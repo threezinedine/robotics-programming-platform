@@ -1,0 +1,17 @@
+macro(RPPOption OPTION_NAME DEFAULT)
+    option(${OPTION_NAME} "Enable ${OPTION_NAME}" ${DEFAULT}) 
+endmacro()
+
+
+macro(RPPProjectSetup)
+    RPPOption(CMAKE_BUILD_TYPE "Debug")
+
+    set(CMAKE_CXX_STANDARD 17)
+    set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+    set(RPP_CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}")
+    set(TEMPORARY_RPP_BASE_DIR "${CMAKE_CURRENT_LIST_DIR}/..")
+    cmake_path(SET RPP_BASE_DIR NORMALIZE ${TEMPORARY_RPP_BASE_DIR})
+
+    set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+endmacro()

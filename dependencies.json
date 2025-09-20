@@ -1,0 +1,11 @@
+[
+    {
+        "name": "googletest",
+        "commit": "50b8600c63c5487e901e2845a0f64d384a65f75d",
+        "url": "https://github.com/google/googletest.git"
+    },
+    {
+        "name": "glfw",
+        "url": "https://github.com/glfw/glfw.git"
+    }
+]

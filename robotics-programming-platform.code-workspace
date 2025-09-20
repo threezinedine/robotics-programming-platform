@@ -1,0 +1,29 @@
+{
+	"folders": [
+		{
+			"name": "autogen",
+			"path": "autogen"
+		},
+		{
+			"name": "editor",
+			"path": "editor"
+		},
+		{
+			"name": "runtime",
+			"path": "runtime"
+		},
+		{
+			"name": "gruntime",
+			"path": "gruntime"
+		},
+		{
+			"name": "libraries",
+			"path": "libraries"
+		},
+		{
+			"name": "robotics-programming-platform",
+			"path": "."
+		}
+	],
+	"settings": {}
+}

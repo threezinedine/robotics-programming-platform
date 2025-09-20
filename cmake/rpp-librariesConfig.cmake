@@ -1,0 +1,9 @@
+if (rpp-libaries_FOUND)
+    return()
+endif()
+
+set(rpp-libaries_DIR ${RPP_BASE_DIR}/libraries)
+message("Adding rpp-libaries from: ${rpp-libaries_DIR}")
+add_subdirectory(${rpp-libaries_DIR} ${CMAKE_BINARY_DIR}/externals/libaries)
+
+set(rpp-libaries_FOUND TRUE)
