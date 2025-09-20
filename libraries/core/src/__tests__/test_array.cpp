@@ -1,13 +1,17 @@
 #include "test_common.h"
 
-/**
- * Used only for testing purposes.
- */
-static struct TestStruct
+namespace
 {
-    i32 a;
-    i32 b;
-};
+    /**
+     * Used only for testing purposes.
+     */
+    struct TestStruct
+    {
+        i32 a;
+        i32 b;
+    };
+
+} // namespace
 
 TEST(ArrayTest, DefaultConstructor)
 {
@@ -115,6 +119,6 @@ TEST(ArrayTest, PushNonNegative1)
     arr.Push(1);
     arr.Push(2, 0);
 
-	EXPECT_EQ(arr[0], 2);
-	EXPECT_EQ(arr[1], 1);
+    EXPECT_EQ(arr[0], 2);
+    EXPECT_EQ(arr[1], 1);
 }

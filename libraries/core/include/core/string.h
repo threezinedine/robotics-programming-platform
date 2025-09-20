@@ -48,6 +48,11 @@ namespace rpp
          */
         char operator[](u32 index) const;
 
+        /**
+         * @brief Assignment operator. Performs a deep copy of the other string.
+         */
+        void operator=(const String &other);
+
     private:
         char *m_data;
     };
