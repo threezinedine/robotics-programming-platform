@@ -16,7 +16,8 @@ namespace rpp
         return result.Replace("{}", ToString(value));                   \
     }
 
-    const String ToString(const String &value)
+    template <>
+    const String ToString<String>(const String &value)
     {
         return value;
     }

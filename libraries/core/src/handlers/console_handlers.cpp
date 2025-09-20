@@ -1,6 +1,7 @@
 #include "core/handlers/console_handlers.h"
 #include "platforms/platforms.h"
 #include "core/string.h"
+#include "core/format.h"
 
 namespace rpp
 {
@@ -32,8 +33,7 @@ namespace rpp
             break;
         };
 
-        print("Logging\n", color);
-        // print("[%s] %s:%d: %s\n", ToString(record.level).CStr(), record.file.CStr(), record.line, record.message.CStr());
+        print(Format("[{}] {}:{}: {}\n", record.level, record.file, record.line, record.message).CStr(), color);
     }
 
 } // namespace rpp
