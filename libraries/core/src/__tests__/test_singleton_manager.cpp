@@ -27,17 +27,7 @@ namespace
         u32 m_value = 42;
     };
 
-    //SINGLETON_IMPLEMENT(TestManager);
-    TestManager* TestManager::s_instsance = nullptr; 
-    TestManager* TestManager::GetInstance() {
-        if (s_instsance == nullptr) {
-            s_instsance = new TestManager(); 
-            SingletonManager::RegisterSingleton(
-                "TestManager", 
-                s_instsance, 
-                [](const SingletonEntry& entry) { delete static_cast<TestManager*>(entry.instance); });
-        } return s_instsance;
-    }
+    SINGLETON_IMPLEMENT(TestManager);
 } // namespace
 
 TEST(SingletonManagerTest, EmptySingltonManager)
