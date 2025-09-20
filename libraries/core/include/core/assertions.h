@@ -8,6 +8,7 @@
 
 namespace rpp
 {
+#if defined(RPP_DEBUG)
 #define RPP_ASSERT(condition)                           \
     if (!(condition))                                   \
     {                                                   \
@@ -21,4 +22,8 @@ namespace rpp
         RPP_LOG_ERROR(message);            \
         debugbreak();                      \
     }
+#else
+#define RPP_ASSERT(condition)
+#define RPP_ASSERT_MSG(condition, message)
+#endif
 } // namespace rpp

@@ -16,6 +16,14 @@ macro(RPPProjectSetup)
     cmake_path(SET RPP_BASE_DIR NORMALIZE ${TEMPORARY_RPP_BASE_DIR})
 
     set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+    if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+        set(RPP_BUILD_TYPE_DEFINE -DRPP_DEBUG)
+        message("Build type: Debug")
+    else()
+        set(RPP_BUILD_TYPE_DEFINE -DRPP_RELEASE)
+        message("Build type: Release")
+    endif()
 endmacro()
 
 macro(RPPDetectPlatform)

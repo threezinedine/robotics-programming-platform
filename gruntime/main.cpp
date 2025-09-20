@@ -18,7 +18,7 @@ int main(void)
     Scope<Window> window = graphics.CreateWindow(800, 600, "RPP Window");
     String title = "RPP Window - \n";
 
-    RPP_ASSERT(5 == 5);
+    RPP_ASSERT(4 == 5);
 
     while (!window->ShouldWindowClose())
     {
