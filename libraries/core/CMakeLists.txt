@@ -13,6 +13,13 @@ file(
 )
 
 add_library(${PROJECT_NAME} STATIC ${CORE_SRC} ${CORE_HDR})
+
+target_link_libraries(
+    ${PROJECT_NAME}
+    PUBLIC
+    RPPPlatforms
+)
+
 target_include_directories(
     ${PROJECT_NAME} 
     PUBLIC 

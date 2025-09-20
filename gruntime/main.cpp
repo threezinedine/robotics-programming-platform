@@ -5,16 +5,22 @@
 
 int main(void)
 {
+    rpp::print("Starting application...\n");
+    rpp::print("Starting application...\n", rpp::ConsoleColor::RED);
+    rpp::print("Starting application...\n", rpp::ConsoleColor::GREEN);
+    rpp::print("Starting application...\n", rpp::ConsoleColor::BLUE);
+    rpp::print("Starting application...\n", rpp::ConsoleColor::YELLOW);
+
     if (!glfwInit())
     {
-        fprintf(stderr, "Failed to initialize GLFW\n");
+        rpp::print("Failed to initialize GLFW\n");
         return -1;
     }
 
     GLFWwindow *window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
     if (!window)
     {
-        fprintf(stderr, "Failed to create GLFW window\n");
+        rpp::print("Failed to create GLFW window\n");
         glfwTerminate();
         return -1;
     }
@@ -24,7 +30,7 @@ int main(void)
 
     if (glewInit() != GLEW_OK)
     {
-        fprintf(stderr, "Failed to initialize GLEW\n");
+        rpp::print("Failed to initialize GLEW\n");
         glfwTerminate();
         return -1;
     }

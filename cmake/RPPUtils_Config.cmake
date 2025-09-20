@@ -4,6 +4,8 @@ endmacro()
 
 
 macro(RPPProjectSetup)
+    message("-----------------------------------------")
+    message(STATUS "Setting up project ${PROJECT_NAME}")
     RPPOption(CMAKE_BUILD_TYPE "Debug")
 
     set(CMAKE_CXX_STANDARD 17)
@@ -14,4 +16,27 @@ macro(RPPProjectSetup)
     cmake_path(SET RPP_BASE_DIR NORMALIZE ${TEMPORARY_RPP_BASE_DIR})
 
     set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+endmacro()
+
+macro(RPPDetectPlatform)
+    message("----------------------------")
+    message(STATUS "Detecting platform...")
+
+    if (WIN32)
+        set(RPP_PLATFORM_NAME "Windows")
+        list(APPEND RPP_PLATFORM_DEFINES -DRPP_PLATFORM_WINDOWS)
+    elseif(APPLE)
+        set(RPP_PLATFORM_NAME "MacOS")
+        list(APPEND RPP_PLATFORM_DEFINES -DRPP_PLATFORM_MACOS)
+    elseif(UNIX)
+        set(RPP_PLATFORM_NAME "Linux")
+        list(APPEND RPP_PLATFORM_DEFINES -DRPP_PLATFORM_LINUX)
+    elseif(CMAKE_SYSTEM_NAME STREQUAL "Android")
+        set(RPP_PLATFORM_NAME "Android")
+        list(APPEND RPP_PLATFORM_DEFINES -DRPP_PLATFORM_ANDROID)
+    else()
+        message(FATAL_ERROR "Unsupported platform")
+    endif()
+
+    message(STATUS "Detected platform: ${RPP_PLATFORM_NAME}")
 endmacro()

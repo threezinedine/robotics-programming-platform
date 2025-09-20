@@ -28,5 +28,10 @@
 			"path": "cmake"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"files.associations": {
+			"ostream": "cpp",
+			"cstdio": "cpp"
+		}
+	}
 }

@@ -1,4 +1,7 @@
 macro(ExternalsSetup)
+    message("-----------------------------------------")
+    message(STATUS "Setting up externals...")
+
     set(TEMPORARY_RPP_EXTERNALS_DIR "${CMAKE_CURRENT_LIST_DIR}/../externals")
     cmake_path(SET RPP_EXTERNALS_DIR NORMALIZE ${TEMPORARY_RPP_EXTERNALS_DIR} )
 
