@@ -4,12 +4,12 @@ Modules and utilities which contains core functionality for the Robotics Program
 
 ## Features
 
-- [ ] Logging system
+- [x] Logging system
 - [ ] File system utilities
-- [ ] Singleton manager
+- [x] Singleton manager
 - [ ] Profiling system
-- [ ] Assertion utilities
+- [x] Assertion utilities
 - [ ] Memory utilities
-- [ ] Container utilities
-- [ ] String utilities
+- [x] Container utilities (Array, List, Map, etc.)
+- [x] String utilities
 - [ ] Parsers (JSON, XML, etc.)
