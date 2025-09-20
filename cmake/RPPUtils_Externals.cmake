@@ -8,8 +8,11 @@ macro(ExternalsSetup)
     endif()
 endmacro()
 
-macro(RPPFindPackage PACKAGE_NAME)
-    set(CMAKE_FOLDER "Externals")
+macro(RPPFindPackage PACKAGE_NAME FOLDER_NAME)
+    if (NOT FOLDER_NAME STREQUAL "")
+        set(CMAKE_FOLDER "${FOLDER_NAME}")
+    endif()
+
     find_package(${PACKAGE_NAME} REQUIRED PATHS ${CMAKE_MODULE_PATH})
     unset(CMAKE_FOLDER)
 endmacro()
