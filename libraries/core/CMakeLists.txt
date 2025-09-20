@@ -1,4 +1,7 @@
+include(RPPUtils_Externals)
 project(RPPCore)
+
+set(TEST_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/src/__tests__)
 
 file(
     GLOB
@@ -8,10 +11,19 @@ file(
 
 file(
     GLOB
+    CORE_SRC_TEST
+    "${TEST_FOLDER}/*.cpp"
+    "${TEST_FOLDER}/*.h"
+)
+
+file(
+    GLOB
     CORE_HDR
     "include/core/*.h"
 )
 
+# -------------- Library target --------------
+set(CMAKE_FOLDER "Libraries")
 add_library(${PROJECT_NAME} STATIC ${CORE_SRC} ${CORE_HDR})
 
 target_link_libraries(
@@ -25,3 +37,13 @@ target_include_directories(
     PUBLIC 
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
+
+RPPFindPackage(rpp-googletest "Dependencies")
+
+# -------------- Test target --------------
+set(CMAKE_FOLDER "Tests")
+set(PROJECT_TEST_NAME ${PROJECT_NAME}_tests)
+add_executable(${PROJECT_TEST_NAME} ${CORE_SRC_TEST})
+target_link_libraries(${PROJECT_TEST_NAME} PRIVATE rpp-googletest ${PROJECT_NAME})
+target_include_directories(${PROJECT_TEST_NAME} PRIVATE ${TEST_FOLDER})
+target_precompile_headers(${PROJECT_TEST_NAME} PRIVATE "${TEST_FOLDER}/test_common.h")
