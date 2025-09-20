@@ -31,7 +31,8 @@
 	"settings": {
 		"files.associations": {
 			"ostream": "cpp",
-			"cstdio": "cpp"
+			"cstdio": "cpp",
+			"cstdint": "c"
 		}
 	}
 }

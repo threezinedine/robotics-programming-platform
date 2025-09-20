@@ -11,3 +11,5 @@ Modules and utilities which contains core functionality for the Robotics Program
 - [ ] Assertion utilities
 - [ ] Memory utilities
 - [ ] Container utilities
+- [ ] String utilities
+- [ ] Parsers (JSON, XML, etc.)
