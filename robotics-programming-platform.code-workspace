@@ -23,6 +23,9 @@
 		{
 			"name": "robotics-programming-platform",
 			"path": "."
+		},
+		{
+			"path": "cmake"
 		}
 	],
 	"settings": {}
