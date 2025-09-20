@@ -4,6 +4,8 @@
 
 namespace rpp
 {
+    String Format(const String &formatMessage);
+
     template <typename T>
     String Format(const String &formatMessage, const T &value);
 

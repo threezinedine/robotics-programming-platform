@@ -42,7 +42,16 @@
 			"xlocmon": "cpp",
 			"xtr1common": "cpp",
 			"xutility": "cpp",
-			"string": "cpp"
+			"string": "cpp",
+			"any": "cpp",
+			"array": "cpp",
+			"compare": "cpp",
+			"memory": "cpp",
+			"ratio": "cpp",
+			"tuple": "cpp",
+			"utility": "cpp",
+			"variant": "cpp",
+			"xmemory": "cpp"
 		}
 	}
 }
