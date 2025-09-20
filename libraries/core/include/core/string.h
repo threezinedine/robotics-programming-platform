@@ -75,6 +75,27 @@ namespace rpp
         i32 Find(const String &substr, u32 startIndex = 0) const;
 
         /**
+         * @brief Extracts a substring from the string.
+         * @param startIndex The starting index of the substring.
+         * @param length The length of the substring to extract. If -1, extracts to the end of the string.
+         *
+         * @note If the startIndex is out of range, an empty string is returned. If the length exceeds the bounds of the string, it is adjusted to fit within the string.
+         *
+         * @return A new String object containing the extracted substring.
+         */
+        String SubString(u32 startIndex, i32 length = -1) const;
+
+        /**
+         * @brief Replaces occurrences of a substring with another substring.
+         * @param oldSubstr The substring to be replaced.
+         * @param newSubstr The substring to replace with.
+         * @param replaceAll If TRUE, replaces all occurrences; if FALSE, replaces only the first occurrence. Default is FALSE.
+         *
+         * @return TRUE if at least one replacement was made, FALSE otherwise.
+         */
+        String Replace(const String &oldSubstr, const String &newSubstr, b8 replaceAll = FALSE);
+
+        /**
          * @brief Concatenates this string with another string and returns the result as a new String object.
          *
          * @param other The string to concatenate with.
@@ -85,4 +106,13 @@ namespace rpp
     private:
         char *m_data;
     };
+
+    /**
+     * @brief Converts a value of any type to its string representation.
+     * @tparam T The type of the value to convert.
+     * @param value The value to convert to a string.
+     * @return A String representing the value.
+     */
+    template <typename T>
+    const String ToString(const T &value);
 } // namespace rpp

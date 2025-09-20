@@ -95,6 +95,64 @@ namespace rpp
         return -1;
     }
 
+    String String::SubString(u32 startIndex, i32 length) const
+    {
+        if (startIndex >= Length())
+        {
+            return String();
+        }
+
+        u32 finalLength = 0;
+
+        if (length == -1 || u32(length) + startIndex > Length())
+        {
+            finalLength = Length() - startIndex;
+        }
+        else
+        {
+            finalLength = static_cast<u32>(length);
+        }
+
+        char *subStr = new char[finalLength + 1];
+        std::strncpy(subStr, m_data + startIndex, finalLength);
+        subStr[finalLength] = '\0';
+
+        String result(subStr);
+        delete[] subStr;
+        return result;
+    }
+
+    String String::Replace(const String &oldSubstr, const String &newSubstr, b8 replaceAll)
+    {
+        String result;
+        i32 startIndex = 0;
+        u32 oldLength = oldSubstr.Length();
+
+        while (TRUE)
+        {
+            i32 foundIndex = Find(oldSubstr, startIndex);
+
+            if (foundIndex == -1)
+            {
+                result += SubString(startIndex);
+                break;
+            }
+
+            result += SubString(startIndex, foundIndex - startIndex);
+            result += newSubstr;
+
+            startIndex = foundIndex + oldSubstr.Length();
+
+            if (!replaceAll)
+            {
+                result += SubString(startIndex);
+                break; // Replace only the first occurrence
+            }
+        }
+
+        return result;
+    }
+
     String String::Concat(const String &other) const
     {
         size_t len1 = std::strlen(m_data);
@@ -107,4 +165,5 @@ namespace rpp
         delete[] newData;
         return result;
     }
+
 } // namespace rpp

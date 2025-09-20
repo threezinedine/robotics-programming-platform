@@ -5,3 +5,4 @@
 #include "handlers/handlers.h"
 #include "string.h"
 #include "array.h"
+#include "format.h"

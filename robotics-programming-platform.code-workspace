@@ -32,7 +32,17 @@
 		"files.associations": {
 			"ostream": "cpp",
 			"cstdio": "cpp",
-			"cstdint": "c"
+			"cstdint": "c",
+			"algorithm": "cpp",
+			"chrono": "cpp",
+			"functional": "cpp",
+			"optional": "cpp",
+			"system_error": "cpp",
+			"type_traits": "cpp",
+			"xlocmon": "cpp",
+			"xtr1common": "cpp",
+			"xutility": "cpp",
+			"string": "cpp"
 		}
 	}
 }

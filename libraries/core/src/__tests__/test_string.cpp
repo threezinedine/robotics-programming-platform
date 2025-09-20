@@ -70,3 +70,30 @@ TEST(StringTest, ConcatStrings)
     EXPECT_EQ(str3.Length(), str1.Length() + str2.Length());
     EXPECT_STREQ(str3.CStr(), "Hello, World!");
 }
+
+TEST(StringTest, SubString)
+{
+    String str("Substring Example");
+    String sub1 = str.SubString(0, 9);
+    String sub2 = str.SubString(10);
+    String sub3 = str.SubString(5, 50); // length exceeds bounds
+    EXPECT_STREQ(sub1.CStr(), "Substring");
+    EXPECT_STREQ(sub2.CStr(), "Example");
+    EXPECT_STREQ(sub3.CStr(), "ring Example");
+}
+
+TEST(StringTest, ReplaceString)
+{
+    String str("The quick brown fox jumps over the lazy dog. The fox is quick.");
+    String replaced = str.Replace("fox", "cat");
+    EXPECT_STREQ(replaced.CStr(), "The quick brown cat jumps over the lazy dog. The fox is quick.");
+
+}
+
+TEST(StringTest, ReplaceStringAll)
+{
+    String str("The quick brown fox jumps over the lazy dog. The fox is quick.");
+
+    String replacedAll = str.Replace("fox", "cat", true);
+    EXPECT_STREQ(replacedAll.CStr(), "The quick brown cat jumps over the lazy dog. The cat is quick.");
+}

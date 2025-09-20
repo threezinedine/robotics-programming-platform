@@ -34,8 +34,6 @@ namespace rpp
         u32 threadId;   ///< The ID of the thread that generated the log message.
     };
 
-    String ToString(LogLevel level);
-
     /**
      * Interface for handling the log records. Users can implement this interface to define custom log handling behavior.
      */
