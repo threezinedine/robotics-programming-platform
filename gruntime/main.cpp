@@ -1,53 +1,32 @@
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
 #include <cstdio>
 #include "core/core.h"
 
+using namespace rpp;
+
 int main(void)
 {
-    rpp::print("Starting application...\n");
-    rpp::print("Starting application...\n", rpp::ConsoleColor::RED);
-    rpp::print("Starting application...\n", rpp::ConsoleColor::GREEN);
-    rpp::print("Starting application...\n", rpp::ConsoleColor::BLUE);
-    rpp::print("Starting application...\n", rpp::ConsoleColor::YELLOW);
+    Graphics graphics;
 
-    if (!glfwInit())
+    graphics.Init();
+
+    Scope<Window> window = graphics.CreateWindow(800, 600, "RPP Window");
+
+    while (!window->ShouldWindowClose())
     {
-        rpp::print("Failed to initialize GLFW\n");
-        return -1;
+        // Main loop
+        window->PollEvents();
+
+        // Clear color command
+        ClearColorCommandData clearColorData = {{0.1f, 0.2f, 0.3f, 1.0f}};
+        GraphicsCommandData commandData = {GraphicsCommandType::CLEAR_COLOR, &clearColorData};
+        window->ExecuteCommand(commandData);
+
+        // Swap buffers command
+        GraphicsCommandData swapBuffersCommand = {GraphicsCommandType::SWAP_BUFFERS, nullptr};
+        window->ExecuteCommand(swapBuffersCommand);
     }
 
-    GLFWwindow *window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
-    if (!window)
-    {
-        rpp::print("Failed to create GLFW window\n");
-        glfwTerminate();
-        return -1;
-    }
-
-    glfwMakeContextCurrent(window);
-    rpp::PrintHello();
-
-    if (glewInit() != GLEW_OK)
-    {
-        rpp::print("Failed to initialize GLEW\n");
-        glfwTerminate();
-        return -1;
-    }
-
-    while (!glfwWindowShouldClose(window))
-    {
-        glClear(GL_COLOR_BUFFER_BIT);
-        glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-
-        // Render OpenGL here
-
-        glfwSwapBuffers(window);
-        glfwPollEvents();
-    }
-
-    glfwDestroyWindow(window);
-    glfwTerminate();
+    graphics.Shutdown();
 
     return 0;
 }

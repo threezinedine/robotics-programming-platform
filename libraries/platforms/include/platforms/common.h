@@ -33,3 +33,25 @@ static_assert(sizeof(f64) == 8, "f64 must be 8 bytes");
 
 #define TRUE b8(true)   ///< Boolean true.
 #define FALSE b8(false) ///< Boolean false.
+
+#include <memory>
+
+// The owner ship smart pointer which cannot be copied.
+template <typename T>
+using Scope = std::unique_ptr<T>;
+
+template <typename T, typename... Args>
+Scope<T> CreateScope(Args &&...args)
+{
+    return std::make_unique<T>(std::forward<Args>(args)...);
+}
+
+// The reference counting smart pointer which can be copied.
+template <typename T>
+using Ref = std::shared_ptr<T>;
+
+template <typename T, typename... Args>
+Ref<T> CreateRef(Args &&...args)
+{
+    return std::make_shared<T>(std::forward<Args>(args)...);
+}

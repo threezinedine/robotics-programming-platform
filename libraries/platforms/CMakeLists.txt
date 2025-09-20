@@ -27,3 +27,10 @@ target_compile_definitions(
     PUBLIC 
     ${RPP_PLATFORM_DEFINES}
 )
+
+if (RPP_PLATFORM_NAME STREQUAL "Windows" OR RPP_PLATFORM_NAME STREQUAL "Linux" OR RPP_PLATFORM_NAME STREQUAL "MacOS")
+    RPPFindPackage(rpp-glfw "Dependencies")
+    target_link_libraries(${PROJECT_NAME} PUBLIC rpp-glfw)
+endif()
+
+target_precompile_headers(${PROJECT_NAME} PUBLIC "include/platforms/common.h")

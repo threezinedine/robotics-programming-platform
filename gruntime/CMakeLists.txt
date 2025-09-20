@@ -16,14 +16,12 @@ file(
     "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
 )
 
-RPPFindPackage(rpp-glfw "Externals")
 RPPFindPackage(rpp-libraries "Libraries")
 
 add_executable(${PROJECT_NAME} ${GRUNTIME_SOURCES})
 target_link_libraries(
     ${PROJECT_NAME} 
     PRIVATE 
-    rpp-glfw
     RPPCore
 )
 
