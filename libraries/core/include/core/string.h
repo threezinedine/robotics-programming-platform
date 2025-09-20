@@ -53,6 +53,35 @@ namespace rpp
          */
         void operator=(const String &other);
 
+        /**
+         * @brief Concatenation operator. Returns a new String that is the concatenation of this string and another.
+         */
+        String operator+(const String &other);
+
+        /**
+         * @brief Concatenation operator with C-style string. Returns a new String that is the concatenation of this string and the C-style string.
+         */
+        void operator+=(const String &other);
+
+    public:
+        /**
+         * @brief Finds the first occurrence of a substring within the string, starting from an optional index.
+         *
+         * @param substr The substring to search for.
+         * @param startIndex The index to start the search from. Default is 0.
+         *
+         * @return The index of the first occurrence of the substring, or -1 if not found.
+         */
+        i32 Find(const String &substr, u32 startIndex = 0) const;
+
+        /**
+         * @brief Concatenates this string with another string and returns the result as a new String object.
+         *
+         * @param other The string to concatenate with.
+         * @return A new String object containing the concatenated result.
+         */
+        String Concat(const String &other) const;
+
     private:
         char *m_data;
     };
