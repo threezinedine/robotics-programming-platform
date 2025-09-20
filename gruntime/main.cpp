@@ -6,7 +6,6 @@ using namespace rpp;
 int main(void)
 {
     SingletonManager::Initialize();
-
     Logging::GetInstance()->SetupHandler(CreateScope<ConsoleHandler>());
 
     Graphics graphics;

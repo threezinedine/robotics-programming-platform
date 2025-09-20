@@ -2,6 +2,7 @@
 #include "platforms/platforms.h"
 #include "singleton_manager.h"
 #include "array.h"
+#include "format.h"
 
 namespace rpp
 {
@@ -92,14 +93,14 @@ namespace rpp
 } // namespace rpp
 
 #if defined(RPP_DEBUG)
-#define RPP_LOG_TRACE(msg) rpp::Logging::GetInstance()->Log(rpp::LogLevel::TRACE, msg, __FILE__, __LINE__)
-#define RPP_LOG_DEBUG(msg) rpp::Logging::GetInstance()->Log(rpp::LogLevel::DEBUG, msg, __FILE__, __LINE__)
+#define RPP_LOG_TRACE(msg, ...) rpp::Logging::GetInstance()->Log(rpp::LogLevel::TRACE, Format(msg, ##__VA_ARGS__), __FILE__, __LINE__)
+#define RPP_LOG_DEBUG(msg, ...) rpp::Logging::GetInstance()->Log(rpp::LogLevel::DEBUG, Format(msg, ##__VA_ARGS__), __FILE__, __LINE__)
 #else
-#define RPP_LOG_TRACE(msg)
-#define RPP_LOG_DEBUG(msg)
+#define RPP_LOG_TRACE(msg, ...)
+#define RPP_LOG_DEBUG(msg, ...)
 #endif
 
-#define RPP_LOG_INFO(msg) rpp::Logging::GetInstance()->Log(rpp::LogLevel::INFO, msg, __FILE__, __LINE__)
-#define RPP_LOG_WARNING(msg) rpp::Logging::GetInstance()->Log(rpp::LogLevel::WARNING, msg, __FILE__, __LINE__)
-#define RPP_LOG_ERROR(msg) rpp::Logging::GetInstance()->Log(rpp::LogLevel::ERROR, msg, __FILE__, __LINE__)
-#define RPP_LOG_FATAL(msg) rpp::Logging::GetInstance()->Log(rpp::LogLevel::FATAL, msg, __FILE__, __LINE__)
+#define RPP_LOG_INFO(msg, ...) rpp::Logging::GetInstance()->Log(rpp::LogLevel::INFO, Format(msg, ##__VA_ARGS__), __FILE__, __LINE__)
+#define RPP_LOG_WARNING(msg, ...) rpp::Logging::GetInstance()->Log(rpp::LogLevel::WARNING, Format(msg, ##__VA_ARGS__), __FILE__, __LINE__)
+#define RPP_LOG_ERROR(msg, ...) rpp::Logging::GetInstance()->Log(rpp::LogLevel::ERROR, Format(msg, ##__VA_ARGS__), __FILE__, __LINE__)
+#define RPP_LOG_FATAL(msg, ...) rpp::Logging::GetInstance()->Log(rpp::LogLevel::FATAL, Format(msg, ##__VA_ARGS__), __FILE__, __LINE__)
