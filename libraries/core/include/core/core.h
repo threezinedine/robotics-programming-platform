@@ -2,3 +2,4 @@
 
 #include "logging.h"
 #include "string.h"
+#include "array.h"
