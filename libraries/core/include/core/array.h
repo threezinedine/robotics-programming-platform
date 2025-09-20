@@ -1,7 +1,7 @@
 #pragma once
 #include "platforms/platforms.h"
 #include <string>
-#include <exception>
+#include <stdexcept>
 
 #define RPP_ARRAY_DEFAULT_CAPACITY 2
 
@@ -125,7 +125,7 @@ namespace rpp
             {
                 modifiedIndex = index;
             }
-			m_size++;
+            m_size++;
 
             for (u32 i = m_size - 1; i >= u32(modifiedIndex) + 1; i--)
             {
@@ -133,6 +133,14 @@ namespace rpp
             }
 
             m_data[modifiedIndex] = std::move(const_cast<T &>(value));
+        }
+
+        /**
+         * @brief Clear the array. The size will be set to zero but the capacity will remain unchanged.
+         */
+        void Clear()
+        {
+            m_size = 0;
         }
 
     private:

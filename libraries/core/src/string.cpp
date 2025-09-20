@@ -32,7 +32,11 @@ namespace rpp
 
     String::~String()
     {
-        delete[] m_data;
+        if (m_data != nullptr)
+        {
+            delete[] m_data;
+            m_data = nullptr;
+        }
     }
 
     u32 String::Length() const
@@ -52,5 +56,16 @@ namespace rpp
             throw std::out_of_range("Index out of range");
         }
         return m_data[index];
+    }
+
+    void String::operator=(const String &other)
+    {
+        if (this != &other)
+        {
+            delete[] m_data;
+            size_t len = std::strlen(other.m_data);
+            m_data = new char[len + 1];
+            std::strcpy(m_data, other.m_data);
+        }
     }
 } // namespace rpp
