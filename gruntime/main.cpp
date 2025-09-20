@@ -5,9 +5,15 @@ using namespace rpp;
 
 int main(void)
 {
+    SingletonManager::Initialize();
+
+    Logging::GetInstance()->SetupHandler(CreateScope<ConsoleHandler>());
+
     Graphics graphics;
 
     graphics.Init();
+    RPP_LOG_INFO("Graphics initialized successfully.");
+    RPP_LOG_ERROR("Graphics initialization failed.");
 
     Scope<Window> window = graphics.CreateWindow(800, 600, "RPP Window");
     String title = "RPP Window - \n";
@@ -29,5 +35,6 @@ int main(void)
 
     graphics.Shutdown();
 
+    SingletonManager::Shutdown();
     return 0;
 }

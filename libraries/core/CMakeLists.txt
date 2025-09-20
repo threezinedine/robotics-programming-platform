@@ -7,6 +7,7 @@ file(
     GLOB
     CORE_SRC
     "src/*.cpp"
+    "src/**/*.cpp"
 )
 
 file(
@@ -20,7 +21,17 @@ file(
     GLOB
     CORE_HDR
     "include/core/*.h"
+    "include/core/**/*.h"
 )
+
+# Remove test files from the main source list
+foreach(CORE_SRC_TEST_FILE ${CORE_SRC_TEST})
+    list(REMOVE_ITEM CORE_SRC ${CORE_SRC_TEST_FILE})
+endforeach()
+
+message("[RPPCore] Source files: ${CORE_SRC}")
+message("[RPPCore] Header files: ${CORE_HDR}")
+message("[RPPCore] Test files: ${CORE_SRC_TEST}")
 
 # -------------- Library target --------------
 set(CMAKE_FOLDER "Libraries")

@@ -6,18 +6,7 @@ namespace
 
     class TestManager
     {
-        SINGLETON_DEFINE(TestManager);
-
-    private:
-        TestManager()
-        {
-            ++numberOfTestManagerInstances;
-        }
-
-        ~TestManager()
-        {
-            --numberOfTestManagerInstances;
-        }
+        RPP_SINGLETON_DEFINE(TestManager);
 
     public:
         inline u32 GetValue() const { return m_value; }
@@ -27,7 +16,17 @@ namespace
         u32 m_value = 42;
     };
 
-    SINGLETON_IMPLEMENT(TestManager);
+    RPP_SINGLETON_IMPLEMENT(TestManager);
+
+    TestManager::TestManager()
+    {
+        ++numberOfTestManagerInstances;
+    }
+
+    TestManager::~TestManager()
+    {
+        --numberOfTestManagerInstances;
+    }
 } // namespace
 
 TEST(SingletonManagerTest, EmptySingltonManager)

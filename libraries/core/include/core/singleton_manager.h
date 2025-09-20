@@ -60,12 +60,16 @@ namespace rpp
     };
 } // namespace rpp
 
-#define SINGLETON_DEFINE(classType) \
-public:                             \
-    static classType *s_instsance;  \
-    static classType *GetInstance();
+#define RPP_SINGLETON_DEFINE(classType) \
+public:                                 \
+    static classType *s_instsance;      \
+    static classType *GetInstance();    \
+                                        \
+private:                                \
+    classType();                        \
+    ~classType();
 
-#define SINGLETON_IMPLEMENT(classType)                                                                 \
+#define RPP_SINGLETON_IMPLEMENT(classType)                                                             \
     classType *classType::s_instsance = nullptr;                                                       \
     classType *classType::GetInstance()                                                                \
     {                                                                                                  \
