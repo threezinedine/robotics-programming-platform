@@ -12,4 +12,4 @@ Modules and utilities which contains core functionality for the Robotics Program
 - [ ] Memory utilities
 - [x] Container utilities (Array, List, Map, etc.)
 - [x] String utilities
-- [ ] Parsers (JSON, XML, etc.)
+- [x] Parsers (JSON, XML, etc.)
