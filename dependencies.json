@@ -11,5 +11,9 @@
     {
         "name": "glew",
         "url": "https://github.com/Perlmint/glew-cmake.git"
+    },
+    {
+        "name": "json",
+        "url": "https://github.com/nlohmann/json.git"
     }
 ]

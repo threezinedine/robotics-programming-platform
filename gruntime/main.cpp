@@ -10,6 +10,8 @@ int main(void)
     Logging::GetInstance()->SetupHandler(CreateScope<ConsoleHandler>());
 
     Graphics graphics;
+    Json json(R"({"name": "John", "age": 30})");
+    RPP_LOG_INFO("Parsed JSON: {}", json.ToString());
 
     graphics.Init();
     RPP_LOG_INFO("Graphics initialized successfully.");
@@ -18,7 +20,7 @@ int main(void)
     Scope<Window> window = graphics.CreateWindow(800, 600, "RPP Window");
     String title = "RPP Window - \n";
 
-    RPP_ASSERT(4 == 5);
+    // RPP_ASSERT(4 == 5);
 
     while (!window->ShouldWindowClose())
     {

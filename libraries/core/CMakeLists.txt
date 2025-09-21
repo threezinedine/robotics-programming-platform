@@ -29,6 +29,8 @@ foreach(CORE_SRC_TEST_FILE ${CORE_SRC_TEST})
     list(REMOVE_ITEM CORE_SRC ${CORE_SRC_TEST_FILE})
 endforeach()
 
+RPPFindPackage(rpp-json "Dependencies")
+
 # -------------- Library target --------------
 set(CMAKE_FOLDER "Libraries")
 add_library(${PROJECT_NAME} STATIC ${CORE_SRC} ${CORE_HDR})
@@ -37,6 +39,7 @@ target_link_libraries(
     ${PROJECT_NAME}
     PUBLIC
     RPPPlatforms
+    rpp-json
 )
 
 target_include_directories(

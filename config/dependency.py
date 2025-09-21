@@ -57,7 +57,6 @@ def InstallCppDependencies() -> None:
                 ],
                 check=True,
                 shell=True,
-                capture_output=True,
                 cwd=Constants.ABSOLUTE_BASE_DIR,
             )
             logger.debug(f"Dependency '{dep.name}' installed successfully.")

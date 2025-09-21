@@ -7,3 +7,4 @@
 #include "array.h"
 #include "format.h"
 #include "assertions.h"
+#include "json.h"
