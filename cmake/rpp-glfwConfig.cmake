@@ -1,4 +1,4 @@
-if (rpp-glfw_FOUND)
+if (TARGET rpp-glfw)
     return()
 endif()
 
@@ -13,5 +13,3 @@ find_package(OpenGL REQUIRED)
 
 add_library(rpp-glfw INTERFACE)
 target_link_libraries(rpp-glfw INTERFACE glfw libglew_static OpenGL::GL)
-
-set(rpp-glfw_FOUND TRUE)

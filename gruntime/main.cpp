@@ -1,4 +1,3 @@
-#include "platforms/memory.h"
 #include "core/core.h"
 
 RPP_ENABLE_MEMORY_TRACKING;
@@ -26,8 +25,6 @@ int main(void)
 
     while (!window->ShouldWindowClose())
     {
-        HighResTimer timer;
-        timer.Start();
         // Main loop
         window->PollEvents();
 
@@ -39,10 +36,6 @@ int main(void)
         // Swap buffers command
         GraphicsCommandData swapBuffersCommand = {GraphicsCommandType::SWAP_BUFFERS, nullptr};
         window->ExecuteCommand(swapBuffersCommand);
-
-		RPP_LOG_INFO("Frame time: {} ns", timer.GetElapsedTimeInNanoseconds());
-        f64 elapsedTime = timer.GetElapsedTimeInSeconds();
-        RPP_LOG_INFO("Frame: {} FPS", 1.0f / elapsedTime);
     }
 
     graphics.Shutdown();

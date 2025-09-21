@@ -1,4 +1,4 @@
-if (rpp-googletest_FOUND)
+if (TARGET rpp-googletest)
     return()
 endif()
 
@@ -13,5 +13,3 @@ target_link_libraries(
     gmock
     gmock_main
 )
-
-set(rpp-googletest_FOUND TRUE)

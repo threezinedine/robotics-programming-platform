@@ -1,4 +1,4 @@
-if (rpp-json_FOUND)
+if (TARGET rpp-json)
     return()
 endif()
 

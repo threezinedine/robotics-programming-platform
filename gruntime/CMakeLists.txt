@@ -22,7 +22,7 @@ add_executable(${PROJECT_NAME} ${GRUNTIME_SOURCES})
 target_link_libraries(
     ${PROJECT_NAME} 
     PRIVATE 
-    RPPCore
+    RPPModules
 )
 target_compile_definitions(
     ${PROJECT_NAME} 
