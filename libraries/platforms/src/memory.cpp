@@ -49,6 +49,10 @@ namespace
 
                 rpp::print(buffer, rpp::ConsoleColor::YELLOW);
             }
+            else
+            {
+                rpp::print("No memory leaks detected.\n", rpp::ConsoleColor::GREEN);
+            }
 
             MemHeader *node = head;
             while (node)

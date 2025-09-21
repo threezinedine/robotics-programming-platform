@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include "platforms/memory.h"
 
 int main(int argc, char **argv)
 {
