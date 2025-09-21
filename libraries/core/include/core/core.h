@@ -8,3 +8,4 @@
 #include "format.h"
 #include "assertions.h"
 #include "json.h"
+#include "timer.h"

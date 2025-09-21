@@ -19,13 +19,15 @@ int main(void)
     Scope<Window> window = graphics.CreateWindow(800, 600, "RPP Window");
     String title = "RPP Window - \n";
 
-	String msg = Format("Memory allocated: {} bytes\n", GetMemoryAllocated());
+    String msg = Format("Memory allocated: {} bytes\n", GetMemoryAllocated());
     Json json(R"({"test": 20})");
 
     print(Format("{}\n", json.ToString()).CStr());
 
     while (!window->ShouldWindowClose())
     {
+        HighResTimer timer;
+        timer.Start();
         // Main loop
         window->PollEvents();
 
@@ -37,6 +39,10 @@ int main(void)
         // Swap buffers command
         GraphicsCommandData swapBuffersCommand = {GraphicsCommandType::SWAP_BUFFERS, nullptr};
         window->ExecuteCommand(swapBuffersCommand);
+
+		RPP_LOG_INFO("Frame time: {} ns", timer.GetElapsedTimeInNanoseconds());
+        f64 elapsedTime = timer.GetElapsedTimeInSeconds();
+        RPP_LOG_INFO("Frame: {} FPS", 1.0f / elapsedTime);
     }
 
     graphics.Shutdown();
