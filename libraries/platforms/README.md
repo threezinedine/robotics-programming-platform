@@ -6,4 +6,5 @@
 - [x] Malloc/free wrappers.
 - [ ] Threading support (std::thread wrapper).
 - [x] Graphics Backend.
+- [ ] Timer utilities.
   

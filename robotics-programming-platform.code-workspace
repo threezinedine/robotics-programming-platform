@@ -21,11 +21,12 @@
 			"path": "libraries"
 		},
 		{
-			"name": "robotics-programming-platform",
-			"path": "."
+			"name": "cmake",
+			"path": "cmake"
 		},
 		{
-			"path": "cmake"
+			"name": "robotics-programming-platform",
+			"path": "."
 		}
 	],
 	"settings": {
