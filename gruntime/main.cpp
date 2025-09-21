@@ -1,4 +1,4 @@
-#include <cstdio>
+#include "platforms/memory.h"
 #include "core/core.h"
 
 using namespace rpp;
@@ -17,7 +17,7 @@ int main(void)
     Scope<Window> window = graphics.CreateWindow(800, 600, "RPP Window");
     String title = "RPP Window - \n";
 
-    RPP_ASSERT(4 == 5);
+    RPP_ASSERT(5 == 5);
 
     while (!window->ShouldWindowClose())
     {
@@ -35,6 +35,15 @@ int main(void)
     }
 
     graphics.Shutdown();
+
+    if (GetMemoryAllocated() != 0)
+    {
+        RPP_LOG_WARNING("Memory leak detected: {} bytes still allocated.", GetMemoryAllocated());
+    }
+    else
+    {
+        RPP_LOG_INFO("No memory leaks detected.");
+    }
 
     SingletonManager::Shutdown();
     return 0;
