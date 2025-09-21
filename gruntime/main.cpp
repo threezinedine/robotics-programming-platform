@@ -9,8 +9,6 @@ int main(void)
     Logging::GetInstance()->SetupHandler(CreateScope<ConsoleHandler>());
 
     Graphics graphics;
-    Json json(R"({"name": "John", "age": 30})");
-    RPP_LOG_INFO("Parsed JSON: {}", json.ToString());
 
     graphics.Init();
     RPP_LOG_INFO("Graphics initialized successfully.");
@@ -18,8 +16,6 @@ int main(void)
 
     Scope<Window> window = graphics.CreateWindow(800, 600, "RPP Window");
     String title = "RPP Window - \n";
-
-    RPP_ASSERT(5 == 5);
 
     while (!window->ShouldWindowClose())
     {
@@ -37,15 +33,6 @@ int main(void)
     }
 
     graphics.Shutdown();
-
-    if (GetMemoryAllocated() != 0)
-    {
-        RPP_LOG_WARNING("Memory leak detected: {} bytes still allocated.", GetMemoryAllocated());
-    }
-    else
-    {
-        RPP_LOG_INFO("No memory leaks detected.");
-    }
 
     SingletonManager::Shutdown();
     return 0;
