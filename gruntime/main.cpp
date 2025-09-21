@@ -20,6 +20,9 @@ int main(void)
     String title = "RPP Window - \n";
 
 	String msg = Format("Memory allocated: {} bytes\n", GetMemoryAllocated());
+    Json json(R"({"test": 20})");
+
+    print(Format("{}\n", json.ToString()).CStr());
 
     while (!window->ShouldWindowClose())
     {
