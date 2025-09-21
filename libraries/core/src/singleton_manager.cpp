@@ -26,11 +26,6 @@ namespace rpp
 
     void SingletonManager::RegisterSingleton(const String &name, void *instance, SingletonDestroyFunc destroyFunc)
     {
-        SingletonEntry entry;
-        entry.name = name;
-        entry.instance = instance;
-        entry.destroyFunc = destroyFunc;
-
-        s_singletonEntries.Push(entry);
+        s_singletonEntries.Push(SingletonEntry(name, instance, destroyFunc));
     }
 } // namespace rpp

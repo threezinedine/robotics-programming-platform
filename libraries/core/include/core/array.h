@@ -20,7 +20,7 @@ namespace rpp
         Array()
         {
             m_capacity = RPP_ARRAY_DEFAULT_CAPACITY;
-            m_data = new T[m_capacity];
+            m_data = (T *)::operator new(m_capacity * sizeof(T));
             m_size = 0;
         }
 
@@ -32,7 +32,7 @@ namespace rpp
         Array(u32 capacity)
         {
             m_capacity = capacity;
-            m_data = new T[m_capacity];
+            m_data = (T *)::operator new(m_capacity * sizeof(T));
             m_size = 0;
         }
 
@@ -43,13 +43,22 @@ namespace rpp
         {
             m_capacity = other.m_capacity;
             m_size = other.m_size;
-            m_data = new T[m_capacity];
-            std::memcpy(m_data, other.m_data, sizeof(T) * m_size);
+            m_data = (T *)::operator new(m_capacity * sizeof(T));
+            for (u32 i = 0; i < m_size; i++)
+            {
+                // m_data[i] = std::move(const_cast<T &>(other.m_data[i]));
+                new (&m_data[i]) T(other.m_data[i]);
+            }
         }
 
         ~Array()
         {
-            delete[] m_data;
+            if (m_data != nullptr)
+            {
+                Clear();
+                ::operator delete(m_data, m_capacity * sizeof(T));
+                m_data = nullptr;
+            }
         }
 
     public:
@@ -91,9 +100,20 @@ namespace rpp
                 throw std::runtime_error("New capacity must be greater than current size");
             }
 
-            T *newData = new T[newCapacity];
-            std::memcpy(newData, m_data, sizeof(T) * m_size);
-            delete[] m_data;
+            T *newData = (T *)::operator new(newCapacity * sizeof(T));
+
+            for (u32 i = 0; i < m_size; i++)
+            {
+                // newData[i] = std::move(m_data[i]);
+                new (&newData[i]) T(std::move(m_data[i]));
+            }
+
+            for (u32 i = 0; i < m_size; i++)
+            {
+                m_data[i].~T();
+            }
+
+            ::operator delete(m_data, m_capacity * sizeof(T));
             m_data = newData;
             m_capacity = newCapacity;
         }
@@ -129,10 +149,43 @@ namespace rpp
 
             for (u32 i = m_size - 1; i >= u32(modifiedIndex) + 1; i--)
             {
-                m_data[i] = std::move(const_cast<T &>(m_data[i - 1]));
+                // m_data[i] = std::move(const_cast<T &>(m_data[i - 1]));
+                new (&m_data[i]) T(std::move(const_cast<T &>(m_data[i - 1])));
             }
 
-            m_data[modifiedIndex] = std::move(const_cast<T &>(value));
+            new (&m_data[modifiedIndex]) T(value);
+        }
+
+        void Push(T &&value, i32 index = -1)
+        {
+            if (index != -1 && (index < 0 || index > static_cast<i32>(m_size)))
+            {
+                throw std::runtime_error("Invalid index, must be -1 or less than than the size of the size of the array");
+            }
+
+            if (m_size >= m_capacity)
+            {
+                Reallocate(m_capacity * 2);
+            }
+
+            u32 modifiedIndex = 0;
+            if (index == -1)
+            {
+                modifiedIndex = m_size;
+            }
+            else
+            {
+                modifiedIndex = index;
+            }
+            m_size++;
+
+            for (u32 i = m_size - 1; i >= u32(modifiedIndex) + 1; i--)
+            {
+                // m_data[i] = std::move(const_cast<T &>(m_data[i - 1]));
+                new (&m_data[i]) T(std::move(const_cast<T &>(m_data[i - 1])));
+            }
+
+            new (&m_data[modifiedIndex]) T(std::move(value));
         }
 
         /**
@@ -140,6 +193,10 @@ namespace rpp
          */
         void Clear()
         {
+            for (u32 i = 0; i < m_size; i++)
+            {
+                m_data[i].~T();
+            }
             m_size = 0;
         }
 

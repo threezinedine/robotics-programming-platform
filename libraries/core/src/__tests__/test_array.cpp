@@ -86,8 +86,8 @@ TEST(ArrayTest, ScopePointerElement)
     auto ts2 = CreateScope<TestStruct>();
     ts2->a = 3;
     ts2->b = 4;
-    arr.Push(ts1);
-    arr.Push(ts2);
+    arr.Push(std::move(ts1));
+    arr.Push(std::move(ts2));
     EXPECT_EQ(arr.Size(), 2);
     EXPECT_EQ(arr[0]->a, 1);
     EXPECT_EQ(arr[0]->b, 2);

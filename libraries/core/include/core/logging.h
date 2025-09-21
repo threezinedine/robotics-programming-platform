@@ -85,7 +85,7 @@ namespace rpp
          * @brief Set up a new handler for processing log records. The logging system takes ownership of the handler.
          * @param handler A unique pointer to the handler to be added.
          */
-        void SetupHandler(const Scope<Handler> &handler);
+        void SetupHandler(Scope<Handler> &&handler);
 
     private:
         Array<Scope<Handler>> m_handlers; ///< Array of handlers to process log records.

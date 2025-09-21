@@ -44,7 +44,7 @@ namespace rpp
         }
     }
 
-    void Logging::SetupHandler(const Scope<Handler> &handler)
+    void Logging::SetupHandler(Scope<Handler> &&handler)
     {
         m_handlers.Push(std::move(handler));
     }

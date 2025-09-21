@@ -17,6 +17,16 @@ namespace rpp
         String name;                      ///< Name of the singleton object.
         void *instance;                   ///< Pointer to the singleton object instance.
         SingletonDestroyFunc destroyFunc; ///< Function to destroy the singleton object.
+
+        SingletonEntry(const String& name, void* instance, SingletonDestroyFunc destroyFunc) 
+            : name(name), instance(instance), destroyFunc(destroyFunc) 
+		{
+		}
+
+        SingletonEntry(const SingletonEntry& other)
+			: name(other.name), instance(other.instance), destroyFunc(other.destroyFunc)
+        {
+        }
     };
 
     /**

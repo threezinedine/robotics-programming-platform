@@ -51,7 +51,14 @@
 			"tuple": "cpp",
 			"utility": "cpp",
 			"variant": "cpp",
-			"xmemory": "cpp"
+			"xmemory": "cpp",
+			"xhash": "cpp",
+			"xstring": "cpp",
+			"xtree": "cpp",
+			"filesystem": "cpp",
+			"ranges": "cpp",
+			"xlocinfo": "cpp",
+			"regex": "cpp"
 		}
 	}
 }
