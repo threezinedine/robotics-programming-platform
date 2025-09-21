@@ -6,7 +6,7 @@ namespace rpp
 {
     String::String()
     {
-        m_data = new char[1]{'\0'};
+        m_data = RPP_NEW(char[1]{'\0'});
     }
 
     String::String(const char *str)
@@ -14,19 +14,19 @@ namespace rpp
         if (str)
         {
             size_t len = std::strlen(str);
-            m_data = new char[len + 1];
+            m_data = RPP_NEW(char[len + 1]);
             std::strcpy(m_data, str);
         }
         else
         {
-            m_data = new char[1]{'\0'};
+            m_data = RPP_NEW(char[1]{'\0'});
         }
     }
 
     String::String(const String &other)
     {
         size_t len = std::strlen(other.m_data);
-        m_data = new char[len + 1];
+        m_data = RPP_NEW(char[len + 1]);
         std::strcpy(m_data, other.m_data);
     }
 
@@ -64,7 +64,7 @@ namespace rpp
         {
             delete[] m_data;
             size_t len = std::strlen(other.m_data);
-            m_data = new char[len + 1];
+            m_data = RPP_NEW(char[len + 1]);
             std::strcpy(m_data, other.m_data);
         }
     }
@@ -113,7 +113,7 @@ namespace rpp
             finalLength = static_cast<u32>(length);
         }
 
-        char *subStr = new char[finalLength + 1];
+        char *subStr = RPP_NEW(char[finalLength + 1]);
         std::strncpy(subStr, m_data + startIndex, finalLength);
         subStr[finalLength] = '\0';
 
@@ -157,7 +157,7 @@ namespace rpp
     {
         size_t len1 = std::strlen(m_data);
         size_t len2 = std::strlen(other.m_data);
-        char *newData = new char[len1 + len2 + 1];
+        char *newData = RPP_NEW(char[len1 + len2 + 1]);
         std::strcpy(newData, m_data);
         std::strcat(newData, other.m_data);
         newData[len1 + len2] = '\0';

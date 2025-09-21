@@ -1,6 +1,8 @@
 #include "platforms/memory.h"
 #include "core/core.h"
 
+RPP_ENABLE_MEMORY_TRACKING;
+
 using namespace rpp;
 
 int main(void)
@@ -16,6 +18,8 @@ int main(void)
 
     Scope<Window> window = graphics.CreateWindow(800, 600, "RPP Window");
     String title = "RPP Window - \n";
+
+	String msg = Format("Memory allocated: {} bytes\n", GetMemoryAllocated());
 
     while (!window->ShouldWindowClose())
     {

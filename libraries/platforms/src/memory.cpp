@@ -1,28 +1,29 @@
-#define __NEW_OVERLOAD_IMPLEMENTATION__
-#include "platforms/memory.h"
 #include <cstdlib>
 #include "platforms/console.h"
 #include <cstdio>
+#include <stdexcept>
+
+#include "platforms/memory.h"
 
 namespace
 {
     struct MemHeader
     {
         void *ptr;
-        const char *file;
-        u32 line;
         size_t size;
+        const char *file;
+        i32 line;
         MemHeader *next;
         MemHeader *prev;
     };
 
-    MemHeader *Create(void *ptr, const char *file, u32 line, size_t size)
+    MemHeader *Create(void *ptr, size_t size, const char *file = nullptr, i32 line = 0)
     {
         MemHeader *node = (MemHeader *)malloc(sizeof(MemHeader));
         node->ptr = ptr;
+        node->size = size;
         node->file = file;
         node->line = line;
-        node->size = size;
         node->next = nullptr;
         node->prev = nullptr;
         return node;
@@ -40,19 +41,10 @@ namespace
 
         ~MemHeaderList()
         {
-            u64 memoryLeaked = GetMemoryAllocated();
+            char buffer[524288];
+            GetMemoryAllocated(buffer, sizeof(buffer));
 
-            if (memoryLeaked != 0)
-            {
-                char buffer[512];
-                snprintf(buffer, sizeof(buffer), "Memory leak detected: %zu bytes\n", memoryLeaked);
-
-                rpp::print(buffer, rpp::ConsoleColor::YELLOW);
-            }
-            else
-            {
-                rpp::print("No memory leaks detected.\n", rpp::ConsoleColor::GREEN);
-            }
+            rpp::print(buffer, rpp::ConsoleColor::RED);
 
             MemHeader *node = head;
             while (node)
@@ -123,8 +115,12 @@ namespace
 
 static MemHeaderList g_memList;
 
-// Overload global new operator
-void *operator new(size_t size, const char *file, u32 line)
+MemoryObject::~MemoryObject()
+{
+    // Destructor will automatically clean up the memory list
+}
+
+void *Allocate(size_t size, const char *file, i32 line)
 {
     void *ptr = malloc(size);
     if (!ptr)
@@ -135,70 +131,67 @@ void *operator new(size_t size, const char *file, u32 line)
     MemHeader *existing = Find(g_memList, ptr);
     if (existing == nullptr)
     {
-        MemHeader *node = Create(ptr, file, line, size);
+        MemHeader *node = Create(ptr, size, file, line);
         PushBack(g_memList, node);
     }
     else
     {
+        if (existing->size != size)
+        {
+            rpp::print("Warning: Allocating memory at an address that is already tracked with a different size.\n", rpp::ConsoleColor::YELLOW);
+        }
         existing->size = size > existing->size ? size : existing->size;
     }
 
     return ptr;
 }
 
-void *operator new[](size_t size, const char *file, u32 line)
+void Deallocate(void *ptr)
 {
-    void *ptr = malloc(size);
-
     if (!ptr)
     {
-        throw std::bad_alloc();
+        return;
     }
 
-    MemHeader *existing = Find(g_memList, ptr);
-    if (existing == nullptr)
-    {
-        MemHeader *node = Create(ptr, file, line, size);
-        PushBack(g_memList, node);
-    }
-    else
-    {
-        existing->size = size > existing->size ? size : existing->size;
-    }
+    free(ptr);
 
-    return ptr;
+    MemHeader *node = Find(g_memList, ptr);
+    if (node)
+    {
+        Remove(g_memList, node);
+    }
+}
+
+// Overload global new operator
+void *operator new(size_t size)
+{
+    return Allocate(size);
+}
+
+void *operator new[](size_t size)
+{
+    return Allocate(size);
+}
+
+void *operator new(size_t size, const char *file, i32 line)
+{
+    return Allocate(size, file, line);
+}
+
+void *operator new[](size_t size, const char *file, i32 line)
+{
+    return Allocate(size, file, line);
 }
 
 // Overload global delete operator
 void operator delete(void *ptr) noexcept
 {
-    if (!ptr)
-    {
-        return;
-    }
-
-    free(ptr);
-
-    MemHeader *node = Find(g_memList, ptr);
-    if (node)
-    {
-        Remove(g_memList, node);
-    }
+    Deallocate(ptr);
 }
 
 void operator delete[](void *ptr) noexcept
 {
-    if (!ptr)
-    {
-        return;
-    }
-
-    free(ptr);
-    MemHeader *node = Find(g_memList, ptr);
-    if (node)
-    {
-        Remove(g_memList, node);
-    }
+    Deallocate(ptr);
 }
 
 u64 GetMemoryAllocated()
@@ -213,4 +206,25 @@ u64 GetMemoryAllocated()
     return total;
 }
 
-#undef __NEW_OVERLOAD_IMPLEMENTATION__
+void GetMemoryAllocated(char *buffer, size_t bufferSize)
+{
+    memset(buffer, 0, bufferSize);
+    MemHeader *node = g_memList.head;
+    u64 total = 0;
+
+    while (node)
+    {
+        total += node->size;
+
+        snprintf(buffer, bufferSize, "%sLeaked %zu bytes at address %p at %s:%d\n", buffer, node->size / 8, node->ptr, node->file != nullptr ? node->file : "unknown", node->line);
+
+        node = node->next;
+    }
+
+    snprintf(buffer, bufferSize, "%sTotal memory allocated: %zu bytes\n", buffer, total / 8);
+
+    if (total == 0)
+    {
+        snprintf(buffer, bufferSize, "No memory leaks detected.\n");
+    }
+}

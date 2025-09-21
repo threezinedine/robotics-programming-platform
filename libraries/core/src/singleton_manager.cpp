@@ -22,6 +22,7 @@ namespace rpp
         }
 
         s_singletonEntries.Clear();
+		s_singletonEntries.~Array();
     }
 
     void SingletonManager::RegisterSingleton(const String &name, void *instance, SingletonDestroyFunc destroyFunc)

@@ -20,7 +20,7 @@ namespace rpp
         Array()
         {
             m_capacity = RPP_ARRAY_DEFAULT_CAPACITY;
-            m_data = (T *)::operator new(m_capacity * sizeof(T));
+            m_data = (T *)RPP_MALLOC(m_capacity * sizeof(T));
             m_size = 0;
         }
 
@@ -32,7 +32,7 @@ namespace rpp
         Array(u32 capacity)
         {
             m_capacity = capacity;
-            m_data = (T *)::operator new(m_capacity * sizeof(T));
+            m_data = (T *)RPP_MALLOC(m_capacity * sizeof(T));
             m_size = 0;
         }
 
@@ -43,7 +43,7 @@ namespace rpp
         {
             m_capacity = other.m_capacity;
             m_size = other.m_size;
-            m_data = (T *)::operator new(m_capacity * sizeof(T));
+            m_data = (T *)RPP_MALLOC(m_capacity * sizeof(T));
             for (u32 i = 0; i < m_size; i++)
             {
                 // m_data[i] = std::move(const_cast<T &>(other.m_data[i]));
@@ -56,7 +56,7 @@ namespace rpp
             if (m_data != nullptr)
             {
                 Clear();
-                ::operator delete(m_data, m_capacity * sizeof(T));
+                RPP_FREE(m_data);
                 m_data = nullptr;
             }
         }
@@ -100,7 +100,7 @@ namespace rpp
                 throw std::runtime_error("New capacity must be greater than current size");
             }
 
-            T *newData = (T *)::operator new(newCapacity * sizeof(T));
+            T *newData = (T *)RPP_MALLOC(newCapacity * sizeof(T));
 
             for (u32 i = 0; i < m_size; i++)
             {
@@ -113,7 +113,7 @@ namespace rpp
                 m_data[i].~T();
             }
 
-            ::operator delete(m_data, m_capacity * sizeof(T));
+            RPP_FREE(m_data);
             m_data = newData;
             m_capacity = newCapacity;
         }
