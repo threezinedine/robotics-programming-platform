@@ -2,7 +2,11 @@ from config.dependency import InstallCppDependencies
 from config.utils.validation_utils import ValidateCommandExists, ValidateEnvDirExists
 from config.args import Args, CppProjectNames, PythonProjectNames
 from config.utils.python_project_utils import InstallPackages, RunPythonProject
-from config.utils.cpp_project_utils import BuildProject, RunCppProject
+from config.utils.cpp_project_utils import (
+    BuildProject,
+    RunCppProject,
+    RunLibrariesTest,
+)
 
 
 def main():
@@ -37,6 +41,24 @@ def main():
                 projectType=args.Type,
                 recreate=args.IsForce,
             )
+
+    if args.IsTest:
+        if args.Project in CppProjectNames:
+            ValidateCommandExists("msbuild")
+
+            if args.Project == "libraries":
+                # Special case for libraries project as it contains multiple tests
+                RunLibrariesTest(
+                    projectDir="core",
+                    projectType=args.Type,
+                )
+                RunLibrariesTest(
+                    projectDir="modules",
+                    projectType=args.Type,
+                )
+        else:
+            pass
+            # RunPythonProject(projectDir=args.Project, isTest=True)
 
     if args.IsRun:
         if args.Project in CppProjectNames:

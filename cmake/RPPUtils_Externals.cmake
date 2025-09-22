@@ -1,13 +1,17 @@
 macro(ExternalsSetup)
-    message("-----------------------------------------")
-    message(STATUS "Setting up externals...")
+    if (NOT ExternalsSetup_DONE)
+        message("-----------------------------------------")
+        message(STATUS "Setting up externals...")
 
-    set(TEMPORARY_RPP_EXTERNALS_DIR "${CMAKE_CURRENT_LIST_DIR}/../externals")
-    cmake_path(SET RPP_EXTERNALS_DIR NORMALIZE ${TEMPORARY_RPP_EXTERNALS_DIR} )
+        set(TEMPORARY_RPP_EXTERNALS_DIR "${CMAKE_CURRENT_LIST_DIR}/../externals")
+        cmake_path(SET RPP_EXTERNALS_DIR NORMALIZE ${TEMPORARY_RPP_EXTERNALS_DIR} )
 
-    if(NOT EXISTS "${RPP_EXTERNALS_DIR}")
-        file(MAKE_DIRECTORY "${RPP_EXTERNALS_DIR}")
-        message("Created externals directory: ${RPP_EXTERNALS_DIR}")
+        if(NOT EXISTS "${RPP_EXTERNALS_DIR}")
+            file(MAKE_DIRECTORY "${RPP_EXTERNALS_DIR}")
+            message("Created externals directory: ${RPP_EXTERNALS_DIR}")
+        endif()
+
+        set(ExternalsSetup_DONE TRUE)
     endif()
 endmacro()
 

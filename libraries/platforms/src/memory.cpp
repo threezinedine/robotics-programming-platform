@@ -5,6 +5,7 @@
 
 #include "platforms/memory.h"
 
+static b8 g_memoryTrackingEnabled = FALSE;
 namespace
 {
     struct MemHeader
@@ -41,10 +42,13 @@ namespace
 
         ~MemHeaderList()
         {
-            char buffer[524288];
-            GetMemoryAllocated(buffer, sizeof(buffer));
+            if (g_memoryTrackingEnabled)
+            {
+                char buffer[524288];
+                GetMemoryAllocated(buffer, sizeof(buffer));
 
-            rpp::print(buffer, rpp::ConsoleColor::RED);
+                rpp::print(buffer, rpp::ConsoleColor::RED);
+            }
 
             MemHeader *node = head;
             while (node)
@@ -114,6 +118,11 @@ namespace
 } // namespace
 
 static MemHeaderList g_memList;
+
+MemoryObject::MemoryObject()
+{
+    g_memoryTrackingEnabled = TRUE;
+}
 
 MemoryObject::~MemoryObject()
 {

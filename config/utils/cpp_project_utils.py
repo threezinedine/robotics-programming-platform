@@ -94,7 +94,7 @@ def RunCppProject(projectDir: str, projectType: str) -> None:
     files = os.listdir(executableDir)
     executable = None
     for file in files:
-        if file.endswith(".exe"):
+        if file.endswith(".exe") and not file.endswith("tests.exe"):
             executable = os.path.join(executableDir, file)
             break
 
@@ -121,6 +121,59 @@ def RunCppProject(projectDir: str, projectType: str) -> None:
             [executable],
             check=True,
             shell=True,
+            cwd=buildDir,
+        )
+    except Exception as e:
+        logger.error(f"Failed to run project '{projectDir}': {e}")
+        raise RuntimeError(f"Failed to run project '{projectDir}'.") from e
+
+
+def RunLibrariesTest(projectDir: str, projectType: str) -> None:
+    """
+    Runs components tests in the `libraries` project (assumes the project has been built already).
+
+    Parameters
+    ----------
+    projectDir : str
+        The project directory where the CMakeLists.txt file is located (relative to the `ABSOLUTE_BASE_DIR`).
+
+    projectType : str, optional
+        The build type which is either 'dev' or 'prod'. Default is 'dev'.
+    """
+
+    buildDir = GetAbsoluteBuildDir("libraries", projectType)
+    cmakeBuildType = "Debug" if projectType == "dev" else "Release"
+    executableDir = os.path.join(buildDir, projectDir, cmakeBuildType)
+
+    # find executable file
+    files = os.listdir(executableDir)
+    executable = None
+    for file in files:
+        if file.endswith("tests.exe"):
+            executable = os.path.join(executableDir, file)
+            break
+
+    if executable is None:
+        raise FileNotFoundError(f"No executable found in '{executableDir}'.")
+
+    try:
+        logger.info(f"Building project in '{projectDir}'...")
+        subprocess.run(
+            [
+                "cmake",
+                "--build",
+                buildDir,
+                "--config",
+                cmakeBuildType,
+            ],
+            check=True,
+            shell=True,
+            cwd=buildDir,
+        )
+
+        logger.info(f"Running project '{projectDir}'...")
+        subprocess.run(
+            [executable],
             cwd=buildDir,
         )
     except Exception as e:

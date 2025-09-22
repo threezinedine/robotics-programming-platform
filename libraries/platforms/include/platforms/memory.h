@@ -68,9 +68,11 @@ void Deallocate(void *ptr);
 
 struct MemoryObject
 {
+    MemoryObject();
     ~MemoryObject();
 };
 
+// Used at main.cpp to enable memory tracking.
 #define RPP_ENABLE_MEMORY_TRACKING MemoryObject __rpp_memory_object
 
 /**

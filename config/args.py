@@ -4,7 +4,7 @@ from logging import DEBUG, INFO
 
 
 PythonProjectNames = ["editor", "autogen"]
-CppProjectNames = ["runtime", "gruntime"]
+CppProjectNames = ["runtime", "gruntime", "libraries"]
 ProjectNames = [*PythonProjectNames, *CppProjectNames]
 Types = ["dev", "prod"]
 
@@ -83,6 +83,11 @@ class Args:
             help="Run the specified project",
         )
 
+        subparsers.add_parser(
+            "test",
+            help="Run the tests for the specified project",
+        )
+
         self.args = parser.parse_args()
 
         if self.args.verbose:
@@ -150,3 +155,10 @@ class Args:
         Returns true if the command is to run the project.
         """
         return self.args.command == "run"
+
+    @property
+    def IsTest(self) -> bool:
+        """
+        Returns true if the command is to run the tests.
+        """
+        return self.args.command == "test"

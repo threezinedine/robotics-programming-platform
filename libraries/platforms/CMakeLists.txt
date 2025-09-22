@@ -1,5 +1,4 @@
 project(RPPPlatforms)
-include(RPPUtils_Config)
 
 file(
     GLOB
