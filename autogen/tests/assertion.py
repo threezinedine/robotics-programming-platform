@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from parser.py_enum import PyEnum, PyEnumConstant
 from parser.py_method import PyMethod
+from parser.py_parameter import PyParameter
 from parser.py_struct import PyStruct
 from parser.py_field import PyField
 from parser import CStruct
@@ -137,6 +138,32 @@ class FieldAssert(IAssert):
         ), f"Expected field access '{self.access}', but got '{field.access}'."
 
 
+class ParameterAssert(IAssert):
+    """
+    A concrete implementation of the IAssert interface for checking method parameters.
+    """
+
+    def __init__(
+        self,
+        name: str,
+        type: str,
+        annotations: list[str] | None = None,
+    ) -> None:
+        super().__init__(name, annotations)
+        self.type = type
+
+    def _AssertImpl(self, obj: CStruct) -> None:
+        assert isinstance(
+            obj, PyParameter
+        ), "The provided structure is not a parameter."
+
+        parameter: PyParameter = obj  # type: ignore
+
+        assert (
+            parameter.type == self.type
+        ), f"Expected parameter type '{self.type}', but got '{parameter.type}'."
+
+
 class MethodAssert(IAssert):
     """
     A concrete implementation of the IAssert interface for checking methods.
@@ -147,11 +174,13 @@ class MethodAssert(IAssert):
         name: str,
         returnType: str,
         access: AccessType | None = None,
+        parameters: list[ParameterAssert] | None = None,
         annotations: list[str] | None = None,
     ) -> None:
         super().__init__(name, annotations)
         self.returnType = returnType
         self.access = access if access is not None else "public"
+        self.parameters = parameters if parameters is not None else []
 
     def _AssertImpl(self, obj: CStruct) -> None:
         assert isinstance(obj, PyMethod), "The provided structure is not a method."
@@ -165,6 +194,12 @@ class MethodAssert(IAssert):
         assert (
             method.access == self.access
         ), f"Expected method access '{self.access}', but got '{method.access}'."
+
+        assert len(method.parameters) == len(
+            self.parameters
+        ), f"Expected {len(self.parameters)} parameters, but got {len(method.parameters)}."
+        for assertion, parameter in zip(self.parameters, method.parameters):
+            assertion.Assert(parameter)
 
 
 class StructAssert(IAssert):

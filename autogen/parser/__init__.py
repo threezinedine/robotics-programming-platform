@@ -6,9 +6,12 @@ from .py_field import PyField
 from .py_struct import PyStruct
 from .py_enum import PyEnum, PyEnumConstant
 from .py_method import PyMethod
+from .py_parameter import PyParameter
 
 # Type alias for a list of Objects
-CStruct: TypeAlias = PyEnum | PyEnumConstant | PyStruct | PyField | PyMethod
+CStruct: TypeAlias = (
+    PyEnum | PyEnumConstant | PyStruct | PyField | PyMethod | PyParameter
+)
 
 # Type alias for the overall structure
 Structure: TypeAlias = dict[

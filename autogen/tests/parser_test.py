@@ -7,6 +7,7 @@ from .assertion import (
     FieldAssert,
     StructAssert,
     MethodAssert,
+    ParameterAssert,
 )
 
 
@@ -73,6 +74,8 @@ namespace rpp {
         float protectedField;
 
         void PrintHello();
+        int GetX() const;
+        void SetX(int newX);
 
     private:
         int z;
@@ -93,6 +96,15 @@ namespace rpp {
             FieldAssert(name="y", type="int", access="public"),
             FieldAssert(name="protectedField", type="float", access="protected"),
             MethodAssert(name="PrintHello", returnType="void", access="protected"),
+            MethodAssert(name="GetX", returnType="int", access="protected"),
+            MethodAssert(
+                name="SetX",
+                returnType="void",
+                access="protected",
+                parameters=[
+                    ParameterAssert(name="newX", type="int"),
+                ],
+            ),
             FieldAssert(name="z", type="int", access="private"),
         ],
         annotations=["python"],

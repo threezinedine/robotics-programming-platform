@@ -14,7 +14,6 @@ class PyStruct(PyObject):
         self.fields: list[PyField | PyMethod] = []
 
         for child in cursor.get_children():
-            print(child.kind, child.spelling)
             if child.kind == clang.cindex.CursorKind.FIELD_DECL:
                 self.fields.append(PyField(child))
             elif child.kind == clang.cindex.CursorKind.CXX_METHOD:
