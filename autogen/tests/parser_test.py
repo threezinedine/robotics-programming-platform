@@ -5,6 +5,7 @@ from .assertion import (
     EnumConstantsAssert,
     EnumAssert,
     FieldAssert,
+    FunctionAssert,
     StructAssert,
     MethodAssert,
     ParameterAssert,
@@ -109,3 +110,54 @@ namespace rpp {
         ],
         annotations=["python"],
     ).Assert(result["struct"][0])
+
+
+def test_parse_function_simplest_function():
+    result = Parse(
+        "",
+        testContent=ParserContentWrapper(
+            """
+namespace rpp {
+    void RPP_PYTHON_BINDING HelloWorld();
+};
+"""
+        ),
+    )
+
+    assert "function" in result
+    assert isinstance(result["function"], list)
+    assert len(result["function"]) == 1
+
+    FunctionAssert(
+        name="HelloWorld",
+        returnType="void",
+        parameters=[],
+        annotations=["python"],
+    ).Assert(result["function"][0])
+
+
+def test_parse_function_function_with_parameters():
+    result = Parse(
+        "",
+        testContent=ParserContentWrapper(
+            """
+namespace rpp {
+    int RPP_PYTHON_BINDING Add(int a, int b);
+};
+"""
+        ),
+    )
+
+    assert "function" in result
+    assert isinstance(result["function"], list)
+    assert len(result["function"]) == 1
+
+    FunctionAssert(
+        name="Add",
+        returnType="int",
+        parameters=[
+            ParameterAssert(name="a", type="int"),
+            ParameterAssert(name="b", type="int"),
+        ],
+        annotations=["python"],
+    ).Assert(result["function"][0])

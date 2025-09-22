@@ -2,6 +2,8 @@ import clang.cindex
 from clang.cindex import Cursor, TranslationUnit
 from typing import Literal, TypeAlias
 
+from parser.py_function import PyFunction
+
 from .py_field import PyField
 from .py_struct import PyStruct
 from .py_enum import PyEnum, PyEnumConstant
@@ -10,7 +12,7 @@ from .py_parameter import PyParameter
 
 # Type alias for a list of Objects
 CStruct: TypeAlias = (
-    PyEnum | PyEnumConstant | PyStruct | PyField | PyMethod | PyParameter
+    PyEnum | PyEnumConstant | PyStruct | PyField | PyMethod | PyParameter | PyFunction
 )
 
 # Type alias for the overall structure
@@ -82,5 +84,8 @@ def Parse(inputFile: str, testContent: str | None = None) -> Structure:
                 elif c.kind == clang.cindex.CursorKind.STRUCT_DECL:
                     pyStruct = PyStruct(c)
                     result["struct"].append(pyStruct)
+                elif c.kind == clang.cindex.CursorKind.FUNCTION_DECL:
+                    pyClass = PyFunction(c)
+                    result["function"].append(pyClass)
 
     return result

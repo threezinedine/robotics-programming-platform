@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from parser.py_enum import PyEnum, PyEnumConstant
+from parser.py_function import PyFunction
 from parser.py_method import PyMethod
 from parser.py_parameter import PyParameter
 from parser.py_struct import PyStruct
@@ -162,6 +163,38 @@ class ParameterAssert(IAssert):
         assert (
             parameter.type == self.type
         ), f"Expected parameter type '{self.type}', but got '{parameter.type}'."
+
+
+class FunctionAssert(IAssert):
+    """
+    A concrete implementation of the IAssert interface for checking free functions.
+    """
+
+    def __init__(
+        self,
+        name: str,
+        returnType: str,
+        parameters: list[ParameterAssert] | None = None,
+        annotations: list[str] | None = None,
+    ) -> None:
+        super().__init__(name, annotations)
+        self.returnType = returnType
+        self.parameters = parameters if parameters is not None else []
+
+    def _AssertImpl(self, obj: CStruct) -> None:
+        assert isinstance(obj, PyFunction), "The provided structure is not a function."
+
+        function: PyFunction = obj  # type: ignore
+
+        assert (
+            function.return_type == self.returnType
+        ), f"Expected function return type '{self.returnType}', but got '{function.return_type}'."
+
+        assert len(function.parameters) == len(
+            self.parameters
+        ), f"Expected {len(self.parameters)} parameters, but got {len(function.parameters)}."
+        for assertion, parameter in zip(self.parameters, function.parameters):
+            assertion.Assert(parameter)
 
 
 class MethodAssert(IAssert):
