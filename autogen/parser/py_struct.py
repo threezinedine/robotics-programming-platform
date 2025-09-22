@@ -11,7 +11,6 @@ class PyStruct(PyObject):
 
     def __init__(self, cursor: clang.cindex.Cursor) -> None:
         super().__init__(cursor)
-        self.name = cursor.spelling
         self.fields: list[PyField | PyMethod] = []
 
         for child in cursor.get_children():

@@ -9,7 +9,6 @@ class PyEnumConstant(PyObject):
 
     def __init__(self, cursor: clang.cindex.Cursor) -> None:
         super().__init__(cursor)
-        self.name = cursor.spelling
         self.value = cursor.enum_value if cursor.enum_value else 0
 
     def __repr__(self) -> str:
@@ -23,7 +22,6 @@ class PyEnum(PyObject):
 
     def __init__(self, cursor: clang.cindex.Cursor) -> None:
         super().__init__(cursor)
-        self.name = cursor.spelling
         self.constants: list[PyEnumConstant] = []
 
         for child in cursor.get_children():

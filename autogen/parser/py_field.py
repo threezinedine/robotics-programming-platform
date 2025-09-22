@@ -9,7 +9,6 @@ class PyField(PyObject):
 
     def __init__(self, cursor: clang.cindex.Cursor) -> None:
         super().__init__(cursor)
-        self.name = cursor.spelling
         self.type = cursor.type.spelling
         self.access = cursor.access_specifier.name.lower()
 

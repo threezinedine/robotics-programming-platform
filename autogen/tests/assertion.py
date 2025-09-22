@@ -12,7 +12,8 @@ class IAssert(ABC):
     The main interface for checking the parsed structures from the C/C++ source code.
     """
 
-    def __init__(self, annotations: list[str] | None = None) -> None:
+    def __init__(self, name: str, annotations: list[str] | None = None) -> None:
+        self.name = name
         self.annotations = annotations if annotations is not None else []
 
     @abstractmethod
@@ -36,6 +37,14 @@ class IAssert(ABC):
             enum (CStruct)
                 The parsed structure to be checked.
         """
+        assert hasattr(obj, "name") and isinstance(
+            getattr(obj, "name", None), str
+        ), "The provided structure does not have a 'name' attribute of type str."
+
+        assert (
+            getattr(obj, "name", "") == self.name
+        ), f"Expected name '{self.name}', but got '{getattr(obj, 'name', '')}'."
+
         self._AssertImpl(obj)
 
         # Additional common assertions can be added here.
@@ -56,8 +65,7 @@ class EnumConstantsAssert(IAssert):
         value: int,
         annotations: list[str] | None = None,
     ) -> None:
-        super().__init__(annotations)
-        self.name = name
+        super().__init__(name, annotations)
         self.value = value
 
     def _AssertImpl(self, obj: CStruct) -> None:
@@ -66,10 +74,6 @@ class EnumConstantsAssert(IAssert):
         ), "The provided structure is not an enumeration constant."
 
         enumConstant: PyEnumConstant = obj  # type: ignore
-
-        assert (
-            enumConstant.name == self.name
-        ), f"Expected enum constant name '{self.name}', but got '{enumConstant.name}'."
 
         assert (
             enumConstant.value == self.value
@@ -87,18 +91,13 @@ class EnumAssert(IAssert):
         constants: list[EnumConstantsAssert],
         annotations: list[str] | None = None,
     ) -> None:
-        super().__init__(annotations)
-        self.name = name
+        super().__init__(name, annotations)
         self.constants = constants
 
     def _AssertImpl(self, obj: CStruct) -> None:
         assert isinstance(obj, PyEnum), "The provided structure is not an enumeration."
 
         enum: PyEnum = obj  # type: ignore
-
-        assert (
-            enum.name == self.name
-        ), f"Expected enum name '{self.name}', but got '{enum.name}'."
 
         assert len(enum.constants) == len(
             self.constants
@@ -120,8 +119,7 @@ class FieldAssert(IAssert):
         access: AccessType | None = None,
         annotations: list[str] | None = None,
     ) -> None:
-        super().__init__(annotations)
-        self.name = name
+        super().__init__(name, annotations)
         self.type = type
         self.access = access if access is not None else "public"
 
@@ -129,10 +127,6 @@ class FieldAssert(IAssert):
         assert isinstance(obj, PyField), "The provided structure is not a field."
 
         field: PyField = obj  # type: ignore
-
-        assert (
-            field.name == self.name
-        ), f"Expected field name '{self.name}', but got '{field.name}'."
 
         assert (
             field.type == self.type
@@ -155,8 +149,7 @@ class MethodAssert(IAssert):
         access: AccessType | None = None,
         annotations: list[str] | None = None,
     ) -> None:
-        super().__init__(annotations)
-        self.name = name
+        super().__init__(name, annotations)
         self.returnType = returnType
         self.access = access if access is not None else "public"
 
@@ -164,10 +157,6 @@ class MethodAssert(IAssert):
         assert isinstance(obj, PyMethod), "The provided structure is not a method."
 
         method: PyMethod = obj  # type: ignore
-
-        assert (
-            method.name == self.name
-        ), f"Expected method name '{self.name}', but got '{method.name}'."
 
         assert (
             method.return_type == self.returnType
@@ -189,18 +178,13 @@ class StructAssert(IAssert):
         fields: list[FieldAssert | MethodAssert] = [],
         annotations: list[str] | None = None,
     ) -> None:
-        super().__init__(annotations)
-        self.name = name
+        super().__init__(name, annotations)
         self.fields = fields
 
     def _AssertImpl(self, obj: CStruct) -> None:
         assert isinstance(obj, PyStruct), "The provided structure is not a struct."
 
         struct: PyStruct = obj  # type: ignore
-
-        assert (
-            struct.name == self.name
-        ), f"Expected struct name '{self.name}', but got '{struct.name}'."
 
         assert len(struct.fields) == len(
             self.fields
