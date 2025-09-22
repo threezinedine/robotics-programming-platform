@@ -5,9 +5,10 @@ from typing import Literal, TypeAlias
 from .py_field import PyField
 from .py_struct import PyStruct
 from .py_enum import PyEnum, PyEnumConstant
+from .py_method import PyMethod
 
 # Type alias for a list of Objects
-CStruct: TypeAlias = PyEnum | PyEnumConstant | PyStruct | PyField
+CStruct: TypeAlias = PyEnum | PyEnumConstant | PyStruct | PyField | PyMethod
 
 # Type alias for the overall structure
 Structure: TypeAlias = dict[

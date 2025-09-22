@@ -1,7 +1,13 @@
 import pytest  # type: ignore
 from parser import Parse
 from .utils import ParserContentWrapper
-from .assertion import EnumConstantsAssert, EnumAssert, FieldAssert, StructAssert
+from .assertion import (
+    EnumConstantsAssert,
+    EnumAssert,
+    FieldAssert,
+    StructAssert,
+    MethodAssert,
+)
 
 
 def test_parse_enum():
@@ -66,6 +72,8 @@ namespace rpp {
     protected:
         float protectedField;
 
+        void PrintHello();
+
     private:
         int z;
     };
@@ -84,6 +92,7 @@ namespace rpp {
             FieldAssert(name="x", type="int", access="public", annotations=["hide"]),
             FieldAssert(name="y", type="int", access="public"),
             FieldAssert(name="protectedField", type="float", access="protected"),
+            MethodAssert(name="PrintHello", returnType="void", access="protected"),
             FieldAssert(name="z", type="int", access="private"),
         ],
         annotations=["python"],
