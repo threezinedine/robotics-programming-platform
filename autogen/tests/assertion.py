@@ -148,10 +148,12 @@ class ParameterAssert(IAssert):
         self,
         name: str,
         type: str,
+        hasDefaultValue: bool = False,
         annotations: list[str] | None = None,
     ) -> None:
         super().__init__(name, annotations)
         self.type = type
+        self.hasDefaultValue = hasDefaultValue
 
     def _AssertImpl(self, obj: CStruct) -> None:
         assert isinstance(
@@ -163,6 +165,10 @@ class ParameterAssert(IAssert):
         assert (
             parameter.type == self.type
         ), f"Expected parameter type '{self.type}', but got '{parameter.type}'."
+
+        assert (
+            parameter.hasDefaultValue == self.hasDefaultValue
+        ), f"Expected parameter hasDefaultValue '{self.hasDefaultValue}', but got '{parameter.hasDefaultValue}'."
 
 
 class FunctionAssert(IAssert):

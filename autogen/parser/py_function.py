@@ -14,6 +14,7 @@ class PyFunction(PyObject):
         self.parameters: list[PyParameter] = []
 
         for child in cursor.get_children():
+            print(child.kind, child.spelling)
             if child.kind == clang.cindex.CursorKind.PARM_DECL:
                 self.parameters.append(PyParameter(child))
 

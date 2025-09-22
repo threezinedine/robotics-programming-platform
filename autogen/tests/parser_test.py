@@ -161,3 +161,30 @@ namespace rpp {
         ],
         annotations=["python"],
     ).Assert(result["function"][0])
+
+
+def test_parse_function_with_default_parameters():
+    result = Parse(
+        "",
+        testContent=ParserContentWrapper(
+            """
+namespace rpp {
+    int RPP_PYTHON_BINDING Multiply(int a, int b = 2);
+};
+"""
+        ),
+    )
+
+    assert "function" in result
+    assert isinstance(result["function"], list)
+    assert len(result["function"]) == 1
+
+    FunctionAssert(
+        name="Multiply",
+        returnType="int",
+        parameters=[
+            ParameterAssert(name="a", type="int"),
+            ParameterAssert(name="b", type="int", hasDefaultValue=True),
+        ],
+        annotations=["python"],
+    ).Assert(result["function"][0])
