@@ -1,8 +1,7 @@
 import pytest  # type: ignore
 from parser import Parse
-from parser.py_enum import PyEnum
 from .utils import ParserContentWrapper
-from .assertion import EnumConstantsAssert, EnumAssert
+from .assertion import EnumConstantsAssert, EnumAssert, FieldAssert, StructAssert
 
 
 def test_parse_enum():
@@ -14,7 +13,7 @@ namespace rpp {
     enum RPP_PYTHON_BINDING RPP_JAVASCRIPT_BINDING Color {
         RED,
         GREEN,
-        BLUE = 10
+        BLUE RPP_HIDE = 10,
     };
 };
     """
@@ -24,17 +23,15 @@ namespace rpp {
     assert isinstance(result["enum"], list)
     assert len(result["enum"]) == 1
 
-    enum: PyEnum = result["enum"][0]  # type: ignore
-
     EnumAssert(
         name="Color",
         constants=[
             EnumConstantsAssert(name="RED", value=0),
             EnumConstantsAssert(name="GREEN", value=1),
-            EnumConstantsAssert(name="BLUE", value=10),
+            EnumConstantsAssert(name="BLUE", value=10, annotations=["hide"]),
         ],
         annotations=["python", "javascript"],
-    ).Assert(enum)
+    ).Assert(result["enum"][0])
 
 
 def test_parse_enum_no_constants():
@@ -49,13 +46,11 @@ namespace rpp {
     """
         ),
     )
-    enum: PyEnum = result["enum"][0]  # type: ignore
-
     EnumAssert(
         name="EmptyEnum",
         constants=[],
         annotations=["python"],
-    ).Assert(enum)
+    ).Assert(result["enum"][0])
 
 
 def test_parse_struct():
@@ -64,9 +59,15 @@ def test_parse_struct():
         testContent=ParserContentWrapper(
             """
 namespace rpp {
-    struct Point {
-        int x;
+    struct RPP_PYTHON_BINDING Point {
+        int x RPP_HIDE;
         int y;
+
+    protected:
+        float protectedField;
+
+    private:
+        int z;
     };
 };
 """
@@ -76,3 +77,14 @@ namespace rpp {
     assert "struct" in result
     assert isinstance(result["struct"], list)
     assert len(result["struct"]) == 1
+
+    StructAssert(
+        name="Point",
+        fields=[
+            FieldAssert(name="x", type="int", access="public", annotations=["hide"]),
+            FieldAssert(name="y", type="int", access="public"),
+            FieldAssert(name="protectedField", type="float", access="protected"),
+            FieldAssert(name="z", type="int", access="private"),
+        ],
+        annotations=["python"],
+    ).Assert(result["struct"][0])

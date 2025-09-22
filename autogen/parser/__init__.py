@@ -1,10 +1,13 @@
 import clang.cindex
 from clang.cindex import Cursor, TranslationUnit
 from typing import Literal, TypeAlias
+
+from .py_field import PyField
+from .py_struct import PyStruct
 from .py_enum import PyEnum, PyEnumConstant
 
 # Type alias for a list of Objects
-CStruct: TypeAlias = PyEnum | PyEnumConstant
+CStruct: TypeAlias = PyEnum | PyEnumConstant | PyStruct | PyField
 
 # Type alias for the overall structure
 Structure: TypeAlias = dict[
@@ -72,5 +75,8 @@ def Parse(inputFile: str, testContent: str | None = None) -> Structure:
                 if c.kind == clang.cindex.CursorKind.ENUM_DECL:
                     pyEnum = PyEnum(c)
                     result["enum"].append(pyEnum)
+                elif c.kind == clang.cindex.CursorKind.STRUCT_DECL:
+                    pyStruct = PyStruct(c)
+                    result["struct"].append(pyStruct)
 
     return result

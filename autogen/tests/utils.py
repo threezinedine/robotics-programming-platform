@@ -16,5 +16,7 @@ def ParserContentWrapper(text: str) -> str:
 #define RPP_JAVASCRIPT_BINDING __attribute__((annotate("javascript")))
 #define RPP_BINDING __attribute__((annotate("python", "javascript")))
 
+#define RPP_HIDE __attribute__((annotate("hide")))
+
     {text}
 """
