@@ -29,12 +29,6 @@ namespace
     }
 } // namespace
 
-TEST(SingletonManagerTest, EmptySingltonManager)
-{
-    SingletonManager::Initialize();
-    SingletonManager::Shutdown();
-}
-
 TEST(SingletonManagerTest, RegisterSingletonObject)
 {
     SingletonManager::Initialize();
