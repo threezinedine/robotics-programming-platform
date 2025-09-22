@@ -1,7 +1,11 @@
 from config.dependency import InstallCppDependencies
 from config.utils.validation_utils import ValidateCommandExists, ValidateEnvDirExists
 from config.args import Args, CppProjectNames, PythonProjectNames
-from config.utils.python_project_utils import InstallPackages, RunPythonProject
+from config.utils.python_project_utils import (
+    InstallPackages,
+    RunPythonProject,
+    RunPythonProjectTest,
+)
 from config.utils.cpp_project_utils import (
     BuildProject,
     RunCppProject,
@@ -57,8 +61,7 @@ def main():
                     projectType=args.Type,
                 )
         else:
-            pass
-            # RunPythonProject(projectDir=args.Project, isTest=True)
+            RunPythonProjectTest(projectDir=args.Project)
 
     if args.IsRun:
         if args.Project in CppProjectNames:

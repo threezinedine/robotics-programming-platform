@@ -2,7 +2,8 @@
 	"folders": [
 		{
 			"name": "autogen",
-			"path": "autogen"
+			"path": "autogen",
+			"python.defaultInterpreterPath": "${workspaceFolder}/venv/Scripts/python.exe"
 		},
 		{
 			"name": "editor",
