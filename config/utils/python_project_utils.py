@@ -106,6 +106,34 @@ def _GetListOfHeaderFiles() -> list[str]:
     return headerFiles
 
 
+def _GetListOfTemplateFiles() -> list[str]:
+    """
+    Retrieves all template files which are used for generating the Python bindings.
+
+    Returns
+    -------
+    list[str]
+        A list of template file paths.
+    """
+    templateFiles: list[str] = []
+
+    directories = [
+        os.path.join(
+            Constants.ABSOLUTE_BASE_DIR,
+            "autogen",
+            "templates",
+        ),
+    ]
+
+    for directory in directories:
+        for root, _, files in os.walk(directory):
+            for file in files:
+                if file.endswith(".j2"):
+                    templateFiles.append(os.path.join(root, file))
+
+    return templateFiles
+
+
 def RunPythonProject(
     projectDir: str,
     force: bool = False,
@@ -136,13 +164,42 @@ def RunPythonProject(
     args: list[str] = []
 
     allHeaderFiles = _GetListOfHeaderFiles()
+    allTemplateFiles = _GetListOfTemplateFiles()
 
     if projectDir == "autogen":
-        isAnyHeaderFileChanged = any(
-            IsFileModified(headerFile) for headerFile in allHeaderFiles
+        cppBindingOutputDir = os.path.join(
+            Constants.ABSOLUTE_BASE_DIR,
+            "libraries",
+            "tmp",
         )
 
-        if not isAnyHeaderFileChanged and not reset and not force:
+        cppBindingOutput = os.path.join(
+            cppBindingOutputDir,
+            "binding.cpp",
+        )
+
+        pyiBindingOutput = os.path.join(
+            Constants.ABSOLUTE_BASE_DIR,
+            "editor",
+            "Engine",
+            "core.pyi",
+        )
+
+        isAnyHeaderFileChanged = any(
+            IsFileModified(headerFile)
+            for headerFile in allHeaderFiles + allTemplateFiles
+        )
+
+        isPyiFileExists = os.path.isfile(pyiBindingOutput)
+        isCppBindingFileExists = os.path.isfile(cppBindingOutput)
+
+        if (
+            not isAnyHeaderFileChanged
+            and isPyiFileExists
+            and isCppBindingFileExists
+            and not reset
+            and not force
+        ):
             logger.info("No header files have changed. Skipping autogen.")
             return
 
@@ -184,8 +241,6 @@ def RunPythonProject(
             "modules.h",
         )
 
-        targetDir = os.path.join(Constants.ABSOLUTE_BASE_DIR, "editor", "Engine")
-
         argCommon = [
             "--clang-path",
             clangPathDll,
@@ -198,17 +253,8 @@ def RunPythonProject(
             "--template",
             os.path.join(cwd, "templates", "pyi_binding.j2"),
             "--output",
-            os.path.join(
-                targetDir,
-                "core.pyi",
-            ),
+            pyiBindingOutput,
         ]
-
-        cppBindingOutputDir = os.path.join(
-            Constants.ABSOLUTE_BASE_DIR,
-            "libraries",
-            "tmp",
-        )
 
         CreateRecursiveDirIfNotExists(cppBindingOutputDir)
 
@@ -216,10 +262,7 @@ def RunPythonProject(
             "--template",
             os.path.join(cwd, "templates", "cpp_binding.j2"),
             "--output",
-            os.path.join(
-                cppBindingOutputDir,
-                "binding.cpp",
-            ),
+            cppBindingOutput,
         ]
 
         logger.info("Header files have changed. Running autogen...")
@@ -250,7 +293,7 @@ def RunPythonProject(
             )
             logger.info(f"Python project '{projectDir}' finished successfully.")
 
-            for headerFile in allHeaderFiles:
+            for headerFile in allHeaderFiles + allTemplateFiles:
                 UpdateFileCache(headerFile)
 
         except Exception as e:
