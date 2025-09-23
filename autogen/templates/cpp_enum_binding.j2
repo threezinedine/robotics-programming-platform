@@ -1,0 +1,12 @@
+{% for enum in enums %}
+    {% if "python" in enum.annotations %}
+py::enum_<{{ enum.name}}>(m, "{{ enum.name }}", py::arithmetic(),
+        {% if enum.comment %} "{{ enum.comment }}" {% else %} "Enum {{enum.name}}" {% endif %} )
+        {% for constant in enum.constants %}
+            {% if "hide" not in constant.annotations %}
+    .value("{{ constant.name }}", {{ enum.name }}::{{ constant.name }}, {% if constant.comment %} "{{ constant.comment }}" {%else%}  "" {% endif %} )
+            {% endif %}
+        {% endfor %}
+    .export_values();
+    {% endif %}
+{% endfor %}

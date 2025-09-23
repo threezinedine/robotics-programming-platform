@@ -78,9 +78,16 @@ class Args:
             help="Build the specified project",
         )
 
-        subparsers.add_parser(
+        runSubParser = subparsers.add_parser(
             "run",
             help="Run the specified project",
+        )
+
+        runSubParser.add_argument(
+            "-r",
+            "--reset",
+            action="store_true",
+            help="Reset the project state before running",
         )
 
         subparsers.add_parser(
@@ -162,3 +169,12 @@ class Args:
         Returns true if the command is to run the tests.
         """
         return self.args.command == "test"
+
+    @property
+    def IsReset(self) -> bool:
+        """
+        Returns true if the reset flag is set when running the project.
+        """
+        if self.IsRun:
+            return self.args.reset
+        return False

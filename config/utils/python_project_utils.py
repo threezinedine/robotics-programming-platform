@@ -1,6 +1,7 @@
 import os
 import subprocess
 from .path_utils import (
+    CreateRecursiveDirIfNotExists,
     GetAbosolutePythonExecutable,
     GetAbsoluteVirtualEnvDir,
 )
@@ -85,6 +86,12 @@ def _GetListOfHeaderFiles() -> list[str]:
         os.path.join(
             Constants.ABSOLUTE_BASE_DIR,
             "libraries",
+            "modules",
+            "include",
+        ),
+        os.path.join(
+            Constants.ABSOLUTE_BASE_DIR,
+            "libraries",
             "core",
             "include",
         ),
@@ -99,7 +106,11 @@ def _GetListOfHeaderFiles() -> list[str]:
     return headerFiles
 
 
-def RunPythonProject(projectDir: str, force: bool = False) -> None:
+def RunPythonProject(
+    projectDir: str,
+    force: bool = False,
+    reset: bool = False,
+) -> None:
     """
     Runs the specified Python project.
 
@@ -110,6 +121,9 @@ def RunPythonProject(projectDir: str, force: bool = False) -> None:
 
     force : bool
         If True, forces the execution of the project even if no relevant files have changed (default is False).
+
+    reset : bool
+        If True, resets the project state before running (default is False).
     """
 
     pythonExe = GetAbosolutePythonExecutable(projectDir)
@@ -128,7 +142,7 @@ def RunPythonProject(projectDir: str, force: bool = False) -> None:
             IsFileModified(headerFile) for headerFile in allHeaderFiles
         )
 
-        if not isAnyHeaderFileChanged and not force:
+        if not isAnyHeaderFileChanged and not reset and not force:
             logger.info("No header files have changed. Skipping autogen.")
             return
 
@@ -161,13 +175,26 @@ def RunPythonProject(projectDir: str, force: bool = False) -> None:
             "core.h",
         )
 
+        moduleHeaderFile = os.path.join(
+            Constants.ABSOLUTE_BASE_DIR,
+            "libraries",
+            "modules",
+            "include",
+            "modules",
+            "modules.h",
+        )
+
         targetDir = os.path.join(Constants.ABSOLUTE_BASE_DIR, "editor", "Engine")
 
-        args = [
+        argCommon = [
             "--clang-path",
             clangPathDll,
             "--input",
             coreHeaderFile,
+            moduleHeaderFile,
+        ]
+
+        args = argCommon + [
             "--template",
             os.path.join(cwd, "templates", "pyi_binding.j2"),
             "--output",
@@ -177,29 +204,76 @@ def RunPythonProject(projectDir: str, force: bool = False) -> None:
             ),
         ]
 
+        cppBindingOutputDir = os.path.join(
+            Constants.ABSOLUTE_BASE_DIR,
+            "libraries",
+            "tmp",
+        )
+
+        CreateRecursiveDirIfNotExists(cppBindingOutputDir)
+
+        arg2 = argCommon + [
+            "--template",
+            os.path.join(cwd, "templates", "cpp_binding.j2"),
+            "--output",
+            os.path.join(
+                cppBindingOutputDir,
+                "binding.cpp",
+            ),
+        ]
+
         logger.info("Header files have changed. Running autogen...")
 
-        for headerFile in allHeaderFiles:
-            UpdateFileCache(headerFile)
+        try:
 
-    try:
+            logger.info(f"Running Python project in '{projectDir}'...")
+            subprocess.run(
+                [
+                    pythonExe,
+                    mainScript,
+                ]
+                + args,
+                check=True,
+                shell=True,
+                cwd=cwd,
+            )
 
-        logger.info(f"Running Python project in '{projectDir}'...")
-        subprocess.run(
-            [
-                pythonExe,
-                mainScript,
-            ]
-            + args,
-            check=True,
-            shell=True,
-            cwd=cwd,
-        )
-        logger.info(f"Python project '{projectDir}' finished successfully.")
+            subprocess.run(
+                [
+                    pythonExe,
+                    mainScript,
+                ]
+                + arg2,
+                check=True,
+                shell=True,
+                cwd=cwd,
+            )
+            logger.info(f"Python project '{projectDir}' finished successfully.")
 
-    except Exception as e:
-        logger.error(f"Failed to run Python project: {e}")
-        raise RuntimeError(f"Failed to run Python project: {e}") from e
+            for headerFile in allHeaderFiles:
+                UpdateFileCache(headerFile)
+
+        except Exception as e:
+            logger.error(f"Failed to run Python project: {e}")
+            raise RuntimeError(f"Failed to run Python project: {e}") from e
+    elif projectDir == "editor":
+        try:
+
+            logger.info(f"Running Python project in '{projectDir}'...")
+            subprocess.run(
+                [
+                    pythonExe,
+                    mainScript,
+                ],
+                check=True,
+                shell=True,
+                cwd=cwd,
+            )
+            logger.info(f"Python project '{projectDir}' finished successfully.")
+
+        except Exception as e:
+            logger.error(f"Failed to run Python project: {e}")
+            raise RuntimeError(f"Failed to run Python project: {e}") from e
 
 
 def RunPythonProjectTest(projectDir: str) -> None:

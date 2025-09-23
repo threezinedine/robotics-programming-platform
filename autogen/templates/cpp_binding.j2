@@ -1,0 +1,8 @@
+#include <pybind11/pybind11.h>
+#include "core/core.h"
+
+namespace py = pybind11;
+
+PYBIND11_MODULE(my_module, m) {
+    {% include "cpp_enum_binding.j2" %}
+}

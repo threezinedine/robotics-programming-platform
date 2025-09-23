@@ -35,7 +35,11 @@ Structure: TypeAlias = dict[
 ]
 
 
-def Parse(inputFile: str, testContent: str | None = None) -> Structure:
+def Parse(
+    inputFile: str,
+    structure: Structure,
+    testContent: str | None = None,
+):
     """
     Main method to analyzing the C/C++ source code and extract structures.
 
@@ -43,6 +47,9 @@ def Parse(inputFile: str, testContent: str | None = None) -> Structure:
     ----------
         inputFile (str)
             Path to the C/C++ source file to be analyzed.
+
+        structure (Structure)
+            The reference structure to be filled.
 
         testContent (str | None)
             Optional string content for testing purposes.
@@ -74,13 +81,6 @@ def Parse(inputFile: str, testContent: str | None = None) -> Structure:
     )
     cursor: Cursor = translationUnit.cursor
 
-    result: Structure = {
-        "enums": [],
-        "structs": [],
-        "functions": [],
-        "classes": [],
-    }
-
     for child in cursor.get_children():
         if (
             child.kind == clang.cindex.CursorKind.NAMESPACE and child.spelling == "rpp"
@@ -88,15 +88,13 @@ def Parse(inputFile: str, testContent: str | None = None) -> Structure:
             for c in child.get_children():
                 if c.kind == clang.cindex.CursorKind.ENUM_DECL:
                     pyEnum = PyEnum(c)
-                    result["enums"].append(pyEnum)
+                    structure["enums"].append(pyEnum)
                 elif c.kind == clang.cindex.CursorKind.STRUCT_DECL:
                     pyStruct = PyStruct(c)
-                    result["structs"].append(pyStruct)
+                    structure["structs"].append(pyStruct)
                 elif c.kind == clang.cindex.CursorKind.FUNCTION_DECL:
                     pyClass = PyFunction(c)
-                    result["functions"].append(pyClass)
+                    structure["functions"].append(pyClass)
                 elif c.kind == clang.cindex.CursorKind.CLASS_DECL:
                     pyClass = PyClass(c)
-                    result["classes"].append(pyClass)
-
-    return result
+                    structure["classes"].append(pyClass)

@@ -1,5 +1,5 @@
 import pytest  # type: ignore
-from parser import Parse
+from parser import Parse, Structure
 from .utils import ParserContentWrapper
 from .assertion import (
     EnumConstantsAssert,
@@ -13,11 +13,22 @@ from .assertion import (
 )
 
 
+def WrapperParse(inputContent: str) -> Structure:
+    result: Structure = {
+        "enums": [],
+        "structs": [],
+        "functions": [],
+        "classes": [],
+    }
+
+    Parse("dummy.h", result, testContent=ParserContentWrapper(inputContent))
+
+    return result
+
+
 def test_parse_enum():
-    result = Parse(
-        "",
-        testContent=ParserContentWrapper(
-            """
+    result = WrapperParse(
+        """
 /// @brief Color enum
 enum RPP_PYTHON_BINDING RPP_JAVASCRIPT_BINDING Color {
     RED,
@@ -25,7 +36,6 @@ enum RPP_PYTHON_BINDING RPP_JAVASCRIPT_BINDING Color {
     BLUE RPP_HIDE = 10,
 };
     """
-        ),
     )
     assert "enums" in result
     assert isinstance(result["enums"], list)
@@ -52,14 +62,11 @@ enum RPP_PYTHON_BINDING RPP_JAVASCRIPT_BINDING Color {
 
 
 def test_parse_enum_no_constants():
-    result = Parse(
-        "",
-        testContent=ParserContentWrapper(
-            """
+    result = WrapperParse(
+        """
 enum RPP_PYTHON_BINDING EmptyEnum {
 };
     """
-        ),
     )
     EnumAssert(
         name="EmptyEnum",
@@ -69,10 +76,8 @@ enum RPP_PYTHON_BINDING EmptyEnum {
 
 
 def test_parse_struct():
-    result = Parse(
-        "",
-        testContent=ParserContentWrapper(
-            """
+    result = WrapperParse(
+        """
 struct RPP_PYTHON_BINDING Point {
     int x RPP_HIDE;
     int y;
@@ -88,7 +93,6 @@ private:
     int z;
 };
 """
-        ),
     )
 
     assert "structs" in result
@@ -120,16 +124,13 @@ private:
 
 
 def test_parse_function_simplest_function():
-    result = Parse(
-        "",
-        testContent=ParserContentWrapper(
-            """
+    result = WrapperParse(
+        """
 /**
     * @brief A simple hello world function.
     */
 void RPP_PYTHON_BINDING HelloWorld();
 """
-        ),
     )
 
     assert "functions" in result
@@ -146,13 +147,10 @@ void RPP_PYTHON_BINDING HelloWorld();
 
 
 def test_parse_function_function_with_parameters():
-    result = Parse(
-        "",
-        testContent=ParserContentWrapper(
-            """
+    result = WrapperParse(
+        """
 int RPP_PYTHON_BINDING Add(int a, int b);
 """
-        ),
     )
 
     assert "functions" in result
@@ -171,10 +169,8 @@ int RPP_PYTHON_BINDING Add(int a, int b);
 
 
 def test_parse_function_with_default_parameters():
-    result = Parse(
-        "",
-        testContent=ParserContentWrapper(
-            """
+    result = WrapperParse(
+        """
 /** @brief Multiplies two integers, with an optional second parameter.
     * @param a The first integer.
     * @param b The second integer, default is 2.
@@ -182,7 +178,6 @@ def test_parse_function_with_default_parameters():
     */
 int RPP_PYTHON_BINDING Multiply(int a, int b = 2);
 """
-        ),
     )
 
     assert "functions" in result
@@ -212,10 +207,8 @@ int RPP_PYTHON_BINDING Multiply(int a, int b = 2);
 
 
 def test_parse_class():
-    result = Parse(
-        "",
-        testContent=ParserContentWrapper(
-            """
+    result = WrapperParse(
+        """
 class RPP_PYTHON_BINDING Calculator {
 public:
     /// @brief Adds two integers.
@@ -228,7 +221,6 @@ private:
     int lastResult;
 };
 """
-        ),
     )
 
     assert "classes" in result

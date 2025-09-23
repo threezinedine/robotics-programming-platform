@@ -68,7 +68,11 @@ def main():
             ValidateCommandExists("msbuild")
             RunCppProject(projectDir=args.Project, projectType=args.Type)
         else:
-            RunPythonProject(projectDir=args.Project)
+            RunPythonProject(
+                projectDir=args.Project,
+                force=args.IsForce,
+                reset=args.IsReset,
+            )
 
 
 if __name__ == "__main__":

@@ -11,7 +11,7 @@ def main():
     args = Args()
 
     ConfigureClangLibrary(args.ClangPath)
-    output = Generate(args.InputFile, args.TemplateFile)
+    output = Generate(args.InputFiles, args.TemplateFile)
 
     with open(args.OutputFile, "w", encoding="utf-8") as f:
         f.write(output)

@@ -11,8 +11,8 @@ class Args:
             "-i",
             "--input",
             type=str,
-            required=True,
-            help="Path to the input C source file (absolute path).",
+            nargs="+",
+            help="Path to the input C source files (absolute path).",
         )
 
         parser.add_argument(
@@ -41,7 +41,7 @@ class Args:
         self._args = parser.parse_args()
 
     @property
-    def InputFile(self) -> str:
+    def InputFiles(self) -> list[str]:
         return self._args.input
 
     @property

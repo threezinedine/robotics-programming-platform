@@ -1,3 +1,6 @@
+from typing import Callable, TypeAlias
+
+
 def ParserContentWrapper(text: str) -> str:
     """
     Add some usedful macros like `RPP_PYTHON_BINDING`, `RPP_JAVASCRIPT_BINDING`, `RPP_BINDING` for testing purposes.
@@ -48,3 +51,6 @@ def AssertGenerateResult(expected: str, actual: str) -> None:
     assert (
         compressedExpected == compressedActual
     ), f"Expected:\n{expected}\n\nActual:\n{actual}"
+
+
+GenerateFuncType: TypeAlias = Callable[[str, str], str]
