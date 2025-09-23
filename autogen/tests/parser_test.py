@@ -18,20 +18,18 @@ def test_parse_enum():
         "",
         testContent=ParserContentWrapper(
             """
-namespace rpp {
-    /// @brief Color enum
-    enum RPP_PYTHON_BINDING RPP_JAVASCRIPT_BINDING Color {
-        RED,
-        GREEN, ///< Green color
-        BLUE RPP_HIDE = 10,
-    };
+/// @brief Color enum
+enum RPP_PYTHON_BINDING RPP_JAVASCRIPT_BINDING Color {
+    RED,
+    GREEN, ///< Green color
+    BLUE RPP_HIDE = 10,
 };
     """
         ),
     )
-    assert "enum" in result
-    assert isinstance(result["enum"], list)
-    assert len(result["enum"]) == 1
+    assert "enums" in result
+    assert isinstance(result["enums"], list)
+    assert len(result["enums"]) == 1
 
     EnumAssert(
         name="Color",
@@ -50,7 +48,7 @@ namespace rpp {
         ],
         comment="Color enum",
         annotations=["python", "javascript"],
-    ).Assert(result["enum"][0])
+    ).Assert(result["enums"][0])
 
 
 def test_parse_enum_no_constants():
@@ -58,9 +56,7 @@ def test_parse_enum_no_constants():
         "",
         testContent=ParserContentWrapper(
             """
-namespace rpp {
-    enum RPP_PYTHON_BINDING EmptyEnum {
-    };
+enum RPP_PYTHON_BINDING EmptyEnum {
 };
     """
         ),
@@ -69,7 +65,7 @@ namespace rpp {
         name="EmptyEnum",
         constants=[],
         annotations=["python"],
-    ).Assert(result["enum"][0])
+    ).Assert(result["enums"][0])
 
 
 def test_parse_struct():
@@ -77,29 +73,27 @@ def test_parse_struct():
         "",
         testContent=ParserContentWrapper(
             """
-namespace rpp {
-    struct RPP_PYTHON_BINDING Point {
-        int x RPP_HIDE;
-        int y;
+struct RPP_PYTHON_BINDING Point {
+    int x RPP_HIDE;
+    int y;
 
-    protected:
-        float protectedField;
+protected:
+    float protectedField;
 
-        void PrintHello();
-        int GetX() const;
-        void SetX(int newX);
+    void PrintHello();
+    int GetX() const;
+    void SetX(int newX);
 
-    private:
-        int z;
-    };
+private:
+    int z;
 };
 """
         ),
     )
 
-    assert "struct" in result
-    assert isinstance(result["struct"], list)
-    assert len(result["struct"]) == 1
+    assert "structs" in result
+    assert isinstance(result["structs"], list)
+    assert len(result["structs"]) == 1
 
     StructAssert(
         name="Point",
@@ -122,7 +116,7 @@ namespace rpp {
             ),
         ],
         annotations=["python"],
-    ).Assert(result["struct"][0])
+    ).Assert(result["structs"][0])
 
 
 def test_parse_function_simplest_function():
@@ -130,19 +124,17 @@ def test_parse_function_simplest_function():
         "",
         testContent=ParserContentWrapper(
             """
-namespace rpp {
-    /**
-     * @brief A simple hello world function.
-     */
-    void RPP_PYTHON_BINDING HelloWorld();
-};
+/**
+    * @brief A simple hello world function.
+    */
+void RPP_PYTHON_BINDING HelloWorld();
 """
         ),
     )
 
-    assert "function" in result
-    assert isinstance(result["function"], list)
-    assert len(result["function"]) == 1
+    assert "functions" in result
+    assert isinstance(result["functions"], list)
+    assert len(result["functions"]) == 1
 
     FunctionAssert(
         name="HelloWorld",
@@ -150,7 +142,7 @@ namespace rpp {
         parameters=[],
         annotations=["python"],
         comment="A simple hello world function.",
-    ).Assert(result["function"][0])
+    ).Assert(result["functions"][0])
 
 
 def test_parse_function_function_with_parameters():
@@ -158,16 +150,14 @@ def test_parse_function_function_with_parameters():
         "",
         testContent=ParserContentWrapper(
             """
-namespace rpp {
-    int RPP_PYTHON_BINDING Add(int a, int b);
-};
+int RPP_PYTHON_BINDING Add(int a, int b);
 """
         ),
     )
 
-    assert "function" in result
-    assert isinstance(result["function"], list)
-    assert len(result["function"]) == 1
+    assert "functions" in result
+    assert isinstance(result["functions"], list)
+    assert len(result["functions"]) == 1
 
     FunctionAssert(
         name="Add",
@@ -177,7 +167,7 @@ namespace rpp {
             ParameterAssert(name="b", type="int"),
         ],
         annotations=["python"],
-    ).Assert(result["function"][0])
+    ).Assert(result["functions"][0])
 
 
 def test_parse_function_with_default_parameters():
@@ -185,21 +175,19 @@ def test_parse_function_with_default_parameters():
         "",
         testContent=ParserContentWrapper(
             """
-namespace rpp {
-    /** @brief Multiplies two integers, with an optional second parameter.
-     * @param a The first integer.
-     * @param b The second integer, default is 2.
-     * @return The product of a and b.
-     */
-    int RPP_PYTHON_BINDING Multiply(int a, int b = 2);
-};
+/** @brief Multiplies two integers, with an optional second parameter.
+    * @param a The first integer.
+    * @param b The second integer, default is 2.
+    * @return The product of a and b.
+    */
+int RPP_PYTHON_BINDING Multiply(int a, int b = 2);
 """
         ),
     )
 
-    assert "function" in result
-    assert isinstance(result["function"], list)
-    assert len(result["function"]) == 1
+    assert "functions" in result
+    assert isinstance(result["functions"], list)
+    assert len(result["functions"]) == 1
 
     FunctionAssert(
         name="Multiply",
@@ -220,7 +208,7 @@ namespace rpp {
         annotations=["python"],
         comment="Multiplies two integers, with an optional second parameter.",
         returnComment="The product of a and b.",
-    ).Assert(result["function"][0])
+    ).Assert(result["functions"][0])
 
 
 def test_parse_class():
@@ -228,26 +216,24 @@ def test_parse_class():
         "",
         testContent=ParserContentWrapper(
             """
-namespace rpp {
-    class RPP_PYTHON_BINDING Calculator {
-    public:
-        /// @brief Adds two integers.
-        int Add(int a, int b);
+class RPP_PYTHON_BINDING Calculator {
+public:
+    /// @brief Adds two integers.
+    int Add(int a, int b);
 
-        /// @brief Subtracts two integers.
-        int Subtract(int a, int b);
+    /// @brief Subtracts two integers.
+    int Subtract(int a, int b);
 
-    private:
-        int lastResult;
-    };
+private:
+    int lastResult;
 };
 """
         ),
     )
 
-    assert "class" in result
-    assert isinstance(result["class"], list)
-    assert len(result["class"]) == 1
+    assert "classes" in result
+    assert isinstance(result["classes"], list)
+    assert len(result["classes"]) == 1
 
     ClassAssert(
         name="Calculator",
@@ -277,4 +263,4 @@ namespace rpp {
             FieldAssert(name="lastResult", type="int", access="private"),
         ],
         annotations=["python"],
-    ).Assert(result["class"][0])
+    ).Assert(result["classes"][0])

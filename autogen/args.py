@@ -12,7 +12,7 @@ class Args:
             "--input",
             type=str,
             required=True,
-            help="Path to the input C source file.",
+            help="Path to the input C source file (absolute path).",
         )
 
         parser.add_argument(
@@ -20,6 +20,22 @@ class Args:
             type=str,
             required=True,
             help="Path to the clang binary.",
+        )
+
+        parser.add_argument(
+            "-t",
+            "--template",
+            type=str,
+            required=True,
+            help="Path to the template file used for code generation (absolute path).",
+        )
+
+        parser.add_argument(
+            "-o",
+            "--output",
+            type=str,
+            required=True,
+            help="Path to the output file where the generated code will be saved (absolute path).",
         )
 
         self._args = parser.parse_args()
@@ -31,3 +47,11 @@ class Args:
     @property
     def ClangPath(self) -> str:
         return self._args.clang_path
+
+    @property
+    def TemplateFile(self) -> str:
+        return self._args.template
+
+    @property
+    def OutputFile(self) -> str:
+        return self._args.output

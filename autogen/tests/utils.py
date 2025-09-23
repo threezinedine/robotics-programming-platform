@@ -18,5 +18,33 @@ def ParserContentWrapper(text: str) -> str:
 
 #define RPP_HIDE __attribute__((annotate("hide")))
 
+namespace rpp {{
     {text}
+}};
 """
+
+
+def AssertGenerateResult(expected: str, actual: str) -> None:
+    """
+    Used for checking the equality of the generated code, the code may have different indentation or extra spaces.
+
+    Parameters
+    ----------
+        expected (str)
+            The expected code.
+
+        actual (str)
+            The actual code.
+
+
+    """
+
+    def compressed(s: str) -> str:
+        return s.replace(" ", "").replace("\n", "")
+
+    compressedExpected = compressed(expected)
+    compressedActual = compressed(actual)
+
+    assert (
+        compressedExpected == compressedActual
+    ), f"Expected:\n{expected}\n\nActual:\n{actual}"

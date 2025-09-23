@@ -1,0 +1,10 @@
+{% for enum in enums %}
+    {% if "python" in enum.annotations %}
+class {{ enum.name }}(Enum):
+        {% for constant in enum.constants %}
+            {% if "hide" not in constant.annotations %}
+    {{ constant.name }} = {{ constant.value }}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+{% endfor %}

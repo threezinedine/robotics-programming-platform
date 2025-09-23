@@ -1,4 +1,5 @@
 #pragma once
+#include "core/common.h"
 #include "platforms/platforms.h"
 #include "singleton_manager.h"
 #include "array.h"
@@ -10,14 +11,14 @@ namespace rpp
      * @brief All predefined types of the message log where the log message can be categorized based
      *      on the severity level.
      */
-    enum class LogLevel
+    enum class RPP_PYTHYON_BINDING LogLevel
     {
         TRACE,   ///< Very detailed information, typically of interest only when diagnosing problems.
         DEBUG,   ///< Detailed information, typically of interest only when diagnosing problems.
         INFO,    ///< Confirmation that things are working as expected.
         WARNING, ///< An indication that something unexpected happened, or indicative of some problem in the near future (e.g. 'disk space low'). The software is still working as expected.
         ERROR,   ///< Due to a more serious problem, the software has not been able to perform some function.
-        FATAL,   /////< A serious error, indicating that the program itself may be unable to continue running.
+        FATAL,   ///< A serious error, indicating that the program itself may be unable to continue running.
         COUNT,
     };
 
@@ -67,7 +68,7 @@ namespace rpp
     /**
      * The logging system (singleton class) that provides logging functionalities.
      */
-    class Logging
+    class RPP_SINGLETON Logging
     {
         RPP_SINGLETON_DEFINE(Logging);
 

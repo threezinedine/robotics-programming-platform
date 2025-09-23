@@ -26,10 +26,10 @@ CStruct: TypeAlias = (
 # Type alias for the overall structure
 Structure: TypeAlias = dict[
     Literal[
-        "enum",
-        "struct",
-        "function",
-        "class",
+        "enums",
+        "structs",
+        "functions",
+        "classes",
     ],
     list[CStruct],
 ]
@@ -75,10 +75,10 @@ def Parse(inputFile: str, testContent: str | None = None) -> Structure:
     cursor: Cursor = translationUnit.cursor
 
     result: Structure = {
-        "enum": [],
-        "struct": [],
-        "function": [],
-        "class": [],
+        "enums": [],
+        "structs": [],
+        "functions": [],
+        "classes": [],
     }
 
     for child in cursor.get_children():
@@ -88,15 +88,15 @@ def Parse(inputFile: str, testContent: str | None = None) -> Structure:
             for c in child.get_children():
                 if c.kind == clang.cindex.CursorKind.ENUM_DECL:
                     pyEnum = PyEnum(c)
-                    result["enum"].append(pyEnum)
+                    result["enums"].append(pyEnum)
                 elif c.kind == clang.cindex.CursorKind.STRUCT_DECL:
                     pyStruct = PyStruct(c)
-                    result["struct"].append(pyStruct)
+                    result["structs"].append(pyStruct)
                 elif c.kind == clang.cindex.CursorKind.FUNCTION_DECL:
                     pyClass = PyFunction(c)
-                    result["function"].append(pyClass)
+                    result["functions"].append(pyClass)
                 elif c.kind == clang.cindex.CursorKind.CLASS_DECL:
                     pyClass = PyClass(c)
-                    result["class"].append(pyClass)
+                    result["classes"].append(pyClass)
 
     return result

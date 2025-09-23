@@ -1,6 +1,6 @@
 import clang.cindex
 from args import Args
-from parser import Parse
+from generate import Generate
 
 
 def ConfigureClangLibrary(clangPath: str) -> None:
@@ -11,7 +11,10 @@ def main():
     args = Args()
 
     ConfigureClangLibrary(args.ClangPath)
-    Parse(args.InputFile)
+    output = Generate(args.InputFile, args.TemplateFile)
+
+    with open(args.OutputFile, "w", encoding="utf-8") as f:
+        f.write(output)
 
 
 if __name__ == "__main__":
