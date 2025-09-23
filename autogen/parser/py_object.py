@@ -9,6 +9,7 @@ class PyObject:
     def __init__(self, cursor: clang.cindex.Cursor) -> None:
         self.name = cursor.spelling
         self.annotations: list[str] = []
+        self.comment = cursor.brief_comment if cursor.brief_comment else None
 
         for child in cursor.get_children():
             if child.kind == clang.cindex.CursorKind.ANNOTATE_ATTR:

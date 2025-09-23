@@ -14,8 +14,14 @@ class IAssert(ABC):
     The main interface for checking the parsed structures from the C/C++ source code.
     """
 
-    def __init__(self, name: str, annotations: list[str] | None = None) -> None:
+    def __init__(
+        self,
+        name: str,
+        comment: str | None = None,
+        annotations: list[str] | None = None,
+    ) -> None:
         self.name = name
+        self.comment = comment
         self.annotations = annotations if annotations is not None else []
 
     @abstractmethod
@@ -47,6 +53,15 @@ class IAssert(ABC):
             getattr(obj, "name", "") == self.name
         ), f"Expected name '{self.name}', but got '{getattr(obj, 'name', '')}'."
 
+        if self.comment is not None:
+            assert hasattr(obj, "comment") and isinstance(
+                getattr(obj, "comment", None), str
+            ), "The provided structure does not have a 'comment' attribute of type str."
+
+            assert (
+                getattr(obj, "comment", "") == self.comment
+            ), f"Expected comment '{self.comment}', but got '{getattr(obj, 'comment', '')}'."
+
         self._AssertImpl(obj)
 
         # Additional common assertions can be added here.
@@ -65,9 +80,10 @@ class EnumConstantsAssert(IAssert):
         self,
         name: str,
         value: int,
+        comment: str | None = None,
         annotations: list[str] | None = None,
     ) -> None:
-        super().__init__(name, annotations)
+        super().__init__(name, comment, annotations)
         self.value = value
 
     def _AssertImpl(self, obj: CStruct) -> None:
@@ -91,9 +107,10 @@ class EnumAssert(IAssert):
         self,
         name: str,
         constants: list[EnumConstantsAssert],
+        comment: str | None = None,
         annotations: list[str] | None = None,
     ) -> None:
-        super().__init__(name, annotations)
+        super().__init__(name, comment, annotations)
         self.constants = constants
 
     def _AssertImpl(self, obj: CStruct) -> None:
@@ -119,9 +136,10 @@ class FieldAssert(IAssert):
         name: str,
         type: str,
         access: AccessType | None = None,
+        comment: str | None = None,
         annotations: list[str] | None = None,
     ) -> None:
-        super().__init__(name, annotations)
+        super().__init__(name, comment, annotations)
         self.type = type
         self.access = access if access is not None else "public"
 
@@ -149,9 +167,10 @@ class ParameterAssert(IAssert):
         name: str,
         type: str,
         hasDefaultValue: bool = False,
+        comment: str | None = None,
         annotations: list[str] | None = None,
     ) -> None:
-        super().__init__(name, annotations)
+        super().__init__(name, comment, annotations)
         self.type = type
         self.hasDefaultValue = hasDefaultValue
 
@@ -181,10 +200,13 @@ class FunctionAssert(IAssert):
         name: str,
         returnType: str,
         parameters: list[ParameterAssert] | None = None,
+        comment: str | None = None,
+        returnComment: str | None = None,
         annotations: list[str] | None = None,
     ) -> None:
-        super().__init__(name, annotations)
+        super().__init__(name, comment, annotations)
         self.returnType = returnType
+        self.returnComment = returnComment
         self.parameters = parameters if parameters is not None else []
 
     def _AssertImpl(self, obj: CStruct) -> None:
@@ -193,14 +215,19 @@ class FunctionAssert(IAssert):
         function: PyFunction = obj  # type: ignore
 
         assert (
-            function.return_type == self.returnType
-        ), f"Expected function return type '{self.returnType}', but got '{function.return_type}'."
+            function.returnType == self.returnType
+        ), f"Expected function return type '{self.returnType}', but got '{function.returnType}'."
 
         assert len(function.parameters) == len(
             self.parameters
         ), f"Expected {len(self.parameters)} parameters, but got {len(function.parameters)}."
         for assertion, parameter in zip(self.parameters, function.parameters):
             assertion.Assert(parameter)
+
+        if self.returnComment is not None:
+            assert (
+                function.returnComment == self.returnComment
+            ), f"Expected return comment '{self.returnComment}', but got '{function.returnComment}'."
 
 
 class MethodAssert(IAssert):
@@ -214,10 +241,13 @@ class MethodAssert(IAssert):
         returnType: str,
         access: AccessType | None = None,
         parameters: list[ParameterAssert] | None = None,
+        comment: str | None = None,
+        returnComment: str | None = None,
         annotations: list[str] | None = None,
     ) -> None:
-        super().__init__(name, annotations)
+        super().__init__(name, comment, annotations)
         self.returnType = returnType
+        self.returnComment = returnComment
         self.access = access if access is not None else "public"
         self.parameters = parameters if parameters is not None else []
 
@@ -227,8 +257,8 @@ class MethodAssert(IAssert):
         method: PyMethod = obj  # type: ignore
 
         assert (
-            method.return_type == self.returnType
-        ), f"Expected method return type '{self.returnType}', but got '{method.return_type}'."
+            method.returnType == self.returnType
+        ), f"Expected method return type '{self.returnType}', but got '{method.returnType}'."
 
         assert (
             method.access == self.access
@@ -240,6 +270,11 @@ class MethodAssert(IAssert):
         for assertion, parameter in zip(self.parameters, method.parameters):
             assertion.Assert(parameter)
 
+        if self.returnComment is not None:
+            assert (
+                method.returnComment == self.returnComment
+            ), f"Expected return comment '{self.returnComment}', but got '{method.returnComment}'."
+
 
 class StructAssert(IAssert):
     """
@@ -250,9 +285,10 @@ class StructAssert(IAssert):
         self,
         name: str,
         fields: list[FieldAssert | MethodAssert] = [],
+        comment: str | None = None,
         annotations: list[str] | None = None,
     ) -> None:
-        super().__init__(name, annotations)
+        super().__init__(name, comment, annotations)
         self.fields = fields
 
     def _AssertImpl(self, obj: CStruct) -> None:

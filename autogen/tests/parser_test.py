@@ -18,9 +18,10 @@ def test_parse_enum():
         testContent=ParserContentWrapper(
             """
 namespace rpp {
+    /// @brief Color enum
     enum RPP_PYTHON_BINDING RPP_JAVASCRIPT_BINDING Color {
         RED,
-        GREEN,
+        GREEN, ///< Green color
         BLUE RPP_HIDE = 10,
     };
 };
@@ -35,9 +36,18 @@ namespace rpp {
         name="Color",
         constants=[
             EnumConstantsAssert(name="RED", value=0),
-            EnumConstantsAssert(name="GREEN", value=1),
-            EnumConstantsAssert(name="BLUE", value=10, annotations=["hide"]),
+            EnumConstantsAssert(
+                name="GREEN",
+                value=1,
+                comment="Green color",
+            ),
+            EnumConstantsAssert(
+                name="BLUE",
+                value=10,
+                annotations=["hide"],
+            ),
         ],
+        comment="Color enum",
         annotations=["python", "javascript"],
     ).Assert(result["enum"][0])
 
@@ -118,6 +128,9 @@ def test_parse_function_simplest_function():
         testContent=ParserContentWrapper(
             """
 namespace rpp {
+    /**
+     * @brief A simple hello world function.
+     */
     void RPP_PYTHON_BINDING HelloWorld();
 };
 """
@@ -133,6 +146,7 @@ namespace rpp {
         returnType="void",
         parameters=[],
         annotations=["python"],
+        comment="A simple hello world function.",
     ).Assert(result["function"][0])
 
 
@@ -169,6 +183,11 @@ def test_parse_function_with_default_parameters():
         testContent=ParserContentWrapper(
             """
 namespace rpp {
+    /** @brief Multiplies two integers, with an optional second parameter.
+     * @param a The first integer.
+     * @param b The second integer, default is 2.
+     * @return The product of a and b.
+     */
     int RPP_PYTHON_BINDING Multiply(int a, int b = 2);
 };
 """
@@ -183,8 +202,19 @@ namespace rpp {
         name="Multiply",
         returnType="int",
         parameters=[
-            ParameterAssert(name="a", type="int"),
-            ParameterAssert(name="b", type="int", hasDefaultValue=True),
+            ParameterAssert(
+                name="a",
+                type="int",
+                comment="The first integer.",
+            ),
+            ParameterAssert(
+                name="b",
+                type="int",
+                hasDefaultValue=True,
+                comment="The second integer, default is 2.",
+            ),
         ],
         annotations=["python"],
+        comment="Multiplies two integers, with an optional second parameter.",
+        returnComment="The product of a and b.",
     ).Assert(result["function"][0])
