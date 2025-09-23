@@ -1,6 +1,9 @@
 import os
 import subprocess
-from .path_utils import GetAbosolutePythonExecutable, GetAbsoluteVirtualEnvDir
+from .path_utils import (
+    GetAbosolutePythonExecutable,
+    GetAbsoluteVirtualEnvDir,
+)
 from ..logger import logger
 from ..constants import Constants
 from .validation_utils import ValidateCommandExists
@@ -115,14 +118,24 @@ def RunPythonProject(projectDir: str) -> None:
             "core.h",
         )
 
+        targetDir = os.path.join(Constants.ABSOLUTE_BASE_DIR, "editor", "Engine")
+
         args = [
             "--clang-path",
             clangPathDll,
             "--input",
             coreHeaderFile,
+            "--template",
+            os.path.join(cwd, "templates", "pyi_binding.j2"),
+            "--output",
+            os.path.join(
+                targetDir,
+                "core.pyi",
+            ),
         ]
 
     try:
+
         logger.info(f"Running Python project in '{projectDir}'...")
         subprocess.run(
             [

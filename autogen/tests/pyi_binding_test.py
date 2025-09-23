@@ -34,6 +34,7 @@ def test_bind_enum(generateFunc: GenerateFuncType) -> None:
     result = generateFunc(
         ParserContentWrapper(
             """
+/// @brief Color enumeration
 enum RPP_PYTHON_BINDING Color {
     RED,
     GREEN, ///< Green color
@@ -46,8 +47,14 @@ enum RPP_PYTHON_BINDING Color {
 
     expected = """
 class Color(Enum):
+    \"\"\"
+        Color enumeration
+    \"\"\"
     RED = 0
     GREEN = 1
+    \"\"\"
+        Green color
+    \"\"\"
 """
 
     AssertGenerateResult(expected, result)

@@ -1,3 +1,4 @@
+#include "common.h"
 #include "platforms/platforms.h"
 
 #include "singleton_manager.h"

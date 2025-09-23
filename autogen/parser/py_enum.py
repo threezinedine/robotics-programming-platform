@@ -29,4 +29,4 @@ class PyEnum(PyObject):
                 self.constants.append(PyEnumConstant(cursor=child))
 
     def __repr__(self) -> str:
-        return f"<PyEnum name='{self.name})'/>"
+        return f"<PyEnum name='{self.name})' />"
