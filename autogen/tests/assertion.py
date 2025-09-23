@@ -285,12 +285,14 @@ class StructAssert(IAssert):
     def __init__(
         self,
         name: str,
-        fields: list[FieldAssert | MethodAssert] = [],
+        fields: list[FieldAssert] = [],
+        methods: list[MethodAssert] = [],
         comment: str | None = None,
         annotations: list[str] | None = None,
     ) -> None:
         super().__init__(name, comment, annotations)
         self.fields = fields
+        self.methods = methods
 
     def _AssertImpl(self, obj: CStruct) -> None:
         assert isinstance(obj, PyStruct), "The provided structure is not a struct."
@@ -303,6 +305,13 @@ class StructAssert(IAssert):
 
         for assertion, field in zip(self.fields, struct.fields):
             assertion.Assert(field)
+
+        assert len(struct.methods) == len(
+            self.methods
+        ), f"Expected {len(self.methods)} methods, but got {len(struct.methods)}."
+
+        for assertion, method in zip(self.methods, struct.methods):
+            assertion.Assert(method)
 
 
 class ClassAssert(IAssert):

@@ -107,6 +107,9 @@ namespace rpp {
             FieldAssert(name="x", type="int", access="public", annotations=["hide"]),
             FieldAssert(name="y", type="int", access="public"),
             FieldAssert(name="protectedField", type="float", access="protected"),
+            FieldAssert(name="z", type="int", access="private"),
+        ],
+        methods=[
             MethodAssert(name="PrintHello", returnType="void", access="protected"),
             MethodAssert(name="GetX", returnType="int", access="protected"),
             MethodAssert(
@@ -117,7 +120,6 @@ namespace rpp {
                     ParameterAssert(name="newX", type="int"),
                 ],
             ),
-            FieldAssert(name="z", type="int", access="private"),
         ],
         annotations=["python"],
     ).Assert(result["struct"][0])
