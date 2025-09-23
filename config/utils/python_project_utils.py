@@ -6,6 +6,7 @@ from .path_utils import (
 )
 from ..logger import logger
 from ..constants import Constants
+from .cache_file_utils import IsFileModified, UpdateFileCache
 from .validation_utils import ValidateCommandExists
 
 
@@ -69,7 +70,36 @@ def InstallPackages(
         ) from e
 
 
-def RunPythonProject(projectDir: str) -> None:
+def _GetListOfHeaderFiles() -> list[str]:
+    """
+    Retrieves all header files which ared used for generating the Python bindings.
+
+    Returns
+    -------
+    list[str]
+        A list of header file paths.
+    """
+    headerFiles: list[str] = []
+
+    directories = [
+        os.path.join(
+            Constants.ABSOLUTE_BASE_DIR,
+            "libraries",
+            "core",
+            "include",
+        ),
+    ]
+
+    for directory in directories:
+        for root, _, files in os.walk(directory):
+            for file in files:
+                if file.endswith(".h") or file.endswith(".hpp"):
+                    headerFiles.append(os.path.join(root, file))
+
+    return headerFiles
+
+
+def RunPythonProject(projectDir: str, force: bool = False) -> None:
     """
     Runs the specified Python project.
 
@@ -77,6 +107,9 @@ def RunPythonProject(projectDir: str) -> None:
     ----------
     projectDir : str
         The project directory where the main.py file is located (relative to the `ABSOLUTE_BASE_DIR`).
+
+    force : bool
+        If True, forces the execution of the project even if no relevant files have changed (default is False).
     """
 
     pythonExe = GetAbosolutePythonExecutable(projectDir)
@@ -88,7 +121,17 @@ def RunPythonProject(projectDir: str) -> None:
 
     args: list[str] = []
 
+    allHeaderFiles = _GetListOfHeaderFiles()
+
     if projectDir == "autogen":
+        isAnyHeaderFileChanged = any(
+            IsFileModified(headerFile) for headerFile in allHeaderFiles
+        )
+
+        if not isAnyHeaderFileChanged and not force:
+            logger.info("No header files have changed. Skipping autogen.")
+            return
+
         ValidateCommandExists("clang")
 
         clangPathResult = subprocess.run(
@@ -133,6 +176,11 @@ def RunPythonProject(projectDir: str) -> None:
                 "core.pyi",
             ),
         ]
+
+        logger.info("Header files have changed. Running autogen...")
+
+        for headerFile in allHeaderFiles:
+            UpdateFileCache(headerFile)
 
     try:
 

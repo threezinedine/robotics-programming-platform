@@ -1,18 +1,28 @@
 import os
 from .path_utils import GetAbsoluteTemporaryDir, CreateRecursiveDirIfNotExists
+from ..constants import Constants
 
 
 def _GetCacheFilePath(filePath: str) -> str:
     """
     Helper function to get the path of the cache file for a given file.
+
+    Parameters
+    ----------
+    filePath : str
+        The path to the file to get the cache file path for (relative to the `ABSOLUTE_BASE_DIR`).
     """
     dirPath = os.path.dirname(filePath)
     fileName = os.path.basename(filePath)
     tmpDir = GetAbsoluteTemporaryDir()
 
-    CreateRecursiveDirIfNotExists(dirPath)
+    finalTmpDir = os.path.join(
+        tmpDir, os.path.relpath(dirPath, Constants.ABSOLUTE_BASE_DIR)
+    )
 
-    return os.path.join(tmpDir, dirPath, f".{fileName}.stamp")
+    CreateRecursiveDirIfNotExists(finalTmpDir)
+
+    return os.path.join(finalTmpDir, f"{fileName}.stamp")
 
 
 def IsFileModified(filePath: str) -> bool:
