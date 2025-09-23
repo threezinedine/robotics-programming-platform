@@ -12,6 +12,7 @@ file(
     "include/platforms/*.h"
 )
 
+set(CMAKE_FOLDER "Libraries")
 add_library(${PROJECT_NAME} STATIC ${PLATFORMS_SRC} ${PLATFORMS_HDR})
 target_include_directories(
     ${PROJECT_NAME} 

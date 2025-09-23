@@ -32,3 +32,5 @@ target_compile_definitions(
 
 # set project as default startup project
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
+
+MarkAutogenTarget(${PROJECT_NAME})

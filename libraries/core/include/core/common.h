@@ -4,7 +4,7 @@
 /**
  * @brief Used for marking the object should be exposed to be binded into Python Module.
  */
-#define RPP_PYTHYON_BINDING
+#define RPP_PYTHON_BINDING
 
 /**
  * @brief Used for marking the object as deprecated. A warning will be shown when the object is used.
@@ -24,7 +24,7 @@
 /**
  * @brief Used for marking the object should be exposed to be binded into Python Module.
  */
-#define RPP_PYTHYON_BINDING __attribute__((annotate("python")))
+#define RPP_PYTHON_BINDING __attribute__((annotate("python")))
 
 /**
  * @brief Used for marking the object as deprecated. A warning will be shown when the object is used.

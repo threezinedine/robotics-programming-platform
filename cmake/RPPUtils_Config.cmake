@@ -56,3 +56,7 @@ macro(RPPDetectPlatform)
         set(RPPDetectPlatform_DONE TRUE)
     endif()
 endmacro()
+
+macro(MarkAutogenTarget TARGET_NAME)
+    add_dependencies(${TARGET_NAME} Autogen)
+endmacro()

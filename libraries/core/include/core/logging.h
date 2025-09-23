@@ -11,7 +11,7 @@ namespace rpp
      * @brief All predefined types of the message log where the log message can be categorized based
      *      on the severity level.
      */
-    enum class RPP_PYTHYON_BINDING LogLevel
+    enum class RPP_PYTHON_BINDING LogLevel
     {
         TRACE,   ///< Very detailed information, typically of interest only when diagnosing problems.
         DEBUG,   ///< Detailed information, typically of interest only when diagnosing problems.
@@ -26,7 +26,7 @@ namespace rpp
      * @brief an object which stores all needed information for a single log entry. This object must be handled
      *      by the handler of the logging system.
      */
-    struct LogRecord
+    struct RPP_PYTHON_BINDING LogRecord
     {
         LogLevel level; ///< The severity level of the log message.
         String message; ///< The log message to be recorded.
@@ -80,7 +80,7 @@ namespace rpp
          * @param file The name of the source file where the log message originated.
          * @param line The line number in the source file where the log message originated.
          */
-        void Log(LogLevel level, const String &message, const String &file, i32 line);
+        void Log(LogLevel level, const String &message, const String &file, i32 line) RPP_PYTHON_BINDING;
 
         /**
          * @brief Set up a new handler for processing log records. The logging system takes ownership of the handler.

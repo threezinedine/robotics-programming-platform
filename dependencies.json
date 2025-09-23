@@ -15,5 +15,9 @@
     {
         "name": "json",
         "url": "https://github.com/nlohmann/json.git"
+    },
+    {
+        "name": "pybind",
+        "url": "https://github.com/pybind/pybind11.git"
     }
 ]
