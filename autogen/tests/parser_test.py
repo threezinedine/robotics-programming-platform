@@ -9,6 +9,7 @@ from .assertion import (
     StructAssert,
     MethodAssert,
     ParameterAssert,
+    ClassAssert,
 )
 
 
@@ -218,3 +219,60 @@ namespace rpp {
         comment="Multiplies two integers, with an optional second parameter.",
         returnComment="The product of a and b.",
     ).Assert(result["function"][0])
+
+
+def test_parse_class():
+    result = Parse(
+        "",
+        testContent=ParserContentWrapper(
+            """
+namespace rpp {
+    class RPP_PYTHON_BINDING Calculator {
+    public:
+        /// @brief Adds two integers.
+        int Add(int a, int b);
+
+        /// @brief Subtracts two integers.
+        int Subtract(int a, int b);
+
+    private:
+        int lastResult;
+    };
+};
+"""
+        ),
+    )
+
+    assert "class" in result
+    assert isinstance(result["class"], list)
+    assert len(result["class"]) == 1
+
+    ClassAssert(
+        name="Calculator",
+        methods=[
+            MethodAssert(
+                name="Add",
+                returnType="int",
+                access="public",
+                comment="Adds two integers.",
+                parameters=[
+                    ParameterAssert(name="a", type="int"),
+                    ParameterAssert(name="b", type="int"),
+                ],
+            ),
+            MethodAssert(
+                name="Subtract",
+                returnType="int",
+                access="public",
+                comment="Subtracts two integers.",
+                parameters=[
+                    ParameterAssert(name="a", type="int"),
+                    ParameterAssert(name="b", type="int"),
+                ],
+            ),
+        ],
+        fields=[
+            FieldAssert(name="lastResult", type="int", access="private"),
+        ],
+        annotations=["python"],
+    ).Assert(result["class"][0])

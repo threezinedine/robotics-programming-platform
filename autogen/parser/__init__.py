@@ -9,10 +9,18 @@ from .py_struct import PyStruct
 from .py_enum import PyEnum, PyEnumConstant
 from .py_method import PyMethod
 from .py_parameter import PyParameter
+from .py_class import PyClass
 
 # Type alias for a list of Objects
 CStruct: TypeAlias = (
-    PyEnum | PyEnumConstant | PyStruct | PyField | PyMethod | PyParameter | PyFunction
+    PyEnum
+    | PyEnumConstant
+    | PyStruct
+    | PyField
+    | PyMethod
+    | PyParameter
+    | PyFunction
+    | PyClass
 )
 
 # Type alias for the overall structure
@@ -87,5 +95,8 @@ def Parse(inputFile: str, testContent: str | None = None) -> Structure:
                 elif c.kind == clang.cindex.CursorKind.FUNCTION_DECL:
                     pyClass = PyFunction(c)
                     result["function"].append(pyClass)
+                elif c.kind == clang.cindex.CursorKind.CLASS_DECL:
+                    pyClass = PyClass(c)
+                    result["class"].append(pyClass)
 
     return result

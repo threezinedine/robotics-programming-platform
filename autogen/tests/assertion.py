@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from parser.py_class import PyClass
 from parser.py_enum import PyEnum, PyEnumConstant
 from parser.py_function import PyFunction
 from parser.py_method import PyMethod
@@ -302,3 +303,36 @@ class StructAssert(IAssert):
 
         for assertion, field in zip(self.fields, struct.fields):
             assertion.Assert(field)
+
+
+class ClassAssert(IAssert):
+    def __init__(
+        self,
+        name: str,
+        fields: list[FieldAssert] = [],
+        methods: list[MethodAssert] = [],
+        comment: str | None = None,
+        annotations: list[str] | None = None,
+    ) -> None:
+        super().__init__(name, comment, annotations)
+        self.fields = fields
+        self.methods = methods
+
+    def _AssertImpl(self, obj: CStruct) -> None:
+        assert isinstance(obj, PyClass), "The provided structure is not a class."
+
+        cls: PyClass = obj  # type: ignore
+
+        assert len(cls.fields) == len(
+            self.fields
+        ), f"Expected {len(self.fields)} fields, but got {len(cls.fields)}."
+
+        for assertion, field in zip(self.fields, cls.fields):
+            assertion.Assert(field)
+
+        assert len(cls.methods) == len(
+            self.methods
+        ), f"Expected {len(self.methods)} methods, but got {len(cls.methods)}."
+
+        for assertion, method in zip(self.methods, cls.methods):
+            assertion.Assert(method)
