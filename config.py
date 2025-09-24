@@ -48,8 +48,6 @@ def main():
 
     if args.IsTest:
         if args.Project in CppProjectNames:
-            ValidateCommandExists("msbuild")
-
             if args.Project == "libraries":
                 # Special case for libraries project as it contains multiple tests
                 RunLibrariesTest(
@@ -65,7 +63,6 @@ def main():
 
     if args.IsRun:
         if args.Project in CppProjectNames:
-            ValidateCommandExists("msbuild")
             RunCppProject(projectDir=args.Project, projectType=args.Type)
         else:
             RunPythonProject(
