@@ -301,6 +301,19 @@ def RunPythonProject(
             raise RuntimeError(f"Failed to run Python project: {e}") from e
     elif projectDir == "editor":
         try:
+            logger.info("Build the libraries project...")
+            subprocess.run(
+                [
+                    "python",
+                    "config.py",
+                    "-p",
+                    "libraries",
+                    "build",
+                ],
+                check=True,
+                shell=True,
+                cwd=Constants.ABSOLUTE_BASE_DIR,
+            )
 
             logger.info(f"Running Python project in '{projectDir}'...")
             subprocess.run(
