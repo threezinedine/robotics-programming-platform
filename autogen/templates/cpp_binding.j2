@@ -5,6 +5,6 @@
 namespace py = pybind11;
 using namespace rpp;
 
-PYBIND11_MODULE(my_module, m) {
+PYBIND11_MODULE(Engine, m) {
     {% include "cpp_enum_binding.j2" %}
 }
