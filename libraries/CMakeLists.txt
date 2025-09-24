@@ -22,7 +22,7 @@ find_package(Python REQUIRED)
 set(TIMESTAMP_FILE ${CMAKE_CURRENT_BINARY_DIR}/autogen_timestamp.txt)
 add_custom_command(
     OUTPUT ${TIMESTAMP_FILE}
-    COMMAND ${CMAKE_COMMAND} -E echo "${CURRENT_TIME}" > ${TIMESTAMP_FILE}
+    COMMAND ${CMAKE_COMMAND} -E touch ${TIMESTAMP_FILE}
 )
 
 add_custom_command(
@@ -47,3 +47,17 @@ set_target_properties(Engine PROPERTIES
                                 INTERPROCEDURAL_OPTIMIZATION ON
                                 CXX_VISIBILITY_PRESET hidden
                                 VISIBILITY_INLINES_HIDDEN ON)
+
+set(TARGET_OUTPUT_DIR ${RPP_BASE_DIR}/editor/Engine)
+set(TARGET_OUTPUT_PATH ${TARGET_OUTPUT_DIR}/Engine.pyd)
+
+add_custom_command(
+    OUTPUT ${TARGET_OUTPUT_PATH}
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:Engine> ${TARGET_OUTPUT_PATH}
+    DEPENDS Engine
+    COMMENT "Copying Engine.pyd to editor folder..."
+)
+
+add_custom_target(CopyEngine ALL
+    DEPENDS ${TARGET_OUTPUT_PATH}
+)

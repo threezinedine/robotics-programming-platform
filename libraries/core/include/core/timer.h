@@ -1,4 +1,5 @@
 #pragma once
+#include "common.h"
 #include "platforms/platforms.h"
 
 namespace rpp
@@ -6,7 +7,7 @@ namespace rpp
     /**
      * Used to measure high resolution time intervals.
      */
-    class HighResTimer
+    class RPP_PYTHON_BINDING HighResTimer
     {
     public:
         HighResTimer();
