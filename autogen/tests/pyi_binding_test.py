@@ -2,6 +2,7 @@
 Unitest for cpp_binding.j2 template (Just testing the separate modules here, the final cpp_binding.j2 is not tested).
 """
 
+import pytest  # type: ignore
 from .utils import GenerateFuncType, AssertGenerateResult
 
 
@@ -16,6 +17,7 @@ enum RPP_PYTHON_BINDING Color {
 };
 """,
         "pyi_enum_binding.j2",
+        [],
     )
 
     expected = """
@@ -43,6 +45,7 @@ enum Color {
 };
 """,
         "pyi_enum_binding.j2",
+        [],
     )
 
     expected = """
@@ -58,9 +61,11 @@ def test_binding_struct(generateFunc: GenerateFuncType) -> None:
 struct RPP_PYTHON_BINDING Point {
     int x; ///< X coordinate
     int y; ///< Y coordinate
+    std::string label;
 };
 """,
         "pyi_struct_binding.j2",
+        ["string"],
     )
 
     expected = """
@@ -76,6 +81,7 @@ class Point:
     \"\"\"
         Y coordinate
     \"\"\"
+    label: str
 """
 
     AssertGenerateResult(expected, result)
@@ -89,6 +95,7 @@ struct Point {
     int y; ///< Y coordinate
     """,
         "pyi_struct_binding.j2",
+        [],
     )
 
     expected = """
@@ -108,11 +115,46 @@ protected:
 };
 """,
         "pyi_struct_binding.j2",
+        [],
     )
 
     expected = """
 class Point:
     x: int
+"""
+
+    AssertGenerateResult(expected, result)
+
+
+def test_bind_class(generateFunc: GenerateFuncType) -> None:
+    result = generateFunc(
+        """
+/// @brief Person class
+class RPP_PYTHON_BINDING Person {
+public:
+    Person();
+
+    /// @brief Get the name of the person
+    std::string getName() const RPP_PYTHON_BINDING;
+};
+""",
+        "pyi_class_binding.j2",
+        ["string"],
+    )
+
+    expected = """
+class Person:
+    \"\"\"
+        Person class
+    \"\"\"
+    def __init__(self) -> None: 
+        ...
+
+    def getName(self) -> str:
+        \"\"\"
+            Get the name of the person
+        \"\"\"
+        ...
 """
 
     AssertGenerateResult(expected, result)

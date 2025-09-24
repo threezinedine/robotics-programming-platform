@@ -1,6 +1,7 @@
 import os
 from jinja2 import Environment, FileSystemLoader
 from parser import Parse, Structure
+from type_map.type_map import TypeMap
 
 
 def Generate(
@@ -43,5 +44,10 @@ def Generate(
 
     for inputFile in inputFiles:
         Parse(inputFile, parser, testContent)
+
+    typeMap = TypeMap()
+    typeMap.LoadMappings()
+
+    template.globals["convertCppTypeToPyType"] = typeMap.Convert
 
     return template.render(**parser)

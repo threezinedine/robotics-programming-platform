@@ -13,7 +13,7 @@ from .assertion import (
 )
 
 
-def WrapperParse(inputContent: str) -> Structure:
+def WrapperParse(inputContent: str, includeLibs: list[str] = []) -> Structure:
     result: Structure = {
         "enums": [],
         "structs": [],
@@ -21,7 +21,11 @@ def WrapperParse(inputContent: str) -> Structure:
         "classes": [],
     }
 
-    Parse("dummy.h", result, testContent=ParserContentWrapper(inputContent))
+    Parse(
+        "dummy.h",
+        result,
+        testContent=ParserContentWrapper(inputContent, includeLibs),
+    )
 
     return result
 
@@ -256,3 +260,27 @@ private:
         ],
         annotations=["python"],
     ).Assert(result["classes"][0])
+
+
+def test_parse_string_function():
+    result = WrapperParse(
+        """
+#include <string>
+
+std::string RPP_PYTHON_BINDING GetGreeting(const std::string& name);
+""",
+        ["string"],
+    )
+
+    assert "functions" in result
+    assert isinstance(result["functions"], list)
+    assert len(result["functions"]) == 1
+
+    FunctionAssert(
+        name="GetGreeting",
+        returnType="std::string",
+        parameters=[
+            ParameterAssert(name="name", type="const std::string &"),
+        ],
+        annotations=["python"],
+    ).Assert(result["functions"][0])

@@ -1,0 +1,7 @@
+{% macro generate_docstring(obj) %}
+    {%if obj.comment %}
+"""
+    {{ obj.comment }}
+"""
+    {% endif %}
+{% endmacro %}

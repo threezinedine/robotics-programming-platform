@@ -165,6 +165,12 @@ def RunPythonProject(
 
     allHeaderFiles = _GetListOfHeaderFiles()
     allTemplateFiles = _GetListOfTemplateFiles()
+    typeMapFiles = os.path.join(
+        Constants.ABSOLUTE_BASE_DIR,
+        "autogen",
+        "type_map",
+        "type_map_const.py",
+    )
 
     if projectDir == "autogen":
         cppBindingOutputDir = os.path.join(
@@ -187,7 +193,7 @@ def RunPythonProject(
 
         isAnyHeaderFileChanged = any(
             IsFileModified(headerFile)
-            for headerFile in allHeaderFiles + allTemplateFiles
+            for headerFile in allHeaderFiles + allTemplateFiles + [typeMapFiles]
         )
 
         isPyiFileExists = os.path.isfile(pyiBindingOutput)
@@ -293,7 +299,7 @@ def RunPythonProject(
             )
             logger.info(f"Python project '{projectDir}' finished successfully.")
 
-            for headerFile in allHeaderFiles + allTemplateFiles:
+            for headerFile in allHeaderFiles + allTemplateFiles + [typeMapFiles]:
                 UpdateFileCache(headerFile)
 
         except Exception as e:

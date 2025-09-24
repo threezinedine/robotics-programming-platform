@@ -8,7 +8,7 @@ class {{ struct.name }}:
         {% endif %}
         {% for field in struct.fields %}
             {% if ("hide" not in field.annotations) and field.access == "public" %}
-    {{ field.name }}: {{ field.type }}
+    {{ field.name }}: {{ convertCppTypeToPyType(field.type) }}
                 {% if field.comment %}
     """
         {{ field.comment }}

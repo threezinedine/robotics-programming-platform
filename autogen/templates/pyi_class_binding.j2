@@ -1,0 +1,17 @@
+{% import "pyi_utils.j2" as utils %}
+
+{% for class in classes %}
+    {% if "python" in class.annotations %}
+class {{ class.name }}:
+    {{ utils.generate_docstring(class) | indent(4) }}
+    def __init__(self) -> None:
+        ...
+        {% for method in class.methods %}  
+            {% if "python" in method.annotations %}  
+    def {{ method.name }}(self {% for parameter in method.parameters %}, {{ parameter.name }} {% endfor %}) -> {{ convertCppTypeToPyType(method.returnType) }}:
+        {{ utils.generate_docstring(method) | indent(8) }}
+        ...
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+{% endfor %}
