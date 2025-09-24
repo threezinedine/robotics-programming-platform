@@ -1,0 +1,20 @@
+{% for struct in structs %}
+    {% if "python" in struct.annotations %}
+class {{ struct.name }}:
+        {% if struct.comment %}
+    """ 
+        {{ struct.comment }}
+    """
+        {% endif %}
+        {% for field in struct.fields %}
+            {% if ("hide" not in field.annotations) and field.access == "public" %}
+    {{ field.name }}: {{ field.type }}
+                {% if field.comment %}
+    """
+        {{ field.comment }}
+    """
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+{% endfor %}

@@ -49,3 +49,70 @@ enum Color {
 """
 
     AssertGenerateResult(expected, result)
+
+
+def test_binding_struct(generateFunc: GenerateFuncType) -> None:
+    result = generateFunc(
+        """
+/// @brief Point structure
+struct RPP_PYTHON_BINDING Point {
+    int x; ///< X coordinate
+    int y; ///< Y coordinate
+};
+""",
+        "pyi_struct_binding.j2",
+    )
+
+    expected = """
+class Point:
+    \"\"\"
+        Point structure
+    \"\"\"
+    x: int
+    \"\"\"
+        X coordinate
+    \"\"\"
+    y: int
+    \"\"\"
+        Y coordinate
+    \"\"\"
+"""
+
+    AssertGenerateResult(expected, result)
+
+
+def test_non_binding_struct(generateFunc: GenerateFuncType) -> None:
+    result = generateFunc(
+        """
+struct Point {
+    int x; ///< X coordinate
+    int y; ///< Y coordinate
+    """,
+        "pyi_struct_binding.j2",
+    )
+
+    expected = """
+"""
+    AssertGenerateResult(expected, result)
+
+
+def test_not_bind_protected_or_private_fields(generateFunc: GenerateFuncType) -> None:
+    result = generateFunc(
+        """
+struct RPP_PYTHON_BINDING Point {
+    int x;
+private:
+    int y;
+protected:
+    int z;
+};
+""",
+        "pyi_struct_binding.j2",
+    )
+
+    expected = """
+class Point:
+    x: int
+"""
+
+    AssertGenerateResult(expected, result)

@@ -7,4 +7,7 @@ using namespace rpp;
 
 PYBIND11_MODULE(Engine, m) {
     {% include "cpp_enum_binding.j2" %}
+
+    # ================ Struct Bindings ================
+    {% include "pyi_struct_binding.j2" %}
 }
