@@ -8,9 +8,15 @@ class {{ class.name }}:
         ...
         {% for method in class.methods %}  
             {% if "python" in method.annotations %}  
-    def {{ method.name }}(self {% for parameter in method.parameters %}, {{ parameter.name }} {% endfor %}) -> {{ convertCppTypeToPyType(method.returnType) }}:
+    def {{ method.name }}(self {% for parameter in method.parameters %}, {{ parameter.name }} : {{ convertCppTypeToPyType(parameter.type) }} {% endfor %}) -> {{ convertCppTypeToPyType(method.returnType) }}:
         {{ utils.generate_docstring(method) | indent(8) }}
         ...
+            {% endif %}
+        {% endfor %}
+        {% for field in class.fields %}
+            {% if field.access == "public" %}
+    {{ field.name }}: {{ convertCppTypeToPyType(field.type) }}
+        {{ utils.generate_docstring(field) | indent(8) }}
             {% endif %}
         {% endfor %}
     {% endif %}

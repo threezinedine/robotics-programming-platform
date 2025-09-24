@@ -51,6 +51,8 @@ class TypeMap:
         -------
             str: The corresponding Python type.
         """
+        cppType = cppType.replace("const ", "").replace("&", "").strip()
+
         for typeMapping in self._typeMappings:
             for cppRegex in typeMapping[0]:
                 import re

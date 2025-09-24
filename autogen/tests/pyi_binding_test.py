@@ -158,3 +158,49 @@ class Person:
 """
 
     AssertGenerateResult(expected, result)
+
+
+def test_bind_class_with_fields(generateFunc: GenerateFuncType) -> None:
+    result = generateFunc(
+        """
+class RPP_PYTHON_BINDING Person {
+public:
+    Person();
+
+    std::string getName() const RPP_PYTHON_BINDING;
+    void setName(const std::string& name) RPP_PYTHON_BINDING;
+
+    int getAge() const;
+
+    std::string name;
+    int age;       ///< Age of the person
+
+private:
+    std::string secret;
+protected:
+    int id;
+};
+""",
+        "pyi_class_binding.j2",
+        ["string"],
+    )
+
+    expected = """
+class Person:
+    def __init__(self) -> None:
+        ...
+
+    def getName(self) -> str:
+        ...
+
+    def setName(self, name: str) -> None:
+        ...
+
+    name: str
+    age: int
+    \"\"\"
+        Age of the person
+    \"\"\"
+"""
+
+    AssertGenerateResult(expected, result)
