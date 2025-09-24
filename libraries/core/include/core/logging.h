@@ -68,7 +68,7 @@ namespace rpp
     /**
      * The logging system (singleton class) that provides logging functionalities.
      */
-    class RPP_SINGLETON Logging
+    class RPP_SINGLETON RPP_PYTHON_BINDING Logging
     {
         RPP_SINGLETON_DEFINE(Logging);
 

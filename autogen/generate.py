@@ -32,7 +32,9 @@ def Generate(
     templateDir = os.path.dirname(templateFile)
     templateName = os.path.basename(templateFile)
 
-    env = Environment(loader=FileSystemLoader(templateDir))
+    env = Environment(
+        loader=FileSystemLoader(templateDir),
+    )
     template = env.get_template(templateName)
 
     parser: Structure = {

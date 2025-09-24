@@ -204,3 +204,34 @@ class Person:
 """
 
     AssertGenerateResult(expected, result)
+
+
+def test_bind_static_method(generateFunc: GenerateFuncType) -> None:
+    result = generateFunc(
+        """
+class RPP_PYTHON_BINDING MathUtils {
+public:
+    static int add(int a, int b) RPP_PYTHON_BINDING;
+    static float multiply(float x, float y) RPP_PYTHON_BINDING;
+    static void log(const std::string& message);
+};
+""",
+        "pyi_class_binding.j2",
+        ["string"],
+    )
+
+    expected = """
+class MathUtils:
+    def __init__(self) -> None:
+        ...
+
+    @staticmethod
+    def add(a: int, b: int) -> int:
+        ...
+
+    @staticmethod
+    def multiply(x: float, y: float) -> float:
+        ...
+"""
+
+    AssertGenerateResult(expected, result)

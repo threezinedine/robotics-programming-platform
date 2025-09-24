@@ -1,22 +1,41 @@
-{% import "pyi_utils.j2" as utils %}
-
 {% for class in classes %}
     {% if "python" in class.annotations %}
 class {{ class.name }}:
-    {{ utils.generate_docstring(class) | indent(4) }}
+    {%if class.comment-%}
+    """
+    {{ class.comment }}
+    """
+    {% endif %}
     def __init__(self) -> None:
         ...
-        {% for method in class.methods %}  
-            {% if "python" in method.annotations %}  
-    def {{ method.name }}(self {% for parameter in method.parameters %}, {{ parameter.name }} : {{ convertCppTypeToPyType(parameter.type) }} {% endfor %}) -> {{ convertCppTypeToPyType(method.returnType) }}:
-        {{ utils.generate_docstring(method) | indent(8) }}
+        {% for method in class.methods-%}  
+            {% if "python" in method.annotations-%}  
+    {% if method.isStatic -%} @staticmethod {%- endif %}
+    def {{ method.name }}({% if not method.isStatic -%} 
+        self 
+            {%-if method.parameters|length > 0 %}, {% endif -%}
+        {% endif -%} 
+        {%-for parameter in method.parameters-%} 
+            {{ parameter.name }} : {{ convertCppTypeToPyType(parameter.type) }} 
+            {%-if not loop.last %}, {% endif -%} 
+        {% endfor -%}
+) -> {{ convertCppTypeToPyType(method.returnType) }}:
+        {%if method.comment-%}
+        """
+        {{ method.comment }}
+        """
+        {% endif-%}
         ...
             {% endif %}
         {% endfor %}
         {% for field in class.fields %}
             {% if field.access == "public" %}
     {{ field.name }}: {{ convertCppTypeToPyType(field.type) }}
-        {{ utils.generate_docstring(field) | indent(8) }}
+    {%if field.comment-%}
+    """
+    {{ field.comment }}
+    """
+    {% endif %}
             {% endif %}
         {% endfor %}
     {% endif %}

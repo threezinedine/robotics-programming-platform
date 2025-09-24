@@ -219,7 +219,7 @@ public:
     int Add(int a, int b);
 
     /// @brief Subtracts two integers.
-    int Subtract(int a, int b);
+    static int Subtract(int a, int b);
 
 private:
     int lastResult;
@@ -253,6 +253,7 @@ private:
                     ParameterAssert(name="a", type="int"),
                     ParameterAssert(name="b", type="int"),
                 ],
+                isStatic=True,
             ),
         ],
         fields=[

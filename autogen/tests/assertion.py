@@ -243,11 +243,13 @@ class MethodAssert(IAssert):
         access: AccessType | None = None,
         parameters: list[ParameterAssert] | None = None,
         comment: str | None = None,
+        isStatic: bool = False,
         returnComment: str | None = None,
         annotations: list[str] | None = None,
     ) -> None:
         super().__init__(name, comment, annotations)
         self.returnType = returnType
+        self.isStatic = isStatic
         self.returnComment = returnComment
         self.access = access if access is not None else "public"
         self.parameters = parameters if parameters is not None else []
@@ -260,6 +262,10 @@ class MethodAssert(IAssert):
         assert (
             method.returnType == self.returnType
         ), f"Expected method return type '{self.returnType}', but got '{method.returnType}'."
+
+        assert (
+            method.isStatic == self.isStatic
+        ), f"Expected method isStatic '{self.isStatic}', but got '{method.isStatic}'."
 
         assert (
             method.access == self.access
