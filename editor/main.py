@@ -1,11 +1,26 @@
-from Engine import LogLevel, Logging, SingletonManager, HandlerType, Project
+from Engine import (
+    LogLevel,
+    Logging,
+    SingletonManager,
+    HandlerType,
+    Project,
+    ProjectDescription,
+    ToString_ProjectDescription,
+)
 
 
 def main():
     SingletonManager.Initialize()
     Logging.Setup(HandlerType.CONSOLE.value, LogLevel.DEBUG)
-    project = Project.CreateProject('{"name": "TestProject"}')
-    Logging.Log(LogLevel.ERROR, f"Project: {project.GetName()}", __file__, 10)
+    projectDest: ProjectDescription = ProjectDescription()
+    projectDest.name = "TestProject"
+    project = Project.CreateProject(projectDest)
+    Logging.Log(
+        LogLevel.ERROR,
+        f"Project: {project.GetName()} - Json: {ToString_ProjectDescription(projectDest)}",
+        __file__,
+        10,
+    )
     SingletonManager.Shutdown()
 
 

@@ -313,3 +313,29 @@ def testFunction(a: int, b: float) -> None:
 """
 
     AssertGenerateResult(expected, result)
+
+
+def test_bind_to_string_method(generateFunc: GenerateFuncType) -> None:
+    result = generateFunc(
+        """
+struct RPP_JSON Vector3 
+{
+};
+
+struct RPP_JSON Work
+{
+};
+""",
+        "pyi_to_string_method.j2",
+        [],
+    )
+
+    expected = """
+def ToString_Vector3(obj: Vector3) -> str:
+    ...
+
+def ToString_Work(obj: Work) -> str:
+    ...
+"""
+
+    AssertGenerateResult(expected, result)

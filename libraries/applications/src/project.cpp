@@ -22,10 +22,8 @@ namespace rpp
     {
     }
 
-    Project Project::CreateProject(const String &descJson)
+    Project Project::CreateProject(const ProjectDescription &desc) RPP_PYTHON_BINDING
     {
-        ProjectDescription desc;
-        FromString<ProjectDescription>(descJson, desc);
         return Project(desc);
     }
 }

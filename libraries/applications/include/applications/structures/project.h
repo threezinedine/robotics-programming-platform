@@ -6,7 +6,7 @@ namespace rpp
     /**
      * @brief The needed information which are used for creating a project object. This is used in Python binding and JSON mapping.
      */
-    struct RPP_JSON ProjectDescription
+    struct RPP_JSON RPP_PYTHON_BINDING ProjectDescription
     {
         String name RPP_JSON_KEY("name"); ///< The name of the project.
     };
@@ -23,7 +23,7 @@ namespace rpp
         ~Project();
 
     public:
-        static Project CreateProject(const String &descJson) RPP_PYTHON_BINDING;
+        static Project CreateProject(const ProjectDescription &desc) RPP_PYTHON_BINDING;
 
     public:
         inline const String &GetName() RPP_PYTHON_BINDING;
