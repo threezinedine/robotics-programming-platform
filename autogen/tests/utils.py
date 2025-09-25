@@ -22,6 +22,7 @@ def ParserContentWrapper(text: str, includeLibs: list[str] = []) -> str:
 #define RPP_PYTHON_BINDING __attribute__((annotate("python")))
 #define RPP_JAVASCRIPT_BINDING __attribute__((annotate("javascript")))
 #define RPP_BINDING __attribute__((annotate("python", "javascript")))
+#define RPP_SINGLETON __attribute__((annotate("singleton")))
 
 #define RPP_HIDE __attribute__((annotate("hide")))
 

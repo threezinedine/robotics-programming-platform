@@ -235,3 +235,28 @@ class MathUtils:
 """
 
     AssertGenerateResult(expected, result)
+
+
+def test_bind_singleton_class(generateFunc: GenerateFuncType) -> None:
+    result = generateFunc(
+        """
+class RPP_PYTHON_BINDING RPP_SINGLETON ConfigManager {
+    public:
+        void loadConfig(const std::string& filepath) RPP_PYTHON_BINDING;
+
+        void saveConfig(const std::string& filepath);
+};
+""",
+        "pyi_class_binding.j2",
+        ["string"],
+    )
+
+    expected = """
+class ConfigManager:
+
+    @staticmethod
+    def loadConfig(filepath: str) -> None:
+        ...
+"""
+
+    AssertGenerateResult(expected, result)

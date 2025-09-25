@@ -12,6 +12,7 @@ enum RPP_PYTHON_BINDING Color {
 };
 """,
         "cpp_enum_binding.j2",
+        [],
     )
 
     expected = """
@@ -34,6 +35,7 @@ struct RPP_PYTHON_BINDING Point {
 };
 """,
         "cpp_struct_binding.j2",
+        [],
     )
 
     expected = """
