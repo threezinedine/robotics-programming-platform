@@ -23,9 +23,9 @@ const String ToString<Version>(const Version &value)
 {
     Json result;
 
-    result["major"] = value.major;
-    result["minor"] = value.minor;
-    result["patch"] = value.patch;
+    result.Set(String("major"), value.major);
+    result.Set(String("minor"), value.minor);
+    result.Set(String("patch"), value.patch);
     return result.ToString();
 }
 
@@ -34,9 +34,9 @@ bool FromString<Version>(const String& str, Version &value)
 {
     Json json(str);
 
-    value.major = json.Get<char>("major", value.major);
-    value.minor = json.Get<char>("minor", value.minor);
-    value.patch = json.Get<char>("patch", value.patch);
+    value.major = json.Get<char>(String("major"), value.major);
+    value.minor = json.Get<char>(String("minor"), value.minor);
+    value.patch = json.Get<char>(String("patch"), value.patch);
 
     return true;
 }
@@ -69,7 +69,7 @@ const String ToString<Test>(const Test &value)
 {
     Json result;
 
-    result["count"] = value.count;
+    result.Set(String("count"), value.count);
     return result.ToString();
 }
 
@@ -77,7 +77,7 @@ template<>
 bool FromString<Test>(const String& str, Test &value)
 {
     Json json(str);
-    value.count = json.Get<int>("count", value.count);
+    value.count = json.Get<int>(String("count"), value.count);
     return true;
 }
 
@@ -86,8 +86,8 @@ const String ToString<Container>(const Container &value)
 {
     Json result;
 
-    result["id"] = value.id;
-    result["test"] = Json(ToString(value.test));
+    result.Set(String("id"), value.id);
+    result.Set(String("test"), Json(ToString(value.test)));
     return result.ToString();
 }
 
@@ -95,8 +95,8 @@ template<>
 bool FromString<Container>(const String& str, Container &value)
 {
     Json json(str);
-    value.id = json.Get<int>("id", value.id);
-    FromString(json.Get<String>("test", "{}"), value.test);
+    value.id = json.Get<int>(String("id"), value.id);
+    FromString(json.Get<String>(String("test"), String("{}")), value.test);
     return true;
 }
 """

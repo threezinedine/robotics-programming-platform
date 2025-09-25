@@ -179,15 +179,20 @@ def RunPythonProject(
     )
 
     if projectDir == "autogen":
-        cppBindingOutputDir = os.path.join(
+        librariesTempDir = os.path.join(
             Constants.ABSOLUTE_BASE_DIR,
             "libraries",
             "tmp",
         )
 
         cppBindingOutput = os.path.join(
-            cppBindingOutputDir,
+            librariesTempDir,
             "binding.cpp",
+        )
+
+        writerOutput = os.path.join(
+            librariesTempDir,
+            "writer_output.cpp",
         )
 
         pyiBindingOutput = os.path.join(
@@ -278,13 +283,20 @@ def RunPythonProject(
             pyiBindingOutput,
         ]
 
-        CreateRecursiveDirIfNotExists(cppBindingOutputDir)
+        CreateRecursiveDirIfNotExists(librariesTempDir)
 
         arg2 = argCommon + [
             "--template",
             os.path.join(cwd, "templates", "cpp_binding.j2"),
             "--output",
             cppBindingOutput,
+        ]
+
+        arg3 = argCommon + [
+            "--template",
+            os.path.join(cwd, "templates", "writer_binding.j2"),
+            "--output",
+            writerOutput,
         ]
 
         logger.info("Header files have changed. Running autogen...")
@@ -313,6 +325,18 @@ def RunPythonProject(
                 shell=True,
                 cwd=cwd,
             )
+
+            subprocess.run(
+                [
+                    pythonExe,
+                    mainScript,
+                ]
+                + arg3,
+                check=True,
+                shell=True,
+                cwd=cwd,
+            )
+
             logger.info(f"Python project '{projectDir}' finished successfully.")
 
             for headerFile in allHeaderFiles + allTemplateFiles + [typeMapFiles]:

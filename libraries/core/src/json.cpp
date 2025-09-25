@@ -7,7 +7,7 @@ namespace rpp
     typedef nlohmann::json JSON;
 
     Json::Json()
-        : m_data(RPP_NEW(JSON("{}")))
+        : m_data(RPP_NEW(JSON(JSON::parse("{}"))))
     {
     }
 
@@ -104,7 +104,56 @@ namespace rpp
     JSON_GET_SET_IMPLEMENT(u16, is_number, get<u16>(), value);
     JSON_GET_SET_IMPLEMENT(u8, is_number, get<u8>(), value);
 
-    JSON_GET_SET_IMPLEMENT(i32, is_number, get<i32>(), value);
+    // JSON_GET_SET_IMPLEMENT(i32, is_number, get<i32>(), value);
+    template <>
+    i32 Json::Get<i32>(const String &key, const i32 defaultValue) const
+    {
+        JSON *json = static_cast<JSON *>(m_data);
+        if (!(*json).contains(key.CStr()))
+        {
+            return defaultValue;
+        }
+
+        if (!(*json)[key.CStr()].is_number())
+        {
+            return defaultValue;
+        }
+
+        return (*json)[key.CStr()].get<i32>();
+    }
+
+    template <>
+    void Json::Set<i32>(const String &key, const i32 &value)
+    {
+        JSON *json = static_cast<JSON *>(m_data);
+        (*json)[key.CStr()] = value;
+    }
+    template <>
+    Array<i32> Json::GetArray<i32>(const String &key) const
+    {
+        Array<i32> result;
+        JSON *json = static_cast<JSON *>(m_data);
+        if (!(*json).contains(key.CStr()))
+        {
+            return result;
+        }
+
+        if (!(*json)[key.CStr()].is_array())
+        {
+            return result;
+        }
+
+        for (const auto &item : (*json)[key.CStr()])
+        {
+            if (!item.is_number_integer())
+            {
+                continue;
+            }
+            result.Push(std::move(item.get<i32>()));
+        }
+        return result;
+    }
+
     JSON_GET_SET_IMPLEMENT(i16, is_number, get<i16>(), value);
     JSON_GET_SET_IMPLEMENT(i8, is_number, get<i8>(), value);
 
