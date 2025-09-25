@@ -1,8 +1,7 @@
 import sys
 from PyQt6.QtWidgets import QApplication
-from Engine import LogLevel, Logging, SingletonManager, HandlerType
-from views.project_main_window import ProjectMainWindow
 import qdarktheme  # type: ignore
+from views.project_main_window import ProjectMainWindow
 from Engine import (
     LogLevel,
     Logging,
@@ -10,6 +9,7 @@ from Engine import (
     HandlerType,
     Project,
     ProjectDescription,
+    ToString_ProjectDescription,
 )
 
 
@@ -27,6 +27,15 @@ def main():
     desc.name = "TestProject"
     project = Project.CreateProject(desc)
     Logging.Log(LogLevel.ERROR, f"Project: {project.GetName()}", __file__, 10)
+    projectDest: ProjectDescription = ProjectDescription()
+    projectDest.name = "TestProject"
+    project = Project.CreateProject(projectDest)
+    Logging.Log(
+        LogLevel.ERROR,
+        f"Project: {project.GetName()} - Json: {ToString_ProjectDescription(projectDest)}",
+        __file__,
+        10,
+    )
     SingletonManager.Shutdown()
 
 

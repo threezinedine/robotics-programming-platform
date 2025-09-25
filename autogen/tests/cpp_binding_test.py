@@ -136,3 +136,20 @@ m.def("add", &add , "" );
 """
 
     AssertGenerateResult(expected, result)
+
+
+def test_bind_to_string_method(generateFunc: GenerateFuncType) -> None:
+    result = generateFunc(
+        """
+struct RPP_JSON Person {
+};
+""",
+        "cpp_to_string_method.j2",
+        [],
+    )
+
+    expected = """
+m.def("ToString_Person", &ToString<Person>, "");
+"""
+
+    AssertGenerateResult(expected, result)

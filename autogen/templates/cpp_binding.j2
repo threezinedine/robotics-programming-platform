@@ -44,4 +44,6 @@ PYBIND11_MODULE(Engine, m) {
 
     // ================ Class Bindings ================
     {% include "cpp_class_binding.j2" %}
+
+    {% include "cpp_to_string_method.j2" %}
 }

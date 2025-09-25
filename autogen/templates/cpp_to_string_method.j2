@@ -1,0 +1,5 @@
+{% for struct in structs %}
+{% if struct.name in allJsonMappedClasses-%}
+m.def("ToString_{{ struct.name }}", &ToString<{{struct.name}}>, "");
+{% endif-%}
+{% endfor %}
