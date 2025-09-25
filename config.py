@@ -5,6 +5,7 @@ from config.utils.python_project_utils import (
     InstallPackages,
     RunPythonProject,
     RunPythonProjectTest,
+    OpenPyQtDesigner,
 )
 from config.utils.cpp_project_utils import (
     BuildProject,
@@ -70,6 +71,9 @@ def main():
                 force=args.IsForce,
                 reset=args.IsReset,
             )
+
+    if args.IsDesigner:
+        OpenPyQtDesigner()
 
 
 if __name__ == "__main__":

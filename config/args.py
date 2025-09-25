@@ -83,6 +83,11 @@ class Args:
             help="Run the specified project",
         )
 
+        subparsers.add_parser(
+            "designer",
+            help="Launch the GUI designer tool",
+        )
+
         runSubParser.add_argument(
             "-r",
             "--reset",
@@ -178,3 +183,10 @@ class Args:
         if self.IsRun:
             return self.args.reset
         return False
+
+    @property
+    def IsDesigner(self) -> bool:
+        """
+        Returns true if the command is to launch the GUI designer tool.
+        """
+        return self.args.command == "designer"
