@@ -25,6 +25,8 @@ bool FromString<{{ struct.name }}>(const String &str, {{ struct.name }} &value)
     value.{{ field.name }} = json.Get<{{field.type}}>("{{ jsonKey }}", value.{{ field.name }});
     {% endif-%}
     {% endfor %} 
+
+    return true;
 }
     {% endif %}
 {% endfor %}

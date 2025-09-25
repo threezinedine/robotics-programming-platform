@@ -37,6 +37,8 @@ bool FromString<Version>(const String& str, Version &value)
     value.major = json.Get<char>("major", value.major);
     value.minor = json.Get<char>("minor", value.minor);
     value.patch = json.Get<char>("patch", value.patch);
+
+    return true;
 }
 """
 
