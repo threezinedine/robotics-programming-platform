@@ -1,0 +1,5 @@
+{% for function in functions %}
+def {{ function.name }}({{ methodParametersPyi(function, true) }}) -> {{ convertCppTypeToPyType(function.returnType) }}:
+    {{ objectComment(function, "") }}
+    ...
+{% endfor %}

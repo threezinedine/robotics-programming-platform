@@ -296,3 +296,20 @@ class Timer:
 """
 
     AssertGenerateResult(expected, result)
+
+
+def test_bind_function(generateFunc: GenerateFuncType) -> None:
+    result = generateFunc(
+        """
+void testFunction(int a, float b) RPP_PYTHON_BINDING;
+""",
+        "pyi_function_binding.j2",
+        [],
+    )
+
+    expected = """
+def testFunction(a: int, b: float) -> None:
+    ...
+"""
+
+    AssertGenerateResult(expected, result)

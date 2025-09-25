@@ -77,4 +77,17 @@ namespace rpp
     private:
         void *m_data;
     };
+
+    /**
+     * @brief Converts a string representation to a value of the specified type. Must write the specialization for the needed type.
+     *
+     * @param str The string to convert.
+     * @param outValue The output value to store the converted result.
+     *
+     * @return TRUE if the conversion was successful, FALSE otherwise.
+     *
+     * @note Autogen will generate the specializations for the following types: using `RPP_JSON` and `RPP_JSON_KEY` macros.
+     */
+    template <typename T>
+    b8 FromString(const String &str, T &outValue);
 } // namespace rpp

@@ -1,0 +1,3 @@
+{% for function in functions %}
+m.def("{{ function.name}}", &{{ function.name }}, "{{ objectComment(function, "") }}");
+{% endfor %}

@@ -9,14 +9,9 @@ ExternalsSetup()
 
 Project(RPPLibs)
 
-add_subdirectory(platforms)
-add_subdirectory(core)
-add_subdirectory(modules)
-
 # -------------- Run autogen --------------
 set(CMAKE_FOLDER "Custom")
 find_package(Python REQUIRED)
-
 
 # trick for always running autogen when building
 set(TIMESTAMP_FILE ${CMAKE_CURRENT_BINARY_DIR}/autogen_timestamp.txt)
@@ -25,8 +20,11 @@ add_custom_command(
     COMMAND ${CMAKE_COMMAND} -E touch ${TIMESTAMP_FILE}
 )
 
+set(BINDING_FILE ${RPP_BASE_DIR}/libraries/tmp/binding.cpp)
+set(WRITER_FILE ${RPP_BASE_DIR}/libraries/tmp/writer_output.cpp)
+
 add_custom_command(
-    OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/tmp/binding.cpp
+    OUTPUT ${BINDING_FILE}
     COMMAND ${Python_EXECUTABLE} ${RPP_BASE_DIR}/config.py -p autogen run
     COMMAND ${CMAKE_COMMAND} -E touch ${TIMESTAMP_FILE}
     WORKING_DIRECTORY ${RPP_BASE_DIR}
@@ -35,14 +33,21 @@ add_custom_command(
 )
 
 add_custom_target(Autogen ALL
-    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/tmp/binding.cpp ${TIMESTAMP_FILE}
+    DEPENDS ${BINDING_FILE} ${TIMESTAMP_FILE}
 )
 
+# -------------- Subdirectories --------------
+add_subdirectory(platforms)
+add_subdirectory(core)
+add_subdirectory(modules)
+add_subdirectory(applications)
+
+# -------------- Python binding --------------
 RPPFindPackage(rpp-pybind "Dependencies")
 
 set(CMAKE_FOLDER "Bindings")
-Python_add_library(Engine "${CMAKE_CURRENT_SOURCE_DIR}/tmp/binding.cpp")
-target_link_libraries(Engine PUBLIC rpp-pybind RPPModules)
+Python_add_library(Engine ${BINDING_FILE})
+target_link_libraries(Engine PUBLIC rpp-pybind RPPApplications)
 set_target_properties(Engine PROPERTIES
                                 INTERPROCEDURAL_OPTIMIZATION ON
                                 CXX_VISIBILITY_PRESET hidden

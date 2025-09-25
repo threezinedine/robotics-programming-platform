@@ -95,6 +95,12 @@ def _GetListOfHeaderFiles() -> list[str]:
             "core",
             "include",
         ),
+        os.path.join(
+            Constants.ABSOLUTE_BASE_DIR,
+            "libraries",
+            "applications",
+            "include",
+        ),
     ]
 
     for directory in directories:
@@ -199,15 +205,20 @@ def RunPythonProject(
     )
 
     if projectDir == "autogen":
-        cppBindingOutputDir = os.path.join(
+        librariesTempDir = os.path.join(
             Constants.ABSOLUTE_BASE_DIR,
             "libraries",
             "tmp",
         )
 
         cppBindingOutput = os.path.join(
-            cppBindingOutputDir,
+            librariesTempDir,
             "binding.cpp",
+        )
+
+        writerOutput = os.path.join(
+            librariesTempDir,
+            "writer_output.cpp",
         )
 
         pyiBindingOutput = os.path.join(
@@ -255,30 +266,20 @@ def RunPythonProject(
 
         logger.debug(f"Using Clang library at: {clangPathDll}")
 
-        coreHeaderFile = os.path.join(
+        applicationHeaderFile = os.path.join(
             Constants.ABSOLUTE_BASE_DIR,
             "libraries",
-            "core",
+            "applications",
             "include",
-            "core",
-            "core.h",
-        )
-
-        moduleHeaderFile = os.path.join(
-            Constants.ABSOLUTE_BASE_DIR,
-            "libraries",
-            "modules",
-            "include",
-            "modules",
-            "modules.h",
+            "applications",
+            "applications.h",
         )
 
         argCommon = [
             "--clang-path",
             clangPathDll,
             "--input",
-            coreHeaderFile,
-            moduleHeaderFile,
+            applicationHeaderFile,
         ]
 
         args = argCommon + [
@@ -288,13 +289,20 @@ def RunPythonProject(
             pyiBindingOutput,
         ]
 
-        CreateRecursiveDirIfNotExists(cppBindingOutputDir)
+        CreateRecursiveDirIfNotExists(librariesTempDir)
 
         arg2 = argCommon + [
             "--template",
             os.path.join(cwd, "templates", "cpp_binding.j2"),
             "--output",
             cppBindingOutput,
+        ]
+
+        arg3 = argCommon + [
+            "--template",
+            os.path.join(cwd, "templates", "writer_binding.j2"),
+            "--output",
+            writerOutput,
         ]
 
         logger.info("Header files have changed. Running autogen...")
@@ -323,6 +331,18 @@ def RunPythonProject(
                 shell=True,
                 cwd=cwd,
             )
+
+            subprocess.run(
+                [
+                    pythonExe,
+                    mainScript,
+                ]
+                + arg3,
+                check=True,
+                shell=True,
+                cwd=cwd,
+            )
+
             logger.info(f"Python project '{projectDir}' finished successfully.")
 
             for headerFile in allHeaderFiles + allTemplateFiles + [typeMapFiles]:
@@ -413,7 +433,7 @@ def RunPythonProject(
             raise RuntimeError(f"Failed to run Python project: {e}") from e
 
 
-def RunPythonProjectTest(projectDir: str) -> None:
+def RunPythonProjectTest(projectDir: str, filter: str | None = None) -> None:
     """
     Runs the specified Python project in test mode.
 
@@ -421,6 +441,9 @@ def RunPythonProjectTest(projectDir: str) -> None:
     ----------
     projectDir : str
         The project directory where the main.py file is located (relative to the `ABSOLUTE_BASE_DIR`).
+
+    filter : str | None
+        Optional filter to pass to pytest to run specific tests only (default is None).
     """
 
     pytestExe = os.path.join(
@@ -435,6 +458,7 @@ def RunPythonProjectTest(projectDir: str) -> None:
         subprocess.run(
             [
                 pytestExe,
+                f"-k {filter}" if filter else "",
             ],
             check=True,
             shell=True,
