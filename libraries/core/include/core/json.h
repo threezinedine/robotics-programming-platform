@@ -89,5 +89,5 @@ namespace rpp
      * @note Autogen will generate the specializations for the following types: using `RPP_JSON` and `RPP_JSON_KEY` macros.
      */
     template <typename T>
-    b8 FromString(const String &str, T &outValue);
+    T FromString(const String &str);
 } // namespace rpp

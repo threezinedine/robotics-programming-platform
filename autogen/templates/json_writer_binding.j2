@@ -19,9 +19,10 @@ const String ToString<{{ struct.name }}>(const {{ struct.name }} &value)
 }
 
 template<>
-bool FromString<{{ struct.name }}>(const String &str, {{ struct.name }} &value)
+{{ struct.name }} FromString<{{ struct.name }}>(const String &str)
 {
     Json json(str);
+    {{ struct.name }} value;
 
     {% for field in struct.fields-%}
     {% set jsonKey = isContainsJsonKeyAnnotation(field)-%}
@@ -34,7 +35,7 @@ bool FromString<{{ struct.name }}>(const String &str, {{ struct.name }} &value)
     {% endif-%}
     {% endfor %} 
 
-    return true;
+    return value;
 }
     {% endif %}
 {% endfor %}

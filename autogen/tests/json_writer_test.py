@@ -30,15 +30,16 @@ const String ToString<Version>(const Version &value)
 }
 
 template<>
-bool FromString<Version>(const String& str, Version &value)
+Version FromString<Version>(const String& str)
 {
     Json json(str);
+    Version value;
 
     value.major = json.Get<char>(String("major"), value.major);
     value.minor = json.Get<char>(String("minor"), value.minor);
     value.patch = json.Get<char>(String("patch"), value.patch);
 
-    return true;
+    return value;
 }
 """
 
@@ -74,11 +75,13 @@ const String ToString<Test>(const Test &value)
 }
 
 template<>
-bool FromString<Test>(const String& str, Test &value)
+Test FromString<Test>(const String& str)
 {
     Json json(str);
+    Test value;
+
     value.count = json.Get<int>(String("count"), value.count);
-    return true;
+    return value;
 }
 
 template<>
@@ -92,12 +95,14 @@ const String ToString<Container>(const Container &value)
 }
 
 template<>
-bool FromString<Container>(const String& str, Container &value)
+Container FromString<Container>(const String& str)
 {
     Json json(str);
+    Container value;
+
     value.id = json.Get<int>(String("id"), value.id);
     FromString(json.Get<String>(String("test"), String("{}")), value.test);
-    return true;
+    return value;
 }
 """
 
