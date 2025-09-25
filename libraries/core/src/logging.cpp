@@ -28,7 +28,7 @@ namespace rpp
     {
     }
 
-    void Logging::Setup(HandlerType type, LogLevel level)
+    void Logging::Setup(u8 type, LogLevel level)
     {
         static bool isSetup = false;
         if (isSetup)
@@ -37,13 +37,11 @@ namespace rpp
         }
         isSetup = true;
 
-        switch (type)
+        if (type & static_cast<u8>(HandlerType::CONSOLE))
         {
-        case HandlerType::CONSOLE:
-            SetupHandler(CreateScope<ConsoleHandler>());
-            break;
-        default:
-            break;
+            Scope<Handler> consoleHandler = CreateScope<ConsoleHandler>();
+            consoleHandler->SetLevel(level);
+            SetupHandler(std::move(consoleHandler));
         }
 
         u32 handlerCount = m_handlers.Size();
