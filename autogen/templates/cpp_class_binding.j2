@@ -6,15 +6,15 @@ py::class_<{{ class.name }}>(m, "{{ class.name }}", {% if class.comment-%} "{{cl
     {%-endif %}
     {% for method in class.methods -%}
     {% if "python" in method.annotations -%}
-    {% if "singleton" not in class.annotations -%}
+    {% if "singleton" not in class.annotations and not method.isStatic -%}
     .def("{{ method.name }}", &{{class.name}}::{{ method.name}}, "{{objectComment(method, "")}}")
     {%- elif method.isStatic -%}
-    .def_static("{{ method.name }}", &{{class.name}}::{{ method.name}}, {{objectComment(method, "")}})
+    .def_static("{{ method.name }}", &{{class.name}}::{{ method.name}}, "{{objectComment(method, "")}}")
     {%- else -%}
     .def_static("{{ method.name}}", []({{methodParametersCpp(method)}}) {
         return {{class.name}}::GetInstance()->{{ method.name }}({{ methodParametersCall(method) }});
     }, "{{ objectComment(method, "") }}")
-    {% endif-%}
+    {% endif %}
     {% endif %}
     {%-endfor-%};
     {% endif %}

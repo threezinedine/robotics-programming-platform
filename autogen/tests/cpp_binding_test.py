@@ -96,3 +96,27 @@ py::class_<Logging>(m, "Logging", "The logging system (singleton class) that pro
 """
 
     AssertGenerateResult(expected, result)
+
+
+def test_bind_static_method(generateFunc: GenerateFuncType) -> None:
+    result = generateFunc(
+        """
+class RPP_PYTHON_BINDING MathUtils {
+public:
+    static int add(int a, int b) RPP_PYTHON_BINDING;
+    static float multiply(float x, float y) RPP_PYTHON_BINDING;
+    static void log(const std::string& message);
+};
+""",
+        "cpp_class_binding.j2",
+        ["string"],
+    )
+
+    expected = """
+py::class_<MathUtils>(m, "MathUtils", "")
+    .def(py::init<>())
+    .def_static("add", &MathUtils::add , "" )
+    .def_static("multiply", &MathUtils::multiply , "" );
+"""
+
+    AssertGenerateResult(expected, result)

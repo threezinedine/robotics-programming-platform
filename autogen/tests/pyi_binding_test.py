@@ -260,3 +260,39 @@ class ConfigManager:
 """
 
     AssertGenerateResult(expected, result)
+
+
+def test_bind_class_with_static_method(generateFunc: GenerateFuncType) -> None:
+    result = generateFunc(
+        """
+class RPP_PYTHON_BINDING Timer {
+public:
+    Timer();
+
+    void Start() RPP_PYTHON_BINDING;
+    float Elapsed() const RPP_PYTHON_BINDING;
+
+    static float GetCurrentTime() RPP_PYTHON_BINDING;
+};
+""",
+        "pyi_class_binding.j2",
+        [],
+    )
+
+    expected = """
+class Timer:
+    def __init__(self) -> None: 
+        ...
+
+    def Start(self) -> None:
+        ...
+
+    def Elapsed(self) -> float:
+        ...
+
+    @staticmethod
+    def GetCurrentTime() -> float:
+        ...
+"""
+
+    AssertGenerateResult(expected, result)

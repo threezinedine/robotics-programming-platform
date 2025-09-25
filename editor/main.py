@@ -1,10 +1,10 @@
-from Engine import LogLevel, Logging
+from Engine import LogLevel, Logging, SingletonManager
 
 
 def main():
-    print(f"Log Level: {LogLevel.DEBUG}")
-    print("Hello, Robotics Programming Platform!")
+    SingletonManager.Initialize()
     Logging.Log(LogLevel.INFO, "This is an info message.", __file__, 10)
+    SingletonManager.Shutdown()
 
 
 if __name__ == "__main__":
