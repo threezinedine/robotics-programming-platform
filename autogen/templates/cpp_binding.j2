@@ -40,6 +40,8 @@ PYBIND11_MODULE(Engine, m) {
     // ================ Struct Bindings ================
     {% include "cpp_struct_binding.j2" %}
 
+    {% include "cpp_function_binding.j2" %}
+
     // ================ Class Bindings ================
     {% include "cpp_class_binding.j2" %}
 }

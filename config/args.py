@@ -90,9 +90,16 @@ class Args:
             help="Reset the project state before running",
         )
 
-        subparsers.add_parser(
+        testParser = subparsers.add_parser(
             "test",
             help="Run the tests for the specified project",
+        )
+
+        testParser.add_argument(
+            "--filter",
+            type=str,
+            default=None,
+            help="Optional filter to run specific tests only (default: None)",
         )
 
         self.args = parser.parse_args()
@@ -178,3 +185,12 @@ class Args:
         if self.IsRun:
             return self.args.reset
         return False
+
+    @property
+    def TestFilter(self) -> str | None:
+        """
+        Returns the optional filter to run specific tests only.
+        """
+        if self.IsTest:
+            return self.args.filter
+        return None

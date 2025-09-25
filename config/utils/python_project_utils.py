@@ -358,7 +358,7 @@ def RunPythonProject(
             raise RuntimeError(f"Failed to run Python project: {e}") from e
 
 
-def RunPythonProjectTest(projectDir: str) -> None:
+def RunPythonProjectTest(projectDir: str, filter: str | None = None) -> None:
     """
     Runs the specified Python project in test mode.
 
@@ -366,6 +366,9 @@ def RunPythonProjectTest(projectDir: str) -> None:
     ----------
     projectDir : str
         The project directory where the main.py file is located (relative to the `ABSOLUTE_BASE_DIR`).
+
+    filter : str | None
+        Optional filter to pass to pytest to run specific tests only (default is None).
     """
 
     pytestExe = os.path.join(
@@ -380,6 +383,7 @@ def RunPythonProjectTest(projectDir: str) -> None:
         subprocess.run(
             [
                 pytestExe,
+                f"-k {filter}" if filter else "",
             ],
             check=True,
             shell=True,

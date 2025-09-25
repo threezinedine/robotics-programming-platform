@@ -120,3 +120,19 @@ py::class_<MathUtils>(m, "MathUtils", "")
 """
 
     AssertGenerateResult(expected, result)
+
+
+def test_bind_function(generateFunc: GenerateFuncType) -> None:
+    result = generateFunc(
+        """
+int RPP_PYTHON_BINDING add(int a, int b);
+""",
+        "cpp_function_binding.j2",
+        [],
+    )
+
+    expected = """
+m.def("add", &add , "" );
+"""
+
+    AssertGenerateResult(expected, result)
