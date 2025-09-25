@@ -8,7 +8,11 @@ const String ToString<{{ struct.name }}>(const {{ struct.name }} &value)
     {% for field in struct.fields-%}
     {% set jsonKey = isContainsJsonKeyAnnotation(field)-%}
     {% if jsonKey != ""-%}
+    {% if field.type not in allJsonMappedClasses-%}
     result["{{ jsonKey }}"] = value.{{ field.name }};
+    {% else-%}
+    result["{{ jsonKey }}"] = Json(ToString(value.{{ field.name }}));
+    {% endif-%}
     {% endif-%}
     {% endfor %} 
     return result.ToString();
@@ -22,7 +26,11 @@ bool FromString<{{ struct.name }}>(const String &str, {{ struct.name }} &value)
     {% for field in struct.fields-%}
     {% set jsonKey = isContainsJsonKeyAnnotation(field)-%}
     {% if jsonKey != ""-%}
+    {% if field.type not in allJsonMappedClasses-%}
     value.{{ field.name }} = json.Get<{{field.type}}>("{{ jsonKey }}", value.{{ field.name }});
+    {% else-%}
+    FromString(json.Get<String>("{{ jsonKey }}", "{}"), value.{{ field.name }});
+    {% endif-%}
     {% endif-%}
     {% endfor %} 
 

@@ -28,6 +28,9 @@ def ParserContentWrapper(text: str, includeLibs: list[str] = []) -> str:
 
 #define RPP_HIDE __attribute__((annotate("hide")))
 
+#include <string>
+using String = std::string;
+
 {" ".join([f'#include <{lib}>' for lib in includeLibs]) if includeLibs else ''}
 
 namespace rpp {{
