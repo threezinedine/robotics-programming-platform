@@ -1,10 +1,11 @@
-from Engine import LogLevel, Logging, SingletonManager, HandlerType
+from Engine import LogLevel, Logging, SingletonManager, HandlerType, Project
 
 
 def main():
     SingletonManager.Initialize()
     Logging.Setup(HandlerType.CONSOLE.value, LogLevel.DEBUG)
-    Logging.Log(LogLevel.ERROR, "This is an info message.", __file__, 10)
+    project = Project.CreateProject('{"name": "TestProject"}')
+    Logging.Log(LogLevel.ERROR, f"Project: {project.GetName()}", __file__, 10)
     SingletonManager.Shutdown()
 
 

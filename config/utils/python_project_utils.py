@@ -240,24 +240,6 @@ def RunPythonProject(
 
         logger.debug(f"Using Clang library at: {clangPathDll}")
 
-        coreHeaderFile = os.path.join(
-            Constants.ABSOLUTE_BASE_DIR,
-            "libraries",
-            "core",
-            "include",
-            "core",
-            "core.h",
-        )
-
-        moduleHeaderFile = os.path.join(
-            Constants.ABSOLUTE_BASE_DIR,
-            "libraries",
-            "modules",
-            "include",
-            "modules",
-            "modules.h",
-        )
-
         applicationHeaderFile = os.path.join(
             Constants.ABSOLUTE_BASE_DIR,
             "libraries",
@@ -271,8 +253,6 @@ def RunPythonProject(
             "--clang-path",
             clangPathDll,
             "--input",
-            coreHeaderFile,
-            moduleHeaderFile,
             applicationHeaderFile,
         ]
 
