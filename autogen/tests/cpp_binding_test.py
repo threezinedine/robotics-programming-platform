@@ -91,7 +91,7 @@ public:
     expected = """
 py::class_<Logging>(m, "Logging", "The logging system (singleton class) that provides logging functionalities.")
     .def_static("Log", [](int level, const std::string &message, const std::string &file, int line) { 
-        return Logging::GetInstance()->Log(level, message, file, line);
+        return Logging::GetInstance()->Log(level, message.c_str(), file.c_str(), line);
     } , "Log a message with the specified log level, file name, and line number." );
 """
 
