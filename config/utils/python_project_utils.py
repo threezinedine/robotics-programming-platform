@@ -95,6 +95,12 @@ def _GetListOfHeaderFiles() -> list[str]:
             "core",
             "include",
         ),
+        os.path.join(
+            Constants.ABSOLUTE_BASE_DIR,
+            "libraries",
+            "applications",
+            "include",
+        ),
     ]
 
     for directory in directories:
@@ -247,12 +253,22 @@ def RunPythonProject(
             "modules.h",
         )
 
+        applicationHeaderFile = os.path.join(
+            Constants.ABSOLUTE_BASE_DIR,
+            "libraries",
+            "applications",
+            "include",
+            "applications",
+            "applications.h",
+        )
+
         argCommon = [
             "--clang-path",
             clangPathDll,
             "--input",
             coreHeaderFile,
             moduleHeaderFile,
+            applicationHeaderFile,
         ]
 
         args = argCommon + [

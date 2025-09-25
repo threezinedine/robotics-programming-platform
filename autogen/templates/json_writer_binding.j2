@@ -1,0 +1,30 @@
+{% for struct in structs %}
+    {% if "json" in struct.annotations %}
+template<>
+const String ToString<{{ struct.name }}>(const {{ struct.name }} &value)
+{
+    Json result;
+
+    {% for field in struct.fields-%}
+    {% set jsonKey = isContainsJsonKeyAnnotation(field)-%}
+    {% if jsonKey != ""-%}
+    result["{{ jsonKey }}"] = value.{{ field.name }};
+    {% endif-%}
+    {% endfor %} 
+    return result.ToString();
+}
+
+template<>
+bool FromString<{{ struct.name }}>(const String &str, {{ struct.name }} &value)
+{
+    Json json(str);
+
+    {% for field in struct.fields-%}
+    {% set jsonKey = isContainsJsonKeyAnnotation(field)-%}
+    {% if jsonKey != ""-%}
+    value.{{ field.name }} = json.Get<{{field.type}}>("{{ jsonKey }}", value.{{ field.name }});
+    {% endif-%}
+    {% endfor %} 
+}
+    {% endif %}
+{% endfor %}

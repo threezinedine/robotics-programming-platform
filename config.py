@@ -58,6 +58,10 @@ def main():
                     projectDir="modules",
                     projectType=args.Type,
                 )
+                RunLibrariesTest(
+                    projectDir="applications",
+                    projectType=args.Type,
+                )
         else:
             RunPythonProjectTest(projectDir=args.Project)
 

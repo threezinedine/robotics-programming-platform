@@ -23,6 +23,8 @@ def ParserContentWrapper(text: str, includeLibs: list[str] = []) -> str:
 #define RPP_JAVASCRIPT_BINDING __attribute__((annotate("javascript")))
 #define RPP_BINDING __attribute__((annotate("python", "javascript")))
 #define RPP_SINGLETON __attribute__((annotate("singleton")))
+#define RPP_JSON __attribute__((annotate("json")))
+#define RPP_JSON_KEY(name) __attribute__((annotate("key:" name)))
 
 #define RPP_HIDE __attribute__((annotate("hide")))
 

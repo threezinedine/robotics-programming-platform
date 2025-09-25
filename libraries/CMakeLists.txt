@@ -12,6 +12,7 @@ Project(RPPLibs)
 add_subdirectory(platforms)
 add_subdirectory(core)
 add_subdirectory(modules)
+add_subdirectory(applications)
 
 # -------------- Run autogen --------------
 set(CMAKE_FOLDER "Custom")
@@ -42,7 +43,7 @@ RPPFindPackage(rpp-pybind "Dependencies")
 
 set(CMAKE_FOLDER "Bindings")
 Python_add_library(Engine "${CMAKE_CURRENT_SOURCE_DIR}/tmp/binding.cpp")
-target_link_libraries(Engine PUBLIC rpp-pybind RPPModules)
+target_link_libraries(Engine PUBLIC rpp-pybind RPPApplications)
 set_target_properties(Engine PROPERTIES
                                 INTERPROCEDURAL_OPTIMIZATION ON
                                 CXX_VISIBILITY_PRESET hidden

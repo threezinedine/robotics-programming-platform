@@ -96,6 +96,13 @@ def Generate(
                 params.append(f"{param.name}")
         return ", ".join(params)
 
+    def IsContainsJsonKeyAnnotation(obj: PyObject) -> str:
+        keyNamePrefix = "key:"
+        for annotation in obj.annotations:
+            if annotation.startswith(keyNamePrefix):
+                return annotation[len(keyNamePrefix) :]
+        return ""
+
     def ObjectComment(obj: PyObject, default: str) -> str:
         return obj.comment if obj.comment else default
 
@@ -104,5 +111,6 @@ def Generate(
     template.globals["methodParametersCpp"] = MethodParametersCpp
     template.globals["methodParametersCall"] = MethodParametersCall
     template.globals["objectComment"] = ObjectComment
+    template.globals["isContainsJsonKeyAnnotation"] = IsContainsJsonKeyAnnotation
 
     return template.render(**parser)

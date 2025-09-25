@@ -20,6 +20,16 @@
  * @brief Used for marking the object should be hidden from Python binding.
  */
 #define RPP_HIDE
+
+/**
+ * @brief Used for marking the class will be mapped to JSON object.
+ */
+#define RPP_JSON
+
+/**
+ * @brief map the attribute with the given name in JSON object.
+ */
+#define RPP_JSON_KEY(name)
 #elif defined(__GNUC__) || defined(__clang__)
 /**
  * @brief Used for marking the object should be exposed to be binded into Python Module.
@@ -40,4 +50,14 @@
  * @brief Used for marking the object should be hidden from Python binding.
  */
 #define RPP_HIDE __attribute__((annotate("hide")))
+
+/**
+ * @brief Used for marking the class will be mapped to JSON object.
+ */
+#define RPP_JSON __attribute__((annotate("json")))
+
+/**
+ * @brief map the attribute with the given name in JSON object.
+ */
+#define RPP_JSON_KEY(name) __attribute__((annotate("key:" name)))
 #endif
