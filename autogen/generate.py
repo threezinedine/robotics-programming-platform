@@ -1,6 +1,9 @@
 import os
 from jinja2 import Environment, FileSystemLoader
 from parser import Parse, Structure
+from parser.py_class import PyClass
+from parser.py_function import PyFunction
+from parser.py_object import PyObject
 from type_map.type_map import TypeMap
 
 
@@ -51,5 +54,55 @@ def Generate(
     typeMap.LoadMappings()
 
     template.globals["convertCppTypeToPyType"] = typeMap.Convert
+
+    def IsMethodStatic(parent: PyObject, method: PyObject) -> bool:
+        assert isinstance(parent, PyClass)
+        assert isinstance(method, PyFunction)
+        return method.isStatic or "singleton" in parent.annotations
+
+    def MethodParametersPyi(method: PyObject, isStatic: bool) -> str:
+        assert isinstance(method, PyFunction)
+
+        params: list[str] = []
+
+        if not isStatic:
+            params.append("self")
+
+        for param in method.parameters:
+            params.append(f"{param.name}: {typeMap.Convert(param.type)}")
+        return ", ".join(params)
+
+    def MethodParametersCpp(method: PyObject) -> str:
+        assert isinstance(method, PyFunction)
+
+        params: list[str] = []
+
+        for param in method.parameters:
+            if typeMap.Convert(param.type) == "str":
+                params.append(f"const std::string& {param.name}")
+            else:
+                params.append(f"{param.type} {param.name}")
+        return ", ".join(params)
+
+    def MethodParametersCall(method: PyObject) -> str:
+        assert isinstance(method, PyFunction)
+
+        params: list[str] = []
+
+        for param in method.parameters:
+            if typeMap.Convert(param.type) == "str":
+                params.append(f"{param.name}.c_str()")
+            else:
+                params.append(f"{param.name}")
+        return ", ".join(params)
+
+    def ObjectComment(obj: PyObject, default: str) -> str:
+        return obj.comment if obj.comment else default
+
+    template.globals["isMethodStatic"] = IsMethodStatic
+    template.globals["methodParametersPyi"] = MethodParametersPyi
+    template.globals["methodParametersCpp"] = MethodParametersCpp
+    template.globals["methodParametersCall"] = MethodParametersCall
+    template.globals["objectComment"] = ObjectComment
 
     return template.render(**parser)

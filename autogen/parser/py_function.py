@@ -13,6 +13,7 @@ class PyFunction(PyObject):
         self.returnType = cursor.result_type.spelling
         self.parameters: list[PyParameter] = []
         self.returnComment: str | None = None
+        self.isStatic = cursor.is_static_method()
 
         for child in cursor.get_children():
             if child.kind == clang.cindex.CursorKind.PARM_DECL:

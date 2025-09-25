@@ -46,3 +46,53 @@ py::class_<Point>(m, "Point", "Point structure")
 """
 
     AssertGenerateResult(expected, result)
+
+
+def test_bind_class(generateFunc: GenerateFuncType) -> None:
+    result = generateFunc(
+        """
+/// @brief The logging system (singleton class) that provides logging functionalities.
+class RPP_PYTHON_BINDING Timer {
+public:
+    /// @brief Start the timer
+    void Start() RPP_PYTHON_BINDING; 
+
+    double Elapsed() RPP_PYTHON_BINDING;
+};
+""",
+        "cpp_class_binding.j2",
+        [],
+    )
+
+    expected = """
+py::class_<Timer>(m, "Timer", "The logging system (singleton class) that provides logging functionalities.")
+    .def(py::init<>())
+    .def("Start", &Timer::Start , "Start the timer" )
+    .def("Elapsed", &Timer::Elapsed , "" );
+"""
+
+    AssertGenerateResult(expected, result)
+
+
+def test_bind_singleton_class(generateFunc: GenerateFuncType) -> None:
+    result = generateFunc(
+        """
+/// @brief The logging system (singleton class) that provides logging functionalities.
+class RPP_PYTHON_BINDING RPP_SINGLETON Logging {
+public:
+    /// @brief Log a message with the specified log level, file name, and line number.
+    void Log(int level, const std::string &message, const std::string &file, int line) RPP_PYTHON_BINDING;
+};
+""",
+        "cpp_class_binding.j2",
+        ["string"],
+    )
+
+    expected = """
+py::class_<Logging>(m, "Logging", "The logging system (singleton class) that provides logging functionalities.")
+    .def_static("Log", [](int level, const std::string &message, const std::string &file, int line) { 
+        return Logging::GetInstance()->Log(level, message, file, line);
+    } , "Log a message with the specified log level, file name, and line number." );
+"""
+
+    AssertGenerateResult(expected, result)
