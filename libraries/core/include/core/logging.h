@@ -37,6 +37,18 @@ namespace rpp
     };
 
     /**
+     * @brief Predefined types of log handlers. These types can be used to create standard handlers.
+     */
+    enum class RPP_PYTHON_BINDING HandlerType
+    {
+        CONSOLE, ///< Output log messages to the console (standard output).
+        FILE,    ///< Write log messages to a file.
+        NETWORK, ///< Send log messages over the network to a logging server.
+        CUSTOM,  ///< Use a custom handler defined by the user.
+        COUNT RPP_HIDE,
+    };
+
+    /**
      * Interface for handling the log records. Users can implement this interface to define custom log handling behavior.
      */
     class Handler
@@ -73,6 +85,16 @@ namespace rpp
         RPP_SINGLETON_DEFINE(Logging);
 
     public:
+        /**
+         * @brief Used for setting up the logging (useful for editor integration).
+         *
+         * @param type The type of handler to be used for logging.
+         * @param level The minimum log level that the handler will process. Default is LogLevel::INFO.
+         *
+         * @note only callable once (the first call will be effective, subsequent calls will be ignored).
+         */
+        void Setup(HandlerType type, LogLevel level = LogLevel::INFO) RPP_PYTHON_BINDING;
+
         /**
          * @brief Log a message with the specified log level, file name, and line number.
          * @param level The severity level of the log message.

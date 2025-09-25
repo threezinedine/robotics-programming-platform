@@ -1,5 +1,6 @@
 #include "core/logging.h"
 #include <cstdio>
+#include "core/handlers/handlers.h"
 
 namespace rpp
 {
@@ -25,6 +26,31 @@ namespace rpp
 
     Logging::~Logging()
     {
+    }
+
+    void Logging::Setup(HandlerType type, LogLevel level)
+    {
+        static bool isSetup = false;
+        if (isSetup)
+        {
+            return;
+        }
+        isSetup = true;
+
+        switch (type)
+        {
+        case HandlerType::CONSOLE:
+            SetupHandler(CreateScope<ConsoleHandler>());
+            break;
+        default:
+            break;
+        }
+
+        u32 handlerCount = m_handlers.Size();
+        for (u32 i = 0; i < handlerCount; i++)
+        {
+            m_handlers[i]->SetLevel(level);
+        }
     }
 
     void Logging::Log(LogLevel level, const String &message, const String &file, i32 line)

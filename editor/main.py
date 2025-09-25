@@ -1,9 +1,10 @@
-from Engine import LogLevel, Logging, SingletonManager
+from Engine import LogLevel, Logging, SingletonManager, HandlerType
 
 
 def main():
     SingletonManager.Initialize()
-    Logging.Log(LogLevel.INFO, "This is an info message.", __file__, 10)
+    Logging.Setup(HandlerType.CONSOLE, LogLevel.DEBUG)
+    Logging.Log(LogLevel.ERROR, "This is an info message.", __file__, 10)
     SingletonManager.Shutdown()
 
 
