@@ -1,6 +1,6 @@
 from typing import Generator
 import pytest  # type: ignore
-from utils import DependencyInjection, depend
+from utils import DependencyInjection, Depend
 
 
 class SingletonObject:
@@ -21,7 +21,7 @@ class SingletonObject:
         self.value = value
 
 
-@depend(SingletonObject)
+@Depend(SingletonObject)
 class DependentSingleton:
     """
     A singleton object which depends on another singleton object.

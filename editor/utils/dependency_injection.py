@@ -99,7 +99,7 @@ class DependencyInjection:
         return instance
 
 
-def depend(*dependencies: Any) -> Any:
+def Depend(*dependencies: Any) -> Any:
     """
     Decorator method for marking that the passed class depends on the passed
     dependencies. The dependencies will be automatically injected into the
