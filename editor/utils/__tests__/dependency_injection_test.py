@@ -157,3 +157,20 @@ def test_register_via_wrapper(setup: None) -> None:
     assert (
         SingletonObject.numberOfCount == 1
     ), "Count should be 1 since one singleton instance should have been created."
+
+
+def test_wrapper_with_object(setup: None) -> None:
+    obj = SingletonObject(value=55)
+    AsSingleton(obj, interfaceType=SingletonObject)
+
+    GetObject(SingletonObject)
+
+    assert (
+        SingletonObject.numberOfCount == 1
+    ), "Count should be 1 since one singleton instance should have been created."
+
+
+def test_wrapper_with_object_no_interface(setup: None) -> None:
+    obj = SingletonObject(value=55)
+    with pytest.raises(ValueError):
+        AsSingleton(obj)  # No interfaceType provided and obj is not a class type
