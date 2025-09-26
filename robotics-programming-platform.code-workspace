@@ -7,7 +7,8 @@
 		},
 		{
 			"name": "editor",
-			"path": "editor"
+			"path": "editor",
+			"python.defaultInterpreterPath": "${workspaceFolder}/venv/Scripts/python.exe"
 		},
 		{
 			"name": "runtime",
