@@ -7,8 +7,21 @@ logger.setLevel(logging.DEBUG)
 
 class EditorLoggerHandler(logging.Handler):
     def emit(self, record: logging.LogRecord) -> None:
+        level = LogLevel.DEBUG
+
+        if record.levelno == logging.DEBUG:
+            level = LogLevel.DEBUG
+        elif record.levelno == logging.INFO:
+            level = LogLevel.INFO
+        elif record.levelno == logging.WARNING:
+            level = LogLevel.WARNING
+        elif record.levelno == logging.ERROR:
+            level = LogLevel.ERROR
+        else:
+            level = LogLevel.FATAL
+
         Logging.Log(
-            LogLevel(record.levelno),
+            level,
             record.getMessage(),
             record.pathname,
             record.lineno,
