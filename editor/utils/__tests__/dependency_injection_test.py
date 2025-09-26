@@ -70,15 +70,13 @@ def test_register_singleton(setup: None) -> None:
         SingletonObject.numberOfCount == 0
     ), "Count should be 0 before any objects are made."
 
-    DependencyInjection.RegisterSingleton(SingletonObject, value=5)
+    AsSingleton(SingletonObject, value=5)
 
     assert (
         SingletonObject.numberOfCount == 0
     ), "Count should still be 0 since no singleton instance should have been created yet."
 
-    obj1 = DependencyInjection.GetObject(
-        SingletonObject.__name__
-    )  # only create singleton object at the first time is called
+    obj1 = GetObject(SingletonObject)
 
     assert obj1 is not None, "Singleton object should not be None."
     assert (
@@ -88,7 +86,7 @@ def test_register_singleton(setup: None) -> None:
         obj1.value == 5
     ), "Singleton object should have been initialized with value 5."
 
-    obj2 = DependencyInjection.GetObject(SingletonObject.__name__)
+    obj2 = GetObject(SingletonObject)
     assert obj1 is obj2, "Both singleton objects should be the same instance."
     assert (
         SingletonObject.numberOfCount == 1
@@ -103,10 +101,10 @@ def test_register_existed_singleton(setup: None) -> None:
         SingletonObject.numberOfCount == 0
     ), "Count should be 0 before registering the singleton again."
 
-    DependencyInjection.RegisterSingleton(int, SingletonObject.__name__, 20)
-    DependencyInjection.RegisterSingleton(SingletonObject, value=10)
+    AsSingleton(int, SingletonObject, 20)
+    AsSingleton(SingletonObject, value=10)
 
-    obj = DependencyInjection.GetObject(SingletonObject.__name__)
+    obj = GetObject(SingletonObject)
     assert obj is not None, "Singleton object should not be None."
     assert (
         SingletonObject.numberOfCount == 1
@@ -118,10 +116,10 @@ def test_register_existed_singleton(setup: None) -> None:
 
 
 def test_add_dependency_between_singletons(setup: None) -> None:
-    DependencyInjection.RegisterSingleton(SingletonObject, value=15)
-    DependencyInjection.RegisterSingleton(DependentSingleton)
+    AsSingleton(DependentSingleton)
+    AsSingleton(SingletonObject, value=10)
 
-    dependent = DependencyInjection.GetObject(DependentSingleton.__name__)
+    dependent = GetObject(DependentSingleton)
 
     assert dependent is not None, "Dependent singleton should not be None."
     assert (
@@ -144,13 +142,13 @@ def test_get_non_existent_singleton(setup: None) -> None:
 
 def test_register_singleton_using_object(setup: None) -> None:
     obj = SingletonObject(value=30)
-    DependencyInjection.RegisterSingleton(obj, SingletonObject.__name__)
+    AsSingleton(obj, SingletonObject)
 
     assert (
         SingletonObject.numberOfCount == 1
     ), "Count should be 1 since one singleton instance should have been created."
 
-    retrieved_obj = DependencyInjection.GetObject(SingletonObject.__name__)
+    retrieved_obj = GetObject(SingletonObject)
     assert (
         retrieved_obj is obj
     ), "The retrieved singleton should be the same as the registered object."
