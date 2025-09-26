@@ -201,3 +201,20 @@ def test_wrapper_with_transient(setup: None) -> None:
     assert (
         TransientObject.numberOfCount == 2
     ), "Count should be 2 since two transient instances should have been created."
+
+
+def test_register_transient_with_same_interface_as_singleton(setup: None) -> None:
+    AsSingleton(SingletonObject, value=10)
+    with pytest.raises(ValueError):
+        AsTransient(TransientObject, SingletonObject, value=20)
+
+
+def test_register_overwrite_transient(setup: None) -> None:
+    AsTransient(TransientObject, value=1)
+    AsTransient(TransientObject, value=2)
+
+
+def test_register_singleton_with_existed_transient(setup: None) -> None:
+    AsTransient(TransientObject, value=1)
+    with pytest.raises(ValueError):
+        AsSingleton(SingletonObject, TransientObject, value=10)

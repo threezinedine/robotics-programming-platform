@@ -71,11 +71,16 @@ class DependencyInjection:
             raise ValueError("name must be provided if className is not a class type.")
 
         if (
-            name in DependencyInjection._singletons
-            or name in DependencyInjection._singletonFactories
+            finalName in DependencyInjection._singletons
+            or finalName in DependencyInjection._singletonFactories
         ):
             logger.warning(
-                f"Singleton '{name}' is already registered. Overwriting existing instance."
+                f"Singleton '{finalName}' is already registered. Overwriting existing instance."
+            )
+
+        if finalName in DependencyInjection._transientsFactories:
+            raise ValueError(
+                f"Cannot register singleton '{finalName}' because a transient with the same name already exists."
             )
 
         if not isinstance(className, type):
@@ -104,6 +109,19 @@ class DependencyInjection:
             The class to register
         """
         name = className.__name__ if name is None else name
+
+        if name in DependencyInjection._transientsFactories:
+            logger.warning(
+                f"Transient '{name}' is already registered. Overwriting existing instance."
+            )
+
+        if (
+            name in DependencyInjection._singletons
+            or name in DependencyInjection._singletonFactories
+        ):
+            raise ValueError(
+                f"Cannot register transient '{name}' because a singleton with the same name already exists."
+            )
 
         if name in DependencyInjection._transientsFactories:
             logger.warning(
