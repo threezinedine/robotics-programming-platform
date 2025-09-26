@@ -128,15 +128,26 @@ class DependencyInjection:
                 f"Transient '{name}' is already registered. Overwriting existing instance."
             )
 
-        DependencyInjection._transientsFactories[name] = lambda dependencies: className(
-            *dependencies, *args, **kwargs
-        )
+        DependencyInjection._transientsFactories[name] = className
 
     @staticmethod
-    def GetObject(name: str) -> Any:
+    def GetObject(name: str, *args: Any, **kwargs: Any) -> Any:
         """
         Retrieves the existed singleton object from the dependency injection
         container. If the singleton has not been registered, raises an error.
+
+        Parameters
+        ----------
+        name : str
+            The name of the singleton to retrieve.
+
+        *args : Any
+            The arguments to pass to the class constructor (for transient objects only).
+            The arguments will be ignored for singleton objects.
+
+        **kwargs : Any
+            The keyword arguments to pass to the class constructor (for transient objects only).
+            The keyword arguments will be ignored for singleton objects.
         """
         if name in DependencyInjection._singletonFactories:
             factory = DependencyInjection._singletonFactories.pop(name)
@@ -166,7 +177,7 @@ class DependencyInjection:
                 ]
             )
 
-            instance = factory(dependencies)
+            instance = factory(*dependencies, *args, **kwargs)
             return instance
 
         instance = DependencyInjection._singletons.get(name)
@@ -238,8 +249,8 @@ def AsTransient(
     DependencyInjection.RegisterTransient(classType, registerName, *args, **kwargs)
 
 
-def GetObject(interfaceType: type[T]) -> T:
+def GetObject(interfaceType: type[T], *args: Any, **kwargs: Any) -> T:
     """
     Simple wrapper for easily retrieving a singleton object by its interface type.
     """
-    return DependencyInjection.GetObject(interfaceType.__name__)  # type: ignore
+    return DependencyInjection.GetObject(interfaceType.__name__, *args, **kwargs)  # type: ignore

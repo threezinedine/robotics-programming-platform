@@ -47,7 +47,7 @@ class TransientObject:
 
     numberOfCount: int = 0
 
-    def __init__(self, value: int) -> None:
+    def __init__(self, value: int = 0) -> None:
         self.value = value
         TransientObject.numberOfCount += 1
 
@@ -193,10 +193,21 @@ def test_wrapper_with_object_no_interface(setup: None) -> None:
 
 
 def test_wrapper_with_transient(setup: None) -> None:
-    AsTransient(TransientObject, value=100)
+    AsTransient(TransientObject)
 
-    GetObject(TransientObject)
-    GetObject(TransientObject)
+    obj1 = GetObject(TransientObject, value=1)
+
+    assert obj1 is not None, "Transient object should not be None."
+    assert (
+        obj1.value == 1
+    ), "Transient object should have been initialized with value 1."
+
+    obj2 = GetObject(TransientObject)
+    assert obj2 is not None, "Transient object should not be None."
+    assert obj2 is not obj1, "Both transient objects should be different instances."
+    assert (
+        obj2.value == 0
+    ), "Transient object should have been initialized with value 0."
 
     assert (
         TransientObject.numberOfCount == 2
@@ -218,3 +229,17 @@ def test_register_singleton_with_existed_transient(setup: None) -> None:
     AsTransient(TransientObject, value=1)
     with pytest.raises(ValueError):
         AsSingleton(SingletonObject, TransientObject, value=10)
+
+
+def test_get_singleton_with_args(setup: None) -> None:
+    AsSingleton(SingletonObject, value=50)
+
+    obj = GetObject(SingletonObject, value=99)
+
+    assert obj is not None, "Singleton object should not be None."
+    assert (
+        SingletonObject.numberOfCount == 1
+    ), "Count should be 1 since one singleton instance should have been created."
+    assert (
+        obj.value == 50
+    ), "Singleton object should have been initialized with value 50."
