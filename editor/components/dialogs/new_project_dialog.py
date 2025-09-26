@@ -1,6 +1,6 @@
 from typing import Optional
 from PyQt6.QtWidgets import QDialog, QWidget
-from converted.new_project_dialog_ui import Ui_NewProjectDialog
+from converted_uis.new_project_dialog_ui import Ui_NewProjectDialog
 from utils.dependency_injection import Depend
 
 

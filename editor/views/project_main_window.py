@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import QMainWindow
-from converted.project_main_window_ui import Ui_StartMainWindow
+from converted_uis.project_main_window_ui import Ui_StartMainWindow
 from components.dialogs import NewProjectDialog
 from utils.dependency_injection import Depend, GetObject
 

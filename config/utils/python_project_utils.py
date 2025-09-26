@@ -367,7 +367,7 @@ def RunPythonProject(
         targetConvertedUiDir = os.path.join(
             Constants.ABSOLUTE_BASE_DIR,
             "editor",
-            "converted",
+            "converted_uis",
         )
 
         CreateRecursiveDirIfNotExists(targetConvertedUiDir)
