@@ -4,6 +4,7 @@ darkdetect==0.7.1
 iniconfig==2.1.0
 packaging==25.0
 pluggy==1.6.0
+pyfakefs==5.9.3
 Pygments==2.19.2
 PyQt6==6.4.2
 pyqt6-plugins==6.4.2.2.3

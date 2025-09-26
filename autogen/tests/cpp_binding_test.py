@@ -150,6 +150,7 @@ struct RPP_JSON Person {
 
     expected = """
 m.def("ToString_Person", &ToString<Person>, "");
+m.def("FromString_Person", &FromString<Person>, "");
 """
 
     AssertGenerateResult(expected, result)

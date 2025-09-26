@@ -2,5 +2,8 @@
 {% if struct.name in allJsonMappedClasses-%}
 def ToString_{{ struct.name }}(obj: {{ struct.name }}) -> str:
     ...
+
+def FromString_{{ struct.name }}(s: str) -> {{ struct.name }}:
+    ...
 {% endif-%}
 {% endfor %}

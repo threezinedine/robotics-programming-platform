@@ -334,7 +334,13 @@ struct RPP_JSON Work
 def ToString_Vector3(obj: Vector3) -> str:
     ...
 
+def FromString_Vector3(s: str) -> Vector3:
+    ...
+
 def ToString_Work(obj: Work) -> str:
+    ...
+
+def FromString_Work(s: str) -> Work:
     ...
 """
 

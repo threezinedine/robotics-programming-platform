@@ -1,5 +1,6 @@
+import os
 from utils.logger import logger  # type: ignore
-from Engine import Project, ProjectDescription
+from Engine import Project, ProjectDescription, ToString_ProjectDescription
 from PyQt6.QtWidgets import QMainWindow
 from converted_uis.project_main_window_ui import Ui_StartMainWindow
 from components.dialogs import NewProjectDialog, NewProjectDialogViewModel
@@ -69,6 +70,18 @@ class ProjectMainWindow(QMainWindow):
         )
 
         # ==== Create the project directory ====
+        projectFolder = viewModel.ProjectPath
+        projectName = viewModel.ProjectName
+
+        fullPath = os.path.join(projectFolder, projectName)
+        if not os.path.exists(fullPath):
+            os.makedirs(fullPath)
+            logger.info(f"Created project directory at {fullPath}")
+
+        projectFile = os.path.join(fullPath, "init.rppproj")
+
+        with open(projectFile, "w") as f:
+            f.write(ToString_ProjectDescription(projectDesc))
 
         # ==== Update loaded state ====
         self.viewModel.projectStateModel.IsProjectLoaded = True
