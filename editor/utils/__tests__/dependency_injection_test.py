@@ -1,6 +1,6 @@
 from typing import Generator
 import pytest  # type: ignore
-from utils import DependencyInjection
+from utils import DependencyInjection, depend
 
 
 class SingletonObject:
@@ -21,6 +21,19 @@ class SingletonObject:
         self.value = value
 
 
+@depend(SingletonObject)
+class DependentSingleton:
+    """
+    A singleton object which depends on another singleton object.
+    """
+
+    numberOfCount: int = 0
+
+    def __init__(self, singleton: SingletonObject) -> None:
+        DependentSingleton.numberOfCount += 1
+        self.singleton = singleton
+
+
 @pytest.fixture
 def setup() -> Generator[None, None, None]:
     # Reset the singleton registry before each test
@@ -39,7 +52,13 @@ def test_register_singleton(setup: None) -> None:
 
     DependencyInjection.RegisterSingleton(SingletonObject, value=5)
 
-    obj1 = DependencyInjection.GetSingleton(SingletonObject.__name__)
+    assert (
+        SingletonObject.numberOfCount == 0
+    ), "Count should still be 0 since no singleton instance should have been created yet."
+
+    obj1 = DependencyInjection.GetSingleton(
+        SingletonObject.__name__
+    )  # only create singleton object at the first time is called
 
     assert obj1 is not None, "Singleton object should not be None."
     assert (
@@ -76,3 +95,28 @@ def test_register_existed_singleton(setup: None) -> None:
     assert (
         obj.value == 10
     ), "Singleton object should still have the initial value of 10."
+
+
+def test_add_dependency_between_singletons(setup: None) -> None:
+    DependencyInjection.RegisterSingleton(SingletonObject, value=15)
+    DependencyInjection.RegisterSingleton(DependentSingleton)
+
+    dependent = DependencyInjection.GetSingleton(DependentSingleton.__name__)
+
+    assert dependent is not None, "Dependent singleton should not be None."
+    assert (
+        DependentSingleton.numberOfCount == 1
+    ), "Count should be 1 since one dependent singleton instance should have been created."
+
+    assert (
+        dependent.singleton is not None
+    ), "The singleton dependency should have been injected and should not be None."
+
+    assert (
+        SingletonObject.numberOfCount == 1
+    ), "Count should be 1 since only one singleton instance should have been created."
+
+
+def test_get_non_existent_singleton(setup: None) -> None:
+    with pytest.raises(ValueError):
+        DependencyInjection.GetSingleton("NonExistentSingleton")
