@@ -39,7 +39,7 @@ class ApplicationAssert(Assert):
             ), f"Expected {len(self.recentProjects)} recent projects, got {len(appModel.recentProjects)}"
 
             for recentProject, expected in zip(
-                set(appModel.recentProjects), set(self.recentProjects)
+                appModel.recentProjects, self.recentProjects
             ):
                 assert recentProject.endswith(
                     expected

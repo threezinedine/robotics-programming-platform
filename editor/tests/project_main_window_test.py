@@ -72,3 +72,45 @@ def test_auto_open_recent_project(
         projectDir=os.getcwd(),
         projectName="RecentProject",
     ).Assert()
+
+
+def test_only_five_recent_projects(
+    qtbot: QtBot,
+    uiConfig: None,
+    fs: FakeFilesystem,
+) -> None:
+    EnvironmentBuilder().AddApplication(
+        ApplicationBuilder()
+        .AddRecentProject("Project5")
+        .AddRecentProject("Project4")
+        .AddRecentProject("Project3")
+        .AddRecentProject("Project2")
+        .AddRecentProject("Project1")
+    ).AddProject(ProjectBuilder("Project1")).AddProject(
+        ProjectBuilder("Project2")
+    ).AddProject(
+        ProjectBuilder("Project3")
+    ).AddProject(
+        ProjectBuilder("Project4")
+    ).AddProject(
+        ProjectBuilder("Project5")
+    ).Build()
+
+    mainWindow = GetObject(ProjectMainWindow)
+    qtbot.addWidget(mainWindow)
+    mainWindow.show()
+
+    mainWindow.ui.newProjectAction.trigger()
+    mainWindow.newProjectDialog.ui.projectNameInput.setText("Project6")
+    mainWindow.newProjectDialog.ui.buttonBox.accepted.emit()
+
+    ApplicationAssert(
+        version="1.0.0",
+        recentProjects=[
+            "Project6",
+            "Project5",
+            "Project4",
+            "Project3",
+            "Project2",
+        ],
+    ).Assert()

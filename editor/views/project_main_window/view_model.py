@@ -97,4 +97,7 @@ class ProjectMainWindowViewModel:
 
         # ==== Update recent projects ====
         self.applicationModel.application.recentProjects.insert(0, fullPath)
+        self.applicationModel.application.recentProjects = (
+            self.applicationModel.application.recentProjects[:5]
+        )
         self.applicationModel.Save()
