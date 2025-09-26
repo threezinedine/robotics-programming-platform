@@ -1,3 +1,4 @@
+import os
 import logging
 from Engine import Logging, LogLevel
 
@@ -23,7 +24,7 @@ class EditorLoggerHandler(logging.Handler):
         Logging.Log(
             level,
             record.getMessage(),
-            record.pathname,
+            os.path.relpath(record.pathname, os.path.join(os.getcwd(), "..")),
             record.lineno,
         )
 
