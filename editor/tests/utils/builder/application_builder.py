@@ -8,6 +8,7 @@ from dataclasses import asdict
 class ApplicationBuilder:
     def __init__(self) -> None:
         self.version = Version()
+        self.recentProjects: list[str] = []
 
     def SetVersion(self, major: int, minor: int, patch: int) -> "ApplicationBuilder":
         """
@@ -16,6 +17,13 @@ class ApplicationBuilder:
         # Currently not implemented, as Application only has default version.
         self.version = Version(major, minor, patch)
 
+        return self
+
+    def AddRecentProject(self, projectPath: str) -> "ApplicationBuilder":
+        """
+        Add a recent project to the application.
+        """
+        self.recentProjects.append(projectPath)
         return self
 
     def Build(self) -> None:
@@ -35,4 +43,5 @@ class ApplicationBuilder:
 
         with open(appFilePath, "w") as f:
             application = Application(version=self.version)
+            application.recentProjects = self.recentProjects
             f.write(json.dumps(asdict(application), indent=4))

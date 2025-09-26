@@ -5,7 +5,7 @@ from views.project_main_window import ProjectMainWindow
 from utils.dependency_injection import GetObject
 from pyfakefs.fake_filesystem import FakeFilesystem
 from tests.utils import ProjectDescriptionAssert, ApplicationAssert
-from tests.utils import EnvironmentBuilder, ApplicationBuilder
+from tests.utils import EnvironmentBuilder, ApplicationBuilder, ProjectBuilder
 
 
 def test_create_new_project(
@@ -49,3 +49,26 @@ def test_existed_application(
     mainWindow.show()
 
     ApplicationAssert(version="1.0.1").Assert()
+
+
+def test_auto_open_recent_project(
+    qtbot: QtBot,
+    uiConfig: None,
+    fs: FakeFilesystem,
+) -> None:
+    EnvironmentBuilder().AddApplication(
+        ApplicationBuilder().AddRecentProject("RecentProject")
+    ).AddProject(ProjectBuilder("RecentProject")).Build()
+
+    mainWindow = GetObject(ProjectMainWindow)
+    qtbot.addWidget(mainWindow)
+    mainWindow.show()
+
+    assert mainWindow.windowTitle() == "Project - RecentProject"
+
+    ApplicationAssert(version="1.0.0", recentProjects=["RecentProject"]).Assert()
+
+    ProjectDescriptionAssert(
+        projectDir=os.getcwd(),
+        projectName="RecentProject",
+    ).Assert()

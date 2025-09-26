@@ -1,25 +1,33 @@
 import os
-import json
 from utils.logger import logger  # type: ignore
-from constants import PROJECT_FILE_NAME, APPLICATION_FOLDER_NAME, APPLICATION_FILE_NAME
-from Engine import Project, ProjectDescription, ToString_ProjectDescription
+from constants import PROJECT_FILE_NAME
+from Engine import (
+    Project,
+    ProjectDescription,
+    ToString_ProjectDescription,
+    FromString_ProjectDescription,
+)
 from PyQt6.QtWidgets import QMainWindow
 from converted_uis.project_main_window_ui import Ui_StartMainWindow
 from components.dialogs import NewProjectDialog, NewProjectDialogViewModel
 from utils.dependency_injection import Depend, GetObject
-from models import ProjectStateModel, Application
-from dataclasses import asdict
+from models import ProjectStateModel, ApplicationModel
 from utils.signal import Signal
 
 
-@Depend(ProjectStateModel)
+@Depend(ProjectStateModel, ApplicationModel)
 class ProjectMainWindowViewModel:
     """
     The view model for the ProjectMainWindow.
     """
 
-    def __init__(self, projectStateModel: ProjectStateModel) -> None:
+    def __init__(
+        self,
+        projectStateModel: ProjectStateModel,
+        applicationModel: ApplicationModel,
+    ) -> None:
         self.projectStateModel = projectStateModel
+        self.applicationModel = applicationModel
 
         self.projectNameSignal = Signal()
 
@@ -62,18 +70,23 @@ class ProjectMainWindow(QMainWindow):
         self.newProjectDialog.viewModel.SetOnConfirm(self._OnConfirmNewProjectCallback)
 
     def _LoadApplicationData(self) -> None:
-        logger.debug("Loading application data...")
-        appdataFolder = os.getenv("APPDATA")
-        assert appdataFolder is not None, "APPDATA environment variable is not set."
-        appFolder = os.path.join(appdataFolder, APPLICATION_FOLDER_NAME)
-        if not os.path.exists(appFolder):
-            os.makedirs(appFolder)
-            logger.info(f"Created application folder at {appFolder}")
+        self.viewModel.applicationModel.Create()
+        self.viewModel.applicationModel.Load()
 
-        appFile = os.path.join(appFolder, APPLICATION_FILE_NAME)
-        if not os.path.exists(appFile):
-            with open(appFile, "w") as f:
-                f.write(json.dumps(asdict(Application()), indent=4))
+        if len(self.viewModel.applicationModel.application.recentProjects) > 0:
+            self._LoadProject(
+                self.viewModel.applicationModel.application.recentProjects[0]
+            )
+
+    def _LoadProject(self, projectPath: str) -> None:
+        projectFile = os.path.join(projectPath, PROJECT_FILE_NAME)
+        with open(projectFile, "r") as f:
+            projectDesc = FromString_ProjectDescription(f.read())
+            self.viewModel.projectStateModel.CurrentProject = Project.CreateProject(
+                projectDesc
+            )
+            self.viewModel.projectStateModel.IsProjectLoaded = True
+            self.viewModel.ProjectNameSignal.Emit(self.viewModel.ProjectName)
 
     def _UpdateProjectName(self, projectName: str) -> None:
         logger.debug(f"Project name updated to {self.viewModel.ProjectName}")

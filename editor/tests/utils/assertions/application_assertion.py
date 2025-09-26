@@ -7,9 +7,14 @@ from .assertion import Assert
 
 
 class ApplicationAssert(Assert):
-    def __init__(self, version: str = "1.0.0") -> None:
+    def __init__(
+        self,
+        version: str = "1.0.0",
+        recentProjects: list[str] | None = None,
+    ) -> None:
         super().__init__()
         self.version = version
+        self.recentProjects = recentProjects if recentProjects is not None else []
 
     def _Assert(self) -> None:
         appDataDir = os.getenv("APPDATA")
@@ -28,3 +33,11 @@ class ApplicationAssert(Assert):
                 self.version
                 == f"{appModel.version.major}.{appModel.version.minor}.{appModel.version.patch}"
             ), f"Expected version {self.version}, got {appModel.version}"
+
+            assert len(appModel.recentProjects) == len(
+                self.recentProjects
+            ), f"Expected {len(self.recentProjects)} recent projects, got {len(appModel.recentProjects)}"
+
+            assert set(appModel.recentProjects) == set(
+                self.recentProjects
+            ), f"Recent projects do not match. Expected {self.recentProjects}, got {appModel.recentProjects}"
