@@ -5,12 +5,16 @@ from components.dialogs.new_project_dialog import (
     NewProjectDialog,
     NewProjectDialogViewModel,
 )
+from models import ProjectState, ProjectStateModel
 
 
 def StartupConfig() -> None:
     """
     Write all singleton/transient registrations here.
     """
+
+    AsSingleton(ProjectState)
+    AsSingleton(ProjectStateModel)
 
     AsSingleton(ProjectMainWindowViewModel)
     AsSingleton(NewProjectDialogViewModel)

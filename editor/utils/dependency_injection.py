@@ -187,7 +187,7 @@ class DependencyInjection:
         return instance
 
 
-def Depend(*dependencies: Any) -> Any:
+def Depend(*dependencies: Any) -> Callable[[T], T]:
     """
     Decorator method for marking that the passed class depends on the passed
     dependencies. The dependencies will be automatically injected into the

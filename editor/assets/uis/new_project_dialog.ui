@@ -53,7 +53,7 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="QLineEdit" name="lineEdit">
+          <widget class="QLineEdit" name="projectDirLabel">
            <property name="readOnly">
             <bool>true</bool>
            </property>
@@ -88,7 +88,7 @@
    <item>
     <widget class="QLabel" name="finalProjectName">
      <property name="text">
-      <string>Final Path:</string>
+      <string>Project:</string>
      </property>
     </widget>
    </item>
