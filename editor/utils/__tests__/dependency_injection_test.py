@@ -243,3 +243,22 @@ def test_get_singleton_with_args(setup: None) -> None:
     assert (
         obj.value == 50
     ), "Singleton object should have been initialized with value 50."
+
+
+def test_use_interface(setup: None) -> None:
+    class ISingleton:
+        @property
+        def value(self) -> int:
+            return 0
+
+    AsSingleton(SingletonObject, ISingleton, value=15)
+
+    obj = GetObject(ISingleton)
+
+    assert obj is not None, "Singleton object should not be None."
+    assert (
+        SingletonObject.numberOfCount == 1
+    ), "Count should be 1 since one singleton instance should have been created."
+    assert (
+        obj.value == 15
+    ), "Singleton object should have been initialized with value 15."
