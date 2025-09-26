@@ -39,7 +39,7 @@ class NewProjectDialogViewModel:
 
     @property
     def ProjectPath(self) -> str:
-        return self._projectPath
+        return self._projectPath if self._projectPath != "" else os.getcwd()
 
     @property
     def ProjectPathSignal(self) -> Signal:

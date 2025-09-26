@@ -1,5 +1,6 @@
 import os
 from utils.logger import logger  # type: ignore
+from constants import PROJECT_FILE_NAME
 from Engine import Project, ProjectDescription, ToString_ProjectDescription
 from PyQt6.QtWidgets import QMainWindow
 from converted_uis.project_main_window_ui import Ui_StartMainWindow
@@ -78,9 +79,10 @@ class ProjectMainWindow(QMainWindow):
             os.makedirs(fullPath)
             logger.info(f"Created project directory at {fullPath}")
 
-        projectFile = os.path.join(fullPath, "init.rppproj")
+        projectFile = os.path.join(fullPath, PROJECT_FILE_NAME)
 
         with open(projectFile, "w") as f:
+            logger.debug(f"Creating project file at {projectFile}")
             f.write(ToString_ProjectDescription(projectDesc))
 
         # ==== Update loaded state ====
