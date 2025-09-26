@@ -16,6 +16,9 @@
     <verstretch>0</verstretch>
    </sizepolicy>
   </property>
+  <property name="cursor">
+   <cursorShape>ArrowCursor</cursorShape>
+  </property>
   <property name="windowTitle">
    <string>Project</string>
   </property>
@@ -33,12 +36,18 @@
     <property name="title">
      <string>File</string>
     </property>
+    <widget class="QMenu" name="recentProjectsMenu">
+     <property name="title">
+      <string>Recents</string>
+     </property>
+     <addaction name="actionNo_projects"/>
+    </widget>
     <addaction name="newProjectAction"/>
     <addaction name="openProjectAction"/>
     <addaction name="saveProjectAction"/>
     <addaction name="saveAsProjectAction"/>
     <addaction name="separator"/>
-    <addaction name="recentProjectsAction"/>
+    <addaction name="recentProjectsMenu"/>
     <addaction name="separator"/>
     <addaction name="undoAction"/>
     <addaction name="separator"/>
@@ -101,9 +110,12 @@
     <string>About</string>
    </property>
   </action>
-  <action name="recentProjectsAction">
+  <action name="actionNo_projects">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
-    <string>Recents</string>
+    <string>No projects</string>
    </property>
   </action>
  </widget>

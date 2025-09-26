@@ -16,8 +16,8 @@
             "python": "${workspaceFolder}/venv/Scripts/python.exe",
             "program": "${workspaceFolder}/venv/Scripts/pytest.exe",
             "args": [
-                // "-k",
-                // "test_register_singleton_using_object",
+                "-k",
+                "test_auto_load_recent_projects",
             ],
             "cwd": "${workspaceFolder}",
         }

@@ -40,6 +40,10 @@ class ProjectMainWindowViewModel:
     def ProjectNameSignal(self) -> Signal:
         return self.projectNameSignal
 
+    @property
+    def RecentProjects(self) -> list[str]:
+        return self.applicationModel.application.recentProjects
+
     def LoadProject(self, projectPath: str) -> None:
         """
         Open a project from the given path.
@@ -62,6 +66,11 @@ class ProjectMainWindowViewModel:
 
         if len(self.applicationModel.application.recentProjects) > 0:
             self.LoadProject(self.applicationModel.application.recentProjects[0])
+
+        logger.debug(f"Recent projects: {self.RecentProjects} emitted")
+        self.applicationModel.RecentProjectsSignal.Emit(
+            self.applicationModel.application
+        )
 
     def OnConfirmNewProjectCallback(
         self,
@@ -101,3 +110,6 @@ class ProjectMainWindowViewModel:
             self.applicationModel.application.recentProjects[:5]
         )
         self.applicationModel.Save()
+        self.applicationModel.RecentProjectsSignal.Emit(
+            self.applicationModel.application
+        )

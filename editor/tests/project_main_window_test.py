@@ -20,6 +20,10 @@ def test_create_new_project(
     qtbot.addWidget(mainWindow)
     mainWindow.show()
 
+    assert (
+        mainWindow.viewModel.RecentProjects == []
+    ), "There should be no recent projects."
+
     mainWindow.ui.newProjectAction.trigger()
 
     mainWindow.newProjectDialog.ui.projectNameInput.setText("TestProject")
@@ -33,6 +37,9 @@ def test_create_new_project(
         projectDir=os.getcwd(),
         projectName="TestProject",
     ).Assert()
+
+    # ----- Recents project has been updated -----
+    assert len(mainWindow.viewModel.RecentProjects) == 1
 
 
 def test_existed_application(
@@ -114,3 +121,23 @@ def test_only_five_recent_projects(
             "Project2",
         ],
     ).Assert()
+
+
+def test_auto_load_recent_projects(
+    qtbot: QtBot,
+    uiConfig: None,
+    fs: FakeFilesystem,
+) -> None:
+    EnvironmentBuilder().AddApplication(
+        ApplicationBuilder().AddRecentProject("Project2").AddRecentProject("Project1")
+    ).AddProject(ProjectBuilder("Project1")).AddProject(
+        ProjectBuilder("Project2")
+    ).Build()
+
+    mainWindow = GetObject(ProjectMainWindow)
+    qtbot.addWidget(mainWindow)
+    mainWindow.show()
+
+    assert mainWindow.windowTitle() == "Project - Project2"
+    assert len(mainWindow.viewModel.RecentProjects) == 2
+    assert len(mainWindow.ui.recentProjectsMenu.actions()) == 2
