@@ -94,3 +94,7 @@ class ProjectMainWindowViewModel:
         self.projectStateModel.IsProjectLoaded = True
 
         self.ProjectNameSignal.Emit(self.ProjectName)
+
+        # ==== Update recent projects ====
+        self.applicationModel.application.recentProjects.insert(0, fullPath)
+        self.applicationModel.Save()

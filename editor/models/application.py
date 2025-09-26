@@ -62,10 +62,7 @@ class ApplicationModel:
             os.makedirs(self.appFolder)
             logger.info(f"Created application folder at {self.appFolder}")
 
-        appFile = os.path.join(self.appFolder, APPLICATION_FILE_NAME)
-        if not os.path.exists(appFile):
-            with open(appFile, "w") as f:
-                f.write(json.dumps(asdict(Application()), indent=4))
+            self.Save()
 
     def Load(self) -> None:
         """
@@ -76,3 +73,11 @@ class ApplicationModel:
                 data_class=Application,
                 data=json.load(f),
             )
+
+    def Save(self) -> None:
+        """
+        Save the application data to the file.
+        """
+        with open(self.appFile, "w") as f:
+            f.write(json.dumps(asdict(self.application), indent=4))
+        self.RecentProjectsSignal.Emit(None)

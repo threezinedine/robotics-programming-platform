@@ -38,6 +38,9 @@ class ApplicationAssert(Assert):
                 self.recentProjects
             ), f"Expected {len(self.recentProjects)} recent projects, got {len(appModel.recentProjects)}"
 
-            assert set(appModel.recentProjects) == set(
-                self.recentProjects
-            ), f"Recent projects do not match. Expected {self.recentProjects}, got {appModel.recentProjects}"
+            for recentProject, expected in zip(
+                set(appModel.recentProjects), set(self.recentProjects)
+            ):
+                assert recentProject.endswith(
+                    expected
+                ), f"Expected recent project {expected}, got {recentProject}"

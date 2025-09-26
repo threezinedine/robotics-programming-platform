@@ -27,7 +27,7 @@ def test_create_new_project(
 
     assert mainWindow.windowTitle() == "Project - TestProject"
 
-    ApplicationAssert().Assert()
+    ApplicationAssert(recentProjects=["TestProject"]).Assert()
 
     ProjectDescriptionAssert(
         projectDir=os.getcwd(),
