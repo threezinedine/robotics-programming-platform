@@ -14,26 +14,14 @@ set(CMAKE_FOLDER "Custom")
 find_package(Python REQUIRED)
 
 # trick for always running autogen when building
-set(TIMESTAMP_FILE ${CMAKE_CURRENT_BINARY_DIR}/autogen_timestamp.txt)
-add_custom_command(
-    OUTPUT ${TIMESTAMP_FILE}
-    COMMAND ${CMAKE_COMMAND} -E touch ${TIMESTAMP_FILE}
-)
-
 set(BINDING_FILE ${RPP_BASE_DIR}/libraries/tmp/binding.cpp)
 set(WRITER_FILE ${RPP_BASE_DIR}/libraries/tmp/writer_output.cpp)
 
-add_custom_command(
-    OUTPUT ${BINDING_FILE}
+add_custom_target(
+    Autogen ALL
     COMMAND ${Python_EXECUTABLE} ${RPP_BASE_DIR}/config.py -p autogen run
-    COMMAND ${CMAKE_COMMAND} -E touch ${TIMESTAMP_FILE}
     WORKING_DIRECTORY ${RPP_BASE_DIR}
-    DEPENDS ${TIMESTAMP_FILE}
     COMMENT "Running autogen..."
-)
-
-add_custom_target(Autogen ALL
-    DEPENDS ${BINDING_FILE} ${TIMESTAMP_FILE}
 )
 
 # -------------- Subdirectories --------------
