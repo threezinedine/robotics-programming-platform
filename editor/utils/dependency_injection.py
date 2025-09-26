@@ -32,7 +32,7 @@ class DependencyInjection:
 
     @staticmethod
     def RegisterSingleton(
-        className: Callable[..., T] | Any,
+        className: type[T] | T,
         name: str | None = None,
         *args: Any,
         **kwargs: Any,
@@ -55,8 +55,14 @@ class DependencyInjection:
             The keyword arguments to pass to the class constructor.
         """
 
-        if name is None:
-            name = className.__name__
+        finalName = ""
+
+        if name is not None:
+            finalName = name
+        elif isinstance(className, type):
+            finalName = className.__name__
+        else:
+            raise ValueError("name must be provided if className is not a class type.")
 
         if (
             name in DependencyInjection._singletons
@@ -67,11 +73,11 @@ class DependencyInjection:
             )
 
         if not isinstance(className, type):
-            DependencyInjection._singletons[name] = (
+            DependencyInjection._singletons[finalName] = (
                 className  # directly register the instance
             )
         else:
-            DependencyInjection._singletonFactories[name] = (
+            DependencyInjection._singletonFactories[finalName] = (
                 lambda dependencies: className(*dependencies, *args, **kwargs)
             )
 
@@ -123,8 +129,8 @@ def Depend(*dependencies: Any) -> Any:
 
 
 def AsSingleton(
-    classType: Any,
-    interfaceType: Any | None = None,
+    classType: type[U] | U,
+    interfaceType: type[T] | None = None,
     *args: Any,
     **kwargs: Any,
 ) -> None:
@@ -134,8 +140,22 @@ def AsSingleton(
     register all singletons.
     """
 
-    registerName = (
-        interfaceType.__name__ if interfaceType is not None else classType.__name__
-    )
+    registerName = ""
+
+    if interfaceType is not None:
+        registerName = interfaceType.__name__
+    elif isinstance(classType, type):
+        registerName = classType.__name__
+    else:
+        raise ValueError(
+            "classType must be a class type or interface type must be provided."
+        )
 
     DependencyInjection.RegisterSingleton(classType, registerName, *args, **kwargs)
+
+
+def GetObject(interfaceType: type[T]) -> T:
+    """
+    Simple wrapper for easily retrieving a singleton object by its interface type.
+    """
+    return DependencyInjection.GetSingleton(interfaceType.__name__)  # type: ignore

@@ -1,6 +1,6 @@
 from typing import Generator
 import pytest  # type: ignore
-from utils import DependencyInjection, Depend
+from utils import DependencyInjection, Depend, AsSingleton, GetObject
 
 
 class SingletonObject:
@@ -39,10 +39,12 @@ def setup() -> Generator[None, None, None]:
     # Reset the singleton registry before each test
     DependencyInjection._singletons = {}  # type: ignore
     SingletonObject.numberOfCount = 0
+    DependentSingleton.numberOfCount = 0
     yield
     # Cleanup after test
     DependencyInjection._singletons = {}  # type: ignore
     SingletonObject.numberOfCount = 0
+    DependentSingleton.numberOfCount = 0
 
 
 def test_register_singleton(setup: None) -> None:
@@ -137,3 +139,21 @@ def test_register_singleton_using_object(setup: None) -> None:
     assert (
         retrieved_obj.value == 30
     ), "The retrieved singleton should have the value of 30."
+
+
+def test_register_via_wrapper(setup: None) -> None:
+    AsSingleton(SingletonObject, value=42)
+    AsSingleton(DependentSingleton)
+
+    assert (
+        SingletonObject.numberOfCount == 0
+    ), "Count should be 0 since no singleton instance should have been created yet."
+
+    dependent = GetObject(DependentSingleton)
+    assert dependent is not None, "Dependent singleton should not be None."
+    assert (
+        DependentSingleton.numberOfCount == 1
+    ), "Count should be 1 since one dependent singleton instance should have been created."
+    assert (
+        SingletonObject.numberOfCount == 1
+    ), "Count should be 1 since one singleton instance should have been created."
