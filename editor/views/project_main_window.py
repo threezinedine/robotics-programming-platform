@@ -1,12 +1,14 @@
 import os
+import json
 from utils.logger import logger  # type: ignore
-from constants import PROJECT_FILE_NAME
+from constants import PROJECT_FILE_NAME, APPLICATION_FOLDER_NAME, APPLICATION_FILE_NAME
 from Engine import Project, ProjectDescription, ToString_ProjectDescription
 from PyQt6.QtWidgets import QMainWindow
 from converted_uis.project_main_window_ui import Ui_StartMainWindow
 from components.dialogs import NewProjectDialog, NewProjectDialogViewModel
 from utils.dependency_injection import Depend, GetObject
-from models import ProjectStateModel
+from models import ProjectStateModel, Application
+from dataclasses import asdict
 from utils.signal import Signal
 
 
@@ -45,6 +47,9 @@ class ProjectMainWindow(QMainWindow):
         self.ui = Ui_StartMainWindow()
         self.ui.setupUi(self)  # type: ignore
 
+        # Setting up the application
+        self._LoadApplicationData()
+
         self.newProjectDialog = GetObject(NewProjectDialog, parent=self)
 
         self._SetupUI()
@@ -55,6 +60,20 @@ class ProjectMainWindow(QMainWindow):
         self.viewModel.ProjectNameSignal.Emit(None)
 
         self.newProjectDialog.viewModel.SetOnConfirm(self._OnConfirmNewProjectCallback)
+
+    def _LoadApplicationData(self) -> None:
+        logger.debug("Loading application data...")
+        appdataFolder = os.getenv("APPDATA")
+        assert appdataFolder is not None, "APPDATA environment variable is not set."
+        appFolder = os.path.join(appdataFolder, APPLICATION_FOLDER_NAME)
+        if not os.path.exists(appFolder):
+            os.makedirs(appFolder)
+            logger.info(f"Created application folder at {appFolder}")
+
+        appFile = os.path.join(appFolder, APPLICATION_FILE_NAME)
+        if not os.path.exists(appFile):
+            with open(appFile, "w") as f:
+                f.write(json.dumps(asdict(Application()), indent=4))
 
     def _UpdateProjectName(self, projectName: str) -> None:
         logger.debug(f"Project name updated to {self.viewModel.ProjectName}")

@@ -1,5 +1,6 @@
 click==8.3.0
 colorama==0.4.6
+dacite==1.9.2
 darkdetect==0.7.1
 iniconfig==2.1.0
 packaging==25.0

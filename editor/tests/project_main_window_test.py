@@ -4,7 +4,7 @@ from pytestqt.qtbot import QtBot
 from views.project_main_window import ProjectMainWindow
 from utils.dependency_injection import GetObject
 from pyfakefs.fake_filesystem import FakeFilesystem
-from tests.utils import ProjectDescriptionAssert
+from tests.utils import ProjectDescriptionAssert, ApplicationAssert
 
 
 def test_create_new_project(
@@ -23,6 +23,8 @@ def test_create_new_project(
     mainWindow.newProjectDialog.ui.buttonBox.accepted.emit()
 
     assert mainWindow.windowTitle() == "Project - TestProject"
+
+    ApplicationAssert().Assert()
 
     ProjectDescriptionAssert(
         projectDir=os.getcwd(),
