@@ -25,6 +25,12 @@ class DependencyInjection:
     injection between singletons.
     """
 
+    _transientsFactories: dict[str, Callable[[list[Any]], Any]] = {}
+    """
+    Used for creating transient objects, suitable for dependency injection
+    between transients or between transients and singletons.
+    """
+
     _dependencies: dict[str, list[Any]] = {}
     """
     Storing all dependent objects from the class name to the list of dependencies.
@@ -82,7 +88,34 @@ class DependencyInjection:
             )
 
     @staticmethod
-    def GetSingleton(name: str) -> Any:
+    def RegisterTransient(
+        className: type[T],
+        name: str | None = None,
+        *args: Any,
+        **kwargs: Any,
+    ) -> None:
+        """
+        Registers a transient object with the dependency injection container. The
+        object will be created every time it is requested.
+
+        Parameters
+        ----------
+        cls : Callable[..., T]
+            The class to register
+        """
+        name = className.__name__ if name is None else name
+
+        if name in DependencyInjection._transientsFactories:
+            logger.warning(
+                f"Transient '{name}' is already registered. Overwriting existing instance."
+            )
+
+        DependencyInjection._transientsFactories[name] = lambda dependencies: className(
+            *dependencies, *args, **kwargs
+        )
+
+    @staticmethod
+    def GetObject(name: str) -> Any:
         """
         Retrieves the existed singleton object from the dependency injection
         container. If the singleton has not been registered, raises an error.
@@ -94,13 +127,28 @@ class DependencyInjection:
                 []
                 if name not in DependencyInjection._dependencies
                 else [
-                    DependencyInjection.GetSingleton(dep.__name__)
+                    DependencyInjection.GetObject(dep.__name__)
                     for dep in DependencyInjection._dependencies[name]
                 ]
             )
 
             instance = factory(dependencies)
             DependencyInjection._singletons[name] = instance
+            return instance
+
+        if name in DependencyInjection._transientsFactories:
+            factory = DependencyInjection._transientsFactories[name]
+
+            dependencies = (
+                []
+                if name not in DependencyInjection._dependencies
+                else [
+                    DependencyInjection.GetObject(dep.__name__)
+                    for dep in DependencyInjection._dependencies[name]
+                ]
+            )
+
+            instance = factory(dependencies)
             return instance
 
         instance = DependencyInjection._singletons.get(name)
@@ -154,8 +202,26 @@ def AsSingleton(
     DependencyInjection.RegisterSingleton(classType, registerName, *args, **kwargs)
 
 
+def AsTransient(
+    classType: type[U],
+    interfaceType: type[T] | None = None,
+    *args: Any,
+    **kwargs: Any,
+) -> None:
+    """
+    Simple wrapper for easily registering a class as a transient object without
+    any dependencies. Used this method manually at the beginning of the program
+    to register all transient objects.
+    """
+    registerName = (
+        classType.__name__ if interfaceType is None else interfaceType.__name__
+    )
+
+    DependencyInjection.RegisterTransient(classType, registerName, *args, **kwargs)
+
+
 def GetObject(interfaceType: type[T]) -> T:
     """
     Simple wrapper for easily retrieving a singleton object by its interface type.
     """
-    return DependencyInjection.GetSingleton(interfaceType.__name__)  # type: ignore
+    return DependencyInjection.GetObject(interfaceType.__name__)  # type: ignore

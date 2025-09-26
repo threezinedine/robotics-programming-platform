@@ -1,6 +1,12 @@
 from typing import Generator
 import pytest  # type: ignore
-from utils import DependencyInjection, Depend, AsSingleton, GetObject
+from utils import (
+    DependencyInjection,
+    Depend,
+    AsSingleton,
+    GetObject,
+    AsTransient,
+)
 
 
 class SingletonObject:
@@ -34,6 +40,18 @@ class DependentSingleton:
         self.singleton = singleton
 
 
+class TransientObject:
+    """
+    A transient object which is not a singleton.
+    """
+
+    numberOfCount: int = 0
+
+    def __init__(self, value: int) -> None:
+        self.value = value
+        TransientObject.numberOfCount += 1
+
+
 @pytest.fixture
 def setup() -> Generator[None, None, None]:
     # Reset the singleton registry before each test
@@ -58,7 +76,7 @@ def test_register_singleton(setup: None) -> None:
         SingletonObject.numberOfCount == 0
     ), "Count should still be 0 since no singleton instance should have been created yet."
 
-    obj1 = DependencyInjection.GetSingleton(
+    obj1 = DependencyInjection.GetObject(
         SingletonObject.__name__
     )  # only create singleton object at the first time is called
 
@@ -70,7 +88,7 @@ def test_register_singleton(setup: None) -> None:
         obj1.value == 5
     ), "Singleton object should have been initialized with value 5."
 
-    obj2 = DependencyInjection.GetSingleton(SingletonObject.__name__)
+    obj2 = DependencyInjection.GetObject(SingletonObject.__name__)
     assert obj1 is obj2, "Both singleton objects should be the same instance."
     assert (
         SingletonObject.numberOfCount == 1
@@ -88,7 +106,7 @@ def test_register_existed_singleton(setup: None) -> None:
     DependencyInjection.RegisterSingleton(int, SingletonObject.__name__, 20)
     DependencyInjection.RegisterSingleton(SingletonObject, value=10)
 
-    obj = DependencyInjection.GetSingleton(SingletonObject.__name__)
+    obj = DependencyInjection.GetObject(SingletonObject.__name__)
     assert obj is not None, "Singleton object should not be None."
     assert (
         SingletonObject.numberOfCount == 1
@@ -103,7 +121,7 @@ def test_add_dependency_between_singletons(setup: None) -> None:
     DependencyInjection.RegisterSingleton(SingletonObject, value=15)
     DependencyInjection.RegisterSingleton(DependentSingleton)
 
-    dependent = DependencyInjection.GetSingleton(DependentSingleton.__name__)
+    dependent = DependencyInjection.GetObject(DependentSingleton.__name__)
 
     assert dependent is not None, "Dependent singleton should not be None."
     assert (
@@ -121,7 +139,7 @@ def test_add_dependency_between_singletons(setup: None) -> None:
 
 def test_get_non_existent_singleton(setup: None) -> None:
     with pytest.raises(ValueError):
-        DependencyInjection.GetSingleton("NonExistentSingleton")
+        DependencyInjection.GetObject("NonExistentSingleton")
 
 
 def test_register_singleton_using_object(setup: None) -> None:
@@ -132,7 +150,7 @@ def test_register_singleton_using_object(setup: None) -> None:
         SingletonObject.numberOfCount == 1
     ), "Count should be 1 since one singleton instance should have been created."
 
-    retrieved_obj = DependencyInjection.GetSingleton(SingletonObject.__name__)
+    retrieved_obj = DependencyInjection.GetObject(SingletonObject.__name__)
     assert (
         retrieved_obj is obj
     ), "The retrieved singleton should be the same as the registered object."
@@ -174,3 +192,14 @@ def test_wrapper_with_object_no_interface(setup: None) -> None:
     obj = SingletonObject(value=55)
     with pytest.raises(ValueError):
         AsSingleton(obj)  # No interfaceType provided and obj is not a class type
+
+
+def test_wrapper_with_transient(setup: None) -> None:
+    AsTransient(TransientObject, value=100)
+
+    GetObject(TransientObject)
+    GetObject(TransientObject)
+
+    assert (
+        TransientObject.numberOfCount == 2
+    ), "Count should be 2 since two transient instances should have been created."
