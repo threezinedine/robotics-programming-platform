@@ -9,7 +9,12 @@ class NewProjectDialogViewModel:
     The view model for the NewProjectDialog.
     """
 
-    pass
+    def __init__(self) -> None:
+        self._projectName: str = ""
+
+    @property
+    def ProjectName(self) -> str:
+        return self._projectName
 
 
 @Depend(NewProjectDialogViewModel)
