@@ -59,3 +59,18 @@ def test_attach_with_another_signal():
     signal2.Emit(1)
 
     functionCallback.assert_called_once_with(1)
+
+
+def test_emit_with_circular_signal():
+    functionCallback = Mock()
+
+    signal1 = Signal()
+    signal2 = Signal()
+
+    signal1.Attach(functionCallback)
+    signal1.Attach(signal2)
+    signal2.Attach(signal1)
+
+    signal1.Emit(1)
+
+    functionCallback.assert_called_once_with(1)

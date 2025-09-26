@@ -16,9 +16,13 @@ class Signal:
         else:
             self._callbacks.append(callback)
 
-    def Emit(self, data: Any) -> None:
+    def Emit(self, data: Any, emittedSignals: set["Signal"] = set()) -> None:
+        emittedSignals.add(self)
+
         for signal in self._signals:
-            signal.Emit(data)
+            if signal in emittedSignals:
+                continue
+            signal.Emit(data, emittedSignals | {signal})
 
         for callback in self._callbacks:
             callback(data)
