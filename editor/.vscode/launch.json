@@ -1,0 +1,17 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Editor Test",
+            "type": "debugpy",
+            "request": "launch",
+            "python": "${workspaceFolder}/venv/Scripts/python.exe",
+            "program": "${workspaceFolder}/venv/Scripts/pytest.exe",
+            "args": [
+                "-k",
+                "test_register_singleton_using_object",
+            ],
+            "cwd": "${workspaceFolder}",
+        }
+    ]
+}

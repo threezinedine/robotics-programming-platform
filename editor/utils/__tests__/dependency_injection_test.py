@@ -120,3 +120,20 @@ def test_add_dependency_between_singletons(setup: None) -> None:
 def test_get_non_existent_singleton(setup: None) -> None:
     with pytest.raises(ValueError):
         DependencyInjection.GetSingleton("NonExistentSingleton")
+
+
+def test_register_singleton_using_object(setup: None) -> None:
+    obj = SingletonObject(value=30)
+    DependencyInjection.RegisterSingleton(obj, SingletonObject.__name__)
+
+    assert (
+        SingletonObject.numberOfCount == 1
+    ), "Count should be 1 since one singleton instance should have been created."
+
+    retrieved_obj = DependencyInjection.GetSingleton(SingletonObject.__name__)
+    assert (
+        retrieved_obj is obj
+    ), "The retrieved singleton should be the same as the registered object."
+    assert (
+        retrieved_obj.value == 30
+    ), "The retrieved singleton should have the value of 30."

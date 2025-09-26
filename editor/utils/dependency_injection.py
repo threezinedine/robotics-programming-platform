@@ -32,7 +32,7 @@ class DependencyInjection:
 
     @staticmethod
     def RegisterSingleton(
-        className: Callable[..., T],
+        className: Callable[..., T] | Any,
         name: str | None = None,
         *args: Any,
         **kwargs: Any,
@@ -66,9 +66,14 @@ class DependencyInjection:
                 f"Singleton '{name}' is already registered. Overwriting existing instance."
             )
 
-        DependencyInjection._singletonFactories[name] = lambda dependencies: className(
-            *dependencies, *args, **kwargs
-        )
+        if not isinstance(className, type):
+            DependencyInjection._singletons[name] = (
+                className  # directly register the instance
+            )
+        else:
+            DependencyInjection._singletonFactories[name] = (
+                lambda dependencies: className(*dependencies, *args, **kwargs)
+            )
 
     @staticmethod
     def GetSingleton(name: str) -> Any:
@@ -115,3 +120,22 @@ def Depend(*dependencies: Any) -> Any:
         return className
 
     return wrapper
+
+
+def AsSingleton(
+    classType: Any,
+    interfaceType: Any | None = None,
+    *args: Any,
+    **kwargs: Any,
+) -> None:
+    """
+    Simple wrapper for easily registering a class as a singleton without any
+    dependencies. Used this method manually at the beginning of the program to
+    register all singletons.
+    """
+
+    registerName = (
+        interfaceType.__name__ if interfaceType is not None else classType.__name__
+    )
+
+    DependencyInjection.RegisterSingleton(classType, registerName, *args, **kwargs)
