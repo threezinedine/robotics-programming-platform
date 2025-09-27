@@ -65,7 +65,13 @@ def Parse(
     index = clang.cindex.Index.create()
     translationUnit: TranslationUnit = index.parse(
         finalInput,
-        args=["-x", "c++", "-std=c++17", "-I../libraries/core/include"],
+        args=[
+            "-x",
+            "c++",
+            "-std=c++17",
+            "-I../libraries/core/include",
+            "-I../libraries/modules/include",
+        ],
         unsaved_files=(
             [
                 (
