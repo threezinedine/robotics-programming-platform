@@ -13,9 +13,9 @@ namespace rpp
     {
     }
 
-    Renderer::Renderer(u32 width, u32 height, const char *title)
+    Renderer::Renderer(u32 width, u32 height, const String &title)
     {
-        m_window = Graphics::CreateWindow(width, height, title);
+        m_window = Graphics::CreateWindow(width, height, title.CStr());
         m_rendererId = s_currentRenderers.Size();
         s_currentRenderers.Push(this);
         s_currentRendererIndex = m_rendererId;
@@ -28,6 +28,7 @@ namespace rpp
 
     void Renderer::Initialize()
     {
+        RPP_LOG_INFO("Initializing the rendering system");
         if (!Graphics::Init())
         {
             throw std::runtime_error("Failed to initialize graphics backend");
@@ -39,6 +40,7 @@ namespace rpp
         s_currentRenderers.Clear();
         s_currentRenderers.~Array();
         Graphics::Shutdown();
+        RPP_LOG_INFO("Rendering system shutdown complete");
     }
 
     void Renderer::Active()

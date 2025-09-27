@@ -102,7 +102,7 @@ def Generate(
         params: list[str] = []
 
         for param in method.parameters:
-            params.append(typeMap.Convert(param.type))
+            params.append(param.type)
         return ", ".join(params)
 
     def IsContainsJsonKeyAnnotation(obj: PyObject) -> str:

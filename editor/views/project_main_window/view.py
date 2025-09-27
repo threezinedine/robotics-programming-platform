@@ -1,5 +1,6 @@
 import os
 from PyQt6.QtWidgets import QMainWindow
+from PyQt6.QtGui import QCloseEvent
 from PyQt6.QtGui import QAction
 from converted_uis.project_main_window_ui import Ui_StartMainWindow
 from components.dialogs import NewProjectDialog
@@ -8,6 +9,7 @@ from utils.dependency_injection import Depend, GetObject
 from utils.logger import logger  # type: ignore
 from .view_model import ProjectMainWindowViewModel
 from functools import partial
+from Engine import Renderer
 
 
 @Depend(ProjectMainWindowViewModel)
@@ -26,6 +28,7 @@ class ProjectMainWindow(QMainWindow):
         self.newProjectDialog = GetObject(NewProjectDialog, parent=self)
         self.recentProjectsActions: list[QAction] = []
 
+        Renderer.Initialize()
         self._SetupUI()
 
         # Setting up the application
@@ -61,3 +64,7 @@ class ProjectMainWindow(QMainWindow):
 
     def _CreateNewFunction(self) -> None:
         self.viewModel.CreateNewFunction()
+
+    def closeEvent(self, a0: QCloseEvent) -> None:
+        logger.info("Closing the main window")
+        Renderer.Shutdown()
