@@ -285,3 +285,66 @@ std::string RPP_PYTHON_BINDING GetGreeting(const std::string& name);
         ],
         annotations=["python"],
     ).Assert(result["functions"][0])
+
+
+def test_parse_constructor():
+    result = WrapperParse(
+        """
+class RPP_PYTHON_BINDING MyClass {
+public:
+    MyClass();
+    MyClass(int value);
+    MyClass(const std::string& name, int value = 0);
+    MyClass(const MyClass& other);
+
+    void DoSomething();
+};
+""",
+        ["string"],
+    )
+
+    assert "classes" in result
+    assert isinstance(result["classes"], list)
+    assert len(result["classes"]) == 1
+
+    ClassAssert(
+        name="MyClass",
+        constructors=[
+            MethodAssert(
+                name="MyClass",
+                returnType="void",
+                access="public",
+                parameters=[],
+            ),
+            MethodAssert(
+                name="MyClass",
+                returnType="void",
+                access="public",
+                parameters=[
+                    ParameterAssert(name="value", type="int"),
+                ],
+            ),
+            MethodAssert(
+                name="MyClass",
+                returnType="void",
+                access="public",
+                parameters=[
+                    ParameterAssert(name="name", type="const std::string &"),
+                    ParameterAssert(
+                        name="value",
+                        type="int",
+                        hasDefaultValue=True,
+                    ),
+                ],
+            ),
+        ],
+        methods=[
+            MethodAssert(
+                name="DoSomething",
+                returnType="void",
+                access="public",
+                parameters=[],
+            ),
+        ],
+        annotations=["python"],
+    ).Assert(result["classes"][0])

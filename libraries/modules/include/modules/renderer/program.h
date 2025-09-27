@@ -3,8 +3,6 @@
 
 namespace rpp
 {
-    class Renderer;
-
     /**
      * @brief Each graphics pipeline is represented by a Program object, which encapsulates the vertex and fragment shaders (maybe include compute shaders).
      * The Program class is responsible for compiling, linking, and managing the lifecycle of the shader program.

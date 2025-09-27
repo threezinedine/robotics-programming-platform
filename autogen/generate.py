@@ -96,6 +96,15 @@ def Generate(
                 params.append(f"{param.name}")
         return ", ".join(params)
 
+    def MethodParametersTypeList(method: PyObject) -> str:
+        assert isinstance(method, PyFunction)
+
+        params: list[str] = []
+
+        for param in method.parameters:
+            params.append(typeMap.Convert(param.type))
+        return ", ".join(params)
+
     def IsContainsJsonKeyAnnotation(obj: PyObject) -> str:
         keyNamePrefix = "key:"
         for annotation in obj.annotations:
@@ -117,6 +126,7 @@ def Generate(
     template.globals["methodParametersCall"] = MethodParametersCall
     template.globals["objectComment"] = ObjectComment
     template.globals["isContainsJsonKeyAnnotation"] = IsContainsJsonKeyAnnotation
+    template.globals["methodParametersTypeList"] = MethodParametersTypeList
     template.globals["allJsonMappedClasses"] = allJsonMappedClasses
 
     return template.render(**parser)

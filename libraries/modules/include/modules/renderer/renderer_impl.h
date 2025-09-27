@@ -8,16 +8,21 @@ namespace rpp
     /**
      * @brief Instance for working with drawing in 1 window (each window has its own renderer as 1-1 relation).
      */
-    class Renderer
+    class RPP_PYTHON_BINDING Renderer
     {
     public:
+        /**
+         * @brief Constructs a default renderer. The default width, height, and title of the window are 800, 600, and 'RPP Window' respectively.
+         */
+        Renderer();
+
         /**
          * @brief Constructs a renderer with a window of the specified width, height, and title.
          * @param width The width of the window.
          * @param height The height of the window.
          * @param title The title of the window.
          */
-        Renderer(u32 width, u32 height, const char *title);
+        Renderer(u32 width, u32 height, const String &title);
 
         Renderer(const Renderer &) = delete;
 
@@ -30,35 +35,35 @@ namespace rpp
         /**
          * @brief Initialize the rendering system, should be called once before using any rendering related features.
          */
-        static void Initialize();
+        static void Initialize() RPP_PYTHON_BINDING;
 
         /**
          * @brief Shutdown the rendering system, must be called once before exiting the application.
          */
-        static void Shutdown();
+        static void Shutdown() RPP_PYTHON_BINDING;
 
     public:
         /**
          * @brief Use each time before working with a specific window (if multiple windows are used). After this method is called,
          * all rendering commands will be directed to this window until another window's Active() method is called.
          */
-        void Active();
+        void Active() RPP_PYTHON_BINDING;
 
     public:
         /**
          * @brief Doing some operations which must be run before drawing. E.g., polling events, clearing the screen, etc.
          */
-        void PreDraw();
+        void PreDraw() RPP_PYTHON_BINDING;
 
         /**
          * @brief Doing some operations which must be run after drawing. E.g., post-processing, etc.
          */
-        void PostDraw();
+        void PostDraw() RPP_PYTHON_BINDING;
 
         /**
          * @brief Present the rendered image to the screen (swap buffers).
          */
-        void Present();
+        void Present() RPP_PYTHON_BINDING;
 
     public:
         /**

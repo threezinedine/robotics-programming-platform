@@ -324,14 +324,16 @@ class ClassAssert(IAssert):
     def __init__(
         self,
         name: str,
-        fields: list[FieldAssert] = [],
-        methods: list[MethodAssert] = [],
+        fields: list[FieldAssert] | None = None,
+        methods: list[MethodAssert] | None = None,
+        constructors: list[MethodAssert] | None = None,
         comment: str | None = None,
         annotations: list[str] | None = None,
     ) -> None:
         super().__init__(name, comment, annotations)
-        self.fields = fields
-        self.methods = methods
+        self.fields = fields if fields is not None else []
+        self.methods = methods if methods is not None else []
+        self.constructors = constructors if constructors is not None else []
 
     def _AssertImpl(self, obj: CStruct) -> None:
         assert isinstance(obj, PyClass), "The provided structure is not a class."
@@ -351,3 +353,10 @@ class ClassAssert(IAssert):
 
         for assertion, method in zip(self.methods, cls.methods):
             assertion.Assert(method)
+
+        assert len(cls.constructors) == len(
+            self.constructors
+        ), f"Expected {len(self.constructors)} constructors, but got {len(cls.constructors)}."
+
+        for assertion, constructor in zip(self.constructors, cls.constructors):
+            assertion.Assert(constructor)

@@ -1,3 +1,4 @@
+import pytest  # type: ignore
 from .utils import GenerateFuncType, AssertGenerateResult
 
 
@@ -66,7 +67,7 @@ public:
 
     expected = """
 py::class_<Timer>(m, "Timer", "The logging system (singleton class) that provides logging functionalities.")
-    .def(py::init<>())
+    .def(py::init<>(), "")
     .def("Start", &Timer::Start , "Start the timer" )
     .def("Elapsed", &Timer::Elapsed , "" );
 """
@@ -114,7 +115,7 @@ public:
 
     expected = """
 py::class_<MathUtils>(m, "MathUtils", "")
-    .def(py::init<>())
+    .def(py::init<>(), "")
     .def_static("add", &MathUtils::add , "" )
     .def_static("multiply", &MathUtils::multiply , "" );
 """
@@ -151,6 +152,26 @@ struct RPP_JSON Person {
     expected = """
 m.def("ToString_Person", &ToString<Person>, "");
 m.def("FromString_Person", &FromString<Person>, "");
+"""
+
+    AssertGenerateResult(expected, result)
+
+
+def test_bind_class_without_default_constructor(generateFunc: GenerateFuncType) -> None:
+    result = generateFunc(
+        """
+class RPP_PYTHON_BINDING NoDefaultConstructor {
+public:
+    NoDefaultConstructor(int value);
+};
+""",
+        "cpp_class_binding.j2",
+        [],
+    )
+
+    expected = """
+py::class_<NoDefaultConstructor>(m, "NoDefaultConstructor", "")
+    .def(py::init<int>(), "" );
 """
 
     AssertGenerateResult(expected, result)

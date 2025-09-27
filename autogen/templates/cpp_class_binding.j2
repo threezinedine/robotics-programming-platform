@@ -2,7 +2,12 @@
     {% if "python" in class.annotations %}
 py::class_<{{ class.name }}>(m, "{{ class.name }}", {% if class.comment-%} "{{class.comment}}" {% else %} "" {% endif %})
     {% if "singleton" not in class.annotations-%}
-    .def(py::init<>())
+    {% for constructor in class.constructors %}
+    .def(py::init<{{ methodParametersTypeList(constructor) }}>(), "{{objectComment(constructor, "")}}")
+    {%-endfor %}
+    {% if class.constructors|length == 0 %}
+    .def(py::init<>(), "")
+    {% endif %}
     {%-endif %}
     {% for method in class.methods -%}
     {% if "python" in method.annotations -%}

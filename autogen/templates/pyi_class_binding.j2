@@ -7,8 +7,18 @@ class {{ class.name }}:
     """
     {% endif %}
     {% if "singleton" not in class.annotations %}
+    {% for constructor in class.constructors %}
+    {% if class.constructors|length > 1 %}@overload{% endif %}
+    def __init__(self {% if constructor.parameters|length > 0 %},{% endif %} {%-for constructor in constructor.parameters-%} 
+            {{ constructor.name }} : {{ convertCppTypeToPyType(constructor.type) }} 
+            {%-if not loop.last %}, {% endif -%} 
+        {% endfor -%}) -> None:
+        ...
+    {% endfor %}
+    {% if class.constructors|length == 0 %}
     def __init__(self) -> None:
         ...
+    {% endif %}
     {% endif %}
         {% for method in class.methods-%}  
             {%-if "python" in method.annotations %}  

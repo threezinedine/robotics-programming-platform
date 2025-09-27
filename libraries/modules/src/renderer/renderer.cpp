@@ -8,6 +8,11 @@ namespace rpp
     u32 Renderer::s_currentRendererIndex = INVALID_RENDERER_INDEX;
     Array<Renderer *> Renderer::s_currentRenderers = Array<Renderer *>();
 
+    Renderer::Renderer()
+        : Renderer(800, 600, "RPP Window")
+    {
+    }
+
     Renderer::Renderer(u32 width, u32 height, const char *title)
     {
         m_window = Graphics::CreateWindow(width, height, title);

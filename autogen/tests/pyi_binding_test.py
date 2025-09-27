@@ -298,6 +298,60 @@ class Timer:
     AssertGenerateResult(expected, result)
 
 
+def test_bind_class_with_constructor_arguments(generateFunc: GenerateFuncType) -> None:
+    result = generateFunc(
+        """
+class RPP_PYTHON_BINDING Rectangle {
+public:
+    Rectangle(int width, int height) RPP_PYTHON_BINDING;
+
+    int area() const RPP_PYTHON_BINDING;
+};""",
+        "pyi_class_binding.j2",
+        [],
+    )
+
+    expected = """
+class Rectangle:
+    def __init__(self, width: int, height: int) -> None:
+        ...
+
+    def area(self) -> int:
+        ...
+"""
+    AssertGenerateResult(expected, result)
+
+
+def test_bind_multiple_constructors(generateFunc: GenerateFuncType) -> None:
+    result = generateFunc(
+        """
+class RPP_PYTHON_BINDING Rectangle {
+public:
+    Rectangle();
+    Rectangle(int width, int height);
+
+    int area() const RPP_PYTHON_BINDING;
+};""",
+        "pyi_class_binding.j2",
+        [],
+    )
+
+    expected = """
+class Rectangle:
+    @overload
+    def __init__(self) -> None:
+        ...
+
+    @overload
+    def __init__(self, width: int, height: int) -> None:
+        ...
+
+    def area(self) -> int:
+        ...
+"""
+    AssertGenerateResult(expected, result)
+
+
 def test_bind_function(generateFunc: GenerateFuncType) -> None:
     result = generateFunc(
         """
