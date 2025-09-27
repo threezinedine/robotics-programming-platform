@@ -57,6 +57,8 @@ target_compile_definitions(
 
 target_precompile_headers(${PROJECT_NAME} PUBLIC "include/core/common.h")
 
+RPPTargetDefines(${PROJECT_NAME})
+
 RPPFindPackage(rpp-googletest "Dependencies")
 
 # -------------- Test target --------------

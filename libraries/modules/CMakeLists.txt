@@ -53,6 +53,8 @@ target_compile_definitions(
     ${RPP_BUILD_TYPE_DEFINE}
 )
 
+RPPTargetDefines(${PROJECT_NAME})
+
 RPPFindPackage(rpp-googletest "Dependencies")
 
 # -------------- Test target --------------

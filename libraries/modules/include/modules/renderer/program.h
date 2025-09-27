@@ -7,7 +7,7 @@ namespace rpp
      * @brief Each graphics pipeline is represented by a Program object, which encapsulates the vertex and fragment shaders (maybe include compute shaders).
      * The Program class is responsible for compiling, linking, and managing the lifecycle of the shader program.
      */
-    class Program
+    class RPP_PYTHON_BINDING Program
     {
     public:
         /**
@@ -34,7 +34,7 @@ namespace rpp
         /**
          * @brief Use for activating the graphics pipeline (shader program) for rendering.
          */
-        void Use() const;
+        void Use() const RPP_PYTHON_BINDING;
 
     private:
         u32 m_programId; ///< The unique identifier for the program in the graphics API.

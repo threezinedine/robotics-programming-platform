@@ -15,6 +15,7 @@ namespace rpp
 
     Renderer::Renderer(u32 width, u32 height, const String &title)
     {
+        RPP_LOG_DEBUG("Creating renderer with window size {}x{} and title '{}'", width, height, title);
         m_window = Graphics::CreateWindow(width, height, title.CStr());
         m_rendererId = s_currentRenderers.Size();
         s_currentRenderers.Push(this);
@@ -23,6 +24,7 @@ namespace rpp
 
     Renderer::~Renderer()
     {
+        RPP_LOG_DEBUG("Destroying renderer with ID {}", m_rendererId);
         s_currentRenderers[m_rendererId] = nullptr;
     }
 
@@ -43,15 +45,7 @@ namespace rpp
         RPP_LOG_INFO("Rendering system shutdown complete");
     }
 
-    void Renderer::Active()
-    {
-        if (s_currentRendererIndex != m_rendererId)
-        {
-            s_currentRendererIndex = m_rendererId;
-        }
-    }
-
-    void Renderer::PreDraw()
+    void Renderer::PreDrawImpl()
     {
         // Main loop
         m_window->PollEvents();
@@ -62,22 +56,69 @@ namespace rpp
         m_window->ExecuteCommand(commandData);
     }
 
-    void Renderer::PostDraw()
+    void Renderer::PreDraw()
     {
+        GetCurrentRenderer()->PreDrawImpl();
     }
 
-    void Renderer::Present()
+    void Renderer::PostDraw()
+    {
+        GetCurrentRenderer()->PostDrawImpl();
+    }
+
+    void Renderer::PostDrawImpl()
+    {
+        // Placeholder for post-draw operations
+    }
+
+    void Renderer::PresentImpl()
     {
         GraphicsCommandData swapBuffersCommand = {GraphicsCommandType::SWAP_BUFFERS, nullptr};
         m_window->ExecuteCommand(swapBuffersCommand);
     }
 
-    Renderer &Renderer::GetCurrentRenderer()
+    void Renderer::Present()
+    {
+        GetCurrentRenderer()->PresentImpl();
+    }
+
+    Renderer *Renderer::GetCurrentRenderer()
     {
         if (s_currentRendererIndex == INVALID_RENDERER_INDEX || s_currentRendererIndex >= s_currentRenderers.Size())
         {
-            throw std::runtime_error("No active renderer available");
+            return nullptr;
         }
-        return *s_currentRenderers[s_currentRendererIndex];
+        return s_currentRenderers[s_currentRendererIndex];
+    }
+
+    u32 Renderer::CreateRenderer(u32 width, u32 height, const String &title)
+    {
+        new Renderer(width, height, title);
+        return s_currentRendererIndex;
+    }
+
+    void Renderer::ActivateRenderer(u32 renderId)
+    {
+        if (renderId >= s_currentRenderers.Size() || s_currentRenderers[renderId] == nullptr)
+        {
+            return;
+        }
+
+        s_currentRendererIndex = renderId;
+    }
+
+    void Renderer::DestroyRenderer(u32 renderId)
+    {
+        if (renderId >= s_currentRenderers.Size() || s_currentRenderers[renderId] == nullptr)
+        {
+            throw std::runtime_error("Invalid renderer ID");
+        }
+
+        delete s_currentRenderers[renderId];
+        s_currentRenderers[renderId] = nullptr;
+        if (s_currentRendererIndex == renderId)
+        {
+            s_currentRendererIndex = INVALID_RENDERER_INDEX;
+        }
     }
 } // namespace rpp

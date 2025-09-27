@@ -59,6 +59,9 @@ target_compile_definitions(
     ${RPP_BUILD_TYPE_DEFINE}
 )
 
+RPPTargetDefines(${PROJECT_NAME})
+
+
 # -------------- Test target --------------
 set(CMAKE_FOLDER "Tests")
 set(PROJECT_TEST_NAME ${PROJECT_NAME}_tests)

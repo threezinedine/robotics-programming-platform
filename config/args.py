@@ -73,9 +73,17 @@ class Args:
             help="The name of the packages to install",
         )
 
-        subparsers.add_parser(
+        buildPraser = subparsers.add_parser(
             "build",
             help="Build the specified project",
+        )
+
+        buildPraser.add_argument(
+            "-o",
+            "--options",
+            type=str,
+            nargs="+",
+            help="Additional options for the build process",
         )
 
         runSubParser = subparsers.add_parser(
@@ -206,3 +214,12 @@ class Args:
         if self.IsTest:
             return self.args.filter
         return None
+
+    @property
+    def BuildOptions(self) -> list[str]:
+        """
+        Returns additional options for the build process.
+        """
+        if self.IsBuild and self.args.options:
+            return self.args.options
+        return []

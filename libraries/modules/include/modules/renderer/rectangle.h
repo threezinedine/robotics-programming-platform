@@ -7,7 +7,7 @@ namespace rpp
     /**
      * @brief Simple instance which is used for rendering rectangles.
      */
-    class Rectangle : public Drawable
+    class RPP_PYTHON_BINDING Rectangle : public Drawable
     {
     public:
         /**
@@ -34,7 +34,7 @@ namespace rpp
         /**
          * @brief Draw the rectangle using the associated renderer.
          */
-        virtual void Draw() const override;
+        virtual void Draw() const override RPP_PYTHON_BINDING;
 
     private:
         f32 m_centerX;        ///< The x-coordinate of the rectangle's center.

@@ -1,3 +1,4 @@
+import os
 import sys
 from PyQt6.QtWidgets import QApplication
 import qdarktheme  # type: ignore
@@ -19,6 +20,7 @@ def main():
     StartupConfig()
 
     logger.info("Application started.")
+    logger.info(f"Current Working Thread ID: {os.getpid()}")
     app = QApplication(sys.argv)
     qdarktheme.setup_theme()
     mainWindow = GetObject(ProjectMainWindow)

@@ -11,6 +11,7 @@ def BuildProject(
     projectDir: str,
     projectType: str = "dev",
     recreate: bool = False,
+    buildOptions: list[str] | None = None,
 ) -> None:
     """
     Used for building C/C++ projects using CMake.
@@ -25,6 +26,9 @@ def BuildProject(
 
     recreate : bool, optional
         Whether to recreate the build directory if it already exists. Default is False.
+
+    buildOptions : list[str], optional
+        Additional options to pass to the CMake command during the build process.
     """
 
     absoluteProjectDir = os.path.join(Constants.ABSOLUTE_BASE_DIR, projectDir)
@@ -37,6 +41,11 @@ def BuildProject(
         logger.info(f"Recreating build directory '{buildDir}'...")
         shutil.rmtree(buildDir)
 
+    finalOptions: list[str] = []
+    if buildOptions:
+        for option in buildOptions:
+            finalOptions.append(f"-D{option}")
+
     try:
         logger.info(f"Building project in '{projectDir}'...")
         subprocess.run(
@@ -48,7 +57,8 @@ def BuildProject(
                 buildDir,
                 f"-G {makefile}",
                 f"-DCMAKE_BUILD_TYPE={cmakeBuildType}",
-            ],
+            ]
+            + finalOptions,
             check=True,
             shell=True,
             cwd=absoluteProjectDir,

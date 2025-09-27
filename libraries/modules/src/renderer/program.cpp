@@ -20,7 +20,7 @@ namespace rpp
         vertexShaderCommand.pShaderId = &vertexShaderId;
 
         GraphicsCommandData vertexShaderCommandData = {GraphicsCommandType::CREATE_SHADER, &vertexShaderCommand};
-        Renderer::GetCurrentRenderer().GetWindow()->ExecuteCommand(vertexShaderCommandData);
+        Renderer::GetCurrentRenderer()->GetWindow()->ExecuteCommand(vertexShaderCommandData);
 
         u32 fragmentShaderId = 0;
         CreateShaderCommandData fragmentShaderCommand = {};
@@ -30,7 +30,7 @@ namespace rpp
         fragmentShaderCommand.pShaderId = &fragmentShaderId;
 
         GraphicsCommandData fragmentShaderCommandData = {GraphicsCommandType::CREATE_SHADER, &fragmentShaderCommand};
-        Renderer::GetCurrentRenderer().GetWindow()->ExecuteCommand(fragmentShaderCommandData);
+        Renderer::GetCurrentRenderer()->GetWindow()->ExecuteCommand(fragmentShaderCommandData);
 
         CreatePipelineCommandData pipelineCommand = {};
         pipelineCommand.vertexShaderId = vertexShaderId;
@@ -38,20 +38,20 @@ namespace rpp
         pipelineCommand.pProgramId = &m_programId;
 
         GraphicsCommandData pipelineCommandData = {GraphicsCommandType::CREATE_PIPELINE, &pipelineCommand};
-        Renderer::GetCurrentRenderer().GetWindow()->ExecuteCommand(pipelineCommandData);
+        Renderer::GetCurrentRenderer()->GetWindow()->ExecuteCommand(pipelineCommandData);
 
         // After creating the pipeline, we can delete the individual shaders
         DeleteShaderCommandData deleteVertexShaderCommand = {};
         deleteVertexShaderCommand.shaderId = vertexShaderId;
 
         GraphicsCommandData deleteVertexShaderCommandData = {GraphicsCommandType::DELETE_SHADER, &deleteVertexShaderCommand};
-        Renderer::GetCurrentRenderer().GetWindow()->ExecuteCommand(deleteVertexShaderCommandData);
+        Renderer::GetCurrentRenderer()->GetWindow()->ExecuteCommand(deleteVertexShaderCommandData);
 
         DeleteShaderCommandData deleteFragmentShaderCommand = {};
         deleteFragmentShaderCommand.shaderId = fragmentShaderId;
 
         GraphicsCommandData deleteFragmentShaderCommandData = {GraphicsCommandType::DELETE_SHADER, &deleteFragmentShaderCommand};
-        Renderer::GetCurrentRenderer().GetWindow()->ExecuteCommand(deleteFragmentShaderCommandData);
+        Renderer::GetCurrentRenderer()->GetWindow()->ExecuteCommand(deleteFragmentShaderCommandData);
     }
 
     Program::~Program()
@@ -59,7 +59,7 @@ namespace rpp
         DeletePipelineCommandData deleteCommand = {};
         deleteCommand.programId = m_programId;
         GraphicsCommandData deleteCommandData = {GraphicsCommandType::DELETE_PIPELINE, &deleteCommand};
-        Renderer::GetCurrentRenderer().GetWindow()->ExecuteCommand(deleteCommandData);
+        Renderer::GetCurrentRenderer()->GetWindow()->ExecuteCommand(deleteCommandData);
     }
 
     void Program::Use() const
@@ -68,6 +68,6 @@ namespace rpp
         useCommand.programId = m_programId;
 
         GraphicsCommandData useCommandData = {GraphicsCommandType::USE_PIPELINE, &useCommand};
-        Renderer::GetCurrentRenderer().GetWindow()->ExecuteCommand(useCommandData);
+        Renderer::GetCurrentRenderer()->GetWindow()->ExecuteCommand(useCommandData);
     }
 } // namespace rpp

@@ -381,6 +381,8 @@ def RunPythonProject(
                     "-p",
                     "libraries",
                     "build",
+                    "--options",
+                    "RPP_EDITOR=ON",
                 ],
                 check=True,
                 shell=True,

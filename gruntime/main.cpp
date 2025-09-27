@@ -31,30 +31,33 @@ int main(void)
     Logging::GetInstance()->Setup(u8(HandlerType::CONSOLE), LogLevel::DEBUG);
     Renderer::Initialize();
 
+	u32 rendererId = Renderer::CreateRenderer(800, 600, "Test");
     {
-        Renderer renderer(800, 600, "RPP Window");
-
-        renderer.Active();
+        Renderer::ActivateRenderer(rendererId);
 
         Program program(vertexShaderSource, fragmentShaderSource);
 
         Rectangle rectangle(0.6f, 0.0f, 0.1f, 0.1f);
         Line line({-0.5f, -0.5f}, {0.5f, 0.5f});
 
-        while (!renderer.GetWindow()->ShouldWindowClose())
+        while (!Renderer::GetCurrentRenderer()->GetWindow()->ShouldWindowClose())
         {
-            renderer.PreDraw();
+            Renderer::ActivateRenderer(rendererId);
+            Renderer::PreDraw();
 
             program.Use();
             rectangle.Draw();
 
             line.Draw();
 
-            renderer.PostDraw();
-            renderer.Present();
+            Renderer::PostDraw();
+
+            Renderer::Present();
         }
+
     }
 
+	Renderer::DestroyRenderer(rendererId);
     Renderer::Shutdown();
     SingletonManager::Shutdown();
     return 0;

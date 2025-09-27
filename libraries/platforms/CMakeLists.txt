@@ -1,3 +1,4 @@
+include(RPPUtils_Config)
 project(RPPPlatforms)
 
 file(
@@ -28,6 +29,8 @@ target_compile_definitions(
     ${RPP_PLATFORM_DEFINES}
     ${RPP_BUILD_TYPE_DEFINE}
 )
+
+RPPTargetDefines(${PROJECT_NAME})
 
 if (RPP_PLATFORM_NAME STREQUAL "Windows" OR RPP_PLATFORM_NAME STREQUAL "Linux" OR RPP_PLATFORM_NAME STREQUAL "MacOS")
     RPPFindPackage(rpp-glfw "Dependencies")

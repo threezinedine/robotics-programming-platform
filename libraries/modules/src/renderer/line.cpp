@@ -3,6 +3,11 @@
 
 namespace rpp
 {
+    Line::Line()
+        : Line({0.0f, 0.0f}, {1.0f, 1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}) // Default line from (0,0) to (1,1) with white color
+    {
+    }
+
     Line::Line(const Point &start, const Point &end)
         : Line(start, end, {1.0f, 1.0f, 1.0f, 1.0f}) // Default color is white
     {
@@ -29,7 +34,7 @@ namespace rpp
         command.type = VertexBufferType::LINE;
 
         GraphicsCommandData commandData = {GraphicsCommandType::CREATE_VERTEX_BUFFER, &command};
-        Renderer::GetCurrentRenderer().GetWindow()->ExecuteCommand(commandData);
+        Renderer::GetCurrentRenderer()->GetWindow()->ExecuteCommand(commandData);
     }
 
     Line::~Line()
@@ -38,7 +43,7 @@ namespace rpp
         command.pBufferId = &m_vertexBufferId;
         command.pArrayId = &m_vertexArrayId;
         GraphicsCommandData commandData = {GraphicsCommandType::DELETE_VERTEX_BUFFER, &command};
-        Renderer::GetCurrentRenderer().GetWindow()->ExecuteCommand(commandData);
+        Renderer::GetCurrentRenderer()->GetWindow()->ExecuteCommand(commandData);
     }
 
     void Line::Draw() const
@@ -49,6 +54,6 @@ namespace rpp
         command.count = 2;
 
         GraphicsCommandData commandData = {GraphicsCommandType::DRAW_VERTEX_BUFFER, &command};
-        Renderer::GetCurrentRenderer().GetWindow()->ExecuteCommand(commandData);
+        Renderer::GetCurrentRenderer()->GetWindow()->ExecuteCommand(commandData);
     }
 } // namespace rpp

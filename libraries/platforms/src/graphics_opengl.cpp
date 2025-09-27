@@ -101,8 +101,12 @@ namespace rpp
     Window::Window(u32 width, u32 height, const char *title)
         : m_width(width), m_height(height), m_title(title)
     {
+#if defined(RPP_EDITOR)
+        m_window = nullptr;
+#else
         m_window = glfwCreateWindow(width, height, title, NULL, NULL);
         glfwMakeContextCurrent((GLFWwindow *)m_window);
+#endif
     }
 
     Window::Window(const Window &other)
@@ -113,11 +117,13 @@ namespace rpp
 
     Window::~Window()
     {
+#if !defined(RPP_EDITOR)
         if (m_window)
         {
             glfwDestroyWindow((GLFWwindow *)m_window);
             m_window = nullptr;
         }
+#endif
     }
 
     b8 Window::ShouldWindowClose()

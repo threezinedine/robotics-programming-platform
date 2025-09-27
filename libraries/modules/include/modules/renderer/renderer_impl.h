@@ -42,28 +42,21 @@ namespace rpp
          */
         static void Shutdown() RPP_PYTHON_BINDING;
 
-    public:
-        /**
-         * @brief Use each time before working with a specific window (if multiple windows are used). After this method is called,
-         * all rendering commands will be directed to this window until another window's Active() method is called.
-         */
-        void Active() RPP_PYTHON_BINDING;
-
-    public:
+    private:
         /**
          * @brief Doing some operations which must be run before drawing. E.g., polling events, clearing the screen, etc.
          */
-        void PreDraw() RPP_PYTHON_BINDING;
+        void PreDrawImpl();
 
         /**
          * @brief Doing some operations which must be run after drawing. E.g., post-processing, etc.
          */
-        void PostDraw() RPP_PYTHON_BINDING;
+        void PostDrawImpl();
 
         /**
          * @brief Present the rendered image to the screen (swap buffers).
          */
-        void Present() RPP_PYTHON_BINDING;
+        void PresentImpl();
 
     public:
         /**
@@ -82,10 +75,22 @@ namespace rpp
         static u32 s_currentRendererIndex; ///< The index of the currently active renderer. If no renderer is active, it is set to `INVALID_RENDERER_INDEX`.
 
     public:
+        static u32 CreateRenderer(u32 width, u32 height, const String &title) RPP_PYTHON_BINDING;
+
         /**
          * Used for other components to get the current active renderer. If no renderer is active, an exception will be thrown.
          */
-        static Renderer &GetCurrentRenderer();
+        static Renderer *GetCurrentRenderer();
+
+        static void ActivateRenderer(u32 renderId) RPP_PYTHON_BINDING;
+
+        static void DestroyRenderer(u32 renderId) RPP_PYTHON_BINDING;
+
+        static void PreDraw() RPP_PYTHON_BINDING;
+
+        static void PostDraw() RPP_PYTHON_BINDING;
+
+        static void Present() RPP_PYTHON_BINDING;
 
     private:
         Scope<Window> m_window; ///< The window associated with this renderer.
