@@ -1,4 +1,5 @@
 from typing import Any
+from PyQt6.QtGui import QMouseEvent
 from PyQt6.QtWidgets import QTreeWidget, QWidget
 from PyQt6.QtCore import Qt
 from utils.logger import logger  # type: ignore
@@ -54,3 +55,6 @@ class ProjectStructureWidget(QTreeWidget):
         column: int,
     ) -> None:
         self.viewModel.ChangeFunctionName(item.folder, item.text(0))
+
+    def mouseDoubleClickEvent(self, e: QMouseEvent) -> None:
+        pass
