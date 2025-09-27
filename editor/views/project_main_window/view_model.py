@@ -59,6 +59,8 @@ class ProjectMainWindowViewModel:
             self.projectStateModel.CurrentProject = Project.CreateProject(projectDesc)
             self.projectStateModel.IsProjectLoaded = True
             self.ProjectNameSignal.Emit(self.ProjectName)
+            self.projectStateModel.projectDir = projectPath
+            self.projectStateModel.projectStructureChangedSignal.Emit(None)
 
         self.applicationModel.application.recentProjects.remove(projectPath)
         self.applicationModel.application.recentProjects.insert(0, projectPath)
@@ -137,3 +139,5 @@ class ProjectMainWindowViewModel:
         functionModel = GetObject(FunctionModel)
         functionModel.CreateNewFunction("NewFunction")
         functionModel.Save()
+
+        self.projectStateModel.projectStructureChangedSignal.Emit(None)

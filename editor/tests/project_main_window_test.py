@@ -205,3 +205,7 @@ def test_create_new_function_placeholder(
             projectName="TestProject",
         )
     ).AddFunctionFile(FunctionFileAssert("NewFunction")).Assert()
+
+    assert (
+        mainWindow.ui.projectStructure.count() == 1
+    ), "There should be one item in the project structure."

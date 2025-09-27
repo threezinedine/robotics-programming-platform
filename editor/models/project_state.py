@@ -23,8 +23,14 @@ class ProjectState:
 class ProjectStateModel:
     def __init__(self, projectState: ProjectState) -> None:
         self.projectState = projectState
+        self.projectDir = ""
+        """
+        The full path to the current project directory (include the folder with the name of the project).
+        """
         self.currentProjectSignal = Signal()
         self.isProjectLoadedSignal = Signal()
+
+        self.projectStructureChangedSignal = Signal()
 
     @property
     def CurrentProject(self) -> Project | None:

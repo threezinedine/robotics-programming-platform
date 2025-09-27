@@ -32,7 +32,7 @@ class FunctionModel:
         ), "No project is currently loaded."
 
         filePath = os.path.join(
-            self.projectStateModel.CurrentProject.GetName(),
+            self.projectStateModel.projectDir,
             f"{self.description.name}.rppfunc",
         )
 

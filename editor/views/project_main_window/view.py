@@ -44,7 +44,7 @@ class ProjectMainWindow(QMainWindow):
             self._UpdateRecentProjectsMenu
         )
 
-        self.ui.newFileAction.triggered.connect(self.viewModel.CreateNewFunction)
+        self.ui.newFileAction.triggered.connect(self._CreateNewFunction)
 
     def _UpdateProjectName(self, projectName: str) -> None:
         self.setWindowTitle(f"Project - {self.viewModel.ProjectName}")
@@ -58,3 +58,6 @@ class ProjectMainWindow(QMainWindow):
             self.ui.recentProjectsMenu.addAction(action)
             self.recentProjectsActions.append(action)
             action.triggered.connect(partial(self.viewModel.LoadProject, recentProject))
+
+    def _CreateNewFunction(self) -> None:
+        self.viewModel.CreateNewFunction()
