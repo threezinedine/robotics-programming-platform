@@ -107,3 +107,43 @@ Container FromString<Container>(const String& str)
 """
 
     AssertGenerateResult(result, expected)
+
+
+@pytest.mark.skip(reason="Array not supported yet")
+def test_array_attribute(generateFunc: GenerateFuncType) -> None:
+    result = generateFunc(
+        """
+struct RPP_JSON Item
+{
+    int id RPP_JSON_KEY("id");
+    Array<int> values RPP_JSON_KEY("values");
+};
+""",
+        "json_writer_binding.j2",
+        ["string"],
+    )
+
+    expected = """
+template<>
+const String ToString<Item>(const Item &value)
+{
+    Json result;
+
+    result.Set(String("id"), value.id);
+    result.Set(String("values"), Json(ToString(value.values)));
+    return result.ToString();
+}
+
+template<>
+Item FromString<Item>(const String& str)
+{
+    Json json(str);
+    Item value;
+
+    value.id = json.Get<int>(String("id"), value.id);
+    FromString(json.Get<String>(String("values"), String("{}")), value.values);
+    return value;
+}
+"""
+
+    AssertGenerateResult(result, expected)

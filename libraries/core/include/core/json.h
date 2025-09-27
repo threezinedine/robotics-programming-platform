@@ -51,6 +51,17 @@ namespace rpp
         T Get(const String &key, const T defaultValue = T()) const;
 
         /**
+         * @brief The overloaded Get method for accessing elements in a JSON array by index (only support for array type).
+         * @tparam T The expected type of the value to retrieve from the array. Supported types include String
+         *     and various integer types (u32, u16, u8, i32, i16, i8).
+         * @param index The index of the element in the JSON array to retrieve.
+         *
+         * @note If the JSON object is not an array, always return the default value.
+         */
+        template <typename T>
+        T Get(i32 index, const T defaultValue = T()) const;
+
+        /**
          * @brief Sets the value for the specified key in the JSON object. If the key already exists, its value is updated; otherwise, a new key-value pair is added.
          * @param key The key for which to set the value.
          * @param value The value to set for the specified key.
@@ -60,19 +71,35 @@ namespace rpp
         void Set(const String &key, const T &value);
 
         /**
+         * @brief The overloaded Set method for setting elements in a JSON array by index (only support for array type).
+         * @tparam T The type of the value to set in the array. Supported types include String
+         *     and various integer types (u32, u16, u8, i32, i16, i8).
+         * @param index The index of the element in the JSON array to set.
+         * @param value The value to set at the specified index.
+         *
+         * @note If the JSON object is not an array, this operation will be ignored.
+         */
+        template <typename T>
+        void Set(i32 index, const T &value);
+
+        /**
          * @brief Checks if the JSON object is empty (i.e., contains no key-value pairs).
          * @return TRUE if the JSON object is empty, FALSE otherwise.
          */
         b8 Empty() const;
 
         /**
-         * @brief Query the specified key to determine if it is an array.
-         * @param key The key to check.
-         * @return The value associated with the specified key, value will be ignored if the key is not found or if the type does not match.
-         *      The result is always an array.
+         * @brief Checks if the JSON object represents an array.
+         * @return TRUE if the JSON object is an array, FALSE otherwise.
          */
-        template <typename T>
-        Array<T> GetArray(const String &key) const;
+        b8 IsArray() const;
+
+        /**
+         * @brief Use only for array object, get the size of the array. If the object is not an array, return 0.
+         *
+         * @return The size of the array, or 0 if the object is not an array.
+         */
+        u32 Size() const;
 
     private:
         void *m_data;

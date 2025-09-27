@@ -48,6 +48,21 @@ namespace rpp
         return static_cast<JSON *>(m_data)->empty();
     }
 
+    b8 Json::IsArray() const
+    {
+        return static_cast<JSON *>(m_data)->is_array();
+    }
+
+    u32 Json::Size() const
+    {
+        JSON *json = static_cast<JSON *>(m_data);
+        if (!json->is_array())
+        {
+            return 0;
+        }
+        return static_cast<u32>(json->size());
+    }
+
 #define JSON_GET_SET_IMPLEMENT(type, isTypeMethod, getMethod, setMethod)   \
     template <>                                                            \
     type Json::Get<type>(const String &key, const type defaultValue) const \
@@ -65,6 +80,17 @@ namespace rpp
                                                                            \
         return (*json)[key.CStr()].getMethod;                              \
     }                                                                      \
+    template <>                                                            \
+    type Json::Get<type>(i32 index, const type defaultValue) const         \
+    {                                                                      \
+        JSON *json = static_cast<JSON *>(m_data);                          \
+        if (!(*json).is_array() || index < 0 || index >= (*json).size())   \
+        {                                                                  \
+            return defaultValue;                                           \
+        }                                                                  \
+                                                                           \
+        return (*json)[index].getMethod;                                   \
+    }                                                                      \
                                                                            \
     template <>                                                            \
     void Json::Set<type>(const String &key, const type &value)             \
@@ -73,29 +99,14 @@ namespace rpp
         (*json)[key.CStr()] = setMethod;                                   \
     }                                                                      \
     template <>                                                            \
-    Array<type> Json::GetArray<type>(const String &key) const              \
+    void Json::Set<type>(i32 index, const type &value)                     \
     {                                                                      \
-        Array<type> result;                                                \
         JSON *json = static_cast<JSON *>(m_data);                          \
-        if (!(*json).contains(key.CStr()))                                 \
+        if (!(*json).is_array() || index < 0 || index >= (*json).size())   \
         {                                                                  \
-            return result;                                                 \
+            return;                                                        \
         }                                                                  \
-                                                                           \
-        if (!(*json)[key.CStr()].is_array())                               \
-        {                                                                  \
-            return result;                                                 \
-        }                                                                  \
-                                                                           \
-        for (const auto &item : (*json)[key.CStr()])                       \
-        {                                                                  \
-            if (!item.isTypeMethod())                                      \
-            {                                                              \
-                continue;                                                  \
-            }                                                              \
-            result.Push(std::move(item.getMethod));                        \
-        }                                                                  \
-        return result;                                                     \
+        (*json)[index] = setMethod;                                        \
     }
 
     JSON_GET_SET_IMPLEMENT(String, is_string, get<std::string>().c_str(), value.CStr());
@@ -104,56 +115,7 @@ namespace rpp
     JSON_GET_SET_IMPLEMENT(u16, is_number, get<u16>(), value);
     JSON_GET_SET_IMPLEMENT(u8, is_number, get<u8>(), value);
 
-    // JSON_GET_SET_IMPLEMENT(i32, is_number, get<i32>(), value);
-    template <>
-    i32 Json::Get<i32>(const String &key, const i32 defaultValue) const
-    {
-        JSON *json = static_cast<JSON *>(m_data);
-        if (!(*json).contains(key.CStr()))
-        {
-            return defaultValue;
-        }
-
-        if (!(*json)[key.CStr()].is_number())
-        {
-            return defaultValue;
-        }
-
-        return (*json)[key.CStr()].get<i32>();
-    }
-
-    template <>
-    void Json::Set<i32>(const String &key, const i32 &value)
-    {
-        JSON *json = static_cast<JSON *>(m_data);
-        (*json)[key.CStr()] = value;
-    }
-    template <>
-    Array<i32> Json::GetArray<i32>(const String &key) const
-    {
-        Array<i32> result;
-        JSON *json = static_cast<JSON *>(m_data);
-        if (!(*json).contains(key.CStr()))
-        {
-            return result;
-        }
-
-        if (!(*json)[key.CStr()].is_array())
-        {
-            return result;
-        }
-
-        for (const auto &item : (*json)[key.CStr()])
-        {
-            if (!item.is_number_integer())
-            {
-                continue;
-            }
-            result.Push(std::move(item.get<i32>()));
-        }
-        return result;
-    }
-
+    JSON_GET_SET_IMPLEMENT(i32, is_number, get<i32>(), value);
     JSON_GET_SET_IMPLEMENT(i16, is_number, get<i16>(), value);
     JSON_GET_SET_IMPLEMENT(i8, is_number, get<i8>(), value);
 
@@ -170,7 +132,7 @@ namespace rpp
         {
             return defaultValue;
         }
-        if (!(*json)[key.CStr()].is_object())
+        if (!(*json)[key.CStr()].is_object() && !(*json)[key.CStr()].is_array())
         {
             return defaultValue;
         }
@@ -182,31 +144,5 @@ namespace rpp
     {
         JSON *json = static_cast<JSON *>(m_data);
         (*json)[key.CStr()] = JSON::parse(value.ToString().CStr());
-    }
-
-    template <>
-    Array<Json> Json::GetArray<Json>(const String &key) const
-    {
-        Array<Json> result;
-        JSON *json = static_cast<JSON *>(m_data);
-        if (!(*json).contains(key.CStr()))
-        {
-            return result;
-        }
-
-        if (!(*json)[key.CStr()].is_array())
-        {
-            return result;
-        }
-
-        for (const auto &item : (*json)[key.CStr()])
-        {
-            if (!item.is_object())
-            {
-                continue;
-            }
-            result.Push(Json(item.dump().c_str()));
-        }
-        return result;
     }
 } // namespace rpp

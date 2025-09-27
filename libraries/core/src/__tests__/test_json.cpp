@@ -146,24 +146,48 @@ TEST(JsonTest, NestedJsonObject)
     EXPECT_EQ(child.Get<i32>("age", 0), 30);
 }
 
-TEST(JsonTest, ListField)
+TEST(JsonTest, ObjectIsAnyArray)
 {
-    String jsonString = R"({"numbers": [1, 2, 3, 4, 5], "nonarray": 30})";
+    String jsonString = R"([1, 2, 3])";
     Json json(jsonString);
 
-    Array<u32> numbers = json.GetArray<u32>("numbers");
-    EXPECT_EQ(numbers.Size(), u32(5));
-    EXPECT_EQ(numbers[0], u32(1));
-    EXPECT_EQ(numbers[4], u32(5));
+    EXPECT_TRUE(json.IsArray());
 }
 
-TEST(JsonTest, GetArrayOfObjects)
+TEST(JsonTest, GetObjectByIndexRatherThanKey)
 {
-    String jsonString = R"({"people": [{"name": "John"}, {"name": "Jane"}]})";
+    String jsonString = R"([1, 2, 3])";
     Json json(jsonString);
 
-    Array<Json> people = json.GetArray<Json>("people");
-    EXPECT_EQ(people.Size(), u32(2));
-    EXPECT_STREQ(people[0].Get<String>("name", "unknown").CStr(), "John");
-    EXPECT_STREQ(people[1].Get<String>("name", "unknown").CStr(), "Jane");
+    EXPECT_EQ(json.Get<i32>(0, -1), 1);
+    EXPECT_EQ(json.Get<i32>(1, -1), 2);
+    EXPECT_EQ(json.Get<i32>(2, -1), 3);
+    EXPECT_EQ(json.Get<i32>(3, -1), -1);
+}
+
+TEST(JsonTest, ModifiedArrayElement)
+{
+    String jsonString = R"([1, 2, 3])";
+    Json json(jsonString);
+    json.Set(0, 10);
+
+    EXPECT_STREQ(json.ToString().CStr(),
+                 Json(R"([10, 2, 3])").ToString().CStr());
+}
+
+TEST(JsonTest, ArrayObjectGetSize)
+{
+    EXPECT_EQ(Json(R"([])").Size(), u32(0));
+    EXPECT_EQ(Json(R"([1, 2, 3])").Size(), u32(3));
+    EXPECT_EQ(Json(R"({"key": "value"})").Size(), u32(0));
+}
+
+TEST(JsonTest, GetJsonObjectFromKey)
+{
+    String jsonString = R"({"person": ["Hung", "My"]})";
+    Json json(jsonString);
+    Json child = json.Get<Json>("person");
+
+    EXPECT_TRUE(child.IsArray());
+    EXPECT_EQ(child.Size(), u32(2));
 }
