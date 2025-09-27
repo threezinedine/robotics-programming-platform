@@ -34,7 +34,7 @@ namespace rpp
     struct GraphicsCommandData
     {
         GraphicsCommandType type; ///< The type of the command.
-        void *data;               ///< The data of the command.
+        void *pData;              ///< The data of the command.
     };
 
     struct ClearColorCommandData
@@ -51,8 +51,8 @@ namespace rpp
         u32 height;          ///< The height of the texture.
         u8 numberOfChannels; ///< The number of color channels (e.g., 3 for RGB, 4 for RGBA).
 
-        u8 *pixelData;  ///< Pointer to the pixel data.
-        u32 *textureId; ///< Pointer to store the generated texture ID.
+        u8 *pPixelData;  ///< Pointer to the pixel data.
+        u32 *pTextureId; ///< Pointer to store the generated texture ID.
     };
 
     /**
@@ -93,19 +93,18 @@ namespace rpp
         u8 elementCount;   ///< The number of components in the attribute (e.g., 3 for vec3).
     };
 
-    // TODO: Rename the poniter -> pBufferId
     /**
      * @brief The data structure for the create vertex buffer command.
      */
     struct CreateVertexBufferCommandData
     {
-        u32 count;             ///< The number of vertices.
-        void *data;            ///< Pointer to the vertex data.
-        u32 *bufferId;         ///< Pointer to store the generated buffer ID.
-        u32 *arrayId;          ///< Pointer to store the generated vertex array ID.
-        VertexBufferType type; ///< The type of the vertex buffer.
-        u8 layoutCount;        ///< The number of layout elements.
-        LayoutElement *layout; ///< Pointer to the array of layout elements.
+        u32 count;              ///< The number of vertices.
+        void *pData;            ///< Pointer to the vertex data.
+        u32 *pBufferId;         ///< Pointer to store the generated buffer ID.
+        u32 *pArrayId;          ///< Pointer to store the generated vertex array ID.
+        VertexBufferType type;  ///< The type of the vertex buffer.
+        u8 layoutCount;         ///< The number of layout elements.
+        LayoutElement *pLayout; ///< Pointer to the array of layout elements.
     };
 
     /**
@@ -113,8 +112,8 @@ namespace rpp
      */
     struct DeleteVertexBufferCommandData
     {
-        u32 *bufferId; ///< The ID of the vertex buffer to be deleted.
-        u32 *arrayId;  ///< The ID of the vertex array to be deleted.
+        u32 *pBufferId; ///< The ID of the vertex buffer to be deleted.
+        u32 *pArrayId;  ///< The ID of the vertex array to be deleted.
     };
 
     struct DrawVertexBufferCommandData
@@ -136,11 +135,11 @@ namespace rpp
 
     struct CreateShaderCommandData
     {
-        u8 *shaderSource; ///< The source code of the vertex shader.
-        u32 length;       ///< The length of the shader source code.
-        ShaderType type;  ///< The type of the shader (vertex or fragment).
+        u8 *pShaderSource; ///< The source code of the vertex shader.
+        u32 length;        ///< The length of the shader source code.
+        ShaderType type;   ///< The type of the shader (vertex or fragment).
 
-        u32 *shaderId; ///< Pointer to store the generated shader program ID.
+        u32 *pShaderId; ///< Pointer to store the generated shader program ID.
     };
 
     struct DeleteShaderCommandData
@@ -153,7 +152,7 @@ namespace rpp
         u32 vertexShaderId;   ///< The ID of the vertex shader.
         u32 fragmentShaderId; ///< The ID of the fragment shader.
 
-        u32 *programId; ///< Pointer to store the generated pipeline ID.
+        u32 *pProgramId; ///< Pointer to store the generated pipeline ID.
     };
 
     struct DeletePipelineCommandData

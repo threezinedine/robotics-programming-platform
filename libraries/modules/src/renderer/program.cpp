@@ -14,20 +14,20 @@ namespace rpp
         u32 vertexShaderId = 0;
 
         CreateShaderCommandData vertexShaderCommand = {};
-        vertexShaderCommand.shaderSource = (u8 *)vertexShaderSource.CStr();
+        vertexShaderCommand.pShaderSource = (u8 *)vertexShaderSource.CStr();
         vertexShaderCommand.length = vertexShaderSource.Length();
         vertexShaderCommand.type = ShaderType::VERTEX;
-        vertexShaderCommand.shaderId = &vertexShaderId;
+        vertexShaderCommand.pShaderId = &vertexShaderId;
 
         GraphicsCommandData vertexShaderCommandData = {GraphicsCommandType::CREATE_SHADER, &vertexShaderCommand};
         Renderer::GetCurrentRenderer().GetWindow()->ExecuteCommand(vertexShaderCommandData);
 
         u32 fragmentShaderId = 0;
         CreateShaderCommandData fragmentShaderCommand = {};
-        fragmentShaderCommand.shaderSource = (u8 *)fragmentShaderSource.CStr();
+        fragmentShaderCommand.pShaderSource = (u8 *)fragmentShaderSource.CStr();
         fragmentShaderCommand.length = fragmentShaderSource.Length();
         fragmentShaderCommand.type = ShaderType::FRAGMENT;
-        fragmentShaderCommand.shaderId = &fragmentShaderId;
+        fragmentShaderCommand.pShaderId = &fragmentShaderId;
 
         GraphicsCommandData fragmentShaderCommandData = {GraphicsCommandType::CREATE_SHADER, &fragmentShaderCommand};
         Renderer::GetCurrentRenderer().GetWindow()->ExecuteCommand(fragmentShaderCommandData);
@@ -35,7 +35,7 @@ namespace rpp
         CreatePipelineCommandData pipelineCommand = {};
         pipelineCommand.vertexShaderId = vertexShaderId;
         pipelineCommand.fragmentShaderId = fragmentShaderId;
-        pipelineCommand.programId = &m_programId;
+        pipelineCommand.pProgramId = &m_programId;
 
         GraphicsCommandData pipelineCommandData = {GraphicsCommandType::CREATE_PIPELINE, &pipelineCommand};
         Renderer::GetCurrentRenderer().GetWindow()->ExecuteCommand(pipelineCommandData);

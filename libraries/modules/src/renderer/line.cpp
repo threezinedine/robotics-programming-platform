@@ -21,11 +21,11 @@ namespace rpp
 
         CreateVertexBufferCommandData command = {};
         command.count = 2;
-        command.data = data;
+        command.pData = data;
         command.layoutCount = 1;
-        command.layout = elements;
-        command.bufferId = &m_vertexBufferId;
-        command.arrayId = &m_vertexArrayId;
+        command.pLayout = elements;
+        command.pBufferId = &m_vertexBufferId;
+        command.pArrayId = &m_vertexArrayId;
         command.type = VertexBufferType::LINE;
 
         GraphicsCommandData commandData = {GraphicsCommandType::CREATE_VERTEX_BUFFER, &command};
@@ -35,8 +35,8 @@ namespace rpp
     Line::~Line()
     {
         DeleteVertexBufferCommandData command = {};
-        command.bufferId = &m_vertexBufferId;
-        command.arrayId = &m_vertexArrayId;
+        command.pBufferId = &m_vertexBufferId;
+        command.pArrayId = &m_vertexArrayId;
         GraphicsCommandData commandData = {GraphicsCommandType::DELETE_VERTEX_BUFFER, &command};
         Renderer::GetCurrentRenderer().GetWindow()->ExecuteCommand(commandData);
     }

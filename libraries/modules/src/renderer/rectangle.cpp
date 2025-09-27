@@ -30,12 +30,12 @@ namespace rpp
 
 		CreateVertexBufferCommandData command = {};
 		command.count = 6;
-		command.data = data;
-		command.bufferId = &m_vertexBufferId;
-		command.arrayId = &m_vertexArrayId;
+		command.pData = data;
+		command.pBufferId = &m_vertexBufferId;
+		command.pArrayId = &m_vertexArrayId;
 		command.type = VertexBufferType::TRIANGLE;
 		command.layoutCount = 1;
-		command.layout = elements;
+		command.pLayout = elements;
 
 		GraphicsCommandData commandData = {GraphicsCommandType::CREATE_VERTEX_BUFFER, &command};
 		Renderer::GetCurrentRenderer().GetWindow()->ExecuteCommand(commandData);
@@ -46,8 +46,8 @@ namespace rpp
 		if (m_vertexBufferId != 0)
 		{
 			DeleteVertexBufferCommandData command = {};
-			command.bufferId = &m_vertexBufferId;
-			command.arrayId = &m_vertexArrayId;
+			command.pBufferId = &m_vertexBufferId;
+			command.pArrayId = &m_vertexArrayId;
 
 			GraphicsCommandData commandData = {GraphicsCommandType::DELETE_VERTEX_BUFFER, &command};
 			Renderer::GetCurrentRenderer().GetWindow()->ExecuteCommand(commandData);
