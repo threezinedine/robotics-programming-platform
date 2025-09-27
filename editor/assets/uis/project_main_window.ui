@@ -158,7 +158,7 @@
  <customwidgets>
   <customwidget>
    <class>ProjectStructureWidget</class>
-   <extends>QListWidget</extends>
+   <extends>QTreeWidget</extends>
    <header>components/list_widgets/project_structure_widget/view.h</header>
   </customwidget>
  </customwidgets>

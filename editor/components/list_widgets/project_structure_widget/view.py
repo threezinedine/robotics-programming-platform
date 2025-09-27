@@ -1,12 +1,13 @@
 from typing import Any
-from PyQt6.QtWidgets import QListWidget, QWidget
+from PyQt6.QtWidgets import QTreeWidget, QWidget
 from utils.logger import logger  # type: ignore
 from utils.dependency_injection import GetObject
 from .view_model import ProjectStructureWidgetViewModel
 from models import ProjectStateModel
+from .item import ProjectStructureItem
 
 
-class ProjectStructureWidget(QListWidget):
+class ProjectStructureWidget(QTreeWidget):
     """
     The override of the default QListWidget to show the project structure.
     """
@@ -36,4 +37,5 @@ class ProjectStructureWidget(QListWidget):
 
         for item in self.viewModel.projectStructure:
             if isinstance(item, str) and item.endswith(".rppfunc"):
-                self.addItem(item)
+                tree_item = ProjectStructureItem(item)
+                self.addTopLevelItem(tree_item)

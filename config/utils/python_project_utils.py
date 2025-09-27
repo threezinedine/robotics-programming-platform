@@ -428,6 +428,9 @@ def RunPythonProject(
             )
             logger.info(f"Python project '{projectDir}' finished successfully.")
 
+            for uiFile in uiFilesChanged:
+                UpdateFileCache(uiFile)
+
         except Exception as e:
             logger.error(f"Failed to run Python project: {e}")
             raise RuntimeError(f"Failed to run Python project: {e}") from e
