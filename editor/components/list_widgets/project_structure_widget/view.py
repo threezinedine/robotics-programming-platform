@@ -57,4 +57,6 @@ class ProjectStructureWidget(QTreeWidget):
         self.viewModel.ChangeFunctionName(item.folder, item.text(0))
 
     def mouseDoubleClickEvent(self, e: QMouseEvent) -> None:
-        pass
+        item: ProjectStructureItem = self.itemAt(e.position().toPoint())  # type: ignore
+
+        self.viewModel.openFunctionSignal.Emit(item.folder)

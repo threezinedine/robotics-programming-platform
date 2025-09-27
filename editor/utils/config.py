@@ -1,6 +1,7 @@
 from .dependency_injection import AsSingleton, AsTransient
 
-from views import ProjectMainWindow, ProjectMainWindowViewModel
+from views.project_main_window import ProjectMainWindow, ProjectMainWindowViewModel
+from views.logic_window import LogicWindow
 from components.dialogs import (
     NewProjectDialog,
     NewProjectDialogViewModel,
@@ -33,6 +34,8 @@ def StartupConfig() -> None:
 
     AsSingleton(ProjectState)
     AsSingleton(ProjectStateModel)
+
+    AsTransient(LogicWindow)
 
     AsSingleton(ProjectMainWindowViewModel)
     AsSingleton(NewProjectDialogViewModel)
