@@ -1,4 +1,5 @@
 import os
+from typing import Any
 from .assertion import Assert
 from Engine import FromString_ProjectDescription
 from constants import PROJECT_FILE_NAME
@@ -10,7 +11,7 @@ class ProjectDescriptionAssert(Assert):
         self.projectDir = projectDir
         self.projectName = projectName
 
-    def _Assert(self) -> None:
+    def _Assert(self, obj: Any = None) -> None:
         finalProjectDir = os.path.join(self.projectDir, self.projectName)
         projectFile = os.path.join(finalProjectDir, PROJECT_FILE_NAME)
         assert os.path.exists(

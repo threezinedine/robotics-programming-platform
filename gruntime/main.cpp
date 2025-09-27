@@ -7,7 +7,7 @@ using namespace rpp;
 int main(void)
 {
     SingletonManager::Initialize();
-    Logging::GetInstance()->Setup(HandlerType::CONSOLE, LogLevel::DEBUG);
+    Logging::GetInstance()->Setup(u8(HandlerType::CONSOLE), LogLevel::DEBUG);
 
     Graphics graphics;
 

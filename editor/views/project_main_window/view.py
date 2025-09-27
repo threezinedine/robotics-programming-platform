@@ -44,6 +44,8 @@ class ProjectMainWindow(QMainWindow):
             self._UpdateRecentProjectsMenu
         )
 
+        self.ui.newFileAction.triggered.connect(self.viewModel.CreateNewFunction)
+
     def _UpdateProjectName(self, projectName: str) -> None:
         self.setWindowTitle(f"Project - {self.viewModel.ProjectName}")
 

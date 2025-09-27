@@ -8,8 +8,8 @@ from Engine import (
     FromString_ProjectDescription,
 )
 
-from utils.dependency_injection import Depend
-from models import ProjectStateModel, ApplicationModel
+from utils.dependency_injection import Depend, GetObject
+from models import ProjectStateModel, ApplicationModel, FunctionModel
 from utils.signal import Signal
 from components.dialogs import NewProjectDialogViewModel
 
@@ -129,3 +129,11 @@ class ProjectMainWindowViewModel:
             The absolute path to the project directory (e.g., C:/path/to/project).
         """
         self.LoadProject(projectPath)
+
+    def CreateNewFunction(self) -> None:
+        """
+        Trigger this method to create a new function in the current project.
+        """
+        functionModel = GetObject(FunctionModel)
+        functionModel.CreateNewFunction("NewFunction")
+        functionModel.Save()

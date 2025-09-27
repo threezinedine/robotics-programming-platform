@@ -38,4 +38,9 @@ namespace rpp
     private:
         String m_name; ///< The name of the function.
     };
+
+    const String &Function::GetName()
+    {
+        return m_name;
+    }
 } // namespace rpp

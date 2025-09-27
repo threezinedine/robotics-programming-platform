@@ -9,13 +9,21 @@ from components.list_widgets import (
     ProjectStructureWidget,
     ProjectStructureWidgetViewModel,
 )
-from models import ProjectState, ProjectStateModel, Application, ApplicationModel
+from models import (
+    ProjectState,
+    ProjectStateModel,
+    Application,
+    ApplicationModel,
+    FunctionModel,
+)
 
 
 def StartupConfig() -> None:
     """
     Write all singleton/transient registrations here.
     """
+
+    AsTransient(FunctionModel)
 
     AsSingleton(Application)
     AsSingleton(ApplicationModel)

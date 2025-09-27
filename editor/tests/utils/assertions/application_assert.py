@@ -1,5 +1,6 @@
 import os
 import json
+from typing import Any
 from dacite import from_dict
 from models import Application
 from constants import APPLICATION_FILE_NAME, APPLICATION_FOLDER_NAME
@@ -16,7 +17,7 @@ class ApplicationAssert(Assert):
         self.version = version
         self.recentProjects = recentProjects if recentProjects is not None else []
 
-    def _Assert(self) -> None:
+    def _Assert(self, obj: Any = None) -> None:
         appDataDir = os.getenv("APPDATA")
         assert appDataDir is not None, "APPDATA environment variable is not set."
 

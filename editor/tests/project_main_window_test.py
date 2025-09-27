@@ -4,7 +4,12 @@ from pytestqt.qtbot import QtBot
 from views.project_main_window import ProjectMainWindow
 from utils.dependency_injection import GetObject
 from pyfakefs.fake_filesystem import FakeFilesystem
-from tests.utils import ProjectDescriptionAssert, ApplicationAssert
+from tests.utils import (
+    ProjectDescriptionAssert,
+    ApplicationAssert,
+    ProjectAssert,
+    FunctionFileAssert,
+)
 from tests.utils import EnvironmentBuilder, ApplicationBuilder, ProjectBuilder
 
 
@@ -174,3 +179,29 @@ def test_open_project(
             "Project2",
         ],
     ).Assert()
+
+
+def test_create_new_function_placeholder(
+    qtbot: QtBot,
+    uiConfig: None,
+    fs: FakeFilesystem,
+) -> None:
+    EnvironmentBuilder().AddApplication(
+        ApplicationBuilder().AddRecentProject("TestProject")
+    ).AddProject(ProjectBuilder("TestProject")).Build()
+
+    mainWindow = GetObject(ProjectMainWindow)
+    qtbot.addWidget(mainWindow)
+    mainWindow.show()
+
+    assert mainWindow.windowTitle() == "Project - TestProject"
+
+    # Placeholder for creating a new function
+    mainWindow.ui.newFileAction.trigger()
+
+    ProjectAssert(
+        ProjectDescriptionAssert(
+            projectDir=os.getcwd(),
+            projectName="TestProject",
+        )
+    ).AddFunctionFile(FunctionFileAssert("NewFunction")).Assert()

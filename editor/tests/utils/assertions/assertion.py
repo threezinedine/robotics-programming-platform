@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Any
 
 
 class Assert(ABC):
@@ -18,15 +19,20 @@ class Assert(ABC):
     def __init__(self) -> None:
         super().__init__()
 
-    def Assert(self) -> None:
+    def Assert(self, obj: Any = None) -> None:
         """
         The test will call this method to perform the assertions.
         """
-        self._Assert()
+        self._Assert(obj)
 
     @abstractmethod
-    def _Assert(self) -> None:
+    def _Assert(self, obj: Any = None) -> None:
         """
         Implement your custom assertions here. This method will be called by the Assert method.
+
+        Parameters
+        ----------
+        object : Any
+            An optional object that can be used in the assertions.
         """
         raise NotImplementedError()
