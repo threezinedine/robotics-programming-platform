@@ -109,7 +109,6 @@ Container FromString<Container>(const String& str)
     AssertGenerateResult(result, expected)
 
 
-@pytest.mark.skip(reason="Array not supported yet")
 def test_array_attribute(generateFunc: GenerateFuncType) -> None:
     result = generateFunc(
         """
@@ -130,7 +129,17 @@ const String ToString<Item>(const Item &value)
     Json result;
 
     result.Set(String("id"), value.id);
-    result.Set(String("values"), Json(ToString(value.values)));
+
+    {
+        u32 fieldsCount = value.values.Size();
+        result.Set(String("values"), Json("[]"));
+        Json fieldJson = result.Get<Json>(String("values"));
+        for (u32 i = 0; i < fieldsCount; i++)
+        {
+            fieldJson.Append<int>(value.values[i]);
+        }
+    }
+
     return result.ToString();
 }
 
@@ -141,7 +150,17 @@ Item FromString<Item>(const String& str)
     Item value;
 
     value.id = json.Get<int>(String("id"), value.id);
-    FromString(json.Get<String>(String("values"), String("{}")), value.values);
+
+    {
+        Json arrayField = json.Get<Json>(String("values"));
+        RPP_ASSERT_MSG(arrayField.IsArray(), "The field 'values' is not an array.");
+        u32 arraySize = arrayField.Size();
+        for (u32 i = 0; i < arraySize; i++)
+        {
+            value.values.Push(arrayField.Get<int>(i));
+        }
+    }
+
     return value;
 }
 """

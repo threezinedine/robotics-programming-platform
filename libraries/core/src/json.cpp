@@ -107,6 +107,16 @@ namespace rpp
             return;                                                        \
         }                                                                  \
         (*json)[index] = setMethod;                                        \
+    }                                                                      \
+    template <>                                                            \
+    void Json::Append<type>(const type &value)                             \
+    {                                                                      \
+        JSON *json = static_cast<JSON *>(m_data);                          \
+        if (!(*json).is_array())                                           \
+        {                                                                  \
+            return;                                                        \
+        }                                                                  \
+        (*json).push_back(setMethod);                                      \
     }
 
     JSON_GET_SET_IMPLEMENT(String, is_string, get<std::string>().c_str(), value.CStr());

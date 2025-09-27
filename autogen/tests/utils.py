@@ -32,6 +32,9 @@ def ParserContentWrapper(text: str, includeLibs: list[str] = []) -> str:
 
 {"using String = std::string;" if "string" in includeLibs else ""}
 
+template<typename T>
+class Array;
+
 namespace rpp {{
     {text}
 }};

@@ -191,3 +191,14 @@ TEST(JsonTest, GetJsonObjectFromKey)
     EXPECT_TRUE(child.IsArray());
     EXPECT_EQ(child.Size(), u32(2));
 }
+
+TEST(JsonTest, AppendToArray)
+{
+    String jsonString = R"([1, 2, 3])";
+    Json json(jsonString);
+    json.Append(4);
+    json.Append(5);
+
+    EXPECT_STREQ(json.ToString().CStr(),
+                 Json(R"([1, 2, 3, 4, 5])").ToString().CStr());
+}

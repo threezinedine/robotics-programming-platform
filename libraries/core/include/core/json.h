@@ -83,6 +83,15 @@ namespace rpp
         void Set(i32 index, const T &value);
 
         /**
+         * @brief Appends a value to the end of the JSON array. If the JSON object is not an array, this operation will be ignored.
+         * @tparam T The type of the value to append to the array. Supported types include String
+         *     and various integer types (u32, u16, u8, i32, i16, i8).
+         * @param value The value to append to the JSON array.
+         */
+        template <typename T>
+        void Append(const T &value);
+
+        /**
          * @brief Checks if the JSON object is empty (i.e., contains no key-value pairs).
          * @return TRUE if the JSON object is empty, FALSE otherwise.
          */
