@@ -29,28 +29,30 @@ int main(void)
 {
     SingletonManager::Initialize();
     Logging::GetInstance()->Setup(u8(HandlerType::CONSOLE), LogLevel::DEBUG);
-    Graphics::Init();
+    Renderer::Initialize();
 
     {
-		Renderer renderer(800, 600, "RPP Window");
-		Program program(renderer, vertexShaderSource, fragmentShaderSource);
+        Renderer renderer(800, 600, "RPP Window");
 
-		Rectangle rectangle(renderer);
+        renderer.Active();
 
-		while (!renderer.GetWindow()->ShouldWindowClose())
-		{
-			renderer.PreDraw();
+        Program program(vertexShaderSource, fragmentShaderSource);
 
-			program.Use();
-			rectangle.Draw();
+        Rectangle rectangle(0.6f, 0.0f, 0.1f, 0.1f);
 
-			renderer.PostDraw();
-			renderer.Present();
-		}
+        while (!renderer.GetWindow()->ShouldWindowClose())
+        {
+            renderer.PreDraw();
+
+            program.Use();
+            rectangle.Draw();
+
+            renderer.PostDraw();
+            renderer.Present();
+        }
     }
 
-    Graphics::Shutdown();
-
+    Renderer::Shutdown();
     SingletonManager::Shutdown();
     return 0;
 }

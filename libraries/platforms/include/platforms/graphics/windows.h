@@ -18,6 +18,8 @@ namespace rpp
          */
         Window(u32 width, u32 height, const char *title);
 
+        Window(const Window &other);
+
         ~Window();
 
         // Methods of the instance.

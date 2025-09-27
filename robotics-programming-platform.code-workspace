@@ -120,7 +120,8 @@
 			"barrier": "cpp",
 			"complex": "cpp",
 			"stack": "cpp",
-			"typeindex": "cpp"
+			"typeindex": "cpp",
+			"*.rh": "cpp"
 		}
 	}
 }

@@ -105,8 +105,19 @@ namespace rpp
         glfwMakeContextCurrent((GLFWwindow *)m_window);
     }
 
+    Window::Window(const Window &other)
+        : m_width(other.m_width), m_height(other.m_height),
+          m_title(other.m_title), m_window(other.m_window)
+    {
+    }
+
     Window::~Window()
     {
+        if (m_window)
+        {
+            glfwDestroyWindow((GLFWwindow *)m_window);
+            m_window = nullptr;
+        }
     }
 
     b8 Window::ShouldWindowClose()
@@ -239,8 +250,8 @@ namespace rpp
         case GraphicsCommandType::DELETE_VERTEX_BUFFER:
         {
             DeleteVertexBufferCommandData *vbData = (DeleteVertexBufferCommandData *)command.data;
-            GL_ASSERT(glDeleteBuffers(1, vbData->bufferId));
-            GL_ASSERT(glDeleteVertexArrays(1, vbData->arrayId));
+            GL_ASSERT(glDeleteBuffers(1, (const GLuint *)vbData->bufferId));
+            GL_ASSERT(glDeleteVertexArrays(1, (const GLuint *)vbData->arrayId));
             return TRUE;
         }
         case GraphicsCommandType::DRAW_VERTEX_BUFFER:

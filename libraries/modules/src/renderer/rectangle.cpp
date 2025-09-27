@@ -5,14 +5,14 @@
 
 namespace rpp
 {
-	Rectangle::Rectangle(Renderer &renderer)
-		: Rectangle(renderer, 0.0f, 0.0f, 1.0f, 1.0f)
+	Rectangle::Rectangle()
+		: Rectangle(0.0f, 0.0f, 1.0f, 1.0f)
 	{
 	}
 
-	Rectangle::Rectangle(Renderer &renderer, f32 centerX, f32 centerY, f32 width, f32 height)
+	Rectangle::Rectangle(f32 centerX, f32 centerY, f32 width, f32 height)
 		: m_centerX(centerX), m_centerY(centerY), m_width(width), m_height(height),
-		  m_vertexBufferId(0), m_vertexArrayId(0), m_renderer(renderer)
+		  m_vertexBufferId(0), m_vertexArrayId(0)
 	{
 		float data[] = {
 			centerX - width / 2, centerY - height / 2, // Bottom-left
@@ -38,7 +38,7 @@ namespace rpp
 		command.layout = elements;
 
 		GraphicsCommandData commandData = {GraphicsCommandType::CREATE_VERTEX_BUFFER, &command};
-		renderer.GetWindow()->ExecuteCommand(commandData);
+		Renderer::GetCurrentRenderer().GetWindow()->ExecuteCommand(commandData);
 	}
 
 	Rectangle::~Rectangle()
@@ -51,7 +51,7 @@ namespace rpp
 
 			GraphicsCommandData commandData = {GraphicsCommandType::DELETE_VERTEX_BUFFER, &command};
 			// RPP_LOG_DEBUG("Deleting rectangle vertex buffer with ID: {}", m_vertexBufferId);
-			m_renderer.GetWindow()->ExecuteCommand(commandData);
+			Renderer::GetCurrentRenderer().GetWindow()->ExecuteCommand(commandData);
 		}
 	}
 
@@ -63,6 +63,6 @@ namespace rpp
 		command.count = 6;
 
 		GraphicsCommandData commandData = {GraphicsCommandType::DRAW_VERTEX_BUFFER, &command};
-		m_renderer.GetWindow()->ExecuteCommand(commandData);
+		Renderer::GetCurrentRenderer().GetWindow()->ExecuteCommand(commandData);
 	}
 } // namespace rpp

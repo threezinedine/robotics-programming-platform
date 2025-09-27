@@ -4,8 +4,6 @@
 
 namespace rpp
 {
-    class Renderer;
-
     /**
      * @brief Simple instance which is used for rendering rectangles.
      */
@@ -15,17 +13,16 @@ namespace rpp
         /**
          * @brief Constructs a unit rectangle centered at the origin (0,0) with width and height of 1.0.
          */
-        Rectangle(Renderer &renderer);
+        Rectangle();
 
         /**
          * @brief Constructs a rectangle centered at (centerX, centerY) with the specified width and height.
-         * @param renderer The renderer instance associated with this rectangle.
          * @param centerX The x-coordinate of the rectangle's center.
          * @param centerY The y-coordinate of the rectangle's center.
          * @param width The width of the rectangle.
          * @param height The height of the rectangle.
          */
-        Rectangle(Renderer &renderer, f32 centerX, f32 centerY, f32 width, f32 height);
+        Rectangle(f32 centerX, f32 centerY, f32 width, f32 height);
 
         Rectangle(const Rectangle &other) = delete;
 
@@ -34,6 +31,9 @@ namespace rpp
          */
         ~Rectangle();
 
+        /**
+         * @brief Draw the rectangle using the associated renderer.
+         */
         virtual void Draw() const override;
 
     private:
@@ -43,6 +43,5 @@ namespace rpp
         f32 m_height;         ///< The height of the rectangle.
         u32 m_vertexBufferId; ///< The ID of the vertex buffer in the graphics API.
         u32 m_vertexArrayId;  ///< The ID of the vertex array in the graphics API.
-        Renderer &m_renderer; ///< Reference to the associated renderer instance.
     };
 } // namespace rpp
