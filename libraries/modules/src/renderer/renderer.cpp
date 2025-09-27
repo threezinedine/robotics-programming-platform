@@ -3,6 +3,8 @@
 
 namespace rpp
 {
+    // TODO: Using command queue later.
+
     u32 Renderer::s_currentRendererIndex = INVALID_RENDERER_INDEX;
     Array<Renderer *> Renderer::s_currentRenderers = Array<Renderer *>();
 

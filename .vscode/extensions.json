@@ -10,6 +10,7 @@
         "eamodio.gitlens",
         "wholroyd.jinja",
         "yzhang.markdown-all-in-one",
-        "DavidAnson.vscode-markdownlint"
+        "DavidAnson.vscode-markdownlint",
+        "Gruntfuggly.todo-tree"
     ]
 }
