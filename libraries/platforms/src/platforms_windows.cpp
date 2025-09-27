@@ -26,7 +26,7 @@ namespace rpp
             std::printf("\033[33m%s\033[0m", message); // Yellow color
             break;
         default:
-            throw std::runtime_error("Unsupported console color");
+            RPP_UNREACHABLE();
         }
     }
 } // namespace rpp

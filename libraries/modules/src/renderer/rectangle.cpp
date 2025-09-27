@@ -50,7 +50,6 @@ namespace rpp
 			command.arrayId = &m_vertexArrayId;
 
 			GraphicsCommandData commandData = {GraphicsCommandType::DELETE_VERTEX_BUFFER, &command};
-			// RPP_LOG_DEBUG("Deleting rectangle vertex buffer with ID: {}", m_vertexBufferId);
 			Renderer::GetCurrentRenderer().GetWindow()->ExecuteCommand(commandData);
 		}
 	}

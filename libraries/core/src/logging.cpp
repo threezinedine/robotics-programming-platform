@@ -91,7 +91,7 @@ namespace rpp
         case LogLevel::FATAL:
             return "FATAL";
         default:
-            return "UNKNOWN";
+            RPP_UNREACHABLE();
         }
     }
 

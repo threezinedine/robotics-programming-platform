@@ -55,3 +55,15 @@ Ref<T> CreateRef(Args &&...args)
 {
     return std::make_shared<T>(std::forward<Args>(args)...);
 }
+
+/**
+ * Used for marking the block of code in switch-case statement which should never be reached or the debugger should break when it is reached.
+ */
+#define RPP_UNREACHABLE() \
+    __debugbreak();       \
+    __assume(0)
+
+/**
+ * Later used for modifying the flags of the compiler to not ignore the unused variable warning.
+ */
+#define RPP_UNUSED(x) (void)(x)

@@ -56,6 +56,10 @@ namespace rpp
 
     Program::~Program()
     {
+        DeletePipelineCommandData deleteCommand = {};
+        deleteCommand.programId = m_programId;
+        GraphicsCommandData deleteCommandData = {GraphicsCommandType::DELETE_PIPELINE, &deleteCommand};
+        Renderer::GetCurrentRenderer().GetWindow()->ExecuteCommand(deleteCommandData);
     }
 
     void Program::Use() const

@@ -58,7 +58,7 @@ namespace rpp
             std::snprintf(message, *size, "There is not enough memory left to execute the command. The state of the GL is undefined, except for the state of the error flags, after this error is recorded.");
             break;
         default:
-            std::snprintf(message, *size, "Unknown error.");
+            RPP_UNREACHABLE();
         };
     }
 
@@ -143,7 +143,7 @@ namespace rpp
         case AtomicType::DOUBLE:
             return GL_DOUBLE;
         default:
-            return GL_FLOAT; // Default to float if unknown
+            RPP_UNREACHABLE();
         }
     }
 
@@ -160,7 +160,7 @@ namespace rpp
         case AtomicType::DOUBLE:
             return sizeof(double);
         default:
-            return sizeof(float); // Default to float if unknown
+            RPP_UNREACHABLE();
         }
     }
 
@@ -258,7 +258,20 @@ namespace rpp
         {
             DrawVertexBufferCommandData *drawData = (DrawVertexBufferCommandData *)command.data;
             GL_ASSERT(glBindVertexArray(drawData->bufferId));
-            GL_ASSERT(glDrawArrays(GL_TRIANGLES, 0, drawData->count));
+
+            switch (drawData->type)
+            {
+            case VertexBufferType::LINE:
+                GL_ASSERT(glDrawArrays(GL_LINES, 0, drawData->count));
+                break;
+            case VertexBufferType::TRIANGLE:
+                GL_ASSERT(glDrawArrays(GL_TRIANGLES, 0, drawData->count));
+                break;
+
+            default:
+                RPP_UNREACHABLE();
+            }
+
             GL_ASSERT(glBindVertexArray(0));
             return TRUE;
         }
@@ -319,8 +332,14 @@ namespace rpp
             GL_ASSERT(glUseProgram(useData->programId));
             return TRUE;
         }
+        case GraphicsCommandType::DELETE_PIPELINE:
+        {
+            DeletePipelineCommandData *deleteData = (DeletePipelineCommandData *)command.data;
+            GL_ASSERT(glDeleteProgram(deleteData->programId));
+            return TRUE;
+        }
         default:
-            return FALSE;
+            RPP_UNREACHABLE();
         }
     }
 } // namespace rpp

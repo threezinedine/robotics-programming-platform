@@ -93,6 +93,7 @@ namespace rpp
         u8 elementCount;   ///< The number of components in the attribute (e.g., 3 for vec3).
     };
 
+    // TODO: Rename the poniter -> pBufferId
     /**
      * @brief The data structure for the create vertex buffer command.
      */

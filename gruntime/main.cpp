@@ -39,6 +39,7 @@ int main(void)
         Program program(vertexShaderSource, fragmentShaderSource);
 
         Rectangle rectangle(0.6f, 0.0f, 0.1f, 0.1f);
+        Line line({-0.5f, -0.5f}, {0.5f, 0.5f});
 
         while (!renderer.GetWindow()->ShouldWindowClose())
         {
@@ -46,6 +47,8 @@ int main(void)
 
             program.Use();
             rectangle.Draw();
+
+            line.Draw();
 
             renderer.PostDraw();
             renderer.Present();
