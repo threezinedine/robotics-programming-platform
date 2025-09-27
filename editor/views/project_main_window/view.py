@@ -7,6 +7,7 @@ from models import Application
 from utils.dependency_injection import Depend, GetObject
 from utils.logger import logger  # type: ignore
 from .view_model import ProjectMainWindowViewModel
+from functools import partial
 
 
 @Depend(ProjectMainWindowViewModel)
@@ -54,3 +55,4 @@ class ProjectMainWindow(QMainWindow):
             action = QAction(actionName, self)
             self.ui.recentProjectsMenu.addAction(action)
             self.recentProjectsActions.append(action)
+            action.triggered.connect(partial(self.viewModel.LoadProject, recentProject))

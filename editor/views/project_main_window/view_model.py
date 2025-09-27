@@ -60,6 +60,11 @@ class ProjectMainWindowViewModel:
             self.projectStateModel.IsProjectLoaded = True
             self.ProjectNameSignal.Emit(self.ProjectName)
 
+        self.applicationModel.application.recentProjects.remove(projectPath)
+        self.applicationModel.application.recentProjects.insert(0, projectPath)
+
+        self.applicationModel.Save()
+
     def LoadApplicationData(self) -> None:
         self.applicationModel.Create()
         self.applicationModel.Load()
@@ -113,3 +118,14 @@ class ProjectMainWindowViewModel:
         self.applicationModel.RecentProjectsSignal.Emit(
             self.applicationModel.application
         )
+
+    def OpenProject(self, projectPath: str) -> None:
+        """
+        Open a project from the given path.
+
+        Parameters
+        ----------
+        projectPath : str
+            The absolute path to the project directory (e.g., C:/path/to/project).
+        """
+        self.LoadProject(projectPath)

@@ -141,3 +141,36 @@ def test_auto_load_recent_projects(
     assert mainWindow.windowTitle() == "Project - Project2"
     assert len(mainWindow.viewModel.RecentProjects) == 2
     assert len(mainWindow.ui.recentProjectsMenu.actions()) == 2
+
+
+def test_open_project(
+    qtbot: QtBot,
+    uiConfig: None,
+    fs: FakeFilesystem,
+) -> None:
+    EnvironmentBuilder().AddApplication(
+        ApplicationBuilder().AddRecentProject("Project2").AddRecentProject("Project1")
+    ).AddProject(ProjectBuilder("Project1")).AddProject(
+        ProjectBuilder("Project2")
+    ).Build()
+
+    mainWindow = GetObject(ProjectMainWindow)
+    qtbot.addWidget(mainWindow)
+    mainWindow.show()
+
+    mainWindow.ui.recentProjectsMenu.actions()[0].trigger()
+
+    assert mainWindow.windowTitle() == "Project - Project2"
+    assert len(mainWindow.viewModel.RecentProjects) == 2
+    assert len(mainWindow.ui.recentProjectsMenu.actions()) == 2
+
+    mainWindow.ui.recentProjectsMenu.actions()[1].trigger()
+    assert mainWindow.windowTitle() == "Project - Project1"
+
+    ApplicationAssert(
+        version="1.0.0",
+        recentProjects=[
+            "Project1",
+            "Project2",
+        ],
+    ).Assert()
