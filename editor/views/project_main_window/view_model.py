@@ -140,4 +140,5 @@ class ProjectMainWindowViewModel:
         functionModel.CreateNewFunction("NewFunction")
         functionModel.Save()
 
+        self.projectStateModel.newestItemName = "NewFunction.rppfunc"
         self.projectStateModel.projectStructureChangedSignal.Emit(None)

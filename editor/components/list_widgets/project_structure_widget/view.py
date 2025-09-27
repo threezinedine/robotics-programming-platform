@@ -1,5 +1,6 @@
 from typing import Any
 from PyQt6.QtWidgets import QTreeWidget, QWidget
+from PyQt6.QtCore import Qt
 from utils.logger import logger  # type: ignore
 from utils.dependency_injection import GetObject
 from .view_model import ProjectStructureWidgetViewModel
@@ -28,14 +29,28 @@ class ProjectStructureWidget(QTreeWidget):
             self._UpdateProjectStructure
         )
 
+        self.itemChanged.connect(self._ItemChanged)
+
     def _UpdateProjectStructure(self, _: Any) -> None:
-        logger.debug("Updating the project structure view.")
         self.viewModel.ReloadProjectStructure()
-        logger.debug(f"New project structure: {self.viewModel.projectStructure}")
 
         self.clear()
 
         for item in self.viewModel.projectStructure:
-            if isinstance(item, str) and item.endswith(".rppfunc"):
-                tree_item = ProjectStructureItem(item)
-                self.addTopLevelItem(tree_item)
+            if isinstance(item, tuple):
+                treeItem = ProjectStructureItem(item)
+                treeItem.setFlags(
+                    treeItem.flags() | Qt.ItemFlag.ItemIsEditable
+                )  # Make it editable
+                self.addTopLevelItem(treeItem)
+
+                if item[0] == self.projectState.newestItemName:
+                    treeItem.setSelected(True)
+                    self.editItem(treeItem)
+
+    def _ItemChanged(
+        self,
+        item: ProjectStructureItem,
+        column: int,
+    ) -> None:
+        self.viewModel.ChangeFunctionName(item.folder, item.text(0))

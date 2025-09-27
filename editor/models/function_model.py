@@ -3,6 +3,7 @@ from Engine import (
     Function,
     FunctionDescription,
     ToString_FunctionDescription,
+    FromString_FunctionDescription,
 )
 from utils.dependency_injection import Depend
 from .project_state import ProjectStateModel
@@ -24,6 +25,12 @@ class FunctionModel:
         self.description.name = functionName
         self.function = Function.CreateFunction(self.description)
 
+    def FromFile(self, filePath: str) -> None:
+        with open(filePath, "r") as f:
+            content = f.read()
+            self.description = FromString_FunctionDescription(content)
+            self.function = Function.CreateFunction(self.description)
+
     def Save(self) -> None:
         assert self.function is not None, "Function is not created yet."
         assert self.description is not None, "Function description is not created yet."
@@ -38,3 +45,21 @@ class FunctionModel:
 
         with open(filePath, "w") as f:
             f.write(ToString_FunctionDescription(self.description))
+
+    def ChangeName(self, newName: str) -> None:
+        assert self.description is not None, "Function description is not created yet."
+        assert (
+            self.projectStateModel.CurrentProject is not None
+        ), "No project is currently loaded."
+
+        oldFilePath = os.path.join(
+            self.projectStateModel.projectDir,
+            f"{self.description.name}.rppfunc",
+        )
+        newFilePath = os.path.join(
+            self.projectStateModel.projectDir,
+            f"{newName}.rppfunc",
+        )
+
+        os.rename(oldFilePath, newFilePath)
+        self.description.name = newName

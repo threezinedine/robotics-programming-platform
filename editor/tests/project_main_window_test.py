@@ -1,5 +1,6 @@
 import os
 import pytest  # type: ignore
+from PyQt6.QtCore import Qt
 from pytestqt.qtbot import QtBot
 from views.project_main_window import ProjectMainWindow
 from utils.dependency_injection import GetObject
@@ -207,5 +208,18 @@ def test_create_new_function_placeholder(
     ).AddFunctionFile(FunctionFileAssert("NewFunction")).Assert()
 
     assert (
-        mainWindow.ui.projectStructure.count() == 1
+        mainWindow.ui.projectStructure.topLevelItem(0).text(0) == "NewFunction"
     ), "There should be one item in the project structure."
+
+    item = mainWindow.ui.projectStructure.topLevelItem(0)
+    itemWidget = mainWindow.ui.projectStructure.itemWidget(item, 0)
+    qtbot.keyClicks(itemWidget, "ewFunction", Qt.KeyboardModifier.NoModifier, delay=10)  # type: ignore
+    qtbot.keyClick(itemWidget, Qt.Key.Key_Enter)  # type: ignore
+    qtbot.wait(100)  # Wait for the signal to be processed
+
+    ProjectAssert(
+        ProjectDescriptionAssert(
+            projectDir=os.getcwd(),
+            projectName="TestProject",
+        )
+    ).AddFunctionFile(FunctionFileAssert("ewFunction")).Assert()

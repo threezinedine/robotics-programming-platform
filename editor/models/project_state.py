@@ -31,6 +31,10 @@ class ProjectStateModel:
         self.isProjectLoadedSignal = Signal()
 
         self.projectStructureChangedSignal = Signal()
+        self.newestItemName = ""
+        """
+        Temporary storage for something like the just created file/folder name.
+        """
 
     @property
     def CurrentProject(self) -> Project | None:
