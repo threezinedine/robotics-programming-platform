@@ -116,7 +116,11 @@
 			"xlocnum": "cpp",
 			"xloctime": "cpp",
 			"xstring": "cpp",
-			"xtree": "cpp"
+			"xtree": "cpp",
+			"barrier": "cpp",
+			"complex": "cpp",
+			"stack": "cpp",
+			"typeindex": "cpp"
 		}
 	}
 }

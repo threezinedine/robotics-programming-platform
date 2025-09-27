@@ -1,44 +1,55 @@
-#include "core/core.h"
+#include "applications/applications.h"
 
 RPP_ENABLE_MEMORY_TRACKING;
 
 using namespace rpp;
 
+const char *vertexShaderSource = R"(
+#version 330 core
+
+layout(location = 0) in vec2 aPos;
+
+void main()
+{
+    gl_Position = vec4(aPos, 0.0, 1.0);
+}
+)";
+
+const char *fragmentShaderSource = R"(
+#version 330 core
+out vec4 FragColor;
+
+void main()
+{
+    FragColor = vec4(1.0);
+}
+)";
+
 int main(void)
 {
     SingletonManager::Initialize();
     Logging::GetInstance()->Setup(u8(HandlerType::CONSOLE), LogLevel::DEBUG);
+    Graphics::Init();
 
-    Graphics graphics;
-
-    graphics.Init();
-    RPP_LOG_INFO("Graphics initialized successfully.");
-    RPP_LOG_ERROR("Graphics initialization failed.");
-
-    Scope<Window> window = graphics.CreateWindow(800, 600, "RPP Window");
-    String title = "RPP Window - \n";
-
-    String msg = Format("Memory allocated: {} bytes\n", GetMemoryAllocated());
-    Json json(R"({"test": 20})");
-
-    print(Format("{}\n", json.ToString()).CStr());
-
-    while (!window->ShouldWindowClose())
     {
-        // Main loop
-        window->PollEvents();
+		Renderer renderer(800, 600, "RPP Window");
+		Program program(renderer, vertexShaderSource, fragmentShaderSource);
 
-        // Clear color command
-        ClearColorCommandData clearColorData = {{0.1f, 0.2f, 0.3f, 1.0f}};
-        GraphicsCommandData commandData = {GraphicsCommandType::CLEAR_COLOR, &clearColorData};
-        window->ExecuteCommand(commandData);
+		Rectangle rectangle(renderer);
 
-        // Swap buffers command
-        GraphicsCommandData swapBuffersCommand = {GraphicsCommandType::SWAP_BUFFERS, nullptr};
-        window->ExecuteCommand(swapBuffersCommand);
+		while (!renderer.GetWindow()->ShouldWindowClose())
+		{
+			renderer.PreDraw();
+
+			program.Use();
+			rectangle.Draw();
+
+			renderer.PostDraw();
+			renderer.Present();
+		}
     }
 
-    graphics.Shutdown();
+    Graphics::Shutdown();
 
     SingletonManager::Shutdown();
     return 0;
