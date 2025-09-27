@@ -12,7 +12,8 @@ namespace rpp
     };
 
     /**
-     * @brief Represents a project with a name.
+     * @brief Main object which is used for interacting with project (a workspace for functions, and classes, emulators). This object is
+     *      used in Python binding and JSON mapping and the graphical runtime environment (the MCU runtime only receives the bytecode).
      */
     class RPP_PYTHON_BINDING Project
     {
@@ -23,9 +24,15 @@ namespace rpp
         ~Project();
 
     public:
+        /// @brief Create a project from the given description.
+        /// @param desc The description of the project.
+        /// @return The created project.
         static Project CreateProject(const ProjectDescription &desc) RPP_PYTHON_BINDING;
 
     public:
+        /**
+         * @brief Get the name of the project.
+         */
         inline const String &GetName() RPP_PYTHON_BINDING;
 
     private:

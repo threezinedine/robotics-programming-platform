@@ -20,4 +20,9 @@ namespace rpp
     Function::~Function()
     {
     }
+
+    Function Function::CreateFunction(const FunctionDescription &desc)
+    {
+        return Function(desc);
+    }
 } // namespace rpp
