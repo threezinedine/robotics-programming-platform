@@ -30,6 +30,7 @@ foreach(MODULES_SRC_TEST_FILE ${MODULES_SRC_TEST})
 endforeach()
 
 RPPFindPackage(rpp-json "Dependencies")
+RPPFindPackage(rpp-imgui "Dependencies")
 
 # -------------- Library target --------------
 set(CMAKE_FOLDER "Libraries")
@@ -39,6 +40,7 @@ target_link_libraries(
     ${PROJECT_NAME}
     PUBLIC
     RPPCore
+    rpp-imgui
 )
 
 target_include_directories(

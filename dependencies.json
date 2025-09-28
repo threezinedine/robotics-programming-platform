@@ -19,5 +19,10 @@
     {
         "name": "pybind",
         "url": "https://github.com/pybind/pybind11.git"
+    },
+    {
+        "name": "imgui",
+        "url": "https://github.com/ocornut/imgui.git",
+        "commit": "e4e3c2cc232218019230b470655c69c16ed348ef"
     }
 ]

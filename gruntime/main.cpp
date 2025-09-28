@@ -1,4 +1,5 @@
 #include "applications/applications.h"
+#include "imgui.h"
 
 RPP_ENABLE_MEMORY_TRACKING;
 
@@ -55,6 +56,9 @@ int main(void)
         Renderer::ActivateRenderer(renderer2);
         u32 program2 = Program::Create(vertexShaderSource, fragmentShaderSource2);
         u32 rectangle2 = Rectangle::Create();
+
+        Renderer::ActivateRenderer(renderer3);
+        u32 imgui = ImGuiImpl::Create();
 
         f32 delta = 0;
 
@@ -124,16 +128,19 @@ int main(void)
                 {
                     shouldApplicationClose = FALSE;
 
+                    ImGuiImpl::PrepareFrame(imgui);
                     Renderer::PreDraw();
 
+                    ImGui::Begin("Test Window");
+                    ImGui::Text("Hello, world!");
+                    ImGui::End();
+
                     Renderer::PostDraw();
+                    ImGuiImpl::Render(imgui);
 
                     Renderer::Present();
                 }
             }
-
-            delta = (f32)timer.GetElapsedTimeInMilliseconds();
-            RPP_LOG_INFO("Frame Time: {} ms", delta);
 
             if (shouldApplicationClose)
             {

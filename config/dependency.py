@@ -48,11 +48,8 @@ def InstallCppDependencies() -> None:
                 [
                     "git",
                     "clone",
-                    (
-                        dep.url
-                        if dep.commit is None
-                        else f"{dep.url} --revision={dep.commit}"
-                    ),
+                    dep.url,
+                    ("" if dep.commit is None else f"--revision={dep.commit}"),
                     dependenciesDir,
                 ],
                 check=True,

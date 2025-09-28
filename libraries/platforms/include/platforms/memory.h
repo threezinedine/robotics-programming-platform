@@ -53,7 +53,6 @@ void Deallocate(void *ptr);
     do                  \
     {                   \
         delete ptr;     \
-        ptr = nullptr;  \
     } while (0)
 
 /**

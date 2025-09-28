@@ -24,7 +24,8 @@ namespace rpp
     class Storage
     {
     public:
-        Storage()
+        Storage(StorageDeallocator<T> deallocator = nullptr)
+            : m_deallocator(deallocator), m_elements(), m_freeIds()
         {
         }
 
