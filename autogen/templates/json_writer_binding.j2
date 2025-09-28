@@ -34,7 +34,7 @@ template<>
 {{ struct.name }} FromString<{{ struct.name }}>(const String &str)
 {
     Json json(str);
-    {{ struct.name }} value;
+    {{ struct.name }} value = {};
 
     {% for field in struct.fields-%}
     {% set jsonKey = isContainsJsonKeyAnnotation(field)-%}

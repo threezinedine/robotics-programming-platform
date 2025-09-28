@@ -33,7 +33,7 @@ template<>
 Version FromString<Version>(const String& str)
 {
     Json json(str);
-    Version value;
+    Version value = {};
 
     value.major = json.Get<char>(String("major"), value.major);
     value.minor = json.Get<char>(String("minor"), value.minor);
@@ -78,7 +78,7 @@ template<>
 Test FromString<Test>(const String& str)
 {
     Json json(str);
-    Test value;
+    Test value = {};
 
     value.count = json.Get<int>(String("count"), value.count);
     return value;
@@ -98,7 +98,7 @@ template<>
 Container FromString<Container>(const String& str)
 {
     Json json(str);
-    Container value;
+    Container value = {};
 
     value.id = json.Get<int>(String("id"), value.id);
     FromString(json.Get<String>(String("test"), String("{}")), value.test);
@@ -147,7 +147,7 @@ template<>
 Item FromString<Item>(const String& str)
 {
     Json json(str);
-    Item value;
+    Item value = {};
 
     value.id = json.Get<int>(String("id"), value.id);
 
