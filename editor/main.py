@@ -10,6 +10,7 @@ from Engine import (
     Logging,
     SingletonManager,
     HandlerType,
+    Renderer,
 )
 from utils.config import StartupConfig
 
@@ -18,6 +19,7 @@ def main():
     SingletonManager.Initialize()
     Logging.Setup(HandlerType.CONSOLE.value, LogLevel.DEBUG)
     StartupConfig()
+    Renderer.Initialize()
 
     logger.info("Application started.")
     logger.info(f"Current Working Thread ID: {os.getpid()}")
@@ -28,6 +30,7 @@ def main():
     app.exec()
     logger.info("Application exited.")
 
+    Renderer.Shutdown()
     SingletonManager.Shutdown()
 
 

@@ -16,7 +16,7 @@ namespace rpp
             throw std::runtime_error("Failed to initialize graphics backend");
         }
         s_currentRenderers = CreateScope<Storage<Renderer::RendererData>>();
-		RPP_LOG_DEBUG("Rendering system initialized successfully");
+        RPP_LOG_DEBUG("Rendering system initialized successfully");
     }
 
     void Renderer::Shutdown()
@@ -71,6 +71,7 @@ namespace rpp
 
     void Renderer::ActivateRenderer(u32 renderId)
     {
+        RPP_ASSERT(s_currentRenderers != nullptr);
         if (s_currentRenderers->Get(renderId) == nullptr)
         {
             return;
@@ -81,6 +82,7 @@ namespace rpp
 
     void Renderer::DestroyRenderer(u32 renderId)
     {
+        RPP_ASSERT(s_currentRenderers != nullptr);
         if (s_currentRenderers->Get(renderId) == nullptr)
         {
             throw std::runtime_error("Invalid renderer ID");

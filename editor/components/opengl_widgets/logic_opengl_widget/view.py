@@ -1,4 +1,3 @@
-from PyQt6.QtGui import QCloseEvent
 from PyQt6.QtWidgets import QWidget
 from PyQt6.QtOpenGLWidgets import QOpenGLWidget
 from PyQt6.QtCore import Qt
@@ -19,10 +18,10 @@ class LogicOpenGLWidget(QOpenGLWidget):
         self.program: Program | None = None
 
     def initializeGL(self) -> None:
-        logger.debug("Initializing OpenGL context for LogicOpenGLWidget.")
         self.renderer = Renderer.CreateRenderer(
             self.width(), self.height(), "Logic OpenGL Widget"
         )
+        logger.info(f"Created renderer with ID: {self.renderer}")
 
     #         self.program = Program(
     #             """
@@ -62,6 +61,8 @@ class LogicOpenGLWidget(QOpenGLWidget):
 
         # Renderer.PostDraw()
 
-    def closeEvent(self, a0: QCloseEvent) -> None:
+    def Close(self) -> None:
         logger.info("Close OpenGL Widget")
-        return super().closeEvent(a0)
+
+        if self.renderer >= 0:
+            Renderer.DestroyRenderer(self.renderer)

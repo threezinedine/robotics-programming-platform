@@ -9,7 +9,6 @@ from utils.dependency_injection import Depend, GetObject
 from utils.logger import logger  # type: ignore
 from .view_model import ProjectMainWindowViewModel
 from functools import partial
-from Engine import Renderer
 
 
 @Depend(ProjectMainWindowViewModel)
@@ -28,7 +27,7 @@ class ProjectMainWindow(QMainWindow):
         self.newProjectDialog = GetObject(NewProjectDialog, parent=self)
         self.recentProjectsActions: list[QAction] = []
 
-        Renderer.Initialize()
+        # Renderer.Initialize()
         self._SetupUI()
 
         # Setting up the application
@@ -67,4 +66,4 @@ class ProjectMainWindow(QMainWindow):
 
     def closeEvent(self, a0: QCloseEvent) -> None:
         logger.info("Closing the main window")
-        Renderer.Shutdown()
+        # Renderer.Shutdown()
