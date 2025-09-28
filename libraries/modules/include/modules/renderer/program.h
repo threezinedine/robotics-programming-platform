@@ -16,8 +16,7 @@ namespace rpp
          */
         struct ProgramData
         {
-            u32 rendererId; ///< The id of the renderer that created this program.
-            u32 programId;  ///< The unique identifier for the program in the graphics API.
+            u32 programId; ///< The unique identifier for the program in the graphics API.
         };
 
     public:

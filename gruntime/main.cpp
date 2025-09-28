@@ -25,6 +25,15 @@ void main()
 }
 )";
 
+const char *fragmentShaderSource2 = R"(
+#version 330 core
+out vec4 FragColor;
+void main()
+{
+    FragColor = vec4(0.0, 1.0, 0.0, 1.0);
+}
+)";
+
 int main(void)
 {
     SingletonManager::Initialize();
@@ -39,10 +48,14 @@ int main(void)
         HighResTimer timer;
 
         Renderer::ActivateRenderer(renderer1);
-
         u32 program = Program::Create(vertexShaderSource, fragmentShaderSource);
 
         u32 rectangle = Rectangle::Create();
+
+        Renderer::ActivateRenderer(renderer2);
+        u32 program2 = Program::Create(vertexShaderSource, fragmentShaderSource2);
+        u32 rectangle2 = Rectangle::Create();
+
         f32 delta = 0;
 
         while (TRUE)
@@ -66,7 +79,6 @@ int main(void)
                     Renderer::PreDraw();
 
                     Program::Use(program);
-
                     Rectangle::Draw(rectangle, {-0.5f, -0.5f, 0.1f, 0.1f});
 
                     Renderer::PostDraw();
@@ -89,6 +101,9 @@ int main(void)
                     shouldApplicationClose = FALSE;
 
                     Renderer::PreDraw();
+
+                    Program::Use(program2);
+                    Rectangle::Draw(rectangle2, {-0.5f, -0.5f, 0.1f, 0.1f});
 
                     Renderer::PostDraw();
 

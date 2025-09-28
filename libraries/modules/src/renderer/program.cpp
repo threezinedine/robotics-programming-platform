@@ -25,7 +25,6 @@ namespace rpp
 
         u32 programId = s_programs->Create();
         ProgramData *data = s_programs->Get(programId);
-        data->rendererId = Renderer::GetCurrentRendererId();
 
         u32 vertexShaderId = 0;
 
@@ -90,8 +89,10 @@ namespace rpp
     {
         RPP_ASSERT(s_programs != nullptr);
 
+        ProgramData *data = s_programs->Get(programId);
+
         UsePipelineCommandData useCommand = {};
-        useCommand.programId = programId;
+        useCommand.programId = data->programId;
 
         GraphicsCommandData useCommandData = {GraphicsCommandType::USE_PIPELINE, &useCommand};
         Renderer::GetWindow()->ExecuteCommand(useCommandData);

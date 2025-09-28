@@ -8,21 +8,26 @@
 #include <functional>
 
 #if defined(RPP_DEBUG)
-#define GL_ASSERT(expression)                                                                                                    \
-    expression;                                                                                                                  \
-    {                                                                                                                            \
-        GLenum error = glGetError();                                                                                             \
-        if (error != GL_NO_ERROR)                                                                                                \
-        {                                                                                                                        \
-            char errorMessage[2048];                                                                                             \
-            char finalMessage[4096];                                                                                             \
-            u32 size = sizeof(errorMessage);                                                                                     \
-            getError(error, errorMessage, &size);                                                                                \
-            std::snprintf(finalMessage, sizeof(finalMessage), "OpenGL Error: %s at: %s:%d\n", errorMessage, __FILE__, __LINE__); \
-            print(finalMessage, ConsoleColor::RED);                                                                              \
-            __debugbreak();                                                                                                      \
-        }                                                                                                                        \
-    }
+#define GL_ASSERT(expression)                                                                                                        \
+    do                                                                                                                               \
+    {                                                                                                                                \
+        while (glGetError() != GL_NO_ERROR)                                                                                          \
+            ;                                                                                                                        \
+        expression;                                                                                                                  \
+        {                                                                                                                            \
+            GLenum error = glGetError();                                                                                             \
+            if (error != GL_NO_ERROR)                                                                                                \
+            {                                                                                                                        \
+                char errorMessage[2048];                                                                                             \
+                char finalMessage[4096];                                                                                             \
+                u32 size = sizeof(errorMessage);                                                                                     \
+                getError(error, errorMessage, &size);                                                                                \
+                std::snprintf(finalMessage, sizeof(finalMessage), "OpenGL Error: %s at: %s:%d\n", errorMessage, __FILE__, __LINE__); \
+                print(finalMessage, ConsoleColor::RED);                                                                              \
+                __debugbreak();                                                                                                      \
+            }                                                                                                                        \
+        }                                                                                                                            \
+    } while (0)
 #else
 #define GL_ASSERT(expression) expression
 #endif
