@@ -40,7 +40,7 @@ int main(void)
         Rectangle rectangle(0.6f, 0.0f, 0.1f, 0.1f);
         Line line({-0.5f, -0.5f}, {0.5f, 0.5f});
 
-        while (!Renderer::GetCurrentRenderer()->GetWindow()->ShouldWindowClose())
+        while (!Renderer::GetWindow()->ShouldWindowClose())
         {
             Renderer::ActivateRenderer(rendererId);
             Renderer::PreDraw();

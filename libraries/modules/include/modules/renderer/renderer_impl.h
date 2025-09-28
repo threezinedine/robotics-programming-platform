@@ -1,5 +1,6 @@
 #pragma once
 #include "core/core.h"
+#include "modules/storage.h"
 
 #define INVALID_RENDERER_INDEX u32(-1)
 
@@ -10,26 +11,15 @@ namespace rpp
      */
     class RPP_PYTHON_BINDING Renderer
     {
-    public:
+    private:
         /**
-         * @brief Constructs a default renderer. The default width, height, and title of the window are 800, 600, and 'RPP Window' respectively.
+         * All information related to the renderer instance.
          */
-        Renderer();
-
-        /**
-         * @brief Constructs a renderer with a window of the specified width, height, and title.
-         * @param width The width of the window.
-         * @param height The height of the window.
-         * @param title The title of the window.
-         */
-        Renderer(u32 width, u32 height, const String &title);
-
-        Renderer(const Renderer &) = delete;
-
-        /**
-         * @brief Destructs the renderer and frees associated resources.
-         */
-        ~Renderer();
+        struct RendererData
+        {
+            Scope<Window> window; ///< The window associated with this renderer.
+            u32 rendererId;       ///< The unique identifier for the renderer instance.
+        };
 
     public:
         /**
@@ -44,19 +34,16 @@ namespace rpp
 
     private:
         /**
-         * @brief Doing some operations which must be run before drawing. E.g., polling events, clearing the screen, etc.
+         * Each time a renderer is created, it is added to this array. When Active() is called, it deactivates all other renderers.
          */
-        void PreDrawImpl();
+        static Scope<Storage<RendererData>> s_currentRenderers;
+
+        static u32 s_currentRendererIndex; ///< The index of the currently active renderer. If no renderer is active, it is set to `INVALID_RENDERER_INDEX`.
 
         /**
-         * @brief Doing some operations which must be run after drawing. E.g., post-processing, etc.
+         * Used for other components to get the current active renderer. If no renderer is active, an exception will be thrown.
          */
-        void PostDrawImpl();
-
-        /**
-         * @brief Present the rendered image to the screen (swap buffers).
-         */
-        void PresentImpl();
+        static RendererData *GetCurrentRenderer();
 
     public:
         /**
@@ -64,36 +51,48 @@ namespace rpp
          *
          * @return The window instance.
          */
-        inline Scope<Window> &GetWindow() { return m_window; }
+        static Scope<Window> &GetWindow() { return GetCurrentRenderer()->window; }
 
-    private:
         /**
-         * Each time a renderer is created, it is added to this array. When Active() is called, it deactivates all other renderers.
+         * @brief Create a new renderer instance with its own window.
+         *
+         * @param width The width of the window.
+         * @param height The height of the window.
+         * @param title The title of the window.
+         *
+         * @return The id of the created renderer instance. This id is used to activate or destroy the renderer later.
+         *
+         * @note The created renderer is not active by default. You need to call `ActivateRenderer` with the returned id to make it active.
          */
-        static Array<Renderer *> s_currentRenderers;
-
-        static u32 s_currentRendererIndex; ///< The index of the currently active renderer. If no renderer is active, it is set to `INVALID_RENDERER_INDEX`.
-
-    public:
         static u32 CreateRenderer(u32 width, u32 height, const String &title) RPP_PYTHON_BINDING;
 
         /**
-         * Used for other components to get the current active renderer. If no renderer is active, an exception will be thrown.
+         * @brief Activate the renderer with the given id. This will deactivate any other active renderer.
          */
-        static Renderer *GetCurrentRenderer();
-
         static void ActivateRenderer(u32 renderId) RPP_PYTHON_BINDING;
 
+        /**
+         * @brief Destroy the renderer with the given id. If the renderer is currently active, it will be deactivated first.
+         *
+         * @param renderId The id of the renderer to destroy.
+         *
+         * @throws std::runtime_error if the renderId is invalid.
+         */
         static void DestroyRenderer(u32 renderId) RPP_PYTHON_BINDING;
 
+        /**
+         * @brief All operations to be done before drawing the frame.
+         */
         static void PreDraw() RPP_PYTHON_BINDING;
 
+        /**
+         * @brief All operations to be done after drawing the frame.
+         */
         static void PostDraw() RPP_PYTHON_BINDING;
 
+        /**
+         * @brief Present the rendered frame to the window.
+         */
         static void Present() RPP_PYTHON_BINDING;
-
-    private:
-        Scope<Window> m_window; ///< The window associated with this renderer.
-        u32 m_rendererId;       ///< The unique identifier for the renderer instance.
     };
 } // namespace rpp

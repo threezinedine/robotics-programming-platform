@@ -38,7 +38,7 @@ namespace rpp
 		command.pLayout = elements;
 
 		GraphicsCommandData commandData = {GraphicsCommandType::CREATE_VERTEX_BUFFER, &command};
-		Renderer::GetCurrentRenderer()->GetWindow()->ExecuteCommand(commandData);
+		Renderer::GetWindow()->ExecuteCommand(commandData);
 	}
 
 	Rectangle::~Rectangle()
@@ -50,7 +50,7 @@ namespace rpp
 			command.pArrayId = &m_vertexArrayId;
 
 			GraphicsCommandData commandData = {GraphicsCommandType::DELETE_VERTEX_BUFFER, &command};
-			Renderer::GetCurrentRenderer()->GetWindow()->ExecuteCommand(commandData);
+			Renderer::GetWindow()->ExecuteCommand(commandData);
 		}
 	}
 
@@ -62,6 +62,6 @@ namespace rpp
 		command.count = 6;
 
 		GraphicsCommandData commandData = {GraphicsCommandType::DRAW_VERTEX_BUFFER, &command};
-		Renderer::GetCurrentRenderer()->GetWindow()->ExecuteCommand(commandData);
+		Renderer::GetWindow()->ExecuteCommand(commandData);
 	}
 } // namespace rpp
