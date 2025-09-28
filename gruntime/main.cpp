@@ -33,6 +33,7 @@ int main(void)
 
     u32 renderer1 = Renderer::CreateRenderer(800, 600, "Test");
     u32 renderer2 = Renderer::CreateRenderer(800, 600, "Test2");
+    u32 renderer3 = Renderer::CreateRenderer(800, 600, "Test3");
 
     {
         HighResTimer timer;
@@ -48,64 +49,81 @@ int main(void)
         {
             timer.Start();
 
-            b8 shouldRender1Close = FALSE;
-            b8 shouldRender2Close = FALSE;
-
-            if (renderer1 == INVALID_ID && renderer2 == INVALID_ID)
-            {
-                break;
-            }
+            b8 shouldApplicationClose = TRUE;
 
             if (renderer1 != INVALID_ID)
             {
                 Renderer::ActivateRenderer(renderer1);
-                shouldRender1Close = Renderer::GetWindow()->ShouldWindowClose();
+
+                if (Renderer::GetWindow()->ShouldWindowClose())
+                {
+                    Renderer::DestroyRenderer(renderer1);
+                    renderer1 = INVALID_ID;
+                }
+                else
+                {
+                    shouldApplicationClose = FALSE;
+                    Renderer::PreDraw();
+
+                    Program::Use(program);
+
+                    Rectangle::Draw(rectangle, {-0.5f, -0.5f, 0.1f, 0.1f});
+
+                    Renderer::PostDraw();
+
+                    Renderer::Present();
+                }
             }
 
             if (renderer2 != INVALID_ID)
             {
                 Renderer::ActivateRenderer(renderer2);
-                shouldRender2Close = Renderer::GetWindow()->ShouldWindowClose();
+
+                if (Renderer::GetWindow()->ShouldWindowClose())
+                {
+                    Renderer::DestroyRenderer(renderer2);
+                    renderer2 = INVALID_ID;
+                }
+                else
+                {
+                    shouldApplicationClose = FALSE;
+
+                    Renderer::PreDraw();
+
+                    Renderer::PostDraw();
+
+                    Renderer::Present();
+                }
             }
 
-            if (shouldRender1Close && renderer1 != INVALID_ID)
+            if (renderer3 != INVALID_ID)
             {
-                Renderer::DestroyRenderer(renderer1);
-                renderer1 = INVALID_ID;
-            }
+                Renderer::ActivateRenderer(renderer3);
 
-            if (shouldRender2Close && renderer2 != INVALID_ID)
-            {
-                Renderer::DestroyRenderer(renderer2);
-                renderer2 = INVALID_ID;
-            }
+                if (Renderer::GetWindow()->ShouldWindowClose())
+                {
+                    Renderer::DestroyRenderer(renderer3);
+                    renderer3 = INVALID_ID;
+                }
+                else
+                {
+                    shouldApplicationClose = FALSE;
 
-            if (renderer1 != INVALID_ID)
-            {
-                Renderer::ActivateRenderer(renderer1);
-                Renderer::PreDraw();
+                    Renderer::PreDraw();
 
-                Program::Use(program);
+                    Renderer::PostDraw();
 
-                Rectangle::Draw(rectangle, {-0.5f, -0.5f, 0.1f, 0.1f});
-
-                Renderer::PostDraw();
-
-                Renderer::Present();
-            }
-
-            if (renderer2 != INVALID_ID)
-            {
-                Renderer::ActivateRenderer(renderer2);
-                Renderer::PreDraw();
-
-                Renderer::PostDraw();
-
-                Renderer::Present();
+                    Renderer::Present();
+                }
             }
 
             delta = (f32)timer.GetElapsedTimeInMilliseconds();
             RPP_LOG_INFO("Frame Time: {} ms", delta);
+
+            if (shouldApplicationClose)
+            {
+                break;
+            }
         }
     }
 
@@ -117,6 +135,11 @@ int main(void)
     if (renderer2 != INVALID_ID)
     {
         Renderer::DestroyRenderer(renderer2);
+    }
+
+    if (renderer3 != INVALID_ID)
+    {
+        Renderer::DestroyRenderer(renderer3);
     }
 
     Renderer::Shutdown();
