@@ -1,47 +1,58 @@
 #pragma once
 #include "core/core.h"
-#include "drawable.h"
+#include "modules/storage.h"
+#include "type.h"
 
 namespace rpp
 {
     /**
      * @brief Simple instance which is used for rendering rectangles.
      */
-    class RPP_PYTHON_BINDING Rectangle : public Drawable
+    class RPP_PYTHON_BINDING Rectangle
     {
+    private:
+        struct RectangleData
+        {
+            u32 rendererId;     ///< The id of the renderer associated with this rectangle.
+            u32 vertexBufferId; ///< The ID of the vertex buffer in the graphics API.
+            u32 vertexArrayId;  ///< The ID of the vertex array in the graphics API.
+        };
+
     public:
         /**
-         * @brief Constructs a unit rectangle centered at the origin (0,0) with width and height of 1.0.
+         * @brief Initialize the Rectangle storage, should be called once before using any Rectangle related features.
          */
-        Rectangle();
+        static void Initialize();
 
         /**
-         * @brief Constructs a rectangle centered at (centerX, centerY) with the specified width and height.
-         * @param centerX The x-coordinate of the rectangle's center.
-         * @param centerY The y-coordinate of the rectangle's center.
-         * @param width The width of the rectangle.
-         * @param height The height of the rectangle.
+         * @brief Shutdown the Rectangle storage, must be called once before exiting the application.
          */
-        Rectangle(f32 centerX, f32 centerY, f32 width, f32 height);
+        static void Shutdown();
 
-        Rectangle(const Rectangle &other) = delete;
+    public:
+        /**
+         * @brief Create a new rectangle instance.
+         *
+         * @return The ID of the created rectangle instance.
+         */
+        static u32 Create() RPP_PYTHON_BINDING;
 
         /**
-         * @brief Destructs the rectangle and frees associated resources.
+         * @brief Destroy the rectangle instance and free associated resources.
+         *
+         * @param rectangleId The ID of the rectangle instance to destroy.
          */
-        ~Rectangle();
+        static void Destroy(u32 rectangleId) RPP_PYTHON_BINDING;
 
         /**
          * @brief Draw the rectangle using the associated renderer.
+         * @param rectangleId The ID of the rectangle instance to draw.
+         * @param rect The rectangle parameters including center coordinates, width, and height.
          */
-        virtual void Draw() const override RPP_PYTHON_BINDING;
+        static void Draw(u32 rectangleId, const Rect &rect) RPP_PYTHON_BINDING;
 
     private:
-        f32 m_centerX;        ///< The x-coordinate of the rectangle's center.
-        f32 m_centerY;        ///< The y-coordinate of the rectangle's center.
-        f32 m_width;          ///< The width of the rectangle.
-        f32 m_height;         ///< The height of the rectangle.
-        u32 m_vertexBufferId; ///< The ID of the vertex buffer in the graphics API.
-        u32 m_vertexArrayId;  ///< The ID of the vertex array in the graphics API.
+        static Scope<Storage<RectangleData>> s_rectangles; ///< Storage for all created rectangles.
     };
+
 } // namespace rpp

@@ -22,4 +22,15 @@ namespace rpp
         f32 b RPP_JSON_KEY("b"); ///< The blue component of the color (0.0 to 1.0).
         f32 a RPP_JSON_KEY("a"); ///< The alpha (opacity) component of the color (0.0 to 1.0).
     };
+
+    /**
+     * @brief Store a rectangle defined by its center coordinates, width, and height.
+     */
+    struct RPP_JSON RPP_PYTHON_BINDING Rect
+    {
+        f32 centerX RPP_JSON_KEY("x");     ///< The x-coordinate of the rectangle's center.
+        f32 centerY RPP_JSON_KEY("y");     ///< The y-coordinate of the rectangle's center.
+        f32 width RPP_JSON_KEY("width");   ///< The width of the rectangle.
+        f32 height RPP_JSON_KEY("height"); ///< The height of the rectangle.
+    };
 } // namespace rpp

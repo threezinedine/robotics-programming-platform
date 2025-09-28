@@ -71,6 +71,7 @@ def Parse(
             "-std=c++17",
             "-I../libraries/core/include",
             "-I../libraries/modules/include",
+            "-I../libraries/platforms/include",
         ],
         unsaved_files=(
             [

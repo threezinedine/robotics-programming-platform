@@ -399,3 +399,28 @@ def FromString_Work(s: str) -> Work:
 """
 
     AssertGenerateResult(expected, result)
+
+
+def test_bind_float_attributes(generateFunc: GenerateFuncType) -> None:
+    result = generateFunc(
+        """
+struct RPP_PYTHON_BINDING Rect {
+    float centerX;
+    float centerY;
+    float width;
+    float height;
+};
+""",
+        "pyi_struct_binding.j2",
+        [],
+    )
+
+    expected = """
+class Rect:
+    centerX: float
+    centerY: float
+    width: float
+    height: float
+"""
+
+    AssertGenerateResult(expected, result)

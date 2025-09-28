@@ -8,8 +8,9 @@ namespace rpp
      */
     enum class GraphicsCommandType
     {
-        CLEAR_COLOR,  ///< Specify the screen color.
-        SWAP_BUFFERS, ///< Swap the front and back buffers.
+        CLEAR_COLOR,      ///< Specify the screen color.
+        ACTIVATE_CONTEXT, ///< Activate the rendering context.
+        SWAP_BUFFERS,     ///< Swap the front and back buffers.
 
         CREATE_VERTEX_BUFFER, ///< Create a vertex buffer.
         DELETE_VERTEX_BUFFER, ///< Delete a vertex buffer.
@@ -40,6 +41,10 @@ namespace rpp
     struct ClearColorCommandData
     {
         f32 color[4]; ///< The RGBA color values.
+    };
+
+    struct ActivateContextCommandData
+    {
     };
 
     /**

@@ -3,14 +3,30 @@
 
 namespace rpp
 {
-    Program::Program()
-        : m_programId(0)
+    Scope<Storage<Program::ProgramData>> Program::s_programs = nullptr;
+
+    void Program::Initialize()
     {
+        RPP_ASSERT(s_programs == nullptr);
+
+        s_programs = CreateScope<Storage<ProgramData>>();
     }
 
-    Program::Program(const String &vertexShaderSource, const String &fragmentShaderSource)
-        : m_programId(0)
+    void Program::Shutdown()
     {
+        RPP_ASSERT(s_programs != nullptr);
+
+        s_programs.reset();
+    }
+
+    u32 Program::Create(const String &vertexShaderSource, const String &fragmentShaderSource)
+    {
+        RPP_ASSERT(s_programs != nullptr);
+
+        u32 programId = s_programs->Create();
+        ProgramData *data = s_programs->Get(programId);
+        data->rendererId = Renderer::GetCurrentRendererId();
+
         u32 vertexShaderId = 0;
 
         CreateShaderCommandData vertexShaderCommand = {};
@@ -35,7 +51,7 @@ namespace rpp
         CreatePipelineCommandData pipelineCommand = {};
         pipelineCommand.vertexShaderId = vertexShaderId;
         pipelineCommand.fragmentShaderId = fragmentShaderId;
-        pipelineCommand.pProgramId = &m_programId;
+        pipelineCommand.pProgramId = &data->programId;
 
         GraphicsCommandData pipelineCommandData = {GraphicsCommandType::CREATE_PIPELINE, &pipelineCommand};
         Renderer::GetWindow()->ExecuteCommand(pipelineCommandData);
@@ -52,20 +68,30 @@ namespace rpp
 
         GraphicsCommandData deleteFragmentShaderCommandData = {GraphicsCommandType::DELETE_SHADER, &deleteFragmentShaderCommand};
         Renderer::GetWindow()->ExecuteCommand(deleteFragmentShaderCommandData);
+
+        return programId;
     }
 
-    Program::~Program()
+    void Program::Destroy(u32 programId)
     {
+        RPP_ASSERT(s_programs != nullptr);
+
+        ProgramData *data = s_programs->Get(programId);
+
         DeletePipelineCommandData deleteCommand = {};
-        deleteCommand.programId = m_programId;
+        deleteCommand.programId = data->programId;
         GraphicsCommandData deleteCommandData = {GraphicsCommandType::DELETE_PIPELINE, &deleteCommand};
         Renderer::GetWindow()->ExecuteCommand(deleteCommandData);
+
+        s_programs->Free(programId);
     }
 
-    void Program::Use() const
+    void Program::Use(u32 programId)
     {
+        RPP_ASSERT(s_programs != nullptr);
+
         UsePipelineCommandData useCommand = {};
-        useCommand.programId = m_programId;
+        useCommand.programId = programId;
 
         GraphicsCommandData useCommandData = {GraphicsCommandType::USE_PIPELINE, &useCommand};
         Renderer::GetWindow()->ExecuteCommand(useCommandData);

@@ -1,5 +1,6 @@
 #pragma once
 #include "core/core.h"
+#include "modules/storage.h"
 
 namespace rpp
 {
@@ -9,34 +10,47 @@ namespace rpp
      */
     class RPP_PYTHON_BINDING Program
     {
-    public:
+    private:
         /**
-         * @brief Constructs a Program object with the specified vertex and fragment shader source code.
+         * @brief All information related to a graphics pipeline (shader program).
          */
-        Program();
-
-        /**
-         * @brief Constructs a Program object with the specified vertex and fragment shader source code.
-         */
-        Program(const String &vertexShaderSource, const String &fragmentShaderSource);
-
-        /**
-         * @brief Can be constructed only with a renderer instance, the actual program is created when the shader sources are provided.
-         */
-        Program(const Program &) = delete;
-
-        /**
-         * @brief Destructs the Program and frees associated resources.
-         */
-        ~Program();
+        struct ProgramData
+        {
+            u32 rendererId; ///< The id of the renderer that created this program.
+            u32 programId;  ///< The unique identifier for the program in the graphics API.
+        };
 
     public:
+        /**
+         * @brief Initialize the Program storage, should be called once before using any Program related features.
+         */
+        static void Initialize();
+
+        /**
+         * @brief Shutdown the Program storage, must be called once before exiting the application.
+         */
+        static void Shutdown();
+
+    public:
+        /**
+         * @brief Create a new graphics pipeline (shader program) from vertex and fragment shader source code.
+         *
+         * @param vertexSource The source code for the vertex shader.
+         * @param fragmentSource The source code for the fragment shader.
+         */
+        static u32 Create(const String &vertexSource, const String &fragmentSource) RPP_PYTHON_BINDING;
+
+        /**
+         * @brief Destroy the graphics pipeline (shader program) and free associated resources.
+         */
+        static void Destroy(u32 programId) RPP_PYTHON_BINDING;
+
         /**
          * @brief Use for activating the graphics pipeline (shader program) for rendering.
          */
-        void Use() const RPP_PYTHON_BINDING;
+        static void Use(u32 programId) RPP_PYTHON_BINDING;
 
     private:
-        u32 m_programId; ///< The unique identifier for the program in the graphics API.
+        static Scope<Storage<ProgramData>> s_programs; ///< Storage for all created program IDs.
     };
 } // namespace rpp

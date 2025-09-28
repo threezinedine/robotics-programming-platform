@@ -1,5 +1,7 @@
 #include "modules/renderer/renderer_impl.h"
 #include "core/containers/containers.h"
+#include "modules/renderer/program.h"
+#include "modules/renderer/rectangle.h"
 
 namespace rpp
 {
@@ -10,17 +12,24 @@ namespace rpp
 
     void Renderer::Initialize()
     {
-        RPP_LOG_INFO("Initializing the rendering system");
+        RPP_ASSERT(s_currentRenderers == nullptr);
         if (!Graphics::Init())
         {
             throw std::runtime_error("Failed to initialize graphics backend");
         }
         s_currentRenderers = CreateScope<Storage<Renderer::RendererData>>();
+        Program::Initialize();
+        Rectangle::Initialize();
+        s_currentRendererIndex = INVALID_RENDERER_INDEX;
         RPP_LOG_DEBUG("Rendering system initialized successfully");
     }
 
     void Renderer::Shutdown()
     {
+        RPP_ASSERT(s_currentRenderers != nullptr);
+
+        Rectangle::Shutdown();
+        Program::Shutdown();
         s_currentRenderers.reset();
         Graphics::Shutdown();
         RPP_LOG_INFO("Rendering system shutdown complete");
@@ -52,6 +61,8 @@ namespace rpp
 
     Renderer::RendererData *Renderer::GetCurrentRenderer()
     {
+        RPP_ASSERT(s_currentRenderers != nullptr);
+
         if (s_currentRendererIndex == INVALID_RENDERER_INDEX)
         {
             return nullptr;
@@ -78,6 +89,11 @@ namespace rpp
         }
 
         s_currentRendererIndex = renderId;
+
+        // Activate context command
+        ActivateContextCommandData activateContextData = {};
+        GraphicsCommandData commandData = {GraphicsCommandType::ACTIVATE_CONTEXT, &activateContextData};
+        GetCurrentRenderer()->window->ExecuteCommand(commandData);
     }
 
     void Renderer::DestroyRenderer(u32 renderId)

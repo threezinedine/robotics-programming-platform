@@ -51,7 +51,13 @@ namespace rpp
          *
          * @return The window instance.
          */
-        static Scope<Window> &GetWindow() { return GetCurrentRenderer()->window; }
+        inline static Scope<Window> &GetWindow() { return GetCurrentRenderer()->window; }
+
+        /**
+         * @brief Get the id of the current active renderer.
+         * @return The id of the current active renderer. If a program or rectangle needs to execute a graphics command, it can use this id to get the current active renderer.
+         */
+        inline static u32 GetCurrentRendererId() { return GetCurrentRenderer()->rendererId; }
 
         /**
          * @brief Create a new renderer instance with its own window.

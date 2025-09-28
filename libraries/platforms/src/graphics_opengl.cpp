@@ -181,6 +181,11 @@ namespace rpp
             GL_ASSERT(glClearColor(color->color[0], color->color[1], color->color[2], color->color[3]));
             return TRUE;
         }
+        case GraphicsCommandType::ACTIVATE_CONTEXT:
+        {
+            glfwMakeContextCurrent((GLFWwindow *)m_window);
+            return TRUE;
+        }
         case GraphicsCommandType::SWAP_BUFFERS:
         {
             glfwSwapBuffers((GLFWwindow *)m_window);
