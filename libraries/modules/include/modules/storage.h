@@ -60,9 +60,20 @@ namespace rpp
         template <typename... Args>
         u32 Create(Args &&...args)
         {
-            T *object = RPP_NEW(T(std::forward<Args>(args)...));
-            m_elements.Push(object);
-            return m_elements.Size() - 1;
+            if (m_freeIds.Size() == 0)
+            {
+                T *object = RPP_NEW(T(std::forward<Args>(args)...));
+                m_elements.Push(object);
+                return m_elements.Size() - 1;
+            }
+            else
+            {
+                u32 id = m_freeIds[0];
+                m_freeIds.Remove(0);
+                T *object = RPP_NEW(T(std::forward<Args>(args)...));
+                m_elements[id] = object;
+                return id;
+            }
         }
 
         /**
@@ -88,15 +99,16 @@ namespace rpp
                 }
                 else
                 {
-                    delete object;
+                    RPP_DELETE(object);
+                    m_freeIds.Add(id);
                 }
                 m_elements[id] = nullptr;
             }
         }
 
     private:
-        Array<T *> m_elements;               ///< The storage for the objects of type T. Each object will be deleted manually (not by Array) when the storage is destroyed.
-        Array<u32> m_freeIds;                ///< The free ids for the objects in the storage. The id of the deleted object can be reused for the new object.
-        StorageDeallocator<T> m_deallocator; ///< The deallocator function to free the memory of the stored object.
+        Array<T *> m_elements;                      ///< The storage for the objects of type T. Each object will be deleted manually (not by Array) when the storage is destroyed.
+        Set<u32, defaultComparator<u32>> m_freeIds; ///< The free ids for the objects in the storage. The id of the deleted object can be reused for the new object.
+        StorageDeallocator<T> m_deallocator;        ///< The deallocator function to free the memory of the stored object.
     };
 } // namespace rpp

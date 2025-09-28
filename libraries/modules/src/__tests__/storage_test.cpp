@@ -47,7 +47,7 @@ protected:
 
     void TearDown() override
     {
-        // Any cleanup code can go here.
+        EXPECT_EQ(TestObject::count, 0); // Ensure all objects are destroyed after each test.
     }
 };
 
