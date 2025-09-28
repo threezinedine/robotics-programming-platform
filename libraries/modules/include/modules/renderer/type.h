@@ -1,5 +1,6 @@
 #pragma once
 #include "core/core.h"
+#include "glm/glm.hpp"
 
 namespace rpp
 {
@@ -33,4 +34,7 @@ namespace rpp
         f32 width RPP_JSON_KEY("width");   ///< The width of the rectangle.
         f32 height RPP_JSON_KEY("height"); ///< The height of the rectangle.
     };
+
+    typedef glm::vec2 Vec2;
+    typedef glm::vec3 Vec3;
 } // namespace rpp

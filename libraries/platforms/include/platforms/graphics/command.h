@@ -24,6 +24,8 @@ namespace rpp
 
         USE_PIPELINE, ///< Use a rendering pipeline.
 
+        SET_UNIFORM, ///< Set a uniform variable in the shader program.
+
         CREATE_TEXTURE, ///< Create a 2D texture.
         DELETE_TEXTURE, ///< Delete a 2D texture.
         COUNT,
@@ -168,5 +170,54 @@ namespace rpp
     struct UsePipelineCommandData
     {
         u32 programId; ///< The ID of the pipeline to be used.
+    };
+
+    /**
+     * @brief The types of uniform variables supported.
+     */
+    enum class UniformType : u8
+    {
+        FLOAT, ///< 32-bit floating point.
+        INT,   ///< 32-bit integer.
+        UINT,  ///< 32-bit unsigned integer.
+
+        VEC2, ///< 2-component vector of 32-bit floats.
+        VEC3, ///< 3-component vector of 32-bit floats.
+        VEC4, ///< 4-component vector of 32-bit floats.
+
+        IVEC2, ///< 2-component vector of 32-bit unsigned integers.
+        IVEC3, ///< 3-component vector of 32-bit unsigned integers.
+        IVEC4, ///< 4-component vector of 32-bit unsigned integers.
+
+        MAT2x2, ///< 2x2 matrix of 32-bit floats.
+        MAT3x3, ///< 3x3 matrix of 32-bit floats.
+        MAT4x4, ///< 4x4 matrix of 32-bit floats.
+
+        MAT2x3, ///< 2x3 matrix of 32-bit floats.
+        MAT2x4, ///< 2x4 matrix of 32-bit floats.
+        MAT3x2, ///< 3x2 matrix of 32-bit floats.
+        MAT3x4, ///< 3x4 matrix of 32-bit floats.
+        MAT4x2, ///< 4x2 matrix of 32-bit floats.
+        MAT4x3, ///< 4x3 matrix of 32-bit floats.
+
+        COUNT,
+    };
+
+    struct UniformDescription
+    {
+        const char *name; ///< The name of the uniform variable in the shader.
+        UniformType type; ///< The type of the uniform variable.
+        void *pData;      ///< Pointer to the data to be set for the uniform variable.
+    };
+
+    /**
+     * @brief The data structure for the set uniform command.
+     * @note This is a simplified example. In a real implementation, you might want to support more types and array uniforms.
+     */
+    struct SetUniformCommandData
+    {
+        u32 programId;                 ///< The ID of the program where the uniform is located.
+        u8 uniformCount;               ///< The number of uniforms to set.
+        UniformDescription *pUniforms; ///< Pointer to the array of uniform descriptions.
     };
 } // namespace rpp

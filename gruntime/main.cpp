@@ -7,11 +7,13 @@ using namespace rpp;
 const char *vertexShaderSource = R"(
 #version 330 core
 
+uniform float vScale;
+
 layout(location = 0) in vec2 aPos;
 
 void main()
 {
-    gl_Position = vec4(aPos, 0.0, 1.0);
+    gl_Position = vec4(aPos.x * vScale, aPos.y * vScale, 0.0, 1.0);
 }
 )";
 
@@ -84,6 +86,7 @@ int main(void)
                     Renderer::PreDraw();
 
                     Program::Use(program);
+                    Program::SetUniform("vScale", 0.5f);
                     Rectangle::Draw(rectangle, {-0.5f, -0.5f, 0.1f, 0.1f});
 
                     Renderer::PostDraw();
@@ -108,6 +111,7 @@ int main(void)
                     Renderer::PreDraw();
 
                     Program::Use(program2);
+                    Program::SetUniform("vScale", 1.0f);
                     Rectangle::Draw(rectangle2, {-0.5f, -0.5f, 0.1f, 0.1f});
 
                     Renderer::PostDraw();
@@ -133,6 +137,7 @@ int main(void)
                     Renderer::PreDraw();
 
                     Program::Use(program3);
+                    Program::SetUniform("vScale", 0.1f);
                     Line::Draw(line, {-0.5f, -0.5f}, {0.5f, 0.5f});
 
                     Renderer::PostDraw();

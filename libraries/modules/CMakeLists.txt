@@ -31,6 +31,7 @@ endforeach()
 
 RPPFindPackage(rpp-json "Dependencies")
 RPPFindPackage(rpp-imgui "Dependencies")
+RPPFindPackage(rpp-glm "Dependencies")
 
 # -------------- Library target --------------
 set(CMAKE_FOLDER "Libraries")
@@ -41,6 +42,7 @@ target_link_libraries(
     PUBLIC
     RPPCore
     rpp-imgui
+    rpp-glm
 )
 
 target_include_directories(

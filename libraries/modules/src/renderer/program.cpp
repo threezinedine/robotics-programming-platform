@@ -4,6 +4,7 @@
 namespace rpp
 {
     Scope<Storage<Program::ProgramData>> Program::s_programs = nullptr;
+    u32 Program::s_currentProgramId = INVALID_ID;
 
     void Program::Initialize()
     {
@@ -96,5 +97,26 @@ namespace rpp
 
         GraphicsCommandData useCommandData = {GraphicsCommandType::USE_PIPELINE, &useCommand};
         Renderer::GetWindow()->ExecuteCommand(useCommandData);
+
+		s_currentProgramId = data->programId;
+    }
+
+    void Program::SetUniform(const String &name, f32 value)
+    {
+        RPP_ASSERT(s_programs != nullptr);
+        RPP_ASSERT(s_currentProgramId != INVALID_ID); // Ensure a program is currently active
+
+        SetUniformCommandData command = {};
+        UniformDescription uniform = {};
+        uniform.name = name.CStr();
+        uniform.type = UniformType::FLOAT;
+        uniform.pData = &value;
+
+        command.uniformCount = 1;
+        command.programId = s_currentProgramId;
+        command.pUniforms = &uniform;
+
+        GraphicsCommandData commandData = {GraphicsCommandType::SET_UNIFORM, &command};
+        Renderer::GetWindow()->ExecuteCommand(commandData);
     }
 } // namespace rpp

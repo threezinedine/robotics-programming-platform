@@ -67,6 +67,51 @@ namespace rpp
         };
     }
 
+    static u32 GetSizeFromUniformType(UniformType type)
+    {
+        switch (type)
+        {
+        case UniformType::FLOAT:
+            return sizeof(f32);
+        case UniformType::INT:
+            return sizeof(i32);
+        case UniformType::UINT:
+            return sizeof(u32);
+        case UniformType::VEC2:
+            return sizeof(f32) * 2;
+        case UniformType::VEC3:
+            return sizeof(f32) * 3;
+        case UniformType::VEC4:
+            return sizeof(f32) * 4;
+        case UniformType::IVEC2:
+            return sizeof(i32) * 2;
+        case UniformType::IVEC3:
+            return sizeof(i32) * 3;
+        case UniformType::IVEC4:
+            return sizeof(i32) * 4;
+        case UniformType::MAT2x2:
+            return sizeof(f32) * 2 * 2;
+        case UniformType::MAT3x3:
+            return sizeof(f32) * 3 * 3;
+        case UniformType::MAT4x4:
+            return sizeof(f32) * 4 * 4;
+        case UniformType::MAT2x3:
+            return sizeof(f32) * 2 * 3;
+        case UniformType::MAT2x4:
+            return sizeof(f32) * 2 * 4;
+        case UniformType::MAT3x2:
+            return sizeof(f32) * 3 * 2;
+        case UniformType::MAT3x4:
+            return sizeof(f32) * 3 * 4;
+        case UniformType::MAT4x2:
+            return sizeof(f32) * 4 * 2;
+        case UniformType::MAT4x3:
+            return sizeof(f32) * 4 * 3;
+        default:
+            RPP_UNREACHABLE();
+        }
+    }
+
     b8 Graphics::Init()
     {
         glfwSetErrorCallback([](int error, const char *description)
@@ -354,9 +399,118 @@ namespace rpp
             GL_ASSERT(glDeleteProgram(deleteData->programId));
             return TRUE;
         }
+        case GraphicsCommandType::SET_UNIFORM:
+        {
+            SetUniformCommandData *uniformData = (SetUniformCommandData *)command.pData;
+
+            for (u32 uniformIndex = 0; uniformIndex < uniformData->uniformCount; ++uniformIndex)
+            {
+                UniformDescription uniformDescription = uniformData->pUniforms[uniformIndex];
+                GLint location = glGetUniformLocation(uniformData->programId, uniformDescription.name);
+
+                switch (uniformDescription.type)
+                {
+                case UniformType::FLOAT:
+                {
+                    GL_ASSERT(glUniform1f(location, *(f32 *)uniformDescription.pData));
+                    continue;
+                }
+                case UniformType::INT:
+                {
+                    GL_ASSERT(glUniform1i(location, *(i32 *)uniformDescription.pData));
+                    continue;
+                }
+                case UniformType::UINT:
+                {
+                    GL_ASSERT(glUniform1ui(location, *(u32 *)uniformDescription.pData));
+                    continue;
+                }
+                case UniformType::VEC2:
+                {
+                    GL_ASSERT(glUniform2fv(location, 1, (f32 *)uniformDescription.pData));
+                    continue;
+                }
+                case UniformType::VEC3:
+                {
+                    GL_ASSERT(glUniform3fv(location, 1, (f32 *)uniformDescription.pData));
+                    continue;
+                }
+                case UniformType::VEC4:
+                {
+                    GL_ASSERT(glUniform4fv(location, 1, (f32 *)uniformDescription.pData));
+                    continue;
+                }
+                case UniformType::IVEC2:
+                {
+                    GL_ASSERT(glUniform2iv(location, 1, (i32 *)uniformDescription.pData));
+                    continue;
+                }
+                case UniformType::IVEC3:
+                {
+                    GL_ASSERT(glUniform3iv(location, 1, (i32 *)uniformDescription.pData));
+                    continue;
+                }
+                case UniformType::IVEC4:
+                {
+                    GL_ASSERT(glUniform4iv(location, 1, (i32 *)uniformDescription.pData));
+                    continue;
+                }
+                case UniformType::MAT2x2:
+                {
+                    GL_ASSERT(glUniformMatrix2fv(location, 1, GL_FALSE, (f32 *)uniformDescription.pData));
+                    continue;
+                }
+                case UniformType::MAT3x3:
+                {
+                    GL_ASSERT(glUniformMatrix3fv(location, 1, GL_FALSE, (f32 *)uniformDescription.pData));
+                    continue;
+                }
+                case UniformType::MAT4x4:
+                {
+                    GL_ASSERT(glUniformMatrix4fv(location, 1, GL_FALSE, (f32 *)uniformDescription.pData));
+                    continue;
+                }
+                case UniformType::MAT2x3:
+                {
+                    GL_ASSERT(glUniformMatrix2x3fv(location, 1, GL_FALSE, (f32 *)uniformDescription.pData));
+                    continue;
+                }
+                case UniformType::MAT2x4:
+                {
+                    GL_ASSERT(glUniformMatrix2x4fv(location, 1, GL_FALSE, (f32 *)uniformDescription.pData));
+                    continue;
+                }
+                case UniformType::MAT3x2:
+                {
+                    GL_ASSERT(glUniformMatrix3x2fv(location, 1, GL_FALSE, (f32 *)uniformDescription.pData));
+                    continue;
+                }
+                case UniformType::MAT3x4:
+                {
+                    GL_ASSERT(glUniformMatrix3x4fv(location, 1, GL_FALSE, (f32 *)uniformDescription.pData));
+                    continue;
+                }
+                case UniformType::MAT4x2:
+                {
+                    GL_ASSERT(glUniformMatrix4x2fv(location, 1, GL_FALSE, (f32 *)uniformDescription.pData));
+                    continue;
+                }
+                case UniformType::MAT4x3:
+                {
+                    GL_ASSERT(glUniformMatrix4x3fv(location, 1, GL_FALSE, (f32 *)uniformDescription.pData));
+                    continue;
+                }
+                default:
+                    RPP_UNREACHABLE();
+                };
+            }
+            return TRUE;
+        }
         default:
             RPP_UNREACHABLE();
         }
+
+        return FALSE;
     }
 } // namespace rpp
 

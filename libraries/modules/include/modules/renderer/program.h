@@ -49,7 +49,13 @@ namespace rpp
          */
         static void Use(u32 programId) RPP_PYTHON_BINDING;
 
+        /**
+         * @brief Set a float uniform variable in the shader program. The current program must be active (used) before calling this method.
+         */
+        static void SetUniform(const String &name, f32 value);
+
     private:
         static Scope<Storage<ProgramData>> s_programs; ///< Storage for all created program IDs.
+        static u32 s_currentProgramId;                 ///< The currently active program ID.
     };
 } // namespace rpp
