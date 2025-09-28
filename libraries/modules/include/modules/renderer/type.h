@@ -37,4 +37,9 @@ namespace rpp
 
     typedef glm::vec2 Vec2;
     typedef glm::vec3 Vec3;
+    typedef glm::vec4 Vec4;
+
+    typedef glm::mat2 Mat2x2;
+    typedef glm::mat3 Mat3x3;
+    typedef glm::mat4 Mat4x4;
 } // namespace rpp

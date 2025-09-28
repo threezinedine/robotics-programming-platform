@@ -1,5 +1,6 @@
 #include "modules/renderer/program.h"
 #include "modules/renderer/renderer_impl.h"
+#include "modules/renderer/type.h"
 
 namespace rpp
 {
@@ -98,25 +99,37 @@ namespace rpp
         GraphicsCommandData useCommandData = {GraphicsCommandType::USE_PIPELINE, &useCommand};
         Renderer::GetWindow()->ExecuteCommand(useCommandData);
 
-		s_currentProgramId = data->programId;
+        s_currentProgramId = data->programId;
     }
 
-    void Program::SetUniform(const String &name, f32 value)
-    {
-        RPP_ASSERT(s_programs != nullptr);
-        RPP_ASSERT(s_currentProgramId != INVALID_ID); // Ensure a program is currently active
-
-        SetUniformCommandData command = {};
-        UniformDescription uniform = {};
-        uniform.name = name.CStr();
-        uniform.type = UniformType::FLOAT;
-        uniform.pData = &value;
-
-        command.uniformCount = 1;
-        command.programId = s_currentProgramId;
-        command.pUniforms = &uniform;
-
-        GraphicsCommandData commandData = {GraphicsCommandType::SET_UNIFORM, &command};
-        Renderer::GetWindow()->ExecuteCommand(commandData);
+#define DEFINE_SET_UNIFORM(valueType, uniformType)                                      \
+    template <>                                                                         \
+    void Program::SetUniform<valueType>(const String &name, valueType value)            \
+    {                                                                                   \
+        RPP_ASSERT(s_programs != nullptr);                                              \
+        RPP_ASSERT(s_currentProgramId != INVALID_ID);                                   \
+                                                                                        \
+        SetUniformCommandData command = {};                                             \
+        UniformDescription uniform = {};                                                \
+        uniform.name = name.CStr();                                                     \
+        uniform.type = uniformType;                                                     \
+        uniform.pData = &value;                                                         \
+                                                                                        \
+        command.uniformCount = 1;                                                       \
+        command.programId = s_currentProgramId;                                         \
+        command.pUniforms = &uniform;                                                   \
+                                                                                        \
+        GraphicsCommandData commandData = {GraphicsCommandType::SET_UNIFORM, &command}; \
+        Renderer::GetWindow()->ExecuteCommand(commandData);                             \
     }
+
+    DEFINE_SET_UNIFORM(f32, UniformType::FLOAT);
+    DEFINE_SET_UNIFORM(i32, UniformType::INT);
+    DEFINE_SET_UNIFORM(u32, UniformType::UINT);
+    DEFINE_SET_UNIFORM(Vec2, UniformType::VEC2);
+    DEFINE_SET_UNIFORM(Vec3, UniformType::VEC3);
+    DEFINE_SET_UNIFORM(Vec4, UniformType::VEC4);
+    DEFINE_SET_UNIFORM(Mat2x2, UniformType::MAT2x2);
+    DEFINE_SET_UNIFORM(Mat3x3, UniformType::MAT3x3);
+    DEFINE_SET_UNIFORM(Mat4x4, UniformType::MAT4x4);
 } // namespace rpp

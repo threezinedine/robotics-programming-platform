@@ -1,4 +1,5 @@
 #include "applications/applications.h"
+#include "glm/gtc/matrix_transform.hpp"
 
 RPP_ENABLE_MEMORY_TRACKING;
 
@@ -8,12 +9,14 @@ const char *vertexShaderSource = R"(
 #version 330 core
 
 uniform float vScale;
+uniform mat4 rotateMat;
 
 layout(location = 0) in vec2 aPos;
 
 void main()
 {
     gl_Position = vec4(aPos.x * vScale, aPos.y * vScale, 0.0, 1.0);
+    gl_Position = rotateMat * gl_Position;
 }
 )";
 
@@ -45,6 +48,8 @@ int main(void)
     u32 renderer1 = Renderer::CreateRenderer(800, 600, "Test");
     u32 renderer2 = Renderer::CreateRenderer(800, 600, "Test2");
     u32 renderer3 = Renderer::CreateRenderer(800, 600, "Test3");
+
+    Mat4x4 move = glm::rotate(Mat4x4(1.0f), glm::radians(45.0f), Vec3(0.0f, 0.0f, 1.0f));
 
     {
         HighResTimer timer;
@@ -87,6 +92,7 @@ int main(void)
 
                     Program::Use(program);
                     Program::SetUniform("vScale", 0.5f);
+                    Program::SetUniform("rotateMat", move);
                     Rectangle::Draw(rectangle, {-0.5f, -0.5f, 0.1f, 0.1f});
 
                     Renderer::PostDraw();
@@ -112,6 +118,7 @@ int main(void)
 
                     Program::Use(program2);
                     Program::SetUniform("vScale", 1.0f);
+                    Program::SetUniform("rotateMat", move);
                     Rectangle::Draw(rectangle2, {-0.5f, -0.5f, 0.1f, 0.1f});
 
                     Renderer::PostDraw();
@@ -138,6 +145,7 @@ int main(void)
 
                     Program::Use(program3);
                     Program::SetUniform("vScale", 0.1f);
+                    Program::SetUniform("rotateMat", move);
                     Line::Draw(line, {-0.5f, -0.5f}, {0.5f, 0.5f});
 
                     Renderer::PostDraw();

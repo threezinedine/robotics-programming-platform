@@ -51,8 +51,12 @@ namespace rpp
 
         /**
          * @brief Set a float uniform variable in the shader program. The current program must be active (used) before calling this method.
+         *
+         * @param name The name of the uniform variable in the shader.
+         * @param value The value to set for the uniform variable.
          */
-        static void SetUniform(const String &name, f32 value);
+        template <typename T>
+        static void SetUniform(const String &name, T value);
 
     private:
         static Scope<Storage<ProgramData>> s_programs; ///< Storage for all created program IDs.
