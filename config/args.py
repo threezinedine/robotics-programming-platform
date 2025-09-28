@@ -73,12 +73,12 @@ class Args:
             help="The name of the packages to install",
         )
 
-        buildPraser = subparsers.add_parser(
+        buildParser = subparsers.add_parser(
             "build",
             help="Build the specified project",
         )
 
-        buildPraser.add_argument(
+        buildParser.add_argument(
             "-o",
             "--options",
             type=str,
@@ -113,6 +113,14 @@ class Args:
             type=str,
             default=None,
             help="Optional filter to run specific tests only (default: None)",
+        )
+
+        testParser.add_argument(
+            "-m",
+            "--module",
+            type=str,
+            default=None,
+            help="Optional module to build (default: None) only works for `libraries`",
         )
 
         self.args = parser.parse_args()
@@ -223,3 +231,12 @@ class Args:
         if self.IsBuild and self.args.options:
             return self.args.options
         return []
+
+    @property
+    def Module(self) -> str:
+        """
+        Returns the optional module to build.
+        """
+        if self.IsTest and self.args.module:
+            return self.args.module
+        return "all"  # Default to 'all' if not specified

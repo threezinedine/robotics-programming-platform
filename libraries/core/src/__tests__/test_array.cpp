@@ -122,3 +122,25 @@ TEST(ArrayTest, PushNonNegative1)
     EXPECT_EQ(arr[0], 2);
     EXPECT_EQ(arr[1], 1);
 }
+
+TEST(ArrayTest, EraseElement)
+{
+    Array<i32> arr;
+    arr.Push(1);
+    arr.Push(2);
+    arr.Push(3);
+    arr.Push(4);
+    arr.Erase(1); // Remove element at index 1 (value 2)
+
+    EXPECT_EQ(arr.Size(), 3);
+    EXPECT_EQ(arr[0], 1);
+    EXPECT_EQ(arr[1], 3);
+    EXPECT_EQ(arr[2], 4);
+
+    // Test erasing the first element
+    arr.Erase(0); // Remove element at index 0 (value 1)
+
+    EXPECT_EQ(arr.Size(), 2);
+    EXPECT_EQ(arr[0], 3);
+    EXPECT_EQ(arr[1], 4);
+}

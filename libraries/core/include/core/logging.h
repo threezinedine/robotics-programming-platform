@@ -2,7 +2,7 @@
 #include "core/common.h"
 #include "platforms/platforms.h"
 #include "singleton_manager.h"
-#include "array.h"
+#include "containers/array.h"
 #include "format.h"
 
 namespace rpp

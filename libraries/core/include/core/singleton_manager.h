@@ -1,7 +1,7 @@
 #pragma once
 #include "common.h"
 #include "platforms/platforms.h"
-#include "array.h"
+#include "containers/array.h"
 #include "string.h"
 
 namespace rpp
@@ -87,7 +87,7 @@ private:                                \
     {                                                                                                  \
         if (s_instsance == nullptr)                                                                    \
         {                                                                                              \
-            s_instsance = new classType();                                                             \
+            s_instsance = RPP_NEW(classType());                                                        \
             SingletonManager::RegisterSingleton(                                                       \
                 #classType,                                                                            \
                 s_instsance,                                                                           \

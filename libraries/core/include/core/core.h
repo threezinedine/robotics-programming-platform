@@ -5,7 +5,7 @@
 #include "logging.h"
 #include "handlers/handlers.h"
 #include "string.h"
-#include "array.h"
+#include "containers/containers.h"
 #include "format.h"
 #include "assertions.h"
 #include "json.h"

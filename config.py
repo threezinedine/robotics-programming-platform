@@ -52,18 +52,23 @@ def main():
         if args.Project in CppProjectNames:
             if args.Project == "libraries":
                 # Special case for libraries project as it contains multiple tests
-                RunLibrariesTest(
-                    projectDir="core",
-                    projectType=args.Type,
-                )
-                RunLibrariesTest(
-                    projectDir="modules",
-                    projectType=args.Type,
-                )
-                RunLibrariesTest(
-                    projectDir="applications",
-                    projectType=args.Type,
-                )
+                if args.Module in ["all", "core"]:
+                    RunLibrariesTest(
+                        projectDir="core",
+                        projectType=args.Type,
+                    )
+
+                if args.Module in ["all", "modules"]:
+                    RunLibrariesTest(
+                        projectDir="modules",
+                        projectType=args.Type,
+                    )
+
+                if args.Module in ["all", "applications"]:
+                    RunLibrariesTest(
+                        projectDir="applications",
+                        projectType=args.Type,
+                    )
         else:
             RunPythonProjectTest(
                 projectDir=args.Project,

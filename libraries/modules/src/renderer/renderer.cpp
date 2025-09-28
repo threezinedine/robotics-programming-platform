@@ -1,5 +1,5 @@
 #include "modules/renderer/renderer_impl.h"
-#include "core/array.h"
+#include "core/containers/containers.h"
 
 namespace rpp
 {
@@ -93,7 +93,7 @@ namespace rpp
 
     u32 Renderer::CreateRenderer(u32 width, u32 height, const String &title)
     {
-        new Renderer(width, height, title);
+        RPP_NEW(Renderer(width, height, title));
         return s_currentRendererIndex;
     }
 

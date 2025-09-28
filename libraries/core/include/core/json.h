@@ -1,7 +1,7 @@
 #pragma once
 #include "platforms/platforms.h"
 #include "string.h"
-#include "array.h"
+#include "containers/array.h"
 
 namespace rpp
 {

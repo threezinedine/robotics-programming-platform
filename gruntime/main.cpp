@@ -31,7 +31,7 @@ int main(void)
     Logging::GetInstance()->Setup(u8(HandlerType::CONSOLE), LogLevel::DEBUG);
     Renderer::Initialize();
 
-	u32 rendererId = Renderer::CreateRenderer(800, 600, "Test");
+    u32 rendererId = Renderer::CreateRenderer(800, 600, "Test");
     {
         Renderer::ActivateRenderer(rendererId);
 
@@ -54,10 +54,9 @@ int main(void)
 
             Renderer::Present();
         }
-
     }
 
-	Renderer::DestroyRenderer(rendererId);
+    Renderer::DestroyRenderer(rendererId);
     Renderer::Shutdown();
     SingletonManager::Shutdown();
     return 0;
