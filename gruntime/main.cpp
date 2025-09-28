@@ -58,7 +58,9 @@ int main(void)
         u32 rectangle2 = Rectangle::Create();
 
         Renderer::ActivateRenderer(renderer3);
+        u32 program3 = Program::Create(vertexShaderSource, fragmentShaderSource2);
         u32 imgui = ImGuiImpl::Create();
+        u32 line = Line::Create();
 
         f32 delta = 0;
 
@@ -131,11 +133,15 @@ int main(void)
                     ImGuiImpl::PrepareFrame(imgui);
                     Renderer::PreDraw();
 
-                    ImGui::Begin("Test Window");
+                    Program::Use(program3);
+                    Line::Draw(line, {-0.5f, -0.5f}, {0.5f, 0.5f});
+
+                    Renderer::PostDraw();
+
+					ImGui::Begin("Test Window");
                     ImGui::Text("Hello, world!");
                     ImGui::End();
 
-                    Renderer::PostDraw();
                     ImGuiImpl::Render(imgui);
 
                     Renderer::Present();

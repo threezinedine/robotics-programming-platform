@@ -3,21 +3,32 @@
 
 namespace rpp
 {
-    Line::Line()
-        : Line({0.0f, 0.0f}, {1.0f, 1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}) // Default line from (0,0) to (1,1) with white color
+    Scope<Storage<Line::LineData>> Line::s_lines = nullptr;
+
+    void Line::Initialize()
     {
+        RPP_ASSERT(s_lines == nullptr);
+
+        s_lines = CreateScope<Storage<LineData>>();
     }
 
-    Line::Line(const Point &start, const Point &end)
-        : Line(start, end, {1.0f, 1.0f, 1.0f, 1.0f}) // Default color is white
+    void Line::Shutdown()
     {
+        RPP_ASSERT(s_lines != nullptr);
+
+        s_lines = nullptr;
     }
 
-    Line::Line(const Point &start, const Point &end, const Color &color)
+    u32 Line::Create()
     {
+        RPP_ASSERT(s_lines != nullptr);
+
+        u32 id = s_lines->Create();
+        LineData *lineData = s_lines->Get(id);
+
         float data[] = {
-            start.x, start.y, // Start point
-            end.x, end.y      // End point
+            1.0f, 1.0f,  // Vertex 1 (X, Y)
+            -1.0f, -1.0f // Vertex 2 (X, Y)
         };
 
         LayoutElement elements[] = {
@@ -29,27 +40,38 @@ namespace rpp
         command.pData = data;
         command.layoutCount = 1;
         command.pLayout = elements;
-        command.pBufferId = &m_vertexBufferId;
-        command.pArrayId = &m_vertexArrayId;
+        command.pBufferId = &lineData->vertexBufferId;
+        command.pArrayId = &lineData->vertextArrayId;
         command.type = VertexBufferType::LINE;
 
         GraphicsCommandData commandData = {GraphicsCommandType::CREATE_VERTEX_BUFFER, &command};
         Renderer::GetWindow()->ExecuteCommand(commandData);
+
+        return id;
     }
 
-    Line::~Line()
+    void Line::Destroy(u32 id)
     {
+        RPP_ASSERT(s_lines != nullptr);
+
+        LineData *lineData = s_lines->Get(id);
+        RPP_ASSERT(lineData != nullptr);
+
         DeleteVertexBufferCommandData command = {};
-        command.pBufferId = &m_vertexBufferId;
-        command.pArrayId = &m_vertexArrayId;
+        command.pBufferId = &lineData->vertexBufferId;
+        command.pArrayId = &lineData->vertextArrayId;
         GraphicsCommandData commandData = {GraphicsCommandType::DELETE_VERTEX_BUFFER, &command};
         Renderer::GetWindow()->ExecuteCommand(commandData);
     }
 
-    void Line::Draw() const
+    void Line::Draw(u32 id, const Point &start, const Point &end)
     {
+        RPP_ASSERT(s_lines != nullptr);
+        LineData *lineData = s_lines->Get(id);
+        RPP_ASSERT(lineData != nullptr);
+
         DrawVertexBufferCommandData command = {};
-        command.bufferId = m_vertexArrayId;
+        command.bufferId = lineData->vertexBufferId;
         command.type = VertexBufferType::LINE;
         command.count = 2;
 

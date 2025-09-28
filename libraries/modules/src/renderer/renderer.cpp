@@ -3,6 +3,7 @@
 #include "modules/renderer/program.h"
 #include "modules/renderer/rectangle.h"
 #include "modules/renderer/imgui_internal.h"
+#include "modules/renderer/line.h"
 
 namespace rpp
 {
@@ -21,6 +22,7 @@ namespace rpp
         s_currentRenderers = CreateScope<Storage<Renderer::RendererData>>();
         Program::Initialize();
         Rectangle::Initialize();
+        Line::Initialize();
         ImGuiImpl::Initialize();
         s_currentRendererIndex = INVALID_RENDERER_INDEX;
         RPP_LOG_DEBUG("Rendering system initialized successfully");
@@ -31,6 +33,7 @@ namespace rpp
         RPP_ASSERT(s_currentRenderers != nullptr);
 
         ImGuiImpl::Shutdown();
+        Line::Shutdown();
         Rectangle::Shutdown();
         Program::Shutdown();
         s_currentRenderers.reset();
