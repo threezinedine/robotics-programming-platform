@@ -12,11 +12,6 @@
 
 namespace rpp
 {
-    struct ImGuiInternalData
-    {
-        ImGuiIO *io; ///< The ImGuiIO structure for input/output handling.
-    };
-
     Scope<Storage<ImGuiImpl::ImGuiData>>
         ImGuiImpl::s_imguis = nullptr;
 
@@ -24,14 +19,7 @@ namespace rpp
     {
         RPP_ASSERT(s_imguis == nullptr);
 
-        auto deallocator = [](ImGuiImpl::ImGuiData *data)
-        {
-            RPP_DELETE((ImGuiInternalData *)data->internalData);
-            data->internalData = nullptr;
-            RPP_DELETE(data);
-        };
-
-        s_imguis = CreateScope<Storage<ImGuiData>>(deallocator);
+        s_imguis = CreateScope<Storage<ImGuiData>>();
     }
 
     void ImGuiImpl::Shutdown()
@@ -52,8 +40,7 @@ namespace rpp
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
         ImGuiIO &io = ImGui::GetIO();
-        data->internalData = RPP_NEW(ImGuiInternalData());
-        ((ImGuiInternalData *)data->internalData)->io = &io;
+        data->io = &io;
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // Enable Gamepad Controls
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;     // Enable Docking
@@ -110,7 +97,6 @@ namespace rpp
     {
         RPP_ASSERT(s_imguis != nullptr);
         ImGuiData *data = s_imguis->Get(imguiId);
-        ImGuiInternalData *internalData = (ImGuiInternalData *)data->internalData;
         RPP_ASSERT(data != nullptr);
         RPP_ASSERT(data->rendererId == Renderer::GetCurrentRendererId() && "ImGui instance was created with a different renderer!");
 
@@ -123,7 +109,7 @@ namespace rpp
         // Update and Render additional Platform Windows
         // (Platform functions may change the current OpenGL context, so we save/restore it to make it easier to paste this code elsewhere.
         //  For this specific demo app we could also call glfwMakeContextCurrent(window) directly)
-        if (internalData->io->ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        if (data->io->ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
         {
             GLFWwindow *backup_current_context = glfwGetCurrentContext();
             ImGui::UpdatePlatformWindows();

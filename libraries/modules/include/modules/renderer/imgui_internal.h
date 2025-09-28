@@ -1,6 +1,7 @@
 #pragma once
 #include "core/core.h"
 #include "modules/storage.h"
+#include "imgui.h"
 
 namespace rpp
 {
@@ -9,8 +10,8 @@ namespace rpp
     private:
         struct ImGuiData
         {
-            u32 rendererId;               ///< The id of the renderer associated with this ImGui instance.
-            void *internalData = nullptr; ///< Pointer to any internal data needed for ImGui integration (e.g., context pointers).
+            u32 rendererId; ///< The id of the renderer associated with this ImGui instance.
+            ImGuiIO *io;    ///< The ImGuiIO structure for input/output handling.
         };
 
     public:

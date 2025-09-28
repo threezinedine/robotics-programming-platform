@@ -1,5 +1,4 @@
 #include "applications/applications.h"
-#include "imgui.h"
 
 RPP_ENABLE_MEMORY_TRACKING;
 
@@ -138,7 +137,7 @@ int main(void)
 
                     Renderer::PostDraw();
 
-					ImGui::Begin("Test Window");
+                    ImGui::Begin("Test Window");
                     ImGui::Text("Hello, world!");
                     ImGui::End();
 
