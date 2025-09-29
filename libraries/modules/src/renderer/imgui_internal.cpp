@@ -91,6 +91,7 @@ namespace rpp
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
+        ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport());
     }
 
     void ImGuiImpl::Render(u32 imguiId)

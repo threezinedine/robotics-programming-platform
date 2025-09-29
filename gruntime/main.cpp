@@ -1,6 +1,8 @@
 #include "applications/applications.h"
 #include "glm/gtc/matrix_transform.hpp"
 
+RPP_ENABLE_MEMORY_TRACKING;
+
 using namespace rpp;
 
 const char *vertexShaderSource = R"(
@@ -50,6 +52,7 @@ int main(void)
         Renderer::ActivateRenderer(renderer);
         u32 program = Program::Create(vertexShaderSource, fragmentShaderSource);
         u32 rectangle = Rectangle::Create();
+        u32 imgui = ImGuiImpl::Create();
 
         while (TRUE)
         {
@@ -62,17 +65,22 @@ int main(void)
             }
             else
             {
-                Renderer::PreDraw();
+                ImGuiImpl::PrepareFrame(imgui);
 
                 u32 program = Program::Create(vertexShaderSource, fragmentShaderSource);
                 u32 rectangle = Rectangle::Create();
 
+                Renderer::PreDraw();
                 Program::Use(program);
                 Program::SetUniform("vScale", 0.5f);
                 Program::SetUniform("rotateMat", move);
                 Rectangle::Draw(rectangle, {-0.5f, -0.5f, 0.1f, 0.1f});
 
                 Renderer::PostDraw();
+
+                ImGui::ShowDemoWindow();
+
+                ImGuiImpl::Render(imgui);
 
                 Renderer::Present();
             }
