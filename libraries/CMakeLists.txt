@@ -31,26 +31,26 @@ add_subdirectory(modules)
 add_subdirectory(applications)
 
 # -------------- Python binding --------------
-RPPFindPackage(rpp-pybind "Dependencies")
+# RPPFindPackage(rpp-pybind "Dependencies")
 
-set(CMAKE_FOLDER "Bindings")
-Python_add_library(Engine ${BINDING_FILE})
-target_link_libraries(Engine PUBLIC rpp-pybind RPPApplications)
-set_target_properties(Engine PROPERTIES
-                                INTERPROCEDURAL_OPTIMIZATION ON
-                                CXX_VISIBILITY_PRESET hidden
-                                VISIBILITY_INLINES_HIDDEN ON)
+# set(CMAKE_FOLDER "Bindings")
+# Python_add_library(Engine ${BINDING_FILE})
+# target_link_libraries(Engine PUBLIC rpp-pybind RPPApplications)
+# set_target_properties(Engine PROPERTIES
+#                                 INTERPROCEDURAL_OPTIMIZATION ON
+#                                 CXX_VISIBILITY_PRESET hidden
+#                                 VISIBILITY_INLINES_HIDDEN ON)
 
-set(TARGET_OUTPUT_DIR ${RPP_BASE_DIR}/editor/Engine)
-set(TARGET_OUTPUT_PATH ${TARGET_OUTPUT_DIR}/Engine.pyd)
+# set(TARGET_OUTPUT_DIR ${RPP_BASE_DIR}/editor/Engine)
+# set(TARGET_OUTPUT_PATH ${TARGET_OUTPUT_DIR}/Engine.pyd)
 
-add_custom_command(
-    OUTPUT ${TARGET_OUTPUT_PATH}
-    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:Engine> ${TARGET_OUTPUT_PATH}
-    DEPENDS Engine
-    COMMENT "Copying Engine.pyd to editor folder..."
-)
+# add_custom_command(
+#     OUTPUT ${TARGET_OUTPUT_PATH}
+#     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:Engine> ${TARGET_OUTPUT_PATH}
+#     DEPENDS Engine
+#     COMMENT "Copying Engine.pyd to editor folder..."
+# )
 
-add_custom_target(CopyEngine ALL
-    DEPENDS ${TARGET_OUTPUT_PATH}
-)
+# add_custom_target(CopyEngine ALL
+#     DEPENDS ${TARGET_OUTPUT_PATH}
+# )

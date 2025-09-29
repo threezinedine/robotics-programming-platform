@@ -193,7 +193,7 @@ def RunPythonProject(
     if not os.path.isfile(mainScript):
         raise FileNotFoundError(f"No main.py file found in '{projectDir}'.")
 
-    args: list[str] = []
+    # args: list[str] = []
 
     allHeaderFiles = _GetListOfHeaderFiles()
     allTemplateFiles = _GetListOfTemplateFiles()
@@ -282,21 +282,21 @@ def RunPythonProject(
             applicationHeaderFile,
         ]
 
-        args = argCommon + [
-            "--template",
-            os.path.join(cwd, "templates", "pyi_binding.j2"),
-            "--output",
-            pyiBindingOutput,
-        ]
+        # args = argCommon + [
+        #     "--template",
+        #     os.path.join(cwd, "templates", "pyi_binding.j2"),
+        #     "--output",
+        #     pyiBindingOutput,
+        # ]
 
         CreateRecursiveDirIfNotExists(librariesTempDir)
 
-        arg2 = argCommon + [
-            "--template",
-            os.path.join(cwd, "templates", "cpp_binding.j2"),
-            "--output",
-            cppBindingOutput,
-        ]
+        # arg2 = argCommon + [
+        #     "--template",
+        #     os.path.join(cwd, "templates", "cpp_binding.j2"),
+        #     "--output",
+        #     cppBindingOutput,
+        # ]
 
         arg3 = argCommon + [
             "--template",
@@ -310,27 +310,27 @@ def RunPythonProject(
         try:
 
             logger.info(f"Running Python project in '{projectDir}'...")
-            subprocess.run(
-                [
-                    pythonExe,
-                    mainScript,
-                ]
-                + args,
-                check=True,
-                shell=True,
-                cwd=cwd,
-            )
+            # subprocess.run(
+            #     [
+            #         pythonExe,
+            #         mainScript,
+            #     ]
+            #     + args,
+            #     check=True,
+            #     shell=True,
+            #     cwd=cwd,
+            # )
 
-            subprocess.run(
-                [
-                    pythonExe,
-                    mainScript,
-                ]
-                + arg2,
-                check=True,
-                shell=True,
-                cwd=cwd,
-            )
+            # subprocess.run(
+            #     [
+            #         pythonExe,
+            #         mainScript,
+            #     ]
+            #     + arg2,
+            #     check=True,
+            #     shell=True,
+            #     cwd=cwd,
+            # )
 
             subprocess.run(
                 [

@@ -1,8 +1,6 @@
 #include "applications/applications.h"
 #include "glm/gtc/matrix_transform.hpp"
 
-RPP_ENABLE_MEMORY_TRACKING;
-
 using namespace rpp;
 
 const char *vertexShaderSource = R"(
@@ -45,141 +43,40 @@ int main(void)
     Logging::GetInstance()->Setup(u8(HandlerType::CONSOLE), LogLevel::DEBUG);
     Renderer::Initialize();
 
-    u32 renderer1 = Renderer::CreateRenderer(800, 600, "Test");
-    u32 renderer2 = Renderer::CreateRenderer(800, 600, "Test2");
-    u32 renderer3 = Renderer::CreateRenderer(800, 600, "Test3");
-
-    Mat4x4 move = glm::rotate(Mat4x4(1.0f), glm::radians(45.0f), Vec3(0.0f, 0.0f, 1.0f));
-
     {
-        HighResTimer timer;
+        u32 renderer = Renderer::CreateRenderer(800, 600, "Test");
+        Mat4x4 move = glm::rotate(Mat4x4(1.0f), glm::radians(45.0f), Vec3(0.0f, 0.0f, 1.0f));
 
-        Renderer::ActivateRenderer(renderer1);
+        Renderer::ActivateRenderer(renderer);
         u32 program = Program::Create(vertexShaderSource, fragmentShaderSource);
-
         u32 rectangle = Rectangle::Create();
-
-        Renderer::ActivateRenderer(renderer2);
-        u32 program2 = Program::Create(vertexShaderSource, fragmentShaderSource2);
-        u32 rectangle2 = Rectangle::Create();
-
-        Renderer::ActivateRenderer(renderer3);
-        u32 program3 = Program::Create(vertexShaderSource, fragmentShaderSource2);
-        u32 imgui = ImGuiImpl::Create();
-        u32 line = Line::Create();
-
-        f32 delta = 0;
 
         while (TRUE)
         {
-            timer.Start();
+            Renderer::ActivateRenderer(renderer);
 
-            b8 shouldApplicationClose = TRUE;
-
-            if (renderer1 != INVALID_ID)
+            if (Renderer::GetWindow()->ShouldWindowClose())
             {
-                Renderer::ActivateRenderer(renderer1);
-
-                if (Renderer::GetWindow()->ShouldWindowClose())
-                {
-                    Renderer::DestroyRenderer(renderer1);
-                    renderer1 = INVALID_ID;
-                }
-                else
-                {
-                    shouldApplicationClose = FALSE;
-                    Renderer::PreDraw();
-
-                    Program::Use(program);
-                    Program::SetUniform("vScale", 0.5f);
-                    Program::SetUniform("rotateMat", move);
-                    Rectangle::Draw(rectangle, {-0.5f, -0.5f, 0.1f, 0.1f});
-
-                    Renderer::PostDraw();
-
-                    Renderer::Present();
-                }
-            }
-
-            if (renderer2 != INVALID_ID)
-            {
-                Renderer::ActivateRenderer(renderer2);
-
-                if (Renderer::GetWindow()->ShouldWindowClose())
-                {
-                    Renderer::DestroyRenderer(renderer2);
-                    renderer2 = INVALID_ID;
-                }
-                else
-                {
-                    shouldApplicationClose = FALSE;
-
-                    Renderer::PreDraw();
-
-                    Program::Use(program2);
-                    Program::SetUniform("vScale", 1.0f);
-                    Program::SetUniform("rotateMat", move);
-                    Rectangle::Draw(rectangle2, {-0.5f, -0.5f, 0.1f, 0.1f});
-
-                    Renderer::PostDraw();
-
-                    Renderer::Present();
-                }
-            }
-
-            if (renderer3 != INVALID_ID)
-            {
-                Renderer::ActivateRenderer(renderer3);
-
-                if (Renderer::GetWindow()->ShouldWindowClose())
-                {
-                    Renderer::DestroyRenderer(renderer3);
-                    renderer3 = INVALID_ID;
-                }
-                else
-                {
-                    shouldApplicationClose = FALSE;
-
-                    ImGuiImpl::PrepareFrame(imgui);
-                    Renderer::PreDraw();
-
-                    Program::Use(program3);
-                    Program::SetUniform("vScale", 0.1f);
-                    Program::SetUniform("rotateMat", move);
-                    Line::Draw(line, {-0.5f, -0.5f}, {0.5f, 0.5f});
-
-                    Renderer::PostDraw();
-
-                    ImGui::Begin("Test Window");
-                    ImGui::Text("Hello, world!");
-                    ImGui::End();
-
-                    ImGuiImpl::Render(imgui);
-
-                    Renderer::Present();
-                }
-            }
-
-            if (shouldApplicationClose)
-            {
+                Renderer::DestroyRenderer(renderer);
                 break;
             }
+            else
+            {
+                Renderer::PreDraw();
+
+                u32 program = Program::Create(vertexShaderSource, fragmentShaderSource);
+                u32 rectangle = Rectangle::Create();
+
+                Program::Use(program);
+                Program::SetUniform("vScale", 0.5f);
+                Program::SetUniform("rotateMat", move);
+                Rectangle::Draw(rectangle, {-0.5f, -0.5f, 0.1f, 0.1f});
+
+                Renderer::PostDraw();
+
+                Renderer::Present();
+            }
         }
-    }
-
-    if (renderer1 != INVALID_ID)
-    {
-        Renderer::DestroyRenderer(renderer1);
-    }
-
-    if (renderer2 != INVALID_ID)
-    {
-        Renderer::DestroyRenderer(renderer2);
-    }
-
-    if (renderer3 != INVALID_ID)
-    {
-        Renderer::DestroyRenderer(renderer3);
     }
 
     Renderer::Shutdown();
