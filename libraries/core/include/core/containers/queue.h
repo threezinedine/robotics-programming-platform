@@ -71,6 +71,14 @@ namespace rpp
             return m_list[0];
         }
 
+        /**
+         * @brief Clear all elements from the queue.
+         */
+        inline void Clear() { m_list.Clear(); }
+
+        /**
+         * @brief Remove the front element of the queue.
+         */
         void Pop()
         {
             if (m_list.Size() == 0)

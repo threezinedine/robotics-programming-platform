@@ -241,6 +241,12 @@ namespace rpp
             m_size = 0;
         }
 
+        /**
+         * @brief Get the pointer to the array data.
+         * @return Pointer to the array data.
+         */
+        inline T *Data() { return m_data; }
+
     private:
         T *m_data = nullptr; ///< Pointer to the array data.
         u32 m_capacity = 0;  ///< Current capacity of the array. The array will be resized when the size exceeds the capacity.
