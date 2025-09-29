@@ -1,7 +1,6 @@
 [
     {
         "name": "googletest",
-        "commit": "50b8600c63c5487e901e2845a0f64d384a65f75d",
         "url": "https://github.com/google/googletest.git"
     },
     {
@@ -23,7 +22,7 @@
     {
         "name": "imgui",
         "url": "https://github.com/ocornut/imgui.git",
-        "commit": "e4e3c2cc232218019230b470655c69c16ed348ef"
+        "comment": "git pull origin docking && git checkout docking"
     },
     {
         "name": "glm",
