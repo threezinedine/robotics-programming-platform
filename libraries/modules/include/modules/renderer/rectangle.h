@@ -16,6 +16,7 @@ namespace rpp
             u32 rendererId;     ///< The id of the renderer associated with this rectangle.
             u32 vertexBufferId; ///< The ID of the vertex buffer in the graphics API.
             u32 vertexArrayId;  ///< The ID of the vertex array in the graphics API.
+            u32 programId;      ///< The ID of the shader program used to render the rectangle.
         };
 
     public:

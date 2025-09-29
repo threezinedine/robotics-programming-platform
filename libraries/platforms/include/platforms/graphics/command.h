@@ -28,6 +28,12 @@ namespace rpp
 
         CREATE_TEXTURE, ///< Create a 2D texture.
         DELETE_TEXTURE, ///< Delete a 2D texture.
+
+        CREATE_FRAMEBUFFER, ///< Create a framebuffer object.
+        DELETE_FRAMEBUFFER, ///< Delete a framebuffer object.
+        RESIZE_FRAMEBUFFER, ///< Resize a framebuffer object.
+        BIND_FRAMEBUFFER,   ///< Bind a framebuffer object.
+        UNBIND_FRAMEBUFFER, ///< Unbind the currently bound framebuffer object.
         COUNT,
     };
 
@@ -219,5 +225,39 @@ namespace rpp
         u32 programId;                 ///< The ID of the program where the uniform is located.
         u8 uniformCount;               ///< The number of uniforms to set.
         UniformDescription *pUniforms; ///< Pointer to the array of uniform descriptions.
+    };
+
+    struct CreateFrameBufferCommandData
+    {
+        u32 width;            ///< The width of the framebuffer.
+        u32 height;           ///< The height of the framebuffer.
+        u32 *pFrameBufferId;  ///< Pointer to store the generated framebuffer ID.
+        u32 *pTextureId;      ///< Pointer to store the texture ID associated with the framebuffer.
+        u32 *pRenderBufferId; ///< Pointer to store the renderbuffer ID associated with the framebuffer.
+    };
+
+    struct DeleteFrameBufferCommandData
+    {
+        u32 frameBufferId;  ///< The ID of the framebuffer to be deleted.
+        u32 textureId;      ///< The ID of the texture associated with the framebuffer to be deleted.
+        u32 renderBufferId; ///< The ID of the renderbuffer associated with the framebuffer to be deleted.
+    };
+
+    struct ResizeFrameBufferCommandData
+    {
+        u32 frameBufferId;  ///< The ID of the framebuffer to be resized.
+        u32 renderBufferId; ///< The ID of the renderbuffer associated with the framebuffer to be resized.
+        u32 width;          ///< The new width of the framebuffer.
+        u32 height;         ///< The new height of the framebuffer.
+        u32 textureId;      ///< The ID of the texture associated with the framebuffer to be resized.
+    };
+
+    struct BindFrameBufferCommandData
+    {
+        u32 frameBufferId; ///< The ID of the framebuffer to be bound.
+    };
+
+    struct UnbindFrameBufferCommandData
+    {
     };
 } // namespace rpp

@@ -1,6 +1,7 @@
 #include "modules/renderer/imgui_internal.h"
 #include "modules/renderer/renderer_impl.h"
 #include "imgui.h"
+#include "modules/renderer/renderer.h"
 
 #if defined(RPP_GRAPHICS_BACKEND_OPENGL)
 #include "imgui_impl_glfw.h"
@@ -76,6 +77,16 @@ namespace rpp
 #endif
         ImGui_ImplOpenGL3_Init("#version 130");
 
+        CreateFrameBufferCommandData fbData;
+        fbData.width = 800;
+        fbData.height = 600;
+        fbData.pFrameBufferId = &data->frameBufferId;
+        fbData.pTextureId = &data->textureId;
+        fbData.pRenderBufferId = &data->frameRenderBufferId;
+
+        GraphicsCommandData commandData{GraphicsCommandType::CREATE_FRAMEBUFFER, &fbData};
+        Renderer::GetWindow()->ExecuteCommand(commandData);
+
         return id;
     }
 
@@ -92,10 +103,22 @@ namespace rpp
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
         ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport());
+
+        // Bind framebuffer
+        BindFrameBufferCommandData bindData;
+        bindData.frameBufferId = data->frameBufferId;
+
+        GraphicsCommandData commandData = {GraphicsCommandType::BIND_FRAMEBUFFER, &bindData};
+        Renderer::GetWindow()->ExecuteCommand(commandData);
     }
 
     void ImGuiImpl::Render(u32 imguiId)
     {
+        // Unbind framebuffer
+        UnbindFrameBufferCommandData unbindData;
+        GraphicsCommandData unbindCommandData = {GraphicsCommandType::UNBIND_FRAMEBUFFER, &unbindData};
+        Renderer::GetWindow()->ExecuteCommand(unbindCommandData);
+
         RPP_ASSERT(s_imguis != nullptr);
         ImGuiData *data = s_imguis->Get(imguiId);
         RPP_ASSERT(data != nullptr);
@@ -119,9 +142,33 @@ namespace rpp
         }
     }
 
+    void ImGuiImpl::DrawRenderingScene(u32 imguiId)
+    {
+        ImGui::BeginChild("RenderingScene");
+        float displayWidth = ImGui::GetContentRegionAvail().x;
+        float displayHeight = ImGui::GetContentRegionAvail().y;
+
+        RPP_ASSERT(s_imguis != nullptr);
+        ImGuiData *data = s_imguis->Get(imguiId);
+        RPP_ASSERT(data != nullptr);
+
+        ImGui::Image((void *)(uintptr_t)data->textureId, ImVec2(displayWidth, displayHeight), ImVec2(0, 1), ImVec2(1, 0));
+        ImGui::EndChild();
+    }
+
     void ImGuiImpl::Destroy(u32 imguiId)
     {
         RPP_ASSERT(s_imguis != nullptr);
         s_imguis->Free(imguiId);
+
+        ImGuiData *data = s_imguis->Get(imguiId);
+
+        DeleteFrameBufferCommandData fbData = {};
+        fbData.frameBufferId = data->frameBufferId;
+        fbData.textureId = data->textureId;
+        fbData.renderBufferId = data->frameRenderBufferId;
+
+        GraphicsCommandData commandData = {GraphicsCommandType::DELETE_FRAMEBUFFER, &fbData};
+        Renderer::GetWindow()->ExecuteCommand(commandData);
     }
 } // namespace rpp

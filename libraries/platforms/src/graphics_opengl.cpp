@@ -506,6 +506,74 @@ namespace rpp
             }
             return TRUE;
         }
+        case GraphicsCommandType::CREATE_FRAMEBUFFER:
+        {
+            CreateFrameBufferCommandData *fbData = (CreateFrameBufferCommandData *)command.pData;
+
+            GL_ASSERT(glGenFramebuffers(1, fbData->pFrameBufferId));
+            GL_ASSERT(glBindFramebuffer(GL_FRAMEBUFFER, *fbData->pFrameBufferId));
+
+            // Create a texture to attach to the framebuffer
+            GL_ASSERT(glGenTextures(1, fbData->pTextureId));
+            GL_ASSERT(glBindTexture(GL_TEXTURE_2D, *fbData->pTextureId));
+            GL_ASSERT(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, fbData->width, fbData->height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL));
+            GL_ASSERT(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+            GL_ASSERT(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+            GL_ASSERT(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, *fbData->pTextureId, 0));
+
+            // Create a renderbuffer object for depth and stencil attachment (optional)
+            GL_ASSERT(glGenRenderbuffers(1, fbData->pRenderBufferId));
+            GL_ASSERT(glBindRenderbuffer(GL_RENDERBUFFER, *fbData->pRenderBufferId));
+            GL_ASSERT(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, fbData->width, fbData->height));
+            GL_ASSERT(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, *fbData->pRenderBufferId));
+
+            if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+            {
+                print("ERROR::FRAMEBUFFER:: Framebuffer is not complete!", ConsoleColor::RED);
+                GL_ASSERT(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+                return FALSE;
+            }
+
+            GL_ASSERT(glBindFramebuffer(GL_FRAMEBUFFER, 0));   // Unbind the framebuffer
+            GL_ASSERT(glBindTexture(GL_TEXTURE_2D, 0));        // Unbind the texture
+            GL_ASSERT(glBindRenderbuffer(GL_RENDERBUFFER, 0)); // Unbind the renderbuffer
+            return TRUE;
+        }
+        case GraphicsCommandType::DELETE_FRAMEBUFFER:
+        {
+            DeleteFrameBufferCommandData *fbData = (DeleteFrameBufferCommandData *)command.pData;
+
+            GL_ASSERT(glDeleteFramebuffers(1, &fbData->frameBufferId));
+            GL_ASSERT(glDeleteTextures(1, &fbData->textureId));
+            GL_ASSERT(glDeleteRenderbuffers(1, &fbData->renderBufferId));
+
+            return TRUE;
+        }
+        case GraphicsCommandType::RESIZE_FRAMEBUFFER:
+        {
+            ResizeFrameBufferCommandData *fbData = (ResizeFrameBufferCommandData *)command.pData;
+
+            GL_ASSERT(glBindTexture(GL_TEXTURE_2D, fbData->textureId));
+            GL_ASSERT(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, fbData->width, fbData->height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL));
+            GL_ASSERT(glBindTexture(GL_TEXTURE_2D, 0));
+
+            GL_ASSERT(glBindRenderbuffer(GL_RENDERBUFFER, fbData->renderBufferId));
+            GL_ASSERT(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, fbData->width, fbData->height));
+            GL_ASSERT(glBindRenderbuffer(GL_RENDERBUFFER, 0));
+
+            return TRUE;
+        }
+        case GraphicsCommandType::BIND_FRAMEBUFFER:
+        {
+            BindFrameBufferCommandData *fbData = (BindFrameBufferCommandData *)command.pData;
+            GL_ASSERT(glBindFramebuffer(GL_FRAMEBUFFER, fbData->frameBufferId));
+            return TRUE;
+        }
+        case GraphicsCommandType::UNBIND_FRAMEBUFFER:
+        {
+            GL_ASSERT(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+            return TRUE;
+        }
         default:
             RPP_UNREACHABLE();
         }

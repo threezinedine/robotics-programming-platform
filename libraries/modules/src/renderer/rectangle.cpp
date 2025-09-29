@@ -2,6 +2,42 @@
 #include "platforms/platforms.h"
 #include "platforms/graphics/command.h"
 #include "modules/renderer/renderer_impl.h"
+#include "modules/renderer/program.h"
+#include "glm/gtc/matrix_transform.hpp"
+
+const char *vertexShaderSource = R"(
+#version 330 core
+
+uniform float vScale;
+uniform mat4 rotateMat;
+
+layout(location = 0) in vec2 aPos;
+
+void main()
+{
+    gl_Position = vec4(aPos.x * vScale, aPos.y * vScale, 0.0, 1.0);
+    gl_Position = rotateMat * gl_Position;
+}
+)";
+
+const char *fragmentShaderSource = R"(
+#version 330 core
+out vec4 FragColor;
+
+void main()
+{
+    FragColor = vec4(1.0);
+}
+)";
+
+const char *fragmentShaderSource2 = R"(
+#version 330 core
+out vec4 FragColor;
+void main()
+{
+    FragColor = vec4(0.0, 1.0, 0.0, 1.0);
+}
+)";
 
 namespace rpp
 {
@@ -23,9 +59,12 @@ namespace rpp
 
 	u32 Rectangle::Create()
 	{
+		u32 program = Program::Create(vertexShaderSource, fragmentShaderSource);
+
 		u32 id = s_rectangles->Create();
 		RectangleData *rectangleData = s_rectangles->Get(id);
 		rectangleData->rendererId = Renderer::GetCurrentRendererId();
+		rectangleData->programId = program;
 
 		float data[] = {
 			-0.5f, -0.5f, // Bottom-left
@@ -78,6 +117,10 @@ namespace rpp
 	{
 		RPP_ASSERT(s_rectangles != nullptr);
 		RectangleData *data = s_rectangles->Get(rectangleId);
+		Program::Use(data->programId);
+		Program::SetUniform("vScale", 0.5f);
+		Mat4x4 move = glm::rotate(Mat4x4(1.0f), glm::radians(45.0f), Vec3(0.0f, 0.0f, 1.0f));
+		Program::SetUniform("rotateMat", move);
 
 		RPP_ASSERT(data->rendererId == Renderer::GetCurrentRendererId());
 
