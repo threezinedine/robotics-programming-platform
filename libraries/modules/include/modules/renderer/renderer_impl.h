@@ -15,6 +15,7 @@ namespace rpp
     struct RendererGraphicData
     {
         u32 rendererId; ///< The unique identifier for the renderer instance.
+        u32 circleMask; ///< The circle mask texture id used for drawing circles.
     };
 
     /**
@@ -36,6 +37,8 @@ namespace rpp
             u32 rectangleId;      ///< The id of the rectangle used for drawing.
             u32 imguiId;          ///< The id of the imgui instance used for drawing.
             u32 lineId;           ///< The id of the line used for drawing.
+            u32 circleMask;       ///< The circle mask texture id used for drawing circles.
+            u32 rectangleMask;    ///< The rectangle mask texture id used for drawing rectangles (the default mask).
         };
 
     public:
@@ -99,8 +102,17 @@ namespace rpp
          * @brief Draw a rectangle on the current active renderer.
          * @param rect The rectangle parameters including center coordinates, width, and height.
          * @param textureId The ID of the texture to apply to the rectangle. If INVALID_ID, no texture is applied.
+         * @param maskTextureId The ID of the mask texture to apply to the rectangle. If INVALID_ID, no mask is applied.
          */
-        static void DrawRectangle(const Rect &rect, u32 textureId = INVALID_ID);
+        static void DrawRectangle(const Rect &rect, u32 textureId = INVALID_ID, u32 maskTextureId = INVALID_ID);
+
+        /**
+         * @brief Draw a circle on the current active renderer.
+         * @param center The center point of the circle.
+         * @param radius The radius of the circle.
+         * @param textureId The ID of the texture to apply to the circle. If INVALID_ID, no texture is applied.
+         */
+        static void DrawCircle(const Point &center, f32 radius, u32 textureId = INVALID_ID);
 
         /**
          * @brief Draw a line on the current active renderer.

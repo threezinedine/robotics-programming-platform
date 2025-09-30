@@ -5,7 +5,6 @@
 #include "modules/renderer/program.h"
 #include "glm/gtc/matrix_transform.hpp"
 #include "modules/renderer/texture.h"
-#include "plutovg.h"
 
 static const char *vertexShaderSource = R"(
 #version 330 core
@@ -32,13 +31,15 @@ static const char *fragmentShaderSource = R"(
 out vec4 FragColor;
 
 uniform sampler2D uTexture;
+uniform sampler2D uMaskTexture;
 
 in vec2 vTexCoord;
 
 void main()
 {
 	vec4 textureColor = texture(uTexture, vTexCoord);
-    FragColor = vec4(1.0) * textureColor;
+	vec4 maskColor = texture(uMaskTexture, vTexCoord);
+    FragColor = textureColor * maskColor;
 }
 )";
 
@@ -127,9 +128,12 @@ namespace rpp
 		s_rectangles->Free(rectangleId);
 	}
 
-	void Rectangle::Draw(u32 rectangleId, const Rect &rect, u32 textureId)
+	void Rectangle::Draw(u32 rectangleId, const Rect &rect, u32 textureId, u32 maskTextureId)
 	{
 		RPP_ASSERT(s_rectangles != nullptr);
+		RPP_ASSERT(rectangleId != INVALID_ID);
+		RPP_ASSERT(textureId != INVALID_ID);
+
 		RectangleData *data = s_rectangles->Get(rectangleId);
 		Program::Use(data->programId);
 
@@ -148,10 +152,8 @@ namespace rpp
 
 		RPP_ASSERT(data->rendererId == Renderer::GetCurrentRendererId());
 
-		if (textureId != INVALID_ID)
-		{
-			Texture::Activate(textureId, 0);
-		}
+		Texture::Activate(textureId, "uTexture", 0);
+		Texture::Activate(maskTextureId, "uMaskTexture", 1);
 
 		DrawVertexBufferCommandData command = {};
 		command.bufferId = data->vertexArrayId;

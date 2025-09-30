@@ -67,13 +67,35 @@ namespace rpp
         return id;
     }
 
+    u32 Texture::Create(u32 width, u32 height, u32 channels, u8 *pData)
+    {
+        RPP_ASSERT(s_textureStorage != nullptr);
+        u32 id = s_textureStorage->Create();
+        TextureData *textureData = s_textureStorage->Get(id);
+
+        textureData->width = width;
+        textureData->height = height;
+
+        CreateTextureCommandData createTexture{};
+        createTexture.width = textureData->width;
+        createTexture.height = textureData->height;
+        createTexture.numberOfChannels = channels;
+        createTexture.pPixelData = pData;
+        createTexture.pTextureId = &textureData->textureId;
+
+        GraphicsCommandData command{GraphicsCommandType::CREATE_TEXTURE, &createTexture};
+        Renderer::GetWindow()->ExecuteCommand(command);
+
+        return id;
+    }
+
     void Texture::Destroy(u32 textureId)
     {
         RPP_ASSERT(s_textureStorage != nullptr);
         s_textureStorage->Free(textureId);
     }
 
-    void Texture::Activate(u32 textureId, u32 slot)
+    void Texture::Activate(u32 textureId, const String &name, u32 slot)
     {
         RPP_ASSERT(s_textureStorage != nullptr);
         TextureData *textureData = s_textureStorage->Get(textureId);
@@ -87,6 +109,6 @@ namespace rpp
         GraphicsCommandData command{GraphicsCommandType::ACTIVE_TEXTURE, &activeTexture};
         Renderer::GetWindow()->ExecuteCommand(command);
 
-        Program::SetUniform("uTexture", (i32)slot);
+        Program::SetUniform(name, (i32)slot);
     }
 } // namespace rpp

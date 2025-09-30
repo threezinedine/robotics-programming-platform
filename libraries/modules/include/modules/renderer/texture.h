@@ -39,6 +39,16 @@ namespace rpp
         static u32 Create(const String &filePath);
 
         /**
+         * @brief Constructs a texture with the specified width, height, and pixel data.
+         * @param width The width of the texture in pixels.
+         * @param height The height of the texture in pixels.
+         * @param channels The number of color channels in the texture (e.g., 3 for RGB, 4 for RGBA).
+         * @param pData A pointer to the pixel data. The data should be in row-major order, with each pixel represented by `channels` bytes.
+         *             The memory for the pixel data is managed by the caller and should remain valid until
+         */
+        static u32 Create(u32 width, u32 height, u32 channels, u8 *pData);
+
+        /**
          * @brief Destroys the texture with the specified ID, freeing its resources.
          */
         static void Destroy(u32 textureId);
@@ -46,10 +56,11 @@ namespace rpp
         /**
          * @brief Activates the texture with the specified ID on the given texture slot.
          * @param textureId The ID of the texture to activate.
+         * @param name The name of the sampler uniform in the shader program that will use this texture.
          * @param slot The texture slot to activate the texture on (e.g., 0 for GL_TEXTURE0).
          * @param program The shader program that will use this texture. The program must be active (used) before calling this method.
          */
-        static void Activate(u32 textureId, u32 slot);
+        static void Activate(u32 textureId, const String &name, u32 slot);
 
     private:
         static Scope<Storage<TextureData>> s_textureStorage; ///< Storage for managing texture data.

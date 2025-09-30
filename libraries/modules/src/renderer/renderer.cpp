@@ -5,6 +5,7 @@
 #include "modules/renderer/imgui_internal.h"
 #include "modules/renderer/line.h"
 #include "modules/renderer/texture.h"
+#include "plutovg.h"
 
 namespace rpp
 {
@@ -101,6 +102,58 @@ namespace rpp
         currentRenderer->rectangleId = Rectangle::Create();
         currentRenderer->lineId = Line::Create();
 
+        // create rectangle mask texture
+        {
+            u32 maskWidth = 400;
+            u32 maskHeight = 400;
+
+            plutovg_surface_t *surface = plutovg_surface_create(maskWidth, maskHeight);
+            plutovg_canvas_t *canvas = plutovg_canvas_create(surface);
+
+            plutovg_canvas_save(canvas);
+            plutovg_canvas_rect(canvas, 0, 0, maskWidth, maskHeight);
+            plutovg_canvas_set_rgba(canvas, 1, 1, 1, 1);
+            plutovg_canvas_fill(canvas);
+            plutovg_canvas_restore(canvas);
+            plutovg_canvas_save(canvas);
+
+            currentRenderer->rectangleMask = Texture::Create(maskWidth, maskHeight, 4, (u8 *)plutovg_surface_get_data(surface));
+
+            plutovg_canvas_destroy(canvas);
+            plutovg_surface_destroy(surface);
+        }
+
+        // create circle mask texture
+        {
+            u32 maskWidth = 400;
+            u32 maskHeight = 400;
+            f32 centerX = maskWidth / 2.0f;
+            f32 centerY = maskHeight / 2.0f;
+            f32 radius = maskWidth / 2.0f;
+
+            plutovg_surface_t *surface = plutovg_surface_create(maskWidth, maskHeight);
+            plutovg_canvas_t *canvas = plutovg_canvas_create(surface);
+
+            plutovg_canvas_save(canvas);
+            plutovg_canvas_rect(canvas, 0, 0, maskWidth, maskHeight);
+            plutovg_canvas_set_rgba(canvas, 0, 0, 0, 0);
+            plutovg_canvas_fill(canvas);
+            plutovg_canvas_restore(canvas);
+
+            plutovg_canvas_arc(canvas, centerX, centerY, radius, 0, 2 * 3.1415926f, 0);
+            plutovg_canvas_set_rgba(canvas, 1, 1, 1, 1);
+            plutovg_canvas_fill(canvas);
+            plutovg_canvas_restore(canvas);
+            plutovg_canvas_save(canvas);
+
+            currentRenderer->circleMask = Texture::Create(maskWidth, maskHeight, 4, (u8 *)plutovg_surface_get_data(surface));
+
+            plutovg_surface_write_to_png(surface, "circle_mask.png");
+
+            plutovg_canvas_destroy(canvas);
+            plutovg_surface_destroy(surface);
+        }
+
         if (useImGui)
         {
             currentRenderer->imguiId = ImGuiImpl::Create();
@@ -113,9 +166,45 @@ namespace rpp
         return rendererId;
     }
 
-    void Renderer::DrawRectangle(const Rect &rect, u32 textureId)
+    void Renderer::DrawRectangle(const Rect &rect, u32 textureId, u32 maskTextureId)
     {
-        Rectangle::Draw(GetCurrentRenderer()->rectangleId, rect, textureId);
+        RPP_ASSERT(s_currentRenderers != nullptr);
+        RPP_ASSERT(s_currentRendererIndex != INVALID_RENDERER_INDEX);
+        RendererData *current = s_currentRenderers->Get(s_currentRendererIndex);
+        u32 usedTextureId = textureId;
+
+        if (usedTextureId == INVALID_ID)
+        {
+            usedTextureId = current->rectangleMask;
+        }
+
+        u32 usedMaskTextureId = maskTextureId;
+        if (usedMaskTextureId == INVALID_ID)
+        {
+            usedMaskTextureId = current->rectangleMask;
+        }
+
+        Rectangle::Draw(GetCurrentRenderer()->rectangleId, rect, usedTextureId, usedMaskTextureId);
+    }
+
+    void Renderer::DrawCircle(const Point &center, f32 radius, u32 textureId)
+    {
+        RPP_ASSERT(s_currentRenderers != nullptr);
+        RPP_ASSERT(s_currentRendererIndex != INVALID_RENDERER_INDEX);
+
+        RendererData *current = s_currentRenderers->Get(s_currentRendererIndex);
+        RPP_ASSERT(current != nullptr);
+
+        u32 usedTextureId = textureId;
+        if (usedTextureId == INVALID_ID)
+        {
+            usedTextureId = current->circleMask;
+        }
+
+        Rectangle::Draw(GetCurrentRenderer()->rectangleId,
+                        Rect{center.x, center.y, radius * 2, radius * 2},
+                        usedTextureId,
+                        current->circleMask);
     }
 
     void Renderer::DrawLine(const Point &start, const Point &end)
@@ -155,6 +244,9 @@ namespace rpp
         {
             ImGuiImpl::Destroy(data->imguiId);
         }
+
+        Texture::Destroy(data->circleMask);
+        Texture::Destroy(data->rectangleMask);
 
         Rectangle::Destroy(data->rectangleId);
         Line::Destroy(data->lineId);
