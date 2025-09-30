@@ -7,11 +7,24 @@
 
 namespace rpp
 {
+    class ImGuiImpl;
+
+    /**
+     * The stored information related to the graphics API used by the renderer. This data will be stored in the Graphics's Window instance.
+     */
+    struct RendererGraphicData
+    {
+        u32 rendererId; ///< The unique identifier for the renderer instance.
+    };
+
     /**
      * @brief Instance for working with drawing in 1 window (each window has its own renderer as 1-1 relation).
      */
     class RPP_PYTHON_BINDING Renderer
     {
+    public:
+        friend class ImGuiImpl;
+
     private:
         /**
          * All information related to the renderer instance.
@@ -21,6 +34,7 @@ namespace rpp
             Scope<Window> window; ///< The window associated with this renderer.
             u32 rendererId;       ///< The unique identifier for the renderer instance.
             u32 rectangleId;      ///< The id of the rectangle used for drawing.
+            u32 imguiId;          ///< The id of the imgui instance used for drawing.
             u32 lineId;           ///< The id of the line used for drawing.
         };
 
@@ -91,6 +105,12 @@ namespace rpp
          * @brief Draw a line on the current active renderer.
          */
         static void DrawLine(const Point &start, const Point &end);
+
+        /**
+         * @brief Draw the rendering scene inside the ImGui frame. This function can be used to embed
+         * a rendering scene within an ImGui window.
+         */
+        static void DrawingSceneInImGui();
 
         /**
          * @brief Destroy the renderer with the given id. If the renderer is currently active, it will be deactivated first.

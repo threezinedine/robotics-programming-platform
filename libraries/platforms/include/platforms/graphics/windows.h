@@ -10,13 +10,15 @@ namespace rpp
     class Window
     {
     public:
-        /*
+        /**
          * @param width The width of the window.
          * @param height The height of the window.
          * @param title The title of the window.
+         * @param pData Pointer to the graphics backend specific data.
+         * @param dataSize The size of the graphics backend specific data.
          *
          */
-        Window(u32 width, u32 height, const char *title);
+        Window(u32 width, u32 height, const char *title, void *pData = nullptr, u32 dataSize = 0);
 
         Window(const Window &other);
 
@@ -45,10 +47,36 @@ namespace rpp
          */
         b8 ExecuteCommand(const GraphicsCommandData &command);
 
+        /**
+         * @brief Get the width of the window.
+         * @return The width of the window.
+         */
+        inline u32 GetWidth() const { return m_width; }
+
+        /**
+         * @brief Get the height of the window.
+         * @return The height of the window.
+         */
+        inline u32 GetHeight() const { return m_height; }
+
+        /**
+         * @brief A callback function type for window resize events.
+         * @param width The new width of the window.
+         * @param height The new height of the window.
+         * @param userData A pointer to user-defined data passed to the callback.
+         */
+        typedef void (*WindowResizeCallback)(u32 width, u32 height, void *userData);
+
+        inline void SetResizeCallback(WindowResizeCallback callback) { m_resizeCallback = callback; }
+
     private:
         u32 m_width;         ///< The width of the window.
         u32 m_height;        ///< The height of the window.
         const char *m_title; ///< The title of the window.
         void *m_window;      ///< The native window handle.
+
+        void *m_pData; ///< Pointer to the graphics backend specific data.
+
+        WindowResizeCallback m_resizeCallback; ///< The callback function for window resize events.
     };
 } // namespace rpp

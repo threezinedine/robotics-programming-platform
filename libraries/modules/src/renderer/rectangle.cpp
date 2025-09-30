@@ -9,17 +9,20 @@
 static const char *vertexShaderSource = R"(
 #version 330 core
 
-uniform float vScale;
-
 layout(location = 0) in vec2 aPos;
 layout(location = 1) in vec2 aTexCoord;
+
+uniform mat4 uTranslate;
+uniform mat4 uScale;
 
 out vec2 vTexCoord;
 
 void main()
 {
+	vec4 pos = vec4(aPos, 0.0, 1.0);
+
     vTexCoord = aTexCoord;
-    gl_Position = vec4(aPos.x * vScale, aPos.y * vScale, 0.0, 1.0);
+    gl_Position = uTranslate * uScale * pos;
 }
 )";
 
@@ -44,8 +47,6 @@ namespace rpp
 
 	void Rectangle::Initialize()
 	{
-		RPP_LOG_DEBUG("Initializing Rectangle storage.");
-
 		RPP_ASSERT(s_rectangles == nullptr);
 
 		auto RectangleDeallocator = [&](Rectangle::RectangleData *data)
@@ -71,8 +72,6 @@ namespace rpp
 
 	void Rectangle::Shutdown()
 	{
-		RPP_LOG_DEBUG("Shutting down Rectangle storage.");
-
 		RPP_ASSERT(s_rectangles != nullptr);
 
 		s_rectangles.reset();
@@ -80,8 +79,6 @@ namespace rpp
 
 	u32 Rectangle::Create()
 	{
-		RPP_LOG_DEBUG("Creating a new Rectangle instance");
-
 		RPP_ASSERT(s_rectangles != nullptr);
 
 		u32 program = Program::Create(vertexShaderSource, fragmentShaderSource);
@@ -124,7 +121,6 @@ namespace rpp
 
 	void Rectangle::Destroy(u32 rectangleId)
 	{
-		RPP_LOG_DEBUG("Destroying Rectangle instance with ID: {}", rectangleId);
 		RPP_ASSERT(s_rectangles != nullptr);
 
 		s_rectangles->Free(rectangleId);
@@ -135,7 +131,19 @@ namespace rpp
 		RPP_ASSERT(s_rectangles != nullptr);
 		RectangleData *data = s_rectangles->Get(rectangleId);
 		Program::Use(data->programId);
-		Program::SetUniform("vScale", 0.5f);
+
+		u32 windowWidth = Renderer::GetWindow()->GetWidth();
+		u32 windowHeight = Renderer::GetWindow()->GetHeight();
+
+		f32 widthScale = rect.width / windowWidth * 2;
+		f32 heightScale = rect.height / windowHeight * 2;
+
+		Mat4x4 uTranslate = glm::translate(Mat4x4(1.0f), glm::vec3(rect.centerX / windowWidth * 2, rect.centerY / windowHeight * 2, 0));
+		Mat4x4 uScale = glm::scale(Mat4x4(1.0f),
+								   glm::vec3(widthScale, heightScale, 1.0f));
+
+		Program::SetUniform("uTranslate", uTranslate);
+		Program::SetUniform("uScale", uScale);
 
 		RPP_ASSERT(data->rendererId == Renderer::GetCurrentRendererId());
 

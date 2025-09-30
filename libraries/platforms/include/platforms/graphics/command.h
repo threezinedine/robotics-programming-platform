@@ -11,6 +11,7 @@ namespace rpp
         CLEAR_COLOR,      ///< Specify the screen color.
         ACTIVATE_CONTEXT, ///< Activate the rendering context.
         SWAP_BUFFERS,     ///< Swap the front and back buffers.
+        RESET_VIEWPORT,   ///< Reset the viewport to the entire window.
 
         CREATE_VERTEX_BUFFER, ///< Create a vertex buffer.
         DELETE_VERTEX_BUFFER, ///< Delete a vertex buffer.
@@ -50,6 +51,10 @@ namespace rpp
     struct ClearColorCommandData
     {
         f32 color[4]; ///< The RGBA color values.
+    };
+
+    struct ResetViewportCommandData
+    {
     };
 
     struct ActivateContextCommandData

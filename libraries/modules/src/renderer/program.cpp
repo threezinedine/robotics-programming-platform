@@ -9,8 +9,6 @@ namespace rpp
 
     void Program::Initialize()
     {
-        RPP_LOG_DEBUG("Initializing Program storage.");
-
         RPP_ASSERT(s_programs == nullptr);
 
         auto ProgramDeallocator = [](Program::ProgramData *data)
@@ -31,8 +29,6 @@ namespace rpp
 
     void Program::Shutdown()
     {
-        RPP_LOG_DEBUG("Shutting down Program storage.");
-
         RPP_ASSERT(s_programs != nullptr);
 
         s_programs.reset();
@@ -40,8 +36,6 @@ namespace rpp
 
     u32 Program::Create(const String &vertexShaderSource, const String &fragmentShaderSource)
     {
-        RPP_LOG_DEBUG("Creating a new Program instance.");
-
         RPP_ASSERT(s_programs != nullptr);
 
         u32 programId = s_programs->Create();

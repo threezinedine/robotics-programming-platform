@@ -6,6 +6,8 @@
 #include "platforms/console.h"
 #include <cstdio>
 #include <functional>
+#include <stdexcept>
+#include "platforms/memory.h"
 
 #if defined(RPP_DEBUG)
 #define GL_ASSERT(expression)                                                                                                        \
@@ -136,9 +138,9 @@ namespace rpp
         glfwTerminate();
     }
 
-    Scope<Window> Graphics::CreateWindow(u32 width, u32 height, const char *title)
+    Scope<Window> Graphics::CreateWindow(u32 width, u32 height, const char *title, void *pData, u32 dataSize)
     {
-        auto window = CreateScope<Window>(width, height, title);
+        auto window = CreateScope<Window>(width, height, title, pData, dataSize);
 
         if (glewInit() != GLEW_OK)
         {
@@ -148,15 +150,40 @@ namespace rpp
         return window;
     }
 
-    Window::Window(u32 width, u32 height, const char *title)
-        : m_width(width), m_height(height), m_title(title)
+    Window::Window(u32 width, u32 height, const char *title, void *pData, u32 dataSize)
+        : m_width(width), m_height(height),
+          m_title(title), m_resizeCallback(nullptr)
     {
-#if defined(RPP_EDITOR)
-        m_window = nullptr;
-#else
         m_window = glfwCreateWindow(width, height, title, NULL, NULL);
         glfwMakeContextCurrent((GLFWwindow *)m_window);
-#endif
+
+        if (pData && dataSize > 0)
+        {
+            m_pData = RPP_MALLOC(dataSize);
+            std::memcpy(m_pData, pData, dataSize);
+        }
+        else
+        {
+            m_pData = nullptr;
+        }
+
+        if (!m_window)
+        {
+            print("Failed to create GLFW window\n", ConsoleColor::RED);
+            throw std::runtime_error("Failed to create GLFW window");
+        }
+
+        // set window resize callback
+        glfwSetWindowUserPointer((GLFWwindow *)m_window, this);
+        glfwSetFramebufferSizeCallback((GLFWwindow *)m_window, [](GLFWwindow *window, int width, int height)
+                                       {
+            Window* win = (Window*)glfwGetWindowUserPointer(window);
+            win->m_width = width;
+            win->m_height = height; 
+            if (win->m_resizeCallback) {
+                win->m_resizeCallback(width, height, win->m_pData);
+            }
+            glViewport(0, 0, width, height); });
     }
 
     Window::Window(const Window &other)
@@ -167,13 +194,17 @@ namespace rpp
 
     Window::~Window()
     {
-#if !defined(RPP_EDITOR)
         if (m_window)
         {
             glfwDestroyWindow((GLFWwindow *)m_window);
             m_window = nullptr;
+
+            if (m_pData)
+            {
+                RPP_FREE(m_pData);
+                m_pData = nullptr;
+            }
         }
-#endif
     }
 
     b8 Window::ShouldWindowClose()
@@ -229,6 +260,11 @@ namespace rpp
             ClearColorCommandData *color = (ClearColorCommandData *)command.pData;
             GL_ASSERT(glClear(GL_COLOR_BUFFER_BIT));
             GL_ASSERT(glClearColor(color->color[0], color->color[1], color->color[2], color->color[3]));
+            return TRUE;
+        }
+        case GraphicsCommandType::RESET_VIEWPORT:
+        {
+            GL_ASSERT(glViewport(0, 0, m_width, m_height));
             return TRUE;
         }
         case GraphicsCommandType::ACTIVATE_CONTEXT:

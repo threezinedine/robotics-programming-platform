@@ -20,19 +20,20 @@ namespace rpp
     {
         RPP_ASSERT(s_imguis == nullptr);
 
-        auto ImGuiDeallocator = [](ImGuiData *data) {
+        auto ImGuiDeallocator = [](ImGuiData *data)
+        {
             // Cleanup
-			RPP_ASSERT(data != nullptr);
+            RPP_ASSERT(data != nullptr);
 
-			DeleteFrameBufferCommandData fbData = {};
-			fbData.frameBufferId = data->frameBufferId;
-			fbData.textureId = data->textureId;
-			fbData.renderBufferId = data->frameRenderBufferId;
+            DeleteFrameBufferCommandData fbData = {};
+            fbData.frameBufferId = data->frameBufferId;
+            fbData.textureId = data->textureId;
+            fbData.renderBufferId = data->frameRenderBufferId;
 
-			GraphicsCommandData commandData = {GraphicsCommandType::DELETE_FRAMEBUFFER, &fbData};
-			Renderer::GetWindow()->ExecuteCommand(commandData);
-			RPP_DELETE(data);
-			};
+            GraphicsCommandData commandData = {GraphicsCommandType::DELETE_FRAMEBUFFER, &fbData};
+            Renderer::GetWindow()->ExecuteCommand(commandData);
+            RPP_DELETE(data);
+        };
 
         s_imguis = CreateScope<Storage<ImGuiData>>();
     }
@@ -100,6 +101,23 @@ namespace rpp
 
         GraphicsCommandData commandData{GraphicsCommandType::CREATE_FRAMEBUFFER, &fbData};
         Renderer::GetWindow()->ExecuteCommand(commandData);
+
+        Renderer::GetWindow()->SetResizeCallback(
+            [](u32 width, u32 height, void *pData)
+            {
+                RendererGraphicData *graphicData = (RendererGraphicData *)pData;
+                ResizeFrameBufferCommandData resizeData;
+                Renderer::RendererData *rendererData = Renderer::s_currentRenderers->Get(graphicData->rendererId);
+                ImGuiImpl::ImGuiData *imguiData = ImGuiImpl::s_imguis->Get(rendererData->imguiId);
+
+                resizeData.frameBufferId = imguiData->frameBufferId;
+                resizeData.renderBufferId = imguiData->frameRenderBufferId;
+                resizeData.textureId = imguiData->textureId;
+                resizeData.width = width;
+                resizeData.height = height;
+                GraphicsCommandData commandData = {GraphicsCommandType::RESIZE_FRAMEBUFFER, &resizeData};
+                Renderer::GetWindow()->ExecuteCommand(commandData);
+            });
 
         return id;
     }
@@ -174,6 +192,5 @@ namespace rpp
     {
         RPP_ASSERT(s_imguis != nullptr);
         s_imguis->Free(imguiId);
-
     }
 } // namespace rpp

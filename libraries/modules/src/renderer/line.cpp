@@ -5,13 +5,20 @@
 static const char *vertexShaderSource = R"(
 #version 330 core
 
-uniform float vScale;
-
 layout(location = 0) in vec2 aPos;
+layout(location = 1) in vec2 aTexCoord;
+
+uniform mat4 uTranslate;
+uniform mat4 uScale;
+
+out vec2 vTexCoord;
 
 void main()
 {
-    gl_Position = vec4(aPos.x * vScale, aPos.y * vScale, 0.0, 1.0);
+	vec4 pos = vec4(aPos, 0.0, 1.0);
+
+    vTexCoord = aTexCoord;
+    gl_Position = uTranslate * uScale * pos;
 }
 )";
 
@@ -104,9 +111,14 @@ namespace rpp
         LineData *lineData = s_lines->Get(id);
         RPP_ASSERT(lineData != nullptr);
         RPP_ASSERT(lineData->rendererId == Renderer::GetCurrentRendererId());
-
         Program::Use(lineData->programId);
-        Program::SetUniform("vScale", 1.0f);
+
+        u32 windowWidth = Renderer::GetWindow()->GetWidth();
+        u32 windowHeight = Renderer::GetWindow()->GetHeight();
+
+        // Mat4x4 uTranslate = glm::translate(Mat4x4(1.0f), glm::vec3(start.x / windowWidth, rect.centerY / windowHeight, 0));
+
+        // Program::SetUniform("uTranslate", uTranslate);
 
         DrawVertexBufferCommandData command = {};
         command.bufferId = lineData->vertexBufferId;

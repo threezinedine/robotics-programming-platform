@@ -15,8 +15,6 @@ namespace rpp
 
     void Renderer::Initialize()
     {
-        RPP_LOG_DEBUG("Initializing rendering system.");
-
         RPP_ASSERT(s_currentRenderers == nullptr);
         if (!Graphics::Init())
         {
@@ -30,13 +28,10 @@ namespace rpp
         Line::Initialize();
         ImGuiImpl::Initialize();
         s_currentRendererIndex = INVALID_RENDERER_INDEX;
-        RPP_LOG_DEBUG("Rendering system initialized successfully");
     }
 
     void Renderer::Shutdown()
     {
-        RPP_LOG_DEBUG("Shutting down rendering system.");
-
         RPP_ASSERT(s_currentRenderers != nullptr);
 
         ImGuiImpl::Shutdown();
@@ -46,12 +41,14 @@ namespace rpp
         Texture::Shutdown();
         s_currentRenderers.reset();
         Graphics::Shutdown();
-        RPP_LOG_INFO("Rendering system shutdown complete");
     }
 
     void Renderer::PreDraw()
     {
         RendererData *current = GetCurrentRenderer();
+
+        ImGuiImpl::PrepareFrame(current->imguiId);
+
         // Main loop
         current->window->PollEvents();
 
@@ -69,6 +66,9 @@ namespace rpp
     void Renderer::Present()
     {
         RendererData *current = GetCurrentRenderer();
+
+        ImGuiImpl::Render(current->imguiId);
+
         GraphicsCommandData swapBuffersCommand = {GraphicsCommandType::SWAP_BUFFERS, nullptr};
         current->window->ExecuteCommand(swapBuffersCommand);
     }
@@ -85,11 +85,16 @@ namespace rpp
         RPP_ASSERT(s_currentRenderers != nullptr);
         u32 rendererId = s_currentRenderers->Create();
         RendererData *currentRenderer = s_currentRenderers->Get(rendererId);
-        currentRenderer->window = Graphics::CreateWindow(width, height, title.CStr());
+
+        RendererGraphicData graphicData = {};
+        graphicData.rendererId = rendererId;
+
+        currentRenderer->window = Graphics::CreateWindow(width, height, title.CStr(), &graphicData, sizeof(RendererGraphicData));
 
         ActivateRenderer(rendererId);
         currentRenderer->rectangleId = Rectangle::Create();
         currentRenderer->lineId = Line::Create();
+        currentRenderer->imguiId = ImGuiImpl::Create();
 
         return rendererId;
     }
@@ -117,6 +122,11 @@ namespace rpp
         GetCurrentRenderer()->window->ExecuteCommand(commandData);
     }
 
+    void Renderer::DrawingSceneInImGui()
+    {
+        ImGuiImpl::DrawRenderingScene(GetCurrentRenderer()->imguiId);
+    }
+
     void Renderer::DestroyRenderer(u32 renderId)
     {
         RPP_ASSERT(s_currentRenderers != nullptr);
@@ -126,6 +136,7 @@ namespace rpp
 
         RPP_ASSERT(data != nullptr);
 
+        ImGuiImpl::Destroy(data->imguiId);
         Rectangle::Destroy(data->rectangleId);
         Line::Destroy(data->lineId);
 

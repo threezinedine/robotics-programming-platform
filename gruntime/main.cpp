@@ -15,7 +15,6 @@ int main(void)
         u32 renderer = Renderer::CreateRenderer(800, 600, "Test");
 
         Renderer::ActivateRenderer(renderer);
-        u32 imgui = ImGuiImpl::Create();
         // u32 texture = Texture::Create("C:\\Users\\APC\\Downloads\\download.jpg");
         u32 texture = Texture::Create("C:\\Users\\APC\\Pictures\\Screenshots\\Screenshot 2025-08-19 222422.png");
 
@@ -25,29 +24,23 @@ int main(void)
 
             if (Renderer::GetWindow()->ShouldWindowClose())
             {
-                ImGuiImpl::Destroy(imgui);
                 Texture::Destroy(texture);
                 Renderer::DestroyRenderer(renderer);
                 break;
             }
             else
             {
-                // ImGuiImpl::PrepareFrame(imgui);
-
                 Renderer::PreDraw();
 
-                Renderer::DrawRectangle({-0.5f, -0.5f, 0.1f, 0.1f}, texture);
-                Renderer::DrawLine({-0.5f, -0.5f}, {0.5f, 0.5f});
+                Renderer::DrawRectangle({0, 0, 100, 100}, texture);
 
                 Renderer::PostDraw();
 
-                // ImGui::ShowDemoWindow();
+                ImGui::ShowDemoWindow();
 
-                // ImGui::Begin("My Captured Scene Window");
-                // ImGuiImpl::DrawRenderingScene(imgui);
-                // ImGui::End();
-
-                // ImGuiImpl::Render(imgui);
+                ImGui::Begin("My Captured Scene Window");
+                Renderer::DrawingSceneInImGui();
+                ImGui::End();
 
                 Renderer::Present();
             }

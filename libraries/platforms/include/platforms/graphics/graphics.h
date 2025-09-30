@@ -38,9 +38,11 @@ namespace rpp
          * @param width The width of the window.
          * @param height The height of the window.
          * @param title The title of the window.
+         * @param pData Pointer to the graphics backend specific data.
+         * @param dataSize The size of the graphics backend specific data.
          *
          * @return The window instance, nullptr if the creation failed.
          */
-        static Scope<Window> CreateWindow(u32 width, u32 height, const char *title);
+        static Scope<Window> CreateWindow(u32 width, u32 height, const char *title, void *pData = nullptr, u32 dataSize = 0);
     };
 } // namespace rpp
