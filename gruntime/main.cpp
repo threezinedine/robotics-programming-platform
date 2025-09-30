@@ -1,4 +1,5 @@
-#include "core/core.h"
+#include "applications/applications.h"
+#include "glm/gtc/matrix_transform.hpp"
 
 RPP_ENABLE_MEMORY_TRACKING;
 
@@ -7,39 +8,46 @@ using namespace rpp;
 int main(void)
 {
     SingletonManager::Initialize();
-    Logging::GetInstance()->SetupHandler(CreateScope<ConsoleHandler>());
+    Logging::GetInstance()->Setup(u8(HandlerType::CONSOLE), LogLevel::DEBUG);
+    Renderer::Initialize();
 
-    Graphics graphics;
-
-    graphics.Init();
-    RPP_LOG_INFO("Graphics initialized successfully.");
-    RPP_LOG_ERROR("Graphics initialization failed.");
-
-    Scope<Window> window = graphics.CreateWindow(800, 600, "RPP Window");
-    String title = "RPP Window - \n";
-
-    String msg = Format("Memory allocated: {} bytes\n", GetMemoryAllocated());
-    Json json(R"({"test": 20})");
-
-    print(Format("{}\n", json.ToString()).CStr());
-
-    while (!window->ShouldWindowClose())
     {
-        // Main loop
-        window->PollEvents();
+        u32 renderer = Renderer::Create(800, 600, "Test", TRUE);
 
-        // Clear color command
-        ClearColorCommandData clearColorData = {{0.1f, 0.2f, 0.3f, 1.0f}};
-        GraphicsCommandData commandData = {GraphicsCommandType::CLEAR_COLOR, &clearColorData};
-        window->ExecuteCommand(commandData);
+        Renderer::Activate(renderer);
+        // u32 texture = Texture::Create("C:\\Users\\APC\\Downloads\\download.jpg");
+        u32 texture = Texture::Create("C:\\Users\\APC\\Pictures\\Screenshots\\Screenshot 2025-08-19 222422.png");
 
-        // Swap buffers command
-        GraphicsCommandData swapBuffersCommand = {GraphicsCommandType::SWAP_BUFFERS, nullptr};
-        window->ExecuteCommand(swapBuffersCommand);
+        while (TRUE)
+        {
+            Renderer::Activate(renderer);
+
+            if (Renderer::GetWindow()->ShouldWindowClose())
+            {
+                Texture::Destroy(texture);
+                Renderer::Destroy(renderer);
+                break;
+            }
+            else
+            {
+                Renderer::PreDraw();
+
+                Renderer::DrawRectangle({0, 0, 100, 100}, texture);
+
+                Renderer::PostDraw();
+
+                ImGui::ShowDemoWindow();
+
+                ImGui::Begin("My Captured Scene Window");
+                Renderer::DrawingSceneInImGui();
+                ImGui::End();
+
+                Renderer::Present();
+            }
+        }
     }
 
-    graphics.Shutdown();
-
+    Renderer::Shutdown();
     SingletonManager::Shutdown();
     return 0;
 }

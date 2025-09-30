@@ -10,7 +10,14 @@ class PyParameter(PyObject):
     def __init__(self, cursor: clang.cindex.Cursor) -> None:
         super().__init__(cursor)
         self.type = cursor.type.spelling
-        self.hasDefaultValue = len(list(cursor.get_children())) > 0
+        self.hasDefaultValue = False
+
+        for child in cursor.get_children():
+            if child.kind not in [
+                clang.cindex.CursorKind.NAMESPACE_REF,
+                clang.cindex.CursorKind.TYPE_REF,
+            ]:
+                self.hasDefaultValue = True
 
     def __repr__(self) -> str:
         return f"<PyParameter name='{self.name}' type='{self.type}'/>"

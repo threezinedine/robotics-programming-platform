@@ -294,5 +294,6 @@ __marimo__/
 
 ### ============================= Project Files =============================
 externals
+externals/*
 
 tmp/*

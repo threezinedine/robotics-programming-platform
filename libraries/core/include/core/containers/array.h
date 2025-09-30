@@ -46,8 +46,7 @@ namespace rpp
             m_data = (T *)RPP_MALLOC(m_capacity * sizeof(T));
             for (u32 i = 0; i < m_size; i++)
             {
-                // m_data[i] = std::move(const_cast<T &>(other.m_data[i]));
-                new (&m_data[i]) T(other.m_data[i]);
+                RPP_NEW_REPLACE(&other.m_data[i], T(other.m_data[i]));
             }
         }
 
@@ -89,6 +88,20 @@ namespace rpp
         }
 
         /**
+         * @brief Const access operator for the array (for read-only access).
+         * @param index Index of the element to access. If the index is out of bounds, an exception will be thrown.
+         */
+        T operator[](u32 index) const
+        {
+            if (index >= m_size)
+            {
+                throw std::runtime_error("Array index out of bounds");
+            }
+
+            return m_data[index];
+        }
+
+        /**
          * @brief Resize the array to the new capacity (not number of elements).
          * @param newCapacity New capacity of the array. The new capacity must be greater than the current size else
          *      an exception will be thrown.
@@ -104,8 +117,7 @@ namespace rpp
 
             for (u32 i = 0; i < m_size; i++)
             {
-                // newData[i] = std::move(m_data[i]);
-                new (&newData[i]) T(std::move(m_data[i]));
+                RPP_NEW_REPLACE(&newData[i], T(std::move(m_data[i])));
             }
 
             for (u32 i = 0; i < m_size; i++)
@@ -149,11 +161,10 @@ namespace rpp
 
             for (u32 i = m_size - 1; i >= u32(modifiedIndex) + 1; i--)
             {
-                // m_data[i] = std::move(const_cast<T &>(m_data[i - 1]));
-                new (&m_data[i]) T(std::move(const_cast<T &>(m_data[i - 1])));
+                RPP_NEW_REPLACE(&m_data[i], T(std::move(const_cast<T &>(m_data[i - 1]))));
             }
 
-            new (&m_data[modifiedIndex]) T(value);
+            RPP_NEW_REPLACE(&m_data[modifiedIndex], T(value));
         }
 
         void Push(T &&value, i32 index = -1)
@@ -181,11 +192,41 @@ namespace rpp
 
             for (u32 i = m_size - 1; i >= u32(modifiedIndex) + 1; i--)
             {
-                // m_data[i] = std::move(const_cast<T &>(m_data[i - 1]));
-                new (&m_data[i]) T(std::move(const_cast<T &>(m_data[i - 1])));
+                RPP_NEW_REPLACE(&m_data[i], T(std::move(const_cast<T &>(m_data[i - 1]))));
             }
 
-            new (&m_data[modifiedIndex]) T(std::move(value));
+            RPP_NEW_REPLACE(&m_data[modifiedIndex], T(std::move(value)));
+        }
+
+        /**
+         * @brief Erase the element at the specified index. The size of the array will be decreased by one.
+         * @param index Index of the element to erase. If the index is out of bounds
+         *     an exception will be thrown.
+         */
+        void Erase(i32 index = -1)
+        {
+            if ((index < 0 || index >= static_cast<i32>(m_size)) && index != -1)
+            {
+                throw std::runtime_error("Invalid index, must be between 0 and size-1 of the array or -1");
+            }
+
+            u32 modifiedIndex = 0;
+            if (index == -1)
+            {
+                modifiedIndex = m_size - 1;
+            }
+            else
+            {
+                modifiedIndex = index;
+            }
+
+            m_size--;
+
+            m_data[m_size].~T();
+            for (u32 i = modifiedIndex; i < m_size; i++)
+            {
+                RPP_NEW_REPLACE(&m_data[i], T(std::move(const_cast<T &>(m_data[i + 1]))));
+            }
         }
 
         /**
@@ -199,6 +240,12 @@ namespace rpp
             }
             m_size = 0;
         }
+
+        /**
+         * @brief Get the pointer to the array data.
+         * @return Pointer to the array data.
+         */
+        inline T *Data() { return m_data; }
 
     private:
         T *m_data = nullptr; ///< Pointer to the array data.

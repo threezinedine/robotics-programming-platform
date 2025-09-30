@@ -1,5 +1,6 @@
 #pragma once
 #include "platforms/platforms.h"
+#include <string>
 
 namespace rpp
 {

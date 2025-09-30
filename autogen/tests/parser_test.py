@@ -13,7 +13,7 @@ from .assertion import (
 )
 
 
-def WrapperParse(inputContent: str) -> Structure:
+def WrapperParse(inputContent: str, includeLibs: list[str] = []) -> Structure:
     result: Structure = {
         "enums": [],
         "structs": [],
@@ -21,7 +21,11 @@ def WrapperParse(inputContent: str) -> Structure:
         "classes": [],
     }
 
-    Parse("dummy.h", result, testContent=ParserContentWrapper(inputContent))
+    Parse(
+        "dummy.h",
+        result,
+        testContent=ParserContentWrapper(inputContent, includeLibs),
+    )
 
     return result
 
@@ -215,7 +219,7 @@ public:
     int Add(int a, int b);
 
     /// @brief Subtracts two integers.
-    int Subtract(int a, int b);
+    static int Subtract(int a, int b);
 
 private:
     int lastResult;
@@ -249,10 +253,98 @@ private:
                     ParameterAssert(name="a", type="int"),
                     ParameterAssert(name="b", type="int"),
                 ],
+                isStatic=True,
             ),
         ],
         fields=[
             FieldAssert(name="lastResult", type="int", access="private"),
+        ],
+        annotations=["python"],
+    ).Assert(result["classes"][0])
+
+
+def test_parse_string_function():
+    result = WrapperParse(
+        """
+#include <string>
+
+std::string RPP_PYTHON_BINDING GetGreeting(const std::string& name);
+""",
+        ["string"],
+    )
+
+    assert "functions" in result
+    assert isinstance(result["functions"], list)
+    assert len(result["functions"]) == 1
+
+    FunctionAssert(
+        name="GetGreeting",
+        returnType="std::string",
+        parameters=[
+            ParameterAssert(name="name", type="const std::string &"),
+        ],
+        annotations=["python"],
+    ).Assert(result["functions"][0])
+
+
+def test_parse_constructor():
+    result = WrapperParse(
+        """
+class RPP_PYTHON_BINDING MyClass {
+public:
+    MyClass();
+    MyClass(int value);
+    MyClass(const std::string& name, int value = 0);
+    MyClass(const MyClass& other);
+
+    void DoSomething();
+};
+""",
+        ["string"],
+    )
+
+    assert "classes" in result
+    assert isinstance(result["classes"], list)
+    assert len(result["classes"]) == 1
+
+    ClassAssert(
+        name="MyClass",
+        constructors=[
+            MethodAssert(
+                name="MyClass",
+                returnType="void",
+                access="public",
+                parameters=[],
+            ),
+            MethodAssert(
+                name="MyClass",
+                returnType="void",
+                access="public",
+                parameters=[
+                    ParameterAssert(name="value", type="int"),
+                ],
+            ),
+            MethodAssert(
+                name="MyClass",
+                returnType="void",
+                access="public",
+                parameters=[
+                    ParameterAssert(name="name", type="const std::string &"),
+                    ParameterAssert(
+                        name="value",
+                        type="int",
+                        hasDefaultValue=True,
+                    ),
+                ],
+            ),
+        ],
+        methods=[
+            MethodAssert(
+                name="DoSomething",
+                returnType="void",
+                access="public",
+                parameters=[],
+            ),
         ],
         annotations=["python"],
     ).Assert(result["classes"][0])

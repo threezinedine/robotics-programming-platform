@@ -1,32 +1,38 @@
 #include "core/singleton_manager.h"
+#include "core/assertions.h"
 
 namespace rpp
 {
-    Array<SingletonEntry> SingletonManager::s_singletonEntries;
+    Scope<Array<SingletonEntry>> SingletonManager::s_singletonEntries = nullptr;
 
     b8 SingletonManager::Initialize()
     {
+        RPP_ASSERT(s_singletonEntries == nullptr);
+
+        s_singletonEntries = CreateScope<Array<SingletonEntry>>();
+
         return TRUE;
     }
 
     void SingletonManager::Shutdown()
     {
-        u32 size = s_singletonEntries.Size();
+        RPP_ASSERT(s_singletonEntries != nullptr);
+
+        u32 size = s_singletonEntries->Size();
         for (i32 i = i32(size - 1); i >= 0; --i)
         {
-            SingletonEntry &entry = s_singletonEntries[i];
+            SingletonEntry &entry = s_singletonEntries->operator[](i);
             if (entry.destroyFunc)
             {
                 entry.destroyFunc(entry);
             }
         }
 
-        s_singletonEntries.Clear();
-		s_singletonEntries.~Array();
+        s_singletonEntries.reset();
     }
 
     void SingletonManager::RegisterSingleton(const String &name, void *instance, SingletonDestroyFunc destroyFunc)
     {
-        s_singletonEntries.Push(SingletonEntry(name, instance, destroyFunc));
+        s_singletonEntries->Push(SingletonEntry(name, instance, destroyFunc));
     }
 } // namespace rpp

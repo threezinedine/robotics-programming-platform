@@ -1,0 +1,63 @@
+{% for struct in structs %}
+    {% if "json" in struct.annotations %}
+template<>
+const String ToString<{{ struct.name }}>(const {{ struct.name }} &value)
+{
+    Json result;
+
+    {% for field in struct.fields-%}
+    {% set jsonKey = isContainsJsonKeyAnnotation(field)-%}
+    {% if jsonKey != ""-%}
+    {% if field.type not in allJsonMappedClasses-%}
+    {% if "Array" not in field.type-%}
+    result.Set(String("{{ jsonKey }}"), value.{{ field.name }});
+    {% else-%}
+    {
+        u32 fieldsCount = value.{{ field.name }}.Size();
+        result.Set(String("{{ jsonKey }}"), Json("[]"));
+        Json fieldJson = result.Get<Json>(String("{{ jsonKey }}"));
+        for (u32 i = 0; i < fieldsCount; i++)
+        {
+            fieldJson.Append<{{ field.type|replace("Array<", "")|replace(">", "") }}>(value.{{ field.name }}[i]);
+        }
+    }
+    {% endif-%}
+    {% else-%}
+    result.Set(String("{{ jsonKey }}"), Json(ToString(value.{{ field.name }})));
+    {% endif-%}
+    {% endif-%}
+    {% endfor %} 
+    return result.ToString();
+}
+
+template<>
+{{ struct.name }} FromString<{{ struct.name }}>(const String &str)
+{
+    Json json(str);
+    {{ struct.name }} value = {};
+
+    {% for field in struct.fields-%}
+    {% set jsonKey = isContainsJsonKeyAnnotation(field)-%}
+    {% if jsonKey != ""-%}
+    {% if field.type not in allJsonMappedClasses and "Array" not in field.type-%}
+    value.{{ field.name }} = json.Get<{{field.type}}>(String("{{ jsonKey }}"), value.{{ field.name }});
+    {% elif "Array" in field.type-%}
+    {
+        Json arrayField = json.Get<Json>(String("{{ jsonKey }}"));
+        RPP_ASSERT_MSG(arrayField.IsArray(), "The field '{{ jsonKey }}' is not an array.");
+        u32 arraySize = arrayField.Size();
+        for (u32 i = 0; i < arraySize; i++)
+        {
+            value.{{ field.name }}.Push(arrayField.Get<{{ field.type|replace("Array<", "")|replace(">", "") }}>(i));
+        }
+    }
+    {% else-%}
+    FromString(json.Get<String>(String("{{ jsonKey }}"), String("{}")), value.{{ field.name }});
+    {% endif-%}
+    {% endif-%}
+    {% endfor %} 
+
+    return value;
+}
+    {% endif %}
+{% endfor %}

@@ -1,0 +1,10 @@
+{% for struct in structs %}
+    {% if "python" in struct.annotations %}
+py::class_<{{ struct.name }}>(m, "{{ struct.name }}", {% if struct.comment %} "{{ struct.comment }}" {% else %} "Struct {{struct.name}}" {% endif %} )
+    .def(py::init<>())
+        {%- for field in struct.fields %}
+    .def_readwrite("{{ field.name }}", &{{ struct.name }}::{{ field.name }}, {% if field.comment %} "{{ field.comment }}" {%else%}  "" {% endif %} )
+        {%- endfor %}
+    ;
+    {% endif %}
+{% endfor %}

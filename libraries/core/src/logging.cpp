@@ -1,5 +1,6 @@
 #include "core/logging.h"
 #include <cstdio>
+#include "core/handlers/handlers.h"
 
 namespace rpp
 {
@@ -25,6 +26,29 @@ namespace rpp
 
     Logging::~Logging()
     {
+    }
+
+    void Logging::Setup(u8 type, LogLevel level)
+    {
+        static bool isSetup = false;
+        if (isSetup)
+        {
+            return;
+        }
+        isSetup = true;
+
+        if (type & static_cast<u8>(HandlerType::CONSOLE))
+        {
+            Scope<Handler> consoleHandler = CreateScope<ConsoleHandler>();
+            consoleHandler->SetLevel(level);
+            SetupHandler(std::move(consoleHandler));
+        }
+
+        u32 handlerCount = m_handlers.Size();
+        for (u32 i = 0; i < handlerCount; i++)
+        {
+            m_handlers[i]->SetLevel(level);
+        }
     }
 
     void Logging::Log(LogLevel level, const String &message, const String &file, i32 line)
@@ -67,7 +91,7 @@ namespace rpp
         case LogLevel::FATAL:
             return "FATAL";
         default:
-            return "UNKNOWN";
+            RPP_UNREACHABLE();
         }
     }
 

@@ -10,7 +10,10 @@
             "request": "launch",
             "python": "${workspaceFolder}/venv/Scripts/python.exe",
             "program": "${workspaceFolder}/venv/Scripts/pytest.exe",
-            "args": [],
+            "args": [
+                "-k",
+                "test_parse_constructor"
+            ],
             "cwd": "${workspaceFolder}",
         }
     ]

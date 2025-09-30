@@ -95,6 +95,12 @@ def _GetListOfHeaderFiles() -> list[str]:
             "core",
             "include",
         ),
+        os.path.join(
+            Constants.ABSOLUTE_BASE_DIR,
+            "libraries",
+            "applications",
+            "include",
+        ),
     ]
 
     for directory in directories:
@@ -134,6 +140,32 @@ def _GetListOfTemplateFiles() -> list[str]:
     return templateFiles
 
 
+def _GetUIFileList() -> list[str]:
+    """
+    Getting all the .ui file in the `assets/uis` directory (the output from Qt Designer).
+
+    Returns
+    -------
+    list[str]
+        A list of .ui file paths.
+    """
+    uiFiles: list[str] = []
+
+    uiDirectory = os.path.join(
+        Constants.ABSOLUTE_BASE_DIR,
+        "editor",
+        "assets",
+        "uis",
+    )
+
+    for root, _, files in os.walk(uiDirectory):
+        for file in files:
+            if file.endswith(".ui"):
+                uiFiles.append(os.path.join(root, file))
+
+    return uiFiles
+
+
 def RunPythonProject(
     projectDir: str,
     force: bool = False,
@@ -161,21 +193,32 @@ def RunPythonProject(
     if not os.path.isfile(mainScript):
         raise FileNotFoundError(f"No main.py file found in '{projectDir}'.")
 
-    args: list[str] = []
+    # args: list[str] = []
 
     allHeaderFiles = _GetListOfHeaderFiles()
     allTemplateFiles = _GetListOfTemplateFiles()
+    typeMapFiles = os.path.join(
+        Constants.ABSOLUTE_BASE_DIR,
+        "autogen",
+        "type_map",
+        "type_map_const.py",
+    )
 
     if projectDir == "autogen":
-        cppBindingOutputDir = os.path.join(
+        librariesTempDir = os.path.join(
             Constants.ABSOLUTE_BASE_DIR,
             "libraries",
             "tmp",
         )
 
         cppBindingOutput = os.path.join(
-            cppBindingOutputDir,
+            librariesTempDir,
             "binding.cpp",
+        )
+
+        writerOutput = os.path.join(
+            librariesTempDir,
+            "writer_output.cpp",
         )
 
         pyiBindingOutput = os.path.join(
@@ -187,7 +230,7 @@ def RunPythonProject(
 
         isAnyHeaderFileChanged = any(
             IsFileModified(headerFile)
-            for headerFile in allHeaderFiles + allTemplateFiles
+            for headerFile in allHeaderFiles + allTemplateFiles + [typeMapFiles]
         )
 
         isPyiFileExists = os.path.isfile(pyiBindingOutput)
@@ -223,46 +266,43 @@ def RunPythonProject(
 
         logger.debug(f"Using Clang library at: {clangPathDll}")
 
-        coreHeaderFile = os.path.join(
+        applicationHeaderFile = os.path.join(
             Constants.ABSOLUTE_BASE_DIR,
             "libraries",
-            "core",
+            "applications",
             "include",
-            "core",
-            "core.h",
-        )
-
-        moduleHeaderFile = os.path.join(
-            Constants.ABSOLUTE_BASE_DIR,
-            "libraries",
-            "modules",
-            "include",
-            "modules",
-            "modules.h",
+            "applications",
+            "applications.h",
         )
 
         argCommon = [
             "--clang-path",
             clangPathDll,
             "--input",
-            coreHeaderFile,
-            moduleHeaderFile,
+            applicationHeaderFile,
         ]
 
-        args = argCommon + [
-            "--template",
-            os.path.join(cwd, "templates", "pyi_binding.j2"),
-            "--output",
-            pyiBindingOutput,
-        ]
+        # args = argCommon + [
+        #     "--template",
+        #     os.path.join(cwd, "templates", "pyi_binding.j2"),
+        #     "--output",
+        #     pyiBindingOutput,
+        # ]
 
-        CreateRecursiveDirIfNotExists(cppBindingOutputDir)
+        CreateRecursiveDirIfNotExists(librariesTempDir)
 
-        arg2 = argCommon + [
+        # arg2 = argCommon + [
+        #     "--template",
+        #     os.path.join(cwd, "templates", "cpp_binding.j2"),
+        #     "--output",
+        #     cppBindingOutput,
+        # ]
+
+        arg3 = argCommon + [
             "--template",
-            os.path.join(cwd, "templates", "cpp_binding.j2"),
+            os.path.join(cwd, "templates", "writer_binding.j2"),
             "--output",
-            cppBindingOutput,
+            writerOutput,
         ]
 
         logger.info("Header files have changed. Running autogen...")
@@ -270,36 +310,68 @@ def RunPythonProject(
         try:
 
             logger.info(f"Running Python project in '{projectDir}'...")
-            subprocess.run(
-                [
-                    pythonExe,
-                    mainScript,
-                ]
-                + args,
-                check=True,
-                shell=True,
-                cwd=cwd,
-            )
+            # subprocess.run(
+            #     [
+            #         pythonExe,
+            #         mainScript,
+            #     ]
+            #     + args,
+            #     check=True,
+            #     shell=True,
+            #     cwd=cwd,
+            # )
+
+            # subprocess.run(
+            #     [
+            #         pythonExe,
+            #         mainScript,
+            #     ]
+            #     + arg2,
+            #     check=True,
+            #     shell=True,
+            #     cwd=cwd,
+            # )
 
             subprocess.run(
                 [
                     pythonExe,
                     mainScript,
                 ]
-                + arg2,
+                + arg3,
                 check=True,
                 shell=True,
                 cwd=cwd,
             )
+
             logger.info(f"Python project '{projectDir}' finished successfully.")
 
-            for headerFile in allHeaderFiles + allTemplateFiles:
+            for headerFile in allHeaderFiles + allTemplateFiles + [typeMapFiles]:
                 UpdateFileCache(headerFile)
 
         except Exception as e:
             logger.error(f"Failed to run Python project: {e}")
             raise RuntimeError(f"Failed to run Python project: {e}") from e
     elif projectDir == "editor":
+        uiFiles = _GetUIFileList()
+        uiFilesChanged: list[str] = list(filter(lambda f: IsFileModified(f), uiFiles))
+
+        if reset or force:
+            uiFilesChanged = uiFiles
+
+        uicExe = os.path.join(
+            GetAbsoluteVirtualEnvDir("editor"),
+            "Scripts",
+            "pyuic6.exe",
+        )
+
+        targetConvertedUiDir = os.path.join(
+            Constants.ABSOLUTE_BASE_DIR,
+            "editor",
+            "converted_uis",
+        )
+
+        CreateRecursiveDirIfNotExists(targetConvertedUiDir)
+
         try:
             logger.info("Build the libraries project...")
             subprocess.run(
@@ -309,11 +381,42 @@ def RunPythonProject(
                     "-p",
                     "libraries",
                     "build",
+                    "--options",
+                    "RPP_EDITOR=ON",
                 ],
                 check=True,
                 shell=True,
                 cwd=Constants.ABSOLUTE_BASE_DIR,
             )
+
+            if len(uiFilesChanged) > 0:
+                logger.info("Converting .ui files to .py files...")
+
+                for uiFile in uiFilesChanged:
+                    fileName = os.path.basename(uiFile)
+                    targetUiFile = os.path.join(
+                        targetConvertedUiDir,
+                        fileName.replace(".ui", "_ui.py"),
+                    )
+
+                    try:
+                        subprocess.run(
+                            [
+                                uicExe,
+                                uiFile,
+                                "-o",
+                                targetUiFile,
+                            ],
+                            check=True,
+                            shell=True,
+                            cwd=cwd,
+                        )
+                    except Exception as e:
+                        logger.warning(f"Failed to convert {uiFile}: {e}")
+
+                logger.info("All .ui files are converted to .py files.")
+            else:
+                logger.info("No .ui files have changed. Skipping conversion.")
 
             logger.info(f"Running Python project in '{projectDir}'...")
             subprocess.run(
@@ -327,12 +430,15 @@ def RunPythonProject(
             )
             logger.info(f"Python project '{projectDir}' finished successfully.")
 
+            for uiFile in uiFilesChanged:
+                UpdateFileCache(uiFile)
+
         except Exception as e:
             logger.error(f"Failed to run Python project: {e}")
             raise RuntimeError(f"Failed to run Python project: {e}") from e
 
 
-def RunPythonProjectTest(projectDir: str) -> None:
+def RunPythonProjectTest(projectDir: str, filter: str | None = None) -> None:
     """
     Runs the specified Python project in test mode.
 
@@ -340,6 +446,9 @@ def RunPythonProjectTest(projectDir: str) -> None:
     ----------
     projectDir : str
         The project directory where the main.py file is located (relative to the `ABSOLUTE_BASE_DIR`).
+
+    filter : str | None
+        Optional filter to pass to pytest to run specific tests only (default is None).
     """
 
     pytestExe = os.path.join(
@@ -354,6 +463,7 @@ def RunPythonProjectTest(projectDir: str) -> None:
         subprocess.run(
             [
                 pytestExe,
+                f"-k {filter}" if filter else "",
             ],
             check=True,
             shell=True,
@@ -364,3 +474,31 @@ def RunPythonProjectTest(projectDir: str) -> None:
     except Exception as e:
         logger.error(f"Failed to run Python project: {e}")
         raise RuntimeError(f"Failed to run Python project: {e}") from e
+
+
+def OpenPyQtDesigner() -> None:
+    """
+    Opens the PyQt Designer tool.
+    """
+
+    designgerExe = os.path.join(
+        GetAbsoluteVirtualEnvDir("editor"),
+        "Scripts",
+        "pyqt6-tools.exe",
+    )
+
+    try:
+        logger.info("Launching the PyQt Designer tool...")
+        subprocess.run(
+            [
+                designgerExe,
+                "designer",
+            ],
+            check=True,
+            shell=True,
+            cwd=os.path.join(Constants.ABSOLUTE_BASE_DIR, "editor"),
+        )
+        logger.info("PyQt Designer tool launched successfully.")
+    except Exception as e:
+        logger.error(f"Failed to launch PyQt Designer tool: {e}")
+        raise RuntimeError(f"Failed to launch PyQt Designer tool: {e}") from e

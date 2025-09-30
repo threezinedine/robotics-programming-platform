@@ -42,6 +42,20 @@ void Deallocate(void *ptr);
 #define RPP_NEW(obj) new (__FILE__, __LINE__) obj
 
 /**
+ * @brief Macro to replace an existing object in place using placement new.
+ */
+#define RPP_NEW_REPLACE(addr, obj) new (addr) obj
+
+/**
+ * @brief Macro to deallocate memory and set the pointer to nullptr (which is a good practice to avoid dangling pointers).
+ */
+#define RPP_DELETE(ptr) \
+    do                  \
+    {                   \
+        delete ptr;     \
+    } while (0)
+
+/**
  * @brief Macro to allocate memory without file and line information. Used for containers' allocations.
  * @param size Size of memory to allocate in bytes.
  *

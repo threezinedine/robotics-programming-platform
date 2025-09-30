@@ -5,6 +5,7 @@ from config.utils.python_project_utils import (
     InstallPackages,
     RunPythonProject,
     RunPythonProjectTest,
+    OpenPyQtDesigner,
 )
 from config.utils.cpp_project_utils import (
     BuildProject,
@@ -44,22 +45,35 @@ def main():
                 projectDir=args.Project,
                 projectType=args.Type,
                 recreate=args.IsForce,
+                buildOptions=args.BuildOptions,
             )
 
     if args.IsTest:
         if args.Project in CppProjectNames:
             if args.Project == "libraries":
                 # Special case for libraries project as it contains multiple tests
-                RunLibrariesTest(
-                    projectDir="core",
-                    projectType=args.Type,
-                )
-                RunLibrariesTest(
-                    projectDir="modules",
-                    projectType=args.Type,
-                )
+                if args.Module in ["all", "core"]:
+                    RunLibrariesTest(
+                        projectDir="core",
+                        projectType=args.Type,
+                    )
+
+                if args.Module in ["all", "modules"]:
+                    RunLibrariesTest(
+                        projectDir="modules",
+                        projectType=args.Type,
+                    )
+
+                if args.Module in ["all", "applications"]:
+                    RunLibrariesTest(
+                        projectDir="applications",
+                        projectType=args.Type,
+                    )
         else:
-            RunPythonProjectTest(projectDir=args.Project)
+            RunPythonProjectTest(
+                projectDir=args.Project,
+                filter=args.TestFilter,
+            )
 
     if args.IsRun:
         if args.Project in CppProjectNames:
@@ -70,6 +84,9 @@ def main():
                 force=args.IsForce,
                 reset=args.IsReset,
             )
+
+    if args.IsDesigner:
+        OpenPyQtDesigner()
 
 
 if __name__ == "__main__":

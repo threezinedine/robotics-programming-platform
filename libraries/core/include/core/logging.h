@@ -2,7 +2,7 @@
 #include "core/common.h"
 #include "platforms/platforms.h"
 #include "singleton_manager.h"
-#include "array.h"
+#include "containers/array.h"
 #include "format.h"
 
 namespace rpp
@@ -37,6 +37,20 @@ namespace rpp
     };
 
     /**
+     * @brief Predefined types of log handlers. These types can be used to create standard handlers.
+     *
+     * @note CUSTOM type is reserved for user-defined handlers and is not associated with any predefined handler implementation.
+     */
+    enum class RPP_PYTHON_BINDING HandlerType : u8
+    {
+        CONSOLE = (0x01),      ///< Output log messages to the console (standard output).
+        FILE = (0x01 << 1),    ///< Write log messages to a file.
+        NETWORK = (0x01 << 2), ///< Send log messages over the network to a logging server.
+        CUSTOM = (0x01 << 3),  ///< Use a custom handler defined by the user.
+        COUNT RPP_HIDE,
+    };
+
+    /**
      * Interface for handling the log records. Users can implement this interface to define custom log handling behavior.
      */
     class Handler
@@ -68,11 +82,26 @@ namespace rpp
     /**
      * The logging system (singleton class) that provides logging functionalities.
      */
-    class RPP_SINGLETON Logging
+    class RPP_SINGLETON RPP_PYTHON_BINDING Logging
     {
         RPP_SINGLETON_DEFINE(Logging);
 
     public:
+        /**
+         * @brief Used for setting up the logging (useful for editor integration).
+         *
+         * @param type The type of handler to be used for logging, can be combined using bitwise OR.
+         * @param level The minimum log level that the handler will process. Default is LogLevel::INFO.
+         *
+         * @example
+         * ```cpp
+         * Logging::GetInstance()->Setup(HandlerType::CONSOLE | HandlerType::FILE, LogLevel::DEBUG);
+         * ```
+         *
+         * @note only callable once (the first call will be effective, subsequent calls will be ignored).
+         */
+        void Setup(u8 type, LogLevel level = LogLevel::INFO) RPP_PYTHON_BINDING;
+
         /**
          * @brief Log a message with the specified log level, file name, and line number.
          * @param level The severity level of the log message.

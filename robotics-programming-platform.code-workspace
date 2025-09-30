@@ -2,8 +2,7 @@
 	"folders": [
 		{
 			"name": "autogen",
-			"path": "autogen",
-			"python.defaultInterpreterPath": "${workspaceFolder}/venv/Scripts/python.exe"
+			"path": "autogen"
 		},
 		{
 			"name": "editor",
@@ -115,7 +114,12 @@
 			"xlocnum": "cpp",
 			"xloctime": "cpp",
 			"xstring": "cpp",
-			"xtree": "cpp"
+			"xtree": "cpp",
+			"barrier": "cpp",
+			"complex": "cpp",
+			"stack": "cpp",
+			"typeindex": "cpp",
+			"*.rh": "cpp"
 		}
 	}
 }

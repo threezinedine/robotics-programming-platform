@@ -31,6 +31,8 @@ namespace rpp
         case LogLevel::FATAL:
             color = ConsoleColor::RED;
             break;
+        default:
+            RPP_UNREACHABLE();
         };
 
         print(Format("[{}] {}:{}: {}\n", record.level, record.file, record.line, record.message).CStr(), color);

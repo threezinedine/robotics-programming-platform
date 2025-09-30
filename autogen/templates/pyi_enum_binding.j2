@@ -1,20 +1,20 @@
 {% for enum in enums %}
     {% if "python" in enum.annotations %}
 class {{ enum.name }}(Enum):
-        {% if enum.comment %}
+    {% if enum.comment-%}
     """ 
-        {{ enum.comment }}
+    {{ enum.comment }}
     """
-        {% endif %}
-        {% for constant in enum.constants %}
-            {% if "hide" not in constant.annotations %}
+        {%endif%}
+    {% for constant in enum.constants-%}
+    {% if "hide" not in constant.annotations-%}
     {{ constant.name }} = {{ constant.value }}
-                {% if constant.comment %}
+    {% if constant.comment-%}
     """
-        {{ constant.comment }}
+    {{ constant.comment }}
     """
-                {% endif %}
-            {% endif %}
+    {% endif-%}
+    {% endif-%}
         {% endfor %}
     {% endif %}
 {% endfor %}

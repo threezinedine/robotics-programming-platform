@@ -2,6 +2,12 @@
 #include "platforms/common.h"
 #include "windows.h"
 
+#if defined(RPP_PLATFORM_WINDOWS) || defined(RPP_PLATFORM_LINUX) || defined(RPP_PLATFORM_MACOS)
+#define RPP_GRAPHICS_BACKEND_OPENGL
+#else
+#error "Graphics backend is not supported on this platform!"
+#endif
+
 namespace rpp
 {
     class Window;
@@ -14,21 +20,17 @@ namespace rpp
     class Graphics
     {
     public:
-        Graphics();
-        ~Graphics();
-
-    public:
         /**
          * @brief Initialize the graphics backend, should be called once before using any graphics related features.
          *
          * @return TRUE if the initialization is successful, FALSE otherwise.
          */
-        b8 Init();
+        static b8 Init();
 
         /**
          * @brief Shutdown the graphics backend, must be called once before exiting the application.
          */
-        void Shutdown();
+        static void Shutdown();
 
         /**
          * @brief Create a window instance of the graphics backend.
@@ -36,9 +38,11 @@ namespace rpp
          * @param width The width of the window.
          * @param height The height of the window.
          * @param title The title of the window.
+         * @param pData Pointer to the graphics backend specific data.
+         * @param dataSize The size of the graphics backend specific data.
          *
          * @return The window instance, nullptr if the creation failed.
          */
-        Scope<Window> CreateWindow(u32 width, u32 height, const char *title);
+        static Scope<Window> CreateWindow(u32 width, u32 height, const char *title, void *pData = nullptr, u32 dataSize = 0);
     };
 } // namespace rpp

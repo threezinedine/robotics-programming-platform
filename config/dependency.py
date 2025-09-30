@@ -43,22 +43,19 @@ def InstallCppDependencies() -> None:
                 logger.info(f"Dependency '{dep.name}' already exists. Skipping...")
                 continue
 
+            command = ["git", "clone", dep.url]
+            if dep.commit is not None:
+                command += ["--revision", dep.commit]
+            command += [dependenciesDir]
+
             logger.info(f"Installing C/C++ dependency '{dep.name}'...")
             subprocess.run(
-                [
-                    "git",
-                    "clone",
-                    (
-                        dep.url
-                        if dep.commit is None
-                        else f"{dep.url} --revision={dep.commit}"
-                    ),
-                    dependenciesDir,
-                ],
+                command,
                 check=True,
                 shell=True,
                 cwd=Constants.ABSOLUTE_BASE_DIR,
             )
+
             logger.debug(f"Dependency '{dep.name}' installed successfully.")
         except Exception as e:
             logger.error(f"Failed to install C/C++ dependency '{dep.name}'.")

@@ -3,8 +3,8 @@ from .logger import logger
 from logging import DEBUG, INFO
 
 
-PythonProjectNames = ["editor", "autogen"]
-CppProjectNames = ["runtime", "gruntime", "libraries"]
+PythonProjectNames = ["autogen"]
+CppProjectNames = ["runtime", "gruntime", "libraries", "editor"]
 ProjectNames = [*PythonProjectNames, *CppProjectNames]
 Types = ["dev", "prod"]
 
@@ -73,14 +73,27 @@ class Args:
             help="The name of the packages to install",
         )
 
-        subparsers.add_parser(
+        buildParser = subparsers.add_parser(
             "build",
             help="Build the specified project",
+        )
+
+        buildParser.add_argument(
+            "-o",
+            "--options",
+            type=str,
+            nargs="+",
+            help="Additional options for the build process",
         )
 
         runSubParser = subparsers.add_parser(
             "run",
             help="Run the specified project",
+        )
+
+        subparsers.add_parser(
+            "designer",
+            help="Launch the GUI designer tool",
         )
 
         runSubParser.add_argument(
@@ -90,9 +103,24 @@ class Args:
             help="Reset the project state before running",
         )
 
-        subparsers.add_parser(
+        testParser = subparsers.add_parser(
             "test",
             help="Run the tests for the specified project",
+        )
+
+        testParser.add_argument(
+            "--filter",
+            type=str,
+            default=None,
+            help="Optional filter to run specific tests only (default: None)",
+        )
+
+        testParser.add_argument(
+            "-m",
+            "--module",
+            type=str,
+            default=None,
+            help="Optional module to build (default: None) only works for `libraries`",
         )
 
         self.args = parser.parse_args()
@@ -178,3 +206,37 @@ class Args:
         if self.IsRun:
             return self.args.reset
         return False
+
+    @property
+    def IsDesigner(self) -> bool:
+        """
+        Returns true if the command is to launch the GUI designer tool.
+        """
+        return self.args.command == "designer"
+
+    @property
+    def TestFilter(self) -> str | None:
+        """
+        Returns the optional filter to run specific tests only.
+        """
+        if self.IsTest:
+            return self.args.filter
+        return None
+
+    @property
+    def BuildOptions(self) -> list[str]:
+        """
+        Returns additional options for the build process.
+        """
+        if self.IsBuild and self.args.options:
+            return self.args.options
+        return []
+
+    @property
+    def Module(self) -> str:
+        """
+        Returns the optional module to build.
+        """
+        if self.IsTest and self.args.module:
+            return self.args.module
+        return "all"  # Default to 'all' if not specified

@@ -1,0 +1,5 @@
+{% for function in functions %}
+{% if "python" in function.annotations %}
+m.def("{{ function.name}}", &{{ function.name }}, "{{ objectComment(function, "") }}");
+{% endif %}
+{% endfor %}

@@ -7,7 +7,7 @@ namespace rpp
     typedef nlohmann::json JSON;
 
     Json::Json()
-        : m_data(RPP_NEW(JSON("{}")))
+        : m_data(RPP_NEW(JSON(JSON::parse("{}"))))
     {
     }
 
@@ -48,6 +48,21 @@ namespace rpp
         return static_cast<JSON *>(m_data)->empty();
     }
 
+    b8 Json::IsArray() const
+    {
+        return static_cast<JSON *>(m_data)->is_array();
+    }
+
+    u32 Json::Size() const
+    {
+        JSON *json = static_cast<JSON *>(m_data);
+        if (!json->is_array())
+        {
+            return 0;
+        }
+        return static_cast<u32>(json->size());
+    }
+
 #define JSON_GET_SET_IMPLEMENT(type, isTypeMethod, getMethod, setMethod)   \
     template <>                                                            \
     type Json::Get<type>(const String &key, const type defaultValue) const \
@@ -65,6 +80,17 @@ namespace rpp
                                                                            \
         return (*json)[key.CStr()].getMethod;                              \
     }                                                                      \
+    template <>                                                            \
+    type Json::Get<type>(i32 index, const type defaultValue) const         \
+    {                                                                      \
+        JSON *json = static_cast<JSON *>(m_data);                          \
+        if (!(*json).is_array() || index < 0 || index >= (*json).size())   \
+        {                                                                  \
+            return defaultValue;                                           \
+        }                                                                  \
+                                                                           \
+        return (*json)[index].getMethod;                                   \
+    }                                                                      \
                                                                            \
     template <>                                                            \
     void Json::Set<type>(const String &key, const type &value)             \
@@ -73,29 +99,24 @@ namespace rpp
         (*json)[key.CStr()] = setMethod;                                   \
     }                                                                      \
     template <>                                                            \
-    Array<type> Json::GetArray<type>(const String &key) const              \
+    void Json::Set<type>(i32 index, const type &value)                     \
     {                                                                      \
-        Array<type> result;                                                \
         JSON *json = static_cast<JSON *>(m_data);                          \
-        if (!(*json).contains(key.CStr()))                                 \
+        if (!(*json).is_array() || index < 0 || index >= (*json).size())   \
         {                                                                  \
-            return result;                                                 \
+            return;                                                        \
         }                                                                  \
-                                                                           \
-        if (!(*json)[key.CStr()].is_array())                               \
+        (*json)[index] = setMethod;                                        \
+    }                                                                      \
+    template <>                                                            \
+    void Json::Append<type>(const type &value)                             \
+    {                                                                      \
+        JSON *json = static_cast<JSON *>(m_data);                          \
+        if (!(*json).is_array())                                           \
         {                                                                  \
-            return result;                                                 \
+            return;                                                        \
         }                                                                  \
-                                                                           \
-        for (const auto &item : (*json)[key.CStr()])                       \
-        {                                                                  \
-            if (!item.isTypeMethod())                                      \
-            {                                                              \
-                continue;                                                  \
-            }                                                              \
-            result.Push(std::move(item.getMethod));                        \
-        }                                                                  \
-        return result;                                                     \
+        (*json).push_back(setMethod);                                      \
     }
 
     JSON_GET_SET_IMPLEMENT(String, is_string, get<std::string>().c_str(), value.CStr());
@@ -121,7 +142,7 @@ namespace rpp
         {
             return defaultValue;
         }
-        if (!(*json)[key.CStr()].is_object())
+        if (!(*json)[key.CStr()].is_object() && !(*json)[key.CStr()].is_array())
         {
             return defaultValue;
         }
@@ -133,31 +154,5 @@ namespace rpp
     {
         JSON *json = static_cast<JSON *>(m_data);
         (*json)[key.CStr()] = JSON::parse(value.ToString().CStr());
-    }
-
-    template <>
-    Array<Json> Json::GetArray<Json>(const String &key) const
-    {
-        Array<Json> result;
-        JSON *json = static_cast<JSON *>(m_data);
-        if (!(*json).contains(key.CStr()))
-        {
-            return result;
-        }
-
-        if (!(*json)[key.CStr()].is_array())
-        {
-            return result;
-        }
-
-        for (const auto &item : (*json)[key.CStr()])
-        {
-            if (!item.is_object())
-            {
-                continue;
-            }
-            result.Push(Json(item.dump().c_str()));
-        }
-        return result;
     }
 } // namespace rpp

@@ -30,6 +30,9 @@ foreach(MODULES_SRC_TEST_FILE ${MODULES_SRC_TEST})
 endforeach()
 
 RPPFindPackage(rpp-json "Dependencies")
+RPPFindPackage(rpp-imgui "Dependencies")
+RPPFindPackage(rpp-glm "Dependencies")
+RPPFindPackage(rpp-luna "Dependencies")
 
 # -------------- Library target --------------
 set(CMAKE_FOLDER "Libraries")
@@ -39,6 +42,9 @@ target_link_libraries(
     ${PROJECT_NAME}
     PUBLIC
     RPPCore
+    rpp-imgui
+    rpp-glm
+    rpp-luna
 )
 
 target_include_directories(
@@ -52,6 +58,8 @@ target_compile_definitions(
     PUBLIC 
     ${RPP_BUILD_TYPE_DEFINE}
 )
+
+RPPTargetDefines(${PROJECT_NAME})
 
 RPPFindPackage(rpp-googletest "Dependencies")
 
