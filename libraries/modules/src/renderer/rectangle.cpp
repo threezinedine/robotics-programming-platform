@@ -54,7 +54,7 @@ namespace rpp
 			RPP_ASSERT(data != nullptr);
 			RPP_ASSERT(data->rendererId != INVALID_ID);
 
-			Renderer::ActivateRenderer(data->rendererId);
+			Renderer::Activate(data->rendererId);
 
 			DeleteVertexBufferCommandData command = {};
 			command.pBufferId = &data->vertexBufferId;

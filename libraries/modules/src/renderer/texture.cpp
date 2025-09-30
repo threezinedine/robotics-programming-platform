@@ -18,7 +18,7 @@ namespace rpp
             RPP_ASSERT(data != nullptr);
             RPP_ASSERT(data->rendererId != INVALID_ID);
 
-            Renderer::ActivateRenderer(data->rendererId);
+            Renderer::Activate(data->rendererId);
 
             DeleteTextureCommandData deleteTexture{};
             deleteTexture.textureId = data->textureId;

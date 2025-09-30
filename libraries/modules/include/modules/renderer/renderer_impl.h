@@ -82,17 +82,18 @@ namespace rpp
          * @param width The width of the window.
          * @param height The height of the window.
          * @param title The title of the window.
+         * @param useImGui Whether to initialize ImGui for this renderer. Default is FALSE.
          *
          * @return The id of the created renderer instance. This id is used to activate or destroy the renderer later.
          *
-         * @note The created renderer is not active by default. You need to call `ActivateRenderer` with the returned id to make it active.
+         * @note The created renderer is not active by default. You need to call `Activate` with the returned id to make it active.
          */
-        static u32 CreateRenderer(u32 width, u32 height, const String &title) RPP_PYTHON_BINDING;
+        static u32 Create(u32 width, u32 height, const String &title, b8 useImGui = FALSE);
 
         /**
          * @brief Activate the renderer with the given id. This will deactivate any other active renderer.
          */
-        static void ActivateRenderer(u32 renderId) RPP_PYTHON_BINDING;
+        static void Activate(u32 renderId) RPP_PYTHON_BINDING;
 
         /**
          * @brief Draw a rectangle on the current active renderer.
@@ -119,7 +120,7 @@ namespace rpp
          *
          * @throws std::runtime_error if the renderId is invalid.
          */
-        static void DestroyRenderer(u32 renderId) RPP_PYTHON_BINDING;
+        static void Destroy(u32 renderId) RPP_PYTHON_BINDING;
 
         /**
          * @brief All operations to be done before drawing the frame.

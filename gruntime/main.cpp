@@ -12,20 +12,20 @@ int main(void)
     Renderer::Initialize();
 
     {
-        u32 renderer = Renderer::CreateRenderer(800, 600, "Test");
+        u32 renderer = Renderer::Create(800, 600, "Test", TRUE);
 
-        Renderer::ActivateRenderer(renderer);
+        Renderer::Activate(renderer);
         // u32 texture = Texture::Create("C:\\Users\\APC\\Downloads\\download.jpg");
         u32 texture = Texture::Create("C:\\Users\\APC\\Pictures\\Screenshots\\Screenshot 2025-08-19 222422.png");
 
         while (TRUE)
         {
-            Renderer::ActivateRenderer(renderer);
+            Renderer::Activate(renderer);
 
             if (Renderer::GetWindow()->ShouldWindowClose())
             {
                 Texture::Destroy(texture);
-                Renderer::DestroyRenderer(renderer);
+                Renderer::Destroy(renderer);
                 break;
             }
             else

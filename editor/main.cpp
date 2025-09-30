@@ -11,17 +11,12 @@ int main(void)
     Logging::GetInstance()->Setup(u8(HandlerType::CONSOLE), LogLevel::DEBUG);
     Renderer::Initialize();
 
-    u32 renderer1 = Renderer::CreateRenderer(800, 600, "Test");
-    u32 renderer2 = Renderer::CreateRenderer(800, 600, "Test2");
-    u32 renderer3 = Renderer::CreateRenderer(800, 600, "Test3");
-
-    Mat4x4 move = glm::rotate(Mat4x4(1.0f), glm::radians(45.0f), Vec3(0.0f, 0.0f, 1.0f));
+    u32 renderer1 = Renderer::Create(800, 600, "Test");
+    u32 renderer2 = Renderer::Create(800, 600, "Test2");
+    u32 renderer3 = Renderer::Create(800, 600, "Test3", TRUE);
 
     {
         HighResTimer timer;
-
-        Renderer::ActivateRenderer(renderer3);
-        u32 imgui = ImGuiImpl::Create();
 
         f32 delta = 0;
 
@@ -33,11 +28,11 @@ int main(void)
 
             if (renderer1 != INVALID_ID)
             {
-                Renderer::ActivateRenderer(renderer1);
+                Renderer::Activate(renderer1);
 
                 if (Renderer::GetWindow()->ShouldWindowClose())
                 {
-                    Renderer::DestroyRenderer(renderer1);
+                    Renderer::Destroy(renderer1);
                     renderer1 = INVALID_ID;
                 }
                 else
@@ -45,7 +40,7 @@ int main(void)
                     shouldApplicationClose = FALSE;
                     Renderer::PreDraw();
 
-                    Renderer::DrawRectangle({-0.5f, -0.5f, 0.1f, 0.1f});
+                    Renderer::DrawRectangle({-100, -100, 200, 200});
 
                     Renderer::PostDraw();
 
@@ -55,11 +50,11 @@ int main(void)
 
             if (renderer2 != INVALID_ID)
             {
-                Renderer::ActivateRenderer(renderer2);
+                Renderer::Activate(renderer2);
 
                 if (Renderer::GetWindow()->ShouldWindowClose())
                 {
-                    Renderer::DestroyRenderer(renderer2);
+                    Renderer::Destroy(renderer2);
                     renderer2 = INVALID_ID;
                 }
                 else
@@ -68,7 +63,7 @@ int main(void)
 
                     Renderer::PreDraw();
 
-                    Renderer::DrawRectangle({-0.5f, -0.5f, 0.1f, 0.1f});
+                    Renderer::DrawRectangle({100, -100, 200, 200});
 
                     Renderer::PostDraw();
 
@@ -78,21 +73,20 @@ int main(void)
 
             if (renderer3 != INVALID_ID)
             {
-                Renderer::ActivateRenderer(renderer3);
+                Renderer::Activate(renderer3);
 
                 if (Renderer::GetWindow()->ShouldWindowClose())
                 {
-                    Renderer::DestroyRenderer(renderer3);
+                    Renderer::Destroy(renderer3);
                     renderer3 = INVALID_ID;
                 }
                 else
                 {
                     shouldApplicationClose = FALSE;
 
-                    ImGuiImpl::PrepareFrame(imgui);
                     Renderer::PreDraw();
 
-                    Renderer::DrawLine({-0.5f, -0.5f}, {0.5f, 0.5f});
+                    Renderer::DrawRectangle({100, 100, 300, 400});
 
                     Renderer::PostDraw();
 
@@ -100,7 +94,9 @@ int main(void)
                     ImGui::Text("Hello, world!");
                     ImGui::End();
 
-                    ImGuiImpl::Render(imgui);
+                    ImGui::Begin("My Captured Scene Window");
+                    Renderer::DrawingSceneInImGui();
+                    ImGui::End();
 
                     Renderer::Present();
                 }
@@ -115,17 +111,17 @@ int main(void)
 
     if (renderer1 != INVALID_ID)
     {
-        Renderer::DestroyRenderer(renderer1);
+        Renderer::Destroy(renderer1);
     }
 
     if (renderer2 != INVALID_ID)
     {
-        Renderer::DestroyRenderer(renderer2);
+        Renderer::Destroy(renderer2);
     }
 
     if (renderer3 != INVALID_ID)
     {
-        Renderer::DestroyRenderer(renderer3);
+        Renderer::Destroy(renderer3);
     }
 
     Renderer::Shutdown();

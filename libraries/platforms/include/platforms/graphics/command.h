@@ -262,9 +262,9 @@ namespace rpp
     {
         u32 frameBufferId;  ///< The ID of the framebuffer to be resized.
         u32 renderBufferId; ///< The ID of the renderbuffer associated with the framebuffer to be resized.
+        u32 textureId;      ///< The ID of the texture associated with the framebuffer to be resized.
         u32 width;          ///< The new width of the framebuffer.
         u32 height;         ///< The new height of the framebuffer.
-        u32 textureId;      ///< The ID of the texture associated with the framebuffer to be resized.
     };
 
     struct BindFrameBufferCommandData
