@@ -63,9 +63,10 @@ RPPTargetDefines(${PROJECT_NAME})
 
 
 # -------------- Test target --------------
+RPPFindPackage(rpp-googletest "Dependencies")
+
 set(CMAKE_FOLDER "Tests")
 set(PROJECT_TEST_NAME ${PROJECT_NAME}_tests)
-RPPFindPackage(rpp-googletest "Dependencies")
 add_executable(${PROJECT_TEST_NAME} ${APPLICATIONS_TEST_SRC})
 target_link_libraries(
     ${PROJECT_TEST_NAME} 

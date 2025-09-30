@@ -23,6 +23,7 @@ file(
     "${rpp-imgui_DIR}/backends/imgui_impl_opengl3.cpp"
 )
 
+set(CMAKE_FOLDER "Dependencies")
 add_library(rpp-imgui STATIC ${IMGUI_HEADERS} ${IMGUI_SOURCES})
 target_include_directories(rpp-imgui PUBLIC ${rpp-imgui_DIR} ${rpp-imgui_DIR}/backends)
 target_link_libraries(rpp-imgui PUBLIC rpp-glfw)

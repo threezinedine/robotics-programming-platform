@@ -27,5 +27,9 @@
     {
         "name": "glm",
         "url": "https://github.com/g-truc/glm.git"
+    },
+    {
+        "name": "luna",
+        "url": "https://github.com/sammycage/lunasvg.git"
     }
 ]

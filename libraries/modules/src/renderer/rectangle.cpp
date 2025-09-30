@@ -5,6 +5,7 @@
 #include "modules/renderer/program.h"
 #include "glm/gtc/matrix_transform.hpp"
 #include "modules/renderer/texture.h"
+#include "plutovg.h"
 
 static const char *vertexShaderSource = R"(
 #version 330 core
