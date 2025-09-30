@@ -21,6 +21,7 @@ namespace rpp
             Scope<Window> window; ///< The window associated with this renderer.
             u32 rendererId;       ///< The unique identifier for the renderer instance.
             u32 rectangleId;      ///< The id of the rectangle used for drawing.
+            u32 lineId;           ///< The id of the line used for drawing.
         };
 
     public:
@@ -59,7 +60,7 @@ namespace rpp
          * @brief Get the id of the current active renderer.
          * @return The id of the current active renderer. If a program or rectangle needs to execute a graphics command, it can use this id to get the current active renderer.
          */
-        inline static u32 GetCurrentRendererId() { return GetCurrentRenderer()->rendererId; }
+        inline static u32 GetCurrentRendererId() { return s_currentRendererIndex; }
 
         /**
          * @brief Create a new renderer instance with its own window.
@@ -83,6 +84,11 @@ namespace rpp
          * @brief Draw a rectangle on the current active renderer.
          */
         static void DrawRectangle(const Rect &rect);
+
+        /**
+         * @brief Draw a line on the current active renderer.
+         */
+        static void DrawLine(const Point &start, const Point &end);
 
         /**
          * @brief Destroy the renderer with the given id. If the renderer is currently active, it will be deactivated first.

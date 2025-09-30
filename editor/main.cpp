@@ -5,40 +5,6 @@ RPP_ENABLE_MEMORY_TRACKING;
 
 using namespace rpp;
 
-const char *vertexShaderSource = R"(
-#version 330 core
-
-uniform float vScale;
-uniform mat4 rotateMat;
-
-layout(location = 0) in vec2 aPos;
-
-void main()
-{
-    gl_Position = vec4(aPos.x * vScale, aPos.y * vScale, 0.0, 1.0);
-    gl_Position = rotateMat * gl_Position;
-}
-)";
-
-const char *fragmentShaderSource = R"(
-#version 330 core
-out vec4 FragColor;
-
-void main()
-{
-    FragColor = vec4(1.0);
-}
-)";
-
-const char *fragmentShaderSource2 = R"(
-#version 330 core
-out vec4 FragColor;
-void main()
-{
-    FragColor = vec4(0.0, 1.0, 0.0, 1.0);
-}
-)";
-
 int main(void)
 {
     SingletonManager::Initialize();
@@ -54,19 +20,8 @@ int main(void)
     {
         HighResTimer timer;
 
-        Renderer::ActivateRenderer(renderer1);
-        u32 program = Program::Create(vertexShaderSource, fragmentShaderSource);
-
-        u32 rectangle = Rectangle::Create();
-
-        Renderer::ActivateRenderer(renderer2);
-        u32 program2 = Program::Create(vertexShaderSource, fragmentShaderSource2);
-        u32 rectangle2 = Rectangle::Create();
-
         Renderer::ActivateRenderer(renderer3);
-        u32 program3 = Program::Create(vertexShaderSource, fragmentShaderSource2);
         u32 imgui = ImGuiImpl::Create();
-        u32 line = Line::Create();
 
         f32 delta = 0;
 
@@ -90,10 +45,7 @@ int main(void)
                     shouldApplicationClose = FALSE;
                     Renderer::PreDraw();
 
-                    Program::Use(program);
-                    Program::SetUniform("vScale", 0.5f);
-                    Program::SetUniform("rotateMat", move);
-                    Rectangle::Draw(rectangle, {-0.5f, -0.5f, 0.1f, 0.1f});
+                    Renderer::DrawRectangle({-0.5f, -0.5f, 0.1f, 0.1f});
 
                     Renderer::PostDraw();
 
@@ -116,10 +68,7 @@ int main(void)
 
                     Renderer::PreDraw();
 
-                    Program::Use(program2);
-                    Program::SetUniform("vScale", 1.0f);
-                    Program::SetUniform("rotateMat", move);
-                    Rectangle::Draw(rectangle2, {-0.5f, -0.5f, 0.1f, 0.1f});
+                    Renderer::DrawRectangle({-0.5f, -0.5f, 0.1f, 0.1f});
 
                     Renderer::PostDraw();
 
@@ -143,10 +92,7 @@ int main(void)
                     ImGuiImpl::PrepareFrame(imgui);
                     Renderer::PreDraw();
 
-                    Program::Use(program3);
-                    Program::SetUniform("vScale", 0.1f);
-                    Program::SetUniform("rotateMat", move);
-                    Line::Draw(line, {-0.5f, -0.5f}, {0.5f, 0.5f});
+                    Renderer::DrawLine({-0.5f, -0.5f}, {0.5f, 0.5f});
 
                     Renderer::PostDraw();
 

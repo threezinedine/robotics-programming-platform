@@ -95,20 +95,7 @@ namespace rpp
 
     void Program::Destroy(u32 programId)
     {
-        RPP_LOG_DEBUG("Destroying Program instance with ID: {}", programId);
-
         RPP_ASSERT(s_programs != nullptr);
-
-        ProgramData *data = s_programs->Get(programId);
-
-        RPP_ASSERT(data->rendererId != INVALID_ID);
-        Renderer::ActivateRenderer(data->rendererId);
-
-        DeletePipelineCommandData deleteCommand = {};
-        deleteCommand.programId = data->programId;
-        GraphicsCommandData deleteCommandData = {GraphicsCommandType::DELETE_PIPELINE, &deleteCommand};
-        Renderer::GetWindow()->ExecuteCommand(deleteCommandData);
-
         s_programs->Free(programId);
     }
 

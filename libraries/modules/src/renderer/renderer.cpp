@@ -27,7 +27,7 @@ namespace rpp
         Program::Initialize();
         Texture::Initialize();
         Rectangle::Initialize();
-        // Line::Initialize();
+        Line::Initialize();
         ImGuiImpl::Initialize();
         s_currentRendererIndex = INVALID_RENDERER_INDEX;
         RPP_LOG_DEBUG("Rendering system initialized successfully");
@@ -40,7 +40,7 @@ namespace rpp
         RPP_ASSERT(s_currentRenderers != nullptr);
 
         ImGuiImpl::Shutdown();
-        // Line::Shutdown();
+        Line::Shutdown();
         Rectangle::Shutdown();
         Program::Shutdown();
         Texture::Shutdown();
@@ -86,16 +86,22 @@ namespace rpp
         u32 rendererId = s_currentRenderers->Create();
         RendererData *currentRenderer = s_currentRenderers->Get(rendererId);
         currentRenderer->window = Graphics::CreateWindow(width, height, title.CStr());
-        s_currentRendererIndex = rendererId;
 
+        ActivateRenderer(rendererId);
         currentRenderer->rectangleId = Rectangle::Create();
+        currentRenderer->lineId = Line::Create();
 
-        return s_currentRendererIndex;
+        return rendererId;
     }
 
     void Renderer::DrawRectangle(const Rect &rect)
     {
         Rectangle::Draw(GetCurrentRenderer()->rectangleId, rect);
+    }
+
+    void Renderer::DrawLine(const Point &start, const Point &end)
+    {
+        Line::Draw(GetCurrentRenderer()->lineId, start, end);
     }
 
     void Renderer::ActivateRenderer(u32 renderId)
@@ -115,9 +121,13 @@ namespace rpp
     {
         RPP_ASSERT(s_currentRenderers != nullptr);
         RPP_ASSERT(renderId != INVALID_RENDERER_INDEX);
-        RPP_ASSERT(s_currentRenderers->Get(renderId) != nullptr);
 
-        Rectangle::Destroy(s_currentRenderers->Get(renderId)->rectangleId);
+        RendererData *data = s_currentRenderers->Get(renderId);
+
+        RPP_ASSERT(data != nullptr);
+
+        Rectangle::Destroy(data->rectangleId);
+        Line::Destroy(data->lineId);
 
         s_currentRenderers->Free(renderId);
         if (s_currentRendererIndex == renderId)

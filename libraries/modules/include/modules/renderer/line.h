@@ -13,7 +13,7 @@ namespace rpp
     private:
         struct LineData
         {
-            u32 vertextArrayId; ///< The ID of the vertex array object (VAO) for the line.
+            u32 vertexArrayId;  ///< The ID of the vertex array object (VAO) for the line.
             u32 vertexBufferId; ///< The ID of the vertex buffer object (VBO) for the line.
         };
 

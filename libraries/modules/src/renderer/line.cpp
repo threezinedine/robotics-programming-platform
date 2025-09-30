@@ -9,7 +9,20 @@ namespace rpp
     {
         RPP_ASSERT(s_lines == nullptr);
 
-        s_lines = CreateScope<Storage<LineData>>();
+        auto LineDeallocator = [](LineData *data)
+        {
+            RPP_ASSERT(data != nullptr);
+
+            DeleteVertexBufferCommandData command = {};
+            command.pBufferId = &data->vertexBufferId;
+            command.pArrayId = &data->vertexArrayId;
+            GraphicsCommandData commandData = {GraphicsCommandType::DELETE_VERTEX_BUFFER, &command};
+            Renderer::GetWindow()->ExecuteCommand(commandData);
+
+            RPP_DELETE(data);
+        };
+
+        s_lines = CreateScope<Storage<LineData>>(LineDeallocator);
     }
 
     void Line::Shutdown()
@@ -41,7 +54,7 @@ namespace rpp
         command.layoutCount = 1;
         command.pLayout = elements;
         command.pBufferId = &lineData->vertexBufferId;
-        command.pArrayId = &lineData->vertextArrayId;
+        command.pArrayId = &lineData->vertexArrayId;
         command.type = VertexBufferType::LINE;
 
         GraphicsCommandData commandData = {GraphicsCommandType::CREATE_VERTEX_BUFFER, &command};
@@ -52,16 +65,7 @@ namespace rpp
 
     void Line::Destroy(u32 id)
     {
-        RPP_ASSERT(s_lines != nullptr);
-
-        LineData *lineData = s_lines->Get(id);
-        RPP_ASSERT(lineData != nullptr);
-
-        DeleteVertexBufferCommandData command = {};
-        command.pBufferId = &lineData->vertexBufferId;
-        command.pArrayId = &lineData->vertextArrayId;
-        GraphicsCommandData commandData = {GraphicsCommandType::DELETE_VERTEX_BUFFER, &command};
-        Renderer::GetWindow()->ExecuteCommand(commandData);
+        s_lines->Free(id);
     }
 
     void Line::Draw(u32 id, const Point &start, const Point &end)

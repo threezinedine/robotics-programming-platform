@@ -36,6 +36,7 @@ int main(void)
                 Renderer::PreDraw();
 
                 Renderer::DrawRectangle({-0.5f, -0.5f, 0.1f, 0.1f});
+                Renderer::DrawLine({-0.5f, -0.5f}, {0.5f, 0.5f});
 
                 Renderer::PostDraw();
 
