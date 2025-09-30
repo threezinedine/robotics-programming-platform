@@ -15,8 +15,8 @@ int main(void)
         u32 renderer = Renderer::CreateRenderer(800, 600, "Test");
 
         Renderer::ActivateRenderer(renderer);
-        u32 rectangle = Rectangle::Create();
         u32 imgui = ImGuiImpl::Create();
+        u32 texture = Texture::Create("C:\\Users\\APC\\Downloads\\download.jpg");
 
         while (TRUE)
         {
@@ -24,6 +24,8 @@ int main(void)
 
             if (Renderer::GetWindow()->ShouldWindowClose())
             {
+                ImGuiImpl::Destroy(imgui);
+                Texture::Destroy(texture);
                 Renderer::DestroyRenderer(renderer);
                 break;
             }
@@ -31,11 +33,9 @@ int main(void)
             {
                 ImGuiImpl::PrepareFrame(imgui);
 
-                u32 rectangle = Rectangle::Create();
-
                 Renderer::PreDraw();
 
-                Rectangle::Draw(rectangle, {-0.5f, -0.5f, 0.1f, 0.1f});
+                Renderer::DrawRectangle({-0.5f, -0.5f, 0.1f, 0.1f});
 
                 Renderer::PostDraw();
 

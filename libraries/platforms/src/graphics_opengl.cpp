@@ -275,6 +275,13 @@ namespace rpp
             glDeleteTextures(1, &deleteData->textureId);
             return TRUE;
         }
+        case GraphicsCommandType::ACTIVE_TEXTURE:
+        {
+            ActiveTextureCommandData *activeData = (ActiveTextureCommandData *)command.pData;
+            GL_ASSERT(glActiveTexture(GL_TEXTURE0 + activeData->slot));
+            GL_ASSERT(glBindTexture(GL_TEXTURE_2D, activeData->textureId));
+            return TRUE;
+        }
         case GraphicsCommandType::CREATE_VERTEX_BUFFER:
         {
             CreateVertexBufferCommandData *vbData = (CreateVertexBufferCommandData *)command.pData;

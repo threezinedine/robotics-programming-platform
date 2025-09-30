@@ -49,8 +49,9 @@ namespace rpp
          * @brief Draw the rectangle using the associated renderer.
          * @param rectangleId The ID of the rectangle instance to draw.
          * @param rect The rectangle parameters including center coordinates, width, and height.
+         * @param textureId The ID of the texture to apply to the rectangle. If INVALID_ID, no texture is applied.
          */
-        static void Draw(u32 rectangleId, const Rect &rect) RPP_PYTHON_BINDING;
+        static void Draw(u32 rectangleId, const Rect &rect, u32 textureId = INVALID_ID) RPP_PYTHON_BINDING;
 
     private:
         static Scope<Storage<RectangleData>> s_rectangles; ///< Storage for all created rectangles.

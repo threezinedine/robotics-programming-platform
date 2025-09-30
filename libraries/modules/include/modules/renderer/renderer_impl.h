@@ -1,6 +1,7 @@
 #pragma once
 #include "core/core.h"
 #include "modules/storage.h"
+#include "modules/renderer/type.h"
 
 #define INVALID_RENDERER_INDEX u32(-1)
 
@@ -19,6 +20,7 @@ namespace rpp
         {
             Scope<Window> window; ///< The window associated with this renderer.
             u32 rendererId;       ///< The unique identifier for the renderer instance.
+            u32 rectangleId;      ///< The id of the rectangle used for drawing.
         };
 
     public:
@@ -76,6 +78,11 @@ namespace rpp
          * @brief Activate the renderer with the given id. This will deactivate any other active renderer.
          */
         static void ActivateRenderer(u32 renderId) RPP_PYTHON_BINDING;
+
+        /**
+         * @brief Draw a rectangle on the current active renderer.
+         */
+        static void DrawRectangle(const Rect &rect);
 
         /**
          * @brief Destroy the renderer with the given id. If the renderer is currently active, it will be deactivated first.

@@ -22,7 +22,7 @@
     {
         "name": "imgui",
         "url": "https://github.com/ocornut/imgui.git",
-        "comment": "git pull origin docking && git checkout docking"
+        "commit": "b4514ce64a62322746af99b83a53187c6761c34a"
     },
     {
         "name": "glm",

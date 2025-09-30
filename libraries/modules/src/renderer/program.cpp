@@ -9,13 +9,30 @@ namespace rpp
 
     void Program::Initialize()
     {
+        RPP_LOG_DEBUG("Initializing Program storage.");
+
         RPP_ASSERT(s_programs == nullptr);
 
-        s_programs = CreateScope<Storage<ProgramData>>();
+        auto ProgramDeallocator = [](Program::ProgramData *data)
+        {
+            RPP_ASSERT(data != nullptr);
+            RPP_ASSERT(data->rendererId != INVALID_ID);
+
+            DeletePipelineCommandData deleteCommand = {};
+            deleteCommand.programId = data->programId;
+            GraphicsCommandData deleteCommandData = {GraphicsCommandType::DELETE_PIPELINE, &deleteCommand};
+            Renderer::GetWindow()->ExecuteCommand(deleteCommandData);
+
+            RPP_DELETE(data);
+        };
+
+        s_programs = CreateScope<Storage<ProgramData>>(ProgramDeallocator);
     }
 
     void Program::Shutdown()
     {
+        RPP_LOG_DEBUG("Shutting down Program storage.");
+
         RPP_ASSERT(s_programs != nullptr);
 
         s_programs.reset();
@@ -23,10 +40,13 @@ namespace rpp
 
     u32 Program::Create(const String &vertexShaderSource, const String &fragmentShaderSource)
     {
+        RPP_LOG_DEBUG("Creating a new Program instance.");
+
         RPP_ASSERT(s_programs != nullptr);
 
         u32 programId = s_programs->Create();
         ProgramData *data = s_programs->Get(programId);
+        data->rendererId = Renderer::GetCurrentRendererId();
 
         u32 vertexShaderId = 0;
 
@@ -75,9 +95,14 @@ namespace rpp
 
     void Program::Destroy(u32 programId)
     {
+        RPP_LOG_DEBUG("Destroying Program instance with ID: {}", programId);
+
         RPP_ASSERT(s_programs != nullptr);
 
         ProgramData *data = s_programs->Get(programId);
+
+        RPP_ASSERT(data->rendererId != INVALID_ID);
+        Renderer::ActivateRenderer(data->rendererId);
 
         DeletePipelineCommandData deleteCommand = {};
         deleteCommand.programId = data->programId;

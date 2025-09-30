@@ -20,6 +20,20 @@ namespace rpp
     {
         RPP_ASSERT(s_imguis == nullptr);
 
+        auto ImGuiDeallocator = [](ImGuiData *data) {
+            // Cleanup
+			RPP_ASSERT(data != nullptr);
+
+			DeleteFrameBufferCommandData fbData = {};
+			fbData.frameBufferId = data->frameBufferId;
+			fbData.textureId = data->textureId;
+			fbData.renderBufferId = data->frameRenderBufferId;
+
+			GraphicsCommandData commandData = {GraphicsCommandType::DELETE_FRAMEBUFFER, &fbData};
+			Renderer::GetWindow()->ExecuteCommand(commandData);
+			RPP_DELETE(data);
+			};
+
         s_imguis = CreateScope<Storage<ImGuiData>>();
     }
 
@@ -96,7 +110,7 @@ namespace rpp
         ImGuiData *data = s_imguis->Get(imguiId);
         RPP_ASSERT(data != nullptr);
 
-        RPP_ASSERT(data->rendererId == Renderer::GetCurrentRendererId() && "ImGui instance was created with a different renderer!");
+        RPP_ASSERT(data->rendererId == Renderer::GetCurrentRendererId());
 
         // Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
@@ -161,14 +175,5 @@ namespace rpp
         RPP_ASSERT(s_imguis != nullptr);
         s_imguis->Free(imguiId);
 
-        ImGuiData *data = s_imguis->Get(imguiId);
-
-        DeleteFrameBufferCommandData fbData = {};
-        fbData.frameBufferId = data->frameBufferId;
-        fbData.textureId = data->textureId;
-        fbData.renderBufferId = data->frameRenderBufferId;
-
-        GraphicsCommandData commandData = {GraphicsCommandType::DELETE_FRAMEBUFFER, &fbData};
-        Renderer::GetWindow()->ExecuteCommand(commandData);
     }
 } // namespace rpp

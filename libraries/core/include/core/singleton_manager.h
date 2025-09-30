@@ -67,7 +67,7 @@ namespace rpp
         static void RegisterSingleton(const String &name, void *instance, SingletonDestroyFunc destroyFunc);
 
     private:
-        static Array<SingletonEntry> s_singletonEntries; ///< Array of all registered singleton objects.
+        static Scope<Array<SingletonEntry>> s_singletonEntries; ///< Array of all registered singleton objects.
     };
 } // namespace rpp
 

@@ -10,3 +10,4 @@
 #include "assertions.h"
 #include "json.h"
 #include "timer.h"
+#include "stb_image.h"

@@ -28,6 +28,7 @@ namespace rpp
 
         CREATE_TEXTURE, ///< Create a 2D texture.
         DELETE_TEXTURE, ///< Delete a 2D texture.
+        ACTIVE_TEXTURE, ///< Activate a texture unit.
 
         CREATE_FRAMEBUFFER, ///< Create a framebuffer object.
         DELETE_FRAMEBUFFER, ///< Delete a framebuffer object.
@@ -74,6 +75,15 @@ namespace rpp
     struct DeleteTextureCommandData
     {
         u32 textureId; ///< The ID of the texture to be deleted.
+    };
+
+    /**
+     * @brief The data structure for the active texture command.
+     */
+    struct ActiveTextureCommandData
+    {
+        u32 slot;      ///< The texture slot to activate (e.g., 0 for GL_TEXTURE0).
+        u32 textureId; ///< The ID of the texture to bind to the active slot.
     };
 
     /**

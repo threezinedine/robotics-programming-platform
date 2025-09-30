@@ -4,6 +4,7 @@
 #include "modules/renderer/rectangle.h"
 #include "modules/renderer/imgui_internal.h"
 #include "modules/renderer/line.h"
+#include "modules/renderer/texture.h"
 
 namespace rpp
 {
@@ -14,15 +15,19 @@ namespace rpp
 
     void Renderer::Initialize()
     {
+        RPP_LOG_DEBUG("Initializing rendering system.");
+
         RPP_ASSERT(s_currentRenderers == nullptr);
         if (!Graphics::Init())
         {
             throw std::runtime_error("Failed to initialize graphics backend");
         }
+
         s_currentRenderers = CreateScope<Storage<Renderer::RendererData>>();
         Program::Initialize();
+        Texture::Initialize();
         Rectangle::Initialize();
-        Line::Initialize();
+        // Line::Initialize();
         ImGuiImpl::Initialize();
         s_currentRendererIndex = INVALID_RENDERER_INDEX;
         RPP_LOG_DEBUG("Rendering system initialized successfully");
@@ -30,12 +35,15 @@ namespace rpp
 
     void Renderer::Shutdown()
     {
+        RPP_LOG_DEBUG("Shutting down rendering system.");
+
         RPP_ASSERT(s_currentRenderers != nullptr);
 
         ImGuiImpl::Shutdown();
-        Line::Shutdown();
+        // Line::Shutdown();
         Rectangle::Shutdown();
         Program::Shutdown();
+        Texture::Shutdown();
         s_currentRenderers.reset();
         Graphics::Shutdown();
         RPP_LOG_INFO("Rendering system shutdown complete");
@@ -68,11 +76,7 @@ namespace rpp
     Renderer::RendererData *Renderer::GetCurrentRenderer()
     {
         RPP_ASSERT(s_currentRenderers != nullptr);
-
-        if (s_currentRendererIndex == INVALID_RENDERER_INDEX)
-        {
-            return nullptr;
-        }
+        RPP_ASSERT(s_currentRendererIndex != INVALID_RENDERER_INDEX);
         return s_currentRenderers->Get(s_currentRendererIndex);
     }
 
@@ -83,16 +87,21 @@ namespace rpp
         RendererData *currentRenderer = s_currentRenderers->Get(rendererId);
         currentRenderer->window = Graphics::CreateWindow(width, height, title.CStr());
         s_currentRendererIndex = rendererId;
+
+        currentRenderer->rectangleId = Rectangle::Create();
+
         return s_currentRendererIndex;
+    }
+
+    void Renderer::DrawRectangle(const Rect &rect)
+    {
+        Rectangle::Draw(GetCurrentRenderer()->rectangleId, rect);
     }
 
     void Renderer::ActivateRenderer(u32 renderId)
     {
         RPP_ASSERT(s_currentRenderers != nullptr);
-        if (s_currentRenderers->Get(renderId) == nullptr)
-        {
-            return;
-        }
+        RPP_ASSERT(s_currentRenderers->Get(renderId) != nullptr)
 
         s_currentRendererIndex = renderId;
 
@@ -105,10 +114,10 @@ namespace rpp
     void Renderer::DestroyRenderer(u32 renderId)
     {
         RPP_ASSERT(s_currentRenderers != nullptr);
-        if (s_currentRenderers->Get(renderId) == nullptr)
-        {
-            throw std::runtime_error("Invalid renderer ID");
-        }
+        RPP_ASSERT(renderId != INVALID_RENDERER_INDEX);
+        RPP_ASSERT(s_currentRenderers->Get(renderId) != nullptr);
+
+        Rectangle::Destroy(s_currentRenderers->Get(renderId)->rectangleId);
 
         s_currentRenderers->Free(renderId);
         if (s_currentRendererIndex == renderId)

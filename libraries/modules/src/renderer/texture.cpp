@@ -1,24 +1,89 @@
 #include "modules/renderer/texture.h"
 #include "platforms/platforms.h"
+#include "modules/renderer/renderer.h"
+#define STB_IMAGE_IMPLEMENTATION
+#include "core/stb_image.h"
 
 namespace rpp
 {
-    Texture::Texture(u32 width, u32 height)
-        : m_width(width), m_height(height), m_textureId(0)
+    Scope<Storage<Texture::TextureData>> Texture::s_textureStorage = nullptr;
+
+    void Texture::Initialize()
     {
+        RPP_ASSERT(s_textureStorage == nullptr);
+
+        auto TextureDeallocator = [](Texture::TextureData *data)
+        {
+            RPP_ASSERT(data != nullptr);
+            RPP_ASSERT(data->rendererId != INVALID_ID);
+
+            Renderer::ActivateRenderer(data->rendererId);
+
+            DeleteTextureCommandData deleteTexture{};
+            deleteTexture.textureId = data->textureId;
+            GraphicsCommandData command{GraphicsCommandType::DELETE_TEXTURE, &deleteTexture};
+            Renderer::GetWindow()->ExecuteCommand(command);
+
+            RPP_DELETE(data);
+        };
+
+        s_textureStorage = CreateScope<Storage<TextureData>>(TextureDeallocator);
     }
 
-    Texture::Texture(const String &filePath)
-        : m_width(0), m_height(0), m_textureId(0)
+    void Texture::Shutdown()
     {
+        RPP_ASSERT(s_textureStorage != nullptr);
+
+        s_textureStorage.reset();
     }
 
-    Texture::Texture(const Texture &other)
-        : m_width(other.m_width), m_height(other.m_height), m_textureId(other.m_textureId)
+    u32 Texture::Create(const String &filePath)
     {
+        RPP_ASSERT(s_textureStorage != nullptr);
+        u32 id = s_textureStorage->Create();
+        TextureData *textureData = s_textureStorage->Get(id);
+
+        i32 channels = 0;
+        u8 *data = stbi_load(filePath.CStr(), reinterpret_cast<i32 *>(&textureData->width), reinterpret_cast<i32 *>(&textureData->height), &channels, 4);
+        if (!data)
+        {
+            RPP_LOG_ERROR("Failed to load texture from file: {}", filePath);
+            return INVALID_ID;
+        }
+
+        CreateTextureCommandData createTexture{};
+        createTexture.width = textureData->width;
+        createTexture.height = textureData->height;
+        createTexture.numberOfChannels = channels;
+        createTexture.pPixelData = data;
+        createTexture.pTextureId = &textureData->textureId;
+
+        GraphicsCommandData command{GraphicsCommandType::CREATE_TEXTURE, &createTexture};
+        Renderer::GetWindow()->ExecuteCommand(command);
+
+        stbi_image_free(data);
+
+        return id;
     }
 
-    Texture::~Texture()
+    void Texture::Destroy(u32 textureId)
     {
+        RPP_ASSERT(s_textureStorage != nullptr);
+        s_textureStorage->Free(textureId);
+    }
+
+    void Texture::Activate(u32 textureId, u32 slot)
+    {
+        RPP_ASSERT(s_textureStorage != nullptr);
+        TextureData *textureData = s_textureStorage->Get(textureId);
+        RPP_ASSERT(textureData != nullptr);
+        RPP_ASSERT(textureData->rendererId == Renderer::GetCurrentRendererId());
+
+        ActiveTextureCommandData activeTexture{};
+        activeTexture.slot = slot;
+        activeTexture.textureId = textureData->textureId;
+
+        GraphicsCommandData command{GraphicsCommandType::ACTIVE_TEXTURE, &activeTexture};
+        Renderer::GetWindow()->ExecuteCommand(command);
     }
 } // namespace rpp
