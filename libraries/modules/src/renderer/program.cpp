@@ -111,7 +111,7 @@ namespace rpp
         GraphicsCommandData useCommandData = {GraphicsCommandType::USE_PIPELINE, &useCommand};
         Renderer::GetWindow()->ExecuteCommand(useCommandData);
 
-        s_currentProgramId = data->programId;
+        s_currentProgramId = programId;
     }
 
 #define DEFINE_SET_UNIFORM(valueType, uniformType)                                      \
@@ -120,6 +120,8 @@ namespace rpp
     {                                                                                   \
         RPP_ASSERT(s_programs != nullptr);                                              \
         RPP_ASSERT(s_currentProgramId != INVALID_ID);                                   \
+        ProgramData *data = s_programs->Get(s_currentProgramId);                        \
+        RPP_ASSERT(data != nullptr);                                                    \
                                                                                         \
         SetUniformCommandData command = {};                                             \
         UniformDescription uniform = {};                                                \
@@ -128,7 +130,7 @@ namespace rpp
         uniform.pData = &value;                                                         \
                                                                                         \
         command.uniformCount = 1;                                                       \
-        command.programId = s_currentProgramId;                                         \
+        command.programId = data->programId;                                            \
         command.pUniforms = &uniform;                                                   \
                                                                                         \
         GraphicsCommandData commandData = {GraphicsCommandType::SET_UNIFORM, &command}; \

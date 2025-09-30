@@ -82,8 +82,10 @@ namespace rpp
 
         /**
          * @brief Draw a rectangle on the current active renderer.
+         * @param rect The rectangle parameters including center coordinates, width, and height.
+         * @param textureId The ID of the texture to apply to the rectangle. If INVALID_ID, no texture is applied.
          */
-        static void DrawRectangle(const Rect &rect);
+        static void DrawRectangle(const Rect &rect, u32 textureId = INVALID_ID);
 
         /**
          * @brief Draw a line on the current active renderer.

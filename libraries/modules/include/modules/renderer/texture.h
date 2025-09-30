@@ -47,6 +47,7 @@ namespace rpp
          * @brief Activates the texture with the specified ID on the given texture slot.
          * @param textureId The ID of the texture to activate.
          * @param slot The texture slot to activate the texture on (e.g., 0 for GL_TEXTURE0).
+         * @param program The shader program that will use this texture. The program must be active (used) before calling this method.
          */
         static void Activate(u32 textureId, u32 slot);
 

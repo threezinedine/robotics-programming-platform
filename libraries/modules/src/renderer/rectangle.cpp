@@ -6,35 +6,35 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "modules/renderer/texture.h"
 
-const char *vertexShaderSource = R"(
+static const char *vertexShaderSource = R"(
 #version 330 core
 
 uniform float vScale;
 
 layout(location = 0) in vec2 aPos;
+layout(location = 1) in vec2 aTexCoord;
+
+out vec2 vTexCoord;
 
 void main()
 {
+    vTexCoord = aTexCoord;
     gl_Position = vec4(aPos.x * vScale, aPos.y * vScale, 0.0, 1.0);
 }
 )";
 
-const char *fragmentShaderSource = R"(
+static const char *fragmentShaderSource = R"(
 #version 330 core
 out vec4 FragColor;
 
-void main()
-{
-    FragColor = vec4(1.0);
-}
-)";
+uniform sampler2D uTexture;
 
-const char *fragmentShaderSource2 = R"(
-#version 330 core
-out vec4 FragColor;
+in vec2 vTexCoord;
+
 void main()
 {
-    FragColor = vec4(0.0, 1.0, 0.0, 1.0);
+	vec4 textureColor = texture(uTexture, vTexCoord);
+    FragColor = vec4(1.0) * textureColor;
 }
 )";
 
@@ -92,16 +92,17 @@ namespace rpp
 		rectangleData->programId = program;
 
 		float data[] = {
-			-0.5f, -0.5f, // Bottom-left
-			0.5f, -0.5f,  // Bottom-right
-			0.5f, 0.5f,	  // Top-right
-			0.5f, 0.5f,	  // Top-right
-			-0.5f, 0.5f,  // Top-left
-			-0.5f, -0.5f  // Bottom-left
+			-0.5f, -0.5f, 0.0f, 1.0f, // Bottom-left
+			0.5f, -0.5f, 1.0f, 1.0f,  // Bottom-right
+			0.5f, 0.5f, 1.0f, 0.0f,	  // Top-right
+			0.5f, 0.5f, 1.0f, 0.0f,	  // Top-right
+			-0.5f, 0.5f, 0.0f, 0.0f,  // Top-left
+			-0.5f, -0.5f, 0.0f, 1.0f  // Bottom-left
 		};
 
 		LayoutElement elements[] = {
-			{AtomicType::FLOAT, 2} // Position attribute (vec3),
+			{AtomicType::FLOAT, 2}, // Position attribute (vec3),
+			{AtomicType::FLOAT, 2}, // Texture coordinate attribute (vec2)
 		};
 
 		CreateVertexBufferCommandData command = {};
@@ -110,7 +111,7 @@ namespace rpp
 		command.pBufferId = &rectangleData->vertexBufferId;
 		command.pArrayId = &rectangleData->vertexArrayId;
 		command.type = VertexBufferType::TRIANGLE;
-		command.layoutCount = 1;
+		command.layoutCount = 2;
 		command.pLayout = elements;
 
 		GraphicsCommandData commandData = {GraphicsCommandType::CREATE_VERTEX_BUFFER, &command};

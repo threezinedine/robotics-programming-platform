@@ -94,9 +94,9 @@ namespace rpp
         return rendererId;
     }
 
-    void Renderer::DrawRectangle(const Rect &rect)
+    void Renderer::DrawRectangle(const Rect &rect, u32 textureId)
     {
-        Rectangle::Draw(GetCurrentRenderer()->rectangleId, rect);
+        Rectangle::Draw(GetCurrentRenderer()->rectangleId, rect, textureId);
     }
 
     void Renderer::DrawLine(const Point &start, const Point &end)

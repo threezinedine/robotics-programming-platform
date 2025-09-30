@@ -3,6 +3,7 @@
 #include "modules/renderer/renderer.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "core/stb_image.h"
+#include "modules/renderer/program.h"
 
 namespace rpp
 {
@@ -85,5 +86,7 @@ namespace rpp
 
         GraphicsCommandData command{GraphicsCommandType::ACTIVE_TEXTURE, &activeTexture};
         Renderer::GetWindow()->ExecuteCommand(command);
+
+        Program::SetUniform("uTexture", (i32)slot);
     }
 } // namespace rpp

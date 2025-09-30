@@ -1,5 +1,29 @@
 #include "modules/renderer/line.h"
 #include "modules/renderer/renderer_impl.h"
+#include "modules/renderer/program.h"
+
+static const char *vertexShaderSource = R"(
+#version 330 core
+
+uniform float vScale;
+
+layout(location = 0) in vec2 aPos;
+
+void main()
+{
+    gl_Position = vec4(aPos.x * vScale, aPos.y * vScale, 0.0, 1.0);
+}
+)";
+
+static const char *fragmentShaderSource = R"(
+#version 330 core
+out vec4 FragColor;
+
+void main()
+{
+    FragColor = vec4(1.0);
+}
+)";
 
 namespace rpp
 {
@@ -12,6 +36,8 @@ namespace rpp
         auto LineDeallocator = [](LineData *data)
         {
             RPP_ASSERT(data != nullptr);
+
+            Program::Destroy(data->programId);
 
             DeleteVertexBufferCommandData command = {};
             command.pBufferId = &data->vertexBufferId;
@@ -39,6 +65,9 @@ namespace rpp
         u32 id = s_lines->Create();
         LineData *lineData = s_lines->Get(id);
 
+        lineData->rendererId = Renderer::GetCurrentRendererId();
+        lineData->programId = Program::Create(vertexShaderSource, fragmentShaderSource);
+
         float data[] = {
             1.0f, 1.0f,  // Vertex 1 (X, Y)
             -1.0f, -1.0f // Vertex 2 (X, Y)
@@ -65,6 +94,7 @@ namespace rpp
 
     void Line::Destroy(u32 id)
     {
+        RPP_ASSERT(s_lines != nullptr);
         s_lines->Free(id);
     }
 
@@ -73,6 +103,10 @@ namespace rpp
         RPP_ASSERT(s_lines != nullptr);
         LineData *lineData = s_lines->Get(id);
         RPP_ASSERT(lineData != nullptr);
+        RPP_ASSERT(lineData->rendererId == Renderer::GetCurrentRendererId());
+
+        Program::Use(lineData->programId);
+        Program::SetUniform("vScale", 1.0f);
 
         DrawVertexBufferCommandData command = {};
         command.bufferId = lineData->vertexBufferId;

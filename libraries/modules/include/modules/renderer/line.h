@@ -15,6 +15,8 @@ namespace rpp
         {
             u32 vertexArrayId;  ///< The ID of the vertex array object (VAO) for the line.
             u32 vertexBufferId; ///< The ID of the vertex buffer object (VBO) for the line.
+            u32 programId;      ///< The ID of the shader program used to render the line.
+            u32 rendererId;     ///< The ID of the renderer that created this line.
         };
 
     public:
