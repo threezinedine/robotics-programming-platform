@@ -5,6 +5,51 @@ RPP_ENABLE_MEMORY_TRACKING;
 
 using namespace rpp;
 
+class TestSession : public GraphicSession
+{
+public:
+    TestSession(u32 width, u32 height, const String &title, b8 enableImGui = FALSE)
+        : GraphicSession(width, height, title, enableImGui)
+    {
+    }
+
+    ~TestSession()
+    {
+    }
+
+protected:
+    void InitializeImpl() override
+    {
+        m_texture = Texture::Create("C:\\Users\\APC\\Pictures\\Screenshots\\Screenshot 2025-08-19 222422.png");
+        RPP_ASSERT(m_texture != INVALID_ID);
+    }
+
+    void RenderImpl() override
+    {
+        RPP_ASSERT(m_texture != INVALID_ID);
+
+        Renderer::DrawRectangle({0, 0, 100, 100}, m_texture);
+        Renderer::DrawCircle({50, 50}, 50, m_texture);
+
+        ImGui::ShowDemoWindow();
+
+        ImGui::Begin("My Captured Scene Window");
+        Renderer::DrawingSceneInImGui();
+        ImGui::End();
+    }
+
+    void ShutdownImpl() override
+    {
+        RPP_ASSERT(m_texture != INVALID_ID);
+
+        Texture::Destroy(m_texture);
+        m_texture = INVALID_ID;
+    }
+
+private:
+    u32 m_texture = INVALID_ID;
+};
+
 int main(void)
 {
     SingletonManager::Initialize();
@@ -12,41 +57,18 @@ int main(void)
     Renderer::Initialize();
 
     {
-        u32 renderer = Renderer::Create(800, 600, "Test", TRUE);
-
-        Renderer::Activate(renderer);
-        // u32 texture = Texture::Create("C:\\Users\\APC\\Downloads\\download.jpg");
-        u32 texture = Texture::Create("C:\\Users\\APC\\Pictures\\Screenshots\\Screenshot 2025-08-19 222422.png");
+        CREATE_SESSION(TestSession, 800, 600, "Test2", TRUE);
 
         while (TRUE)
         {
-            Renderer::Activate(renderer);
-
-            if (Renderer::GetWindow()->ShouldWindowClose())
+            if (GraphicSessionManager::GetInstance()->Update(0.0f))
             {
-                Texture::Destroy(texture);
-                Renderer::Destroy(renderer);
                 break;
-            }
-            else
-            {
-                Renderer::PreDraw();
-
-                Renderer::DrawRectangle({0, 0, 100, 100}, texture);
-                Renderer::DrawCircle({50, 50}, 50, texture);
-
-                Renderer::PostDraw();
-
-                ImGui::ShowDemoWindow();
-
-                ImGui::Begin("My Captured Scene Window");
-                Renderer::DrawingSceneInImGui();
-                ImGui::End();
-
-                Renderer::Present();
             }
         }
     }
+
+    GraphicSessionManager::GetInstance()->ClearSessions();
 
     Renderer::Shutdown();
     SingletonManager::Shutdown();

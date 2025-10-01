@@ -5,125 +5,66 @@ RPP_ENABLE_MEMORY_TRACKING;
 
 using namespace rpp;
 
+class FirstWindow : public GraphicSession
+{
+public:
+    FirstWindow(u32 width, u32 height, const String &title, b8 enableImGui = FALSE)
+        : GraphicSession(width, height, title, enableImGui)
+    {
+    }
+
+    ~FirstWindow()
+    {
+    }
+
+protected:
+    void RenderImpl() override
+    {
+        ImGui::Begin("First Window");
+        ImGui::Text("This is the first window.");
+        ImGui::End();
+    }
+};
+
+class TestSession : public GraphicSession
+{
+public:
+    TestSession(u32 width, u32 height, const String &title, b8 enableImGui = FALSE)
+        : GraphicSession(width, height, title, enableImGui)
+    {
+    }
+
+    ~TestSession()
+    {
+    }
+
+protected:
+    void RenderImpl() override
+    {
+        Renderer::DrawRectangle({0, 0, 100, 100});
+    }
+};
+
 int main(void)
 {
     SingletonManager::Initialize();
     Logging::GetInstance()->Setup(u8(HandlerType::CONSOLE), LogLevel::DEBUG);
     Renderer::Initialize();
 
-    u32 renderer1 = Renderer::Create(800, 600, "Test");
-    u32 renderer2 = Renderer::Create(800, 600, "Test2");
-    u32 renderer3 = Renderer::Create(800, 600, "Test3", TRUE);
-
     {
-        HighResTimer timer;
-
-        f32 delta = 0;
+        CREATE_SESSION(FirstWindow, 800, 600, "Test2", TRUE);
+        CREATE_SESSION(TestSession, 1000, 1000, "Test");
 
         while (TRUE)
         {
-            timer.Start();
-
-            b8 shouldApplicationClose = TRUE;
-
-            if (renderer1 != INVALID_ID)
-            {
-                Renderer::Activate(renderer1);
-
-                if (Renderer::GetWindow()->ShouldWindowClose())
-                {
-                    Renderer::Destroy(renderer1);
-                    renderer1 = INVALID_ID;
-                }
-                else
-                {
-                    shouldApplicationClose = FALSE;
-                    Renderer::PreDraw();
-
-                    Renderer::DrawRectangle({-100, -100, 200, 200});
-
-                    Renderer::PostDraw();
-
-                    Renderer::Present();
-                }
-            }
-
-            if (renderer2 != INVALID_ID)
-            {
-                Renderer::Activate(renderer2);
-
-                if (Renderer::GetWindow()->ShouldWindowClose())
-                {
-                    Renderer::Destroy(renderer2);
-                    renderer2 = INVALID_ID;
-                }
-                else
-                {
-                    shouldApplicationClose = FALSE;
-
-                    Renderer::PreDraw();
-
-                    Renderer::DrawRectangle({100, -100, 200, 200});
-
-                    Renderer::PostDraw();
-
-                    Renderer::Present();
-                }
-            }
-
-            if (renderer3 != INVALID_ID)
-            {
-                Renderer::Activate(renderer3);
-
-                if (Renderer::GetWindow()->ShouldWindowClose())
-                {
-                    Renderer::Destroy(renderer3);
-                    renderer3 = INVALID_ID;
-                }
-                else
-                {
-                    shouldApplicationClose = FALSE;
-
-                    Renderer::PreDraw();
-
-                    Renderer::DrawRectangle({100, 100, 300, 400});
-
-                    Renderer::PostDraw();
-
-                    ImGui::Begin("Test Window");
-                    ImGui::Text("Hello, world!");
-                    ImGui::End();
-
-                    ImGui::Begin("My Captured Scene Window");
-                    Renderer::DrawingSceneInImGui();
-                    ImGui::End();
-
-                    Renderer::Present();
-                }
-            }
-
-            if (shouldApplicationClose)
+            if (GraphicSessionManager::GetInstance()->Update(0.0f))
             {
                 break;
             }
         }
     }
 
-    if (renderer1 != INVALID_ID)
-    {
-        Renderer::Destroy(renderer1);
-    }
-
-    if (renderer2 != INVALID_ID)
-    {
-        Renderer::Destroy(renderer2);
-    }
-
-    if (renderer3 != INVALID_ID)
-    {
-        Renderer::Destroy(renderer3);
-    }
-
+    GraphicSessionManager::GetInstance()->ClearSessions();
     Renderer::Shutdown();
     SingletonManager::Shutdown();
     return 0;

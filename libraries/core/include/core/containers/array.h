@@ -222,7 +222,7 @@ namespace rpp
 
             m_size--;
 
-            m_data[m_size].~T();
+            m_data[modifiedIndex].~T();
             for (u32 i = modifiedIndex; i < m_size; i++)
             {
                 RPP_NEW_REPLACE(&m_data[i], T(std::move(const_cast<T &>(m_data[i + 1]))));
