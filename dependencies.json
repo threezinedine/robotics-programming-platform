@@ -31,5 +31,9 @@
     {
         "name": "luna",
         "url": "https://github.com/sammycage/lunasvg.git"
+    },
+    {
+        "name": "stb",
+        "url": "https://github.com/nothings/stb.git"
     }
 ]

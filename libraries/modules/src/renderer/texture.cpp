@@ -2,7 +2,7 @@
 #include "platforms/platforms.h"
 #include "modules/renderer/renderer.h"
 #define STB_IMAGE_IMPLEMENTATION
-#include "core/stb_image.h"
+#include "stb_image.h"
 #include "modules/renderer/program.h"
 
 namespace rpp
