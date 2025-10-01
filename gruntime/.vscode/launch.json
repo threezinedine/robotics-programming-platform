@@ -4,6 +4,7 @@
             "name": "Graphical runtime",
             "type": "cppvsdbg",
             "request": "launch",
+            "preLaunchTask": "build graphical runtime",
             "program": "${workspaceFolder}/build/dev/Debug/RPPGraphicRuntime.exe",
             "args": [],
             "cwd": "${workspaceRoot}"

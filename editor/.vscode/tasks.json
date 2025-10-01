@@ -1,0 +1,19 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build editor",
+            "type": "shell",
+            "command": "python",
+            "args": [
+                "${workspaceFolder}/../config.py",
+                "-p",
+                "editor",
+                "build"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/.."
+            }
+        }
+    ]
+}

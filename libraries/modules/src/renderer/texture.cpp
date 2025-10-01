@@ -52,6 +52,8 @@ namespace rpp
             return INVALID_ID;
         }
 
+        textureData->rendererId = Renderer::GetCurrentRendererId();
+
         CreateTextureCommandData createTexture{};
         createTexture.width = textureData->width;
         createTexture.height = textureData->height;
@@ -72,6 +74,8 @@ namespace rpp
         RPP_ASSERT(s_textureStorage != nullptr);
         u32 id = s_textureStorage->Create();
         TextureData *textureData = s_textureStorage->Get(id);
+
+        textureData->rendererId = Renderer::GetCurrentRendererId();
 
         textureData->width = width;
         textureData->height = height;

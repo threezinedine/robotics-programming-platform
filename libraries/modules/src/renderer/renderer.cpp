@@ -148,8 +148,6 @@ namespace rpp
 
             currentRenderer->circleMask = Texture::Create(maskWidth, maskHeight, 4, (u8 *)plutovg_surface_get_data(surface));
 
-            plutovg_surface_write_to_png(surface, "circle_mask.png");
-
             plutovg_canvas_destroy(canvas);
             plutovg_surface_destroy(surface);
         }

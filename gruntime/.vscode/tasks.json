@@ -1,0 +1,19 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build graphical runtime",
+            "type": "shell",
+            "command": "python",
+            "args": [
+                "${workspaceFolder}/../config.py",
+                "-p",
+                "gruntime",
+                "build"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/.."
+            }
+        }
+    ]
+}

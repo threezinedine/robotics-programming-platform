@@ -12,7 +12,7 @@ int main(void)
     Renderer::Initialize();
 
     {
-        u32 renderer = Renderer::Create(800, 600, "Test");
+        u32 renderer = Renderer::Create(800, 600, "Test", TRUE);
 
         Renderer::Activate(renderer);
         // u32 texture = Texture::Create("C:\\Users\\APC\\Downloads\\download.jpg");
@@ -37,11 +37,11 @@ int main(void)
 
                 Renderer::PostDraw();
 
-                // ImGui::ShowDemoWindow();
+                ImGui::ShowDemoWindow();
 
-                // ImGui::Begin("My Captured Scene Window");
-                // Renderer::DrawingSceneInImGui();
-                // ImGui::End();
+                ImGui::Begin("My Captured Scene Window");
+                Renderer::DrawingSceneInImGui();
+                ImGui::End();
 
                 Renderer::Present();
             }
