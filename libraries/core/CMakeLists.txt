@@ -30,6 +30,7 @@ foreach(CORE_SRC_TEST_FILE ${CORE_SRC_TEST})
 endforeach()
 
 RPPFindPackage(rpp-json "Dependencies")
+RPPFindPackage(rpp-stb "Dependencies")
 
 # -------------- Library target --------------
 set(CMAKE_FOLDER "Libraries")
@@ -39,6 +40,7 @@ target_link_libraries(
     ${PROJECT_NAME}
     PUBLIC
     RPPPlatforms
+    rpp-stb
     PRIVATE
     rpp-json
 )
