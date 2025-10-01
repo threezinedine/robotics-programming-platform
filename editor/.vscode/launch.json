@@ -1,0 +1,12 @@
+{
+    "configurations": [
+        {
+            "name": "Editor",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/dev/Debug/RPPEditor.exe",
+            "args": [],
+            "cwd": "${workspaceRoot}"
+        }
+    ]
+}

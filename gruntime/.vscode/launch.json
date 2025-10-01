@@ -1,0 +1,12 @@
+{
+    "configurations": [
+        {
+            "name": "Graphical runtime",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/dev/Debug/RPPGraphicRuntime.exe",
+            "args": [],
+            "cwd": "${workspaceRoot}"
+        }
+    ]
+}
