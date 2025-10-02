@@ -108,6 +108,7 @@ namespace rpp
             {
                 Operation operation; ///< The operation to perform on the system.
                 u32 systemId;        ///< The ID of the system to be modified.
+                b8 isActive;         ///< The new active status of the system (if the operation is CHANGE_STATE or be ignored).
             };
             Queue<DirtySystem> dirtySystems; ///< The list of systems which need to be modified.
         };

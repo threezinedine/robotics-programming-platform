@@ -237,9 +237,15 @@ namespace rpp
         ECSData *currentEcs = s_ecsStorage->Get(s_currentEcsIndex);
         RPP_ASSERT(currentEcs != nullptr);
 
-        ECS::ECSData::SystemData *systemData = currentEcs->systemStorage->Get(systemId);
+        ECSData::SystemData *systemData = currentEcs->systemStorage->Get(systemId);
         RPP_ASSERT(systemData != nullptr);
-        systemData->isActive = isActive;
+
+        ECSData::DirtySystem dirtySystem;
+        dirtySystem.operation = ECSData::Operation::CHANGE_STATE;
+        dirtySystem.systemId = systemId;
+        dirtySystem.isActive = isActive;
+
+        currentEcs->dirtySystems.Push(dirtySystem);
     }
 
     u32 ECS::RegisterSystem(System *system, ComponentId *pRequiredComponents, u32 numberOfRequiredComponents)
@@ -275,6 +281,21 @@ namespace rpp
         RPP_ASSERT(s_currentEcsIndex != INVALID_ID);
         ECSData *currentEcs = s_ecsStorage->Get(s_currentEcsIndex);
         RPP_ASSERT(currentEcs != nullptr);
+
+        // process dirty systems
+        while (!currentEcs->dirtySystems.Empty())
+        {
+            ECSData::DirtySystem &dirtySystem = currentEcs->dirtySystems.Front();
+            ECSData::SystemData *systemData = currentEcs->systemStorage->Get(dirtySystem.systemId);
+            RPP_ASSERT(systemData != nullptr);
+
+            if (dirtySystem.operation == ECSData::Operation::CHANGE_STATE)
+            {
+                systemData->isActive = dirtySystem.isActive;
+            }
+
+            currentEcs->dirtySystems.Pop();
+        }
 
         // process dirty entities
         while (!currentEcs->dirtyEntities.Empty())

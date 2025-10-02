@@ -204,6 +204,26 @@ TEST_F(ECSTest, ModifyTheStatusOfTheEntity)
     ASSERT_TRUE(ECSAssert::IsEntityMatchSystem(entity, pSystemData));
 }
 
+TEST_F(ECSTest, ModifyStatusOfTheSystem)
+{
+    ECSId id = ECS::Create();
+    ECS::Activate(id);
+
+    ComponentId requiredComponents[] = {COMPONENT_A_ID};
+    SystemId systemId = ECS::RegisterSystem(RPP_NEW(TestSystem()), requiredComponents, 1);
+
+    auto pSystemData = ECSAssert::GetSystemData(id, systemId);
+    ASSERT_TRUE(pSystemData->isActive);
+
+    ECS::ModifySystemStatus(systemId, FALSE);
+    pSystemData = ECSAssert::GetSystemData(id, systemId);
+    ASSERT_TRUE(pSystemData->isActive);
+
+    ECS::Update(0.016f);
+
+    ASSERT_FALSE(pSystemData->isActive);
+}
+
 TEST_F(ECSTest, DISABLED_CreateEntityMatchSystem)
 {
     ECSId id = ECS::Create();
