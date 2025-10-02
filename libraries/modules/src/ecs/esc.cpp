@@ -185,7 +185,11 @@ namespace rpp
         ECSData *currentEcs = s_ecsStorage->Get(s_currentEcsIndex);
         RPP_ASSERT(currentEcs != nullptr);
 
-        currentEcs->entityStorage->Free(entityId);
+        ECSData::DirtyEntity dirtyEntity;
+        dirtyEntity.operation = ECSData::Operation::DELETE;
+        dirtyEntity.entityId = entityId;
+
+        currentEcs->dirtyEntities.Push(dirtyEntity);
     }
 
     Entity *ECS::GetEntity(EntityId entityId)
@@ -307,6 +311,10 @@ namespace rpp
             if (dirtyEntity.operation == ECSData::Operation::CHANGE_STATE)
             {
                 entity->isActive = !entity->isActive;
+            }
+            else if (dirtyEntity.operation == ECSData::Operation::DELETE)
+            {
+                currentEcs->entityStorage->Free(dirtyEntity.entityId);
             }
 
             currentEcs->dirtyEntities.Pop();

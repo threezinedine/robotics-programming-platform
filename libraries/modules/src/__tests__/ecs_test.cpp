@@ -80,6 +80,37 @@ protected:
     }
 };
 
+#define SINGLE_ECS_SETUP()    \
+    ECSId id = ECS::Create(); \
+    ECS::Activate(id);
+
+#define SYSTEM_SETUP(system, ...)                     \
+    ComponentId requiredComponents[] = {__VA_ARGS__}; \
+    u32 systemId = ECS::RegisterSystem(RPP_NEW(system()), requiredComponents, sizeof(requiredComponents) / sizeof(ComponentId));
+
+#define CREATE_ENTITY_WITH_AB_COMPONENTS()                                \
+    ComponentA aData = {42};                                              \
+    Component aComponent = {COMPONENT_A_ID, TRUE, &aData, sizeof(aData)}; \
+    ComponentB bData = {3.14f};                                           \
+    Component bComponent = {COMPONENT_B_ID, TRUE, &bData, sizeof(bData)}; \
+    Component *components[] = {&aComponent, &bComponent};                 \
+    EntityId entityId = ECS::CreateEntity(components, 2);                 \
+    Entity *entity = ECS::GetEntity(entityId);
+
+#define CREATE_ENTITY_WITH_A_COMPONENT()                                  \
+    ComponentA aData = {42};                                              \
+    Component aComponent = {COMPONENT_A_ID, TRUE, &aData, sizeof(aData)}; \
+    Component *components[] = {&aComponent};                              \
+    EntityId entityId = ECS::CreateEntity(components, 1);                 \
+    Entity *entity = ECS::GetEntity(entityId);
+
+#define CREATE_ENTITY_WITH_B_COMPONENT()                                  \
+    ComponentB bData = {3.14f};                                           \
+    Component bComponent = {COMPONENT_B_ID, TRUE, &bData, sizeof(bData)}; \
+    Component *components[] = {&bComponent};                              \
+    EntityId entityId = ECS::CreateEntity(components, 1);                 \
+    Entity *entity = ECS::GetEntity(entityId);
+
 TEST_F(ECSTest, CreateSimpleECSInstance)
 {
     ECSId id = ECS::Create();
@@ -88,70 +119,45 @@ TEST_F(ECSTest, CreateSimpleECSInstance)
 
 TEST_F(ECSTest, CheckAnEntityMatchASystem)
 {
-    ECSId id = ECS::Create();
-    ECS::Activate(id);
+    SINGLE_ECS_SETUP();
 
-    ComponentId requiredComponents[] = {COMPONENT_A_ID};
-    ECS::RegisterSystem(RPP_NEW(TestSystem()), requiredComponents, 1);
+    SYSTEM_SETUP(TestSystem, COMPONENT_A_ID);
+    CREATE_ENTITY_WITH_AB_COMPONENTS();
 
     auto pSystemData = ECSAssert::GetSystemData(id, 0);
-
-    ComponentA aData = {42};
-    Component aComponent = {COMPONENT_A_ID, TRUE, &aData, sizeof(aData)};
-    ComponentB bData = {3.14f};
-    Component bComponent = {COMPONENT_B_ID, TRUE, &bData, sizeof(bData)};
-    Component *components[] = {&aComponent, &bComponent};
-    EntityId entityId = ECS::CreateEntity(components, 2);
-    Entity *entity = ECS::GetEntity(entityId);
-
     ASSERT_TRUE(ECSAssert::IsEntityMatchSystem(entity, pSystemData));
 }
 
 TEST_F(ECSTest, CheckNotMatch)
 {
-    ECSId id = ECS::Create();
-    ECS::Activate(id);
+    SINGLE_ECS_SETUP();
 
-    ComponentId requiredComponents[] = {COMPONENT_A_ID, COMPONENT_B_ID};
-    ECS::RegisterSystem(RPP_NEW(TestSystem()), requiredComponents, 2);
+    SYSTEM_SETUP(TestSystem, COMPONENT_A_ID, COMPONENT_B_ID);
+    CREATE_ENTITY_WITH_A_COMPONENT();
 
     auto pSystemData = ECSAssert::GetSystemData(id, 0);
-
-    ComponentA aData = {42};
-    Component aComponent = {COMPONENT_A_ID, TRUE, &aData, sizeof(aData)};
-    Component *components[] = {&aComponent};
-    EntityId entityId = ECS::CreateEntity(components, 1);
-    Entity *entity = ECS::GetEntity(entityId);
-
     ASSERT_FALSE(ECSAssert::IsEntityMatchSystem(entity, pSystemData));
 }
 
 TEST_F(ECSTest, CheckNotMatchIfInactive)
 {
-    ECSId id = ECS::Create();
-    ECS::Activate(id);
-
-    ComponentId requiredComponents[] = {COMPONENT_A_ID};
-    ECS::RegisterSystem(RPP_NEW(TestSystem()), requiredComponents, 1);
-
-    auto pSystemData = ECSAssert::GetSystemData(id, 0);
+    SINGLE_ECS_SETUP();
+    SYSTEM_SETUP(TestSystem, COMPONENT_A_ID);
 
     ComponentA aData = {42};
-    Component aComponent = {COMPONENT_A_ID, FALSE, &aData, sizeof(aData)};
+    Component aComponent = {1, FALSE, &aData, sizeof(aData)};
     Component *components[] = {&aComponent};
     EntityId entityId = ECS::CreateEntity(components, 1);
     Entity *entity = ECS::GetEntity(entityId);
 
+    auto pSystemData = ECSAssert::GetSystemData(id, 0);
     ASSERT_FALSE(ECSAssert::IsEntityMatchSystem(entity, pSystemData));
 }
 
 TEST_F(ECSTest, ModifyTheStatusOfTheComponent)
 {
-    ECSId id = ECS::Create();
-    ECS::Activate(id);
-
-    ComponentId requiredComponents[] = {COMPONENT_A_ID};
-    ECS::RegisterSystem(RPP_NEW(TestSystem()), requiredComponents, 1);
+    SINGLE_ECS_SETUP();
+    SYSTEM_SETUP(TestSystem, COMPONENT_A_ID);
 
     auto pSystemData = ECSAssert::GetSystemData(id, 0);
 
@@ -171,21 +177,42 @@ TEST_F(ECSTest, ModifyTheStatusOfTheComponent)
     ASSERT_TRUE(ECSAssert::IsEntityMatchSystem(entity, pSystemData));
 }
 
+TEST_F(ECSTest, DeleteTheEntity)
+{
+    SINGLE_ECS_SETUP();
+    SYSTEM_SETUP(TestSystem, COMPONENT_A_ID);
+    CREATE_ENTITY_WITH_A_COMPONENT();
+
+    ECS::DestroyEntity(entityId);
+    ASSERT_TRUE(ECS::GetEntity(entityId) != nullptr);
+
+    ECS::Update(0.016f);
+
+    ASSERT_EQ(ECS::GetEntity(entityId), nullptr);
+}
+
+TEST_F(ECSTest, ModifyStatusOfComponentWhichItsEntityIsDeleted)
+{
+    SINGLE_ECS_SETUP();
+    SYSTEM_SETUP(TestSystem, COMPONENT_A_ID);
+    CREATE_ENTITY_WITH_A_COMPONENT();
+
+    ECS::DestroyEntity(entityId);
+    ASSERT_TRUE(ECS::GetEntity(entityId) != nullptr);
+
+    ECS::ModifyComponentStatus(entityId, COMPONENT_A_ID, FALSE);
+
+    ASSERT_NO_THROW(ECS::Update(0.016f));
+    ASSERT_EQ(ECS::GetEntity(entityId), nullptr);
+}
+
 TEST_F(ECSTest, ModifyTheStatusOfTheEntity)
 {
-    ECSId id = ECS::Create();
-    ECS::Activate(id);
-
-    ComponentId requiredComponents[] = {COMPONENT_A_ID};
-    ECS::RegisterSystem(RPP_NEW(TestSystem()), requiredComponents, 1);
+    SINGLE_ECS_SETUP();
+    SYSTEM_SETUP(TestSystem, COMPONENT_A_ID);
+    CREATE_ENTITY_WITH_A_COMPONENT();
 
     auto pSystemData = ECSAssert::GetSystemData(id, 0);
-
-    ComponentA aData = {42};
-    Component aComponent = {COMPONENT_A_ID, TRUE, &aData, sizeof(aData)};
-    Component *components[] = {&aComponent};
-    EntityId entityId = ECS::CreateEntity(components, 1);
-    Entity *entity = ECS::GetEntity(entityId);
 
     ASSERT_TRUE(ECSAssert::IsEntityMatchSystem(entity, pSystemData));
 
@@ -206,11 +233,8 @@ TEST_F(ECSTest, ModifyTheStatusOfTheEntity)
 
 TEST_F(ECSTest, ModifyStatusOfTheSystem)
 {
-    ECSId id = ECS::Create();
-    ECS::Activate(id);
-
-    ComponentId requiredComponents[] = {COMPONENT_A_ID};
-    SystemId systemId = ECS::RegisterSystem(RPP_NEW(TestSystem()), requiredComponents, 1);
+    SINGLE_ECS_SETUP();
+    SYSTEM_SETUP(TestSystem, COMPONENT_A_ID);
 
     auto pSystemData = ECSAssert::GetSystemData(id, systemId);
     ASSERT_TRUE(pSystemData->isActive);

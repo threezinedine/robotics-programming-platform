@@ -167,13 +167,6 @@ namespace rpp
         static EntityId CreateEntity(Component **ppComponents, u32 numberOfComponents);
 
         /**
-         * Destroy an entity in the current ECS system instance.
-         *
-         * @param entityId The ID of the entity to destroy.
-         */
-        static void DestroyEntity(EntityId entityId);
-
-        /**
          * Retrieve the entity by its ID in the current ECS system instance.
          * @param entityId The ID of the entity to retrieve.
          * @return The pointer to the entity. Returns `nullptr` if the entity does not exist.
@@ -182,6 +175,13 @@ namespace rpp
 
         // Delay operations like activating/deactivating entities, removing components will be applied after all the systems are updated.
     public:
+        /**
+         * Destroy an entity in the current ECS system instance.
+         *
+         * @param entityId The ID of the entity to destroy.
+         */
+        static void DestroyEntity(EntityId entityId);
+
         /**
          * Delay operations like activating/deactivating entities.
          *
