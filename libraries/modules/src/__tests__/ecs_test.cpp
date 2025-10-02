@@ -145,7 +145,7 @@ TEST_F(ECSTest, CheckNotMatchIfInactive)
     ASSERT_FALSE(ECSAssert::IsEntityMatchSystem(entity, pSystemData));
 }
 
-TEST_F(ECSTest, ModifyTheStatusOfTheComponet)
+TEST_F(ECSTest, ModifyTheStatusOfTheComponent)
 {
     ECSId id = ECS::Create();
     ECS::Activate(id);
@@ -164,6 +164,39 @@ TEST_F(ECSTest, ModifyTheStatusOfTheComponet)
     ASSERT_FALSE(ECSAssert::IsEntityMatchSystem(entity, pSystemData));
 
     ECS::ModifyComponentStatus(entityId, COMPONENT_A_ID, TRUE);
+    ASSERT_FALSE(ECSAssert::IsEntityMatchSystem(entity, pSystemData));
+
+    ECS::Update(0.016f);
+
+    ASSERT_TRUE(ECSAssert::IsEntityMatchSystem(entity, pSystemData));
+}
+
+TEST_F(ECSTest, ModifyTheStatusOfTheEntity)
+{
+    ECSId id = ECS::Create();
+    ECS::Activate(id);
+
+    ComponentId requiredComponents[] = {COMPONENT_A_ID};
+    ECS::RegisterSystem(RPP_NEW(TestSystem()), requiredComponents, 1);
+
+    auto pSystemData = ECSAssert::GetSystemData(id, 0);
+
+    ComponentA aData = {42};
+    Component aComponent = {COMPONENT_A_ID, TRUE, &aData, sizeof(aData)};
+    Component *components[] = {&aComponent};
+    EntityId entityId = ECS::CreateEntity(components, 1);
+    Entity *entity = ECS::GetEntity(entityId);
+
+    ASSERT_TRUE(ECSAssert::IsEntityMatchSystem(entity, pSystemData));
+
+    ECS::ModifyEntityStatus(entityId, FALSE);
+    ASSERT_TRUE(ECSAssert::IsEntityMatchSystem(entity, pSystemData));
+
+    ECS::Update(0.016f);
+
+    ASSERT_FALSE(ECSAssert::IsEntityMatchSystem(entity, pSystemData));
+
+    ECS::ModifyEntityStatus(entityId, TRUE);
     ASSERT_FALSE(ECSAssert::IsEntityMatchSystem(entity, pSystemData));
 
     ECS::Update(0.016f);

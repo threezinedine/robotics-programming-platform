@@ -91,6 +91,7 @@ namespace rpp
             {
                 Operation operation; ///< The operation to perform on the entity.
                 EntityId entityId;   ///< The ID of the entity which needs to be added/removed or modified.
+                b8 isActive;         ///< The new active status of the entity (if the operation is CHANGE_STATE or be ignored).
             };
             Queue<DirtyEntity> dirtyEntities; ///< The list of entities which need to be added/removed or modified.
 

@@ -9,6 +9,11 @@ namespace rpp
     {
         RPP_ASSERT(pEntity != nullptr);
 
+        if (!pEntity->isActive)
+        {
+            return FALSE;
+        }
+
         u32 systemRequiredComponentCount = pSystemData->numberOfRequiredComponents;
         u32 entityComponentCount = pEntity->numberOfComponents;
 
@@ -196,6 +201,16 @@ namespace rpp
 
     void ECS::ModifyEntityStatus(EntityId entityId, b8 isActive)
     {
+        RPP_ASSERT(s_ecsStorage != nullptr);
+        RPP_ASSERT(s_currentEcsIndex != INVALID_ID);
+
+        ECSData *currentEcs = s_ecsStorage->Get(s_currentEcsIndex);
+        RPP_ASSERT(currentEcs != nullptr);
+
+        ECS::ECSData::DirtyEntity dirtyEntity;
+        dirtyEntity.operation = ECSData::Operation::CHANGE_STATE;
+        dirtyEntity.entityId = entityId;
+        currentEcs->dirtyEntities.Push(dirtyEntity);
     }
 
     void ECS::ModifyComponentStatus(EntityId entityId, ComponentId componentId, b8 isActive)
@@ -261,6 +276,21 @@ namespace rpp
         ECSData *currentEcs = s_ecsStorage->Get(s_currentEcsIndex);
         RPP_ASSERT(currentEcs != nullptr);
 
+        // process dirty entities
+        while (!currentEcs->dirtyEntities.Empty())
+        {
+            ECSData::DirtyEntity &dirtyEntity = currentEcs->dirtyEntities.Front();
+            Entity *entity = currentEcs->entityStorage->Get(dirtyEntity.entityId);
+            RPP_ASSERT(entity != nullptr);
+
+            if (dirtyEntity.operation == ECSData::Operation::CHANGE_STATE)
+            {
+                entity->isActive = !entity->isActive;
+            }
+
+            currentEcs->dirtyEntities.Pop();
+        }
+
         // process dirty components
         while (!currentEcs->dirtyComponents.Empty())
         {
@@ -269,6 +299,7 @@ namespace rpp
 
             if (entity == nullptr) ///< the entity is deleted above
             {
+                currentEcs->dirtyComponents.Pop();
                 continue;
             }
 
