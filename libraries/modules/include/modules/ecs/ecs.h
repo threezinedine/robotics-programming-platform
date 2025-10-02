@@ -4,14 +4,16 @@
 #include "component.h"
 #include "system.h"
 #include "modules/storage.h"
+#include "type.h"
+
+class ECSAssert; ///< Used only for testing purpose.
 
 namespace rpp
 {
+
     namespace internal
     {
     } // namespace internal
-
-    typedef u32 ECSId; ///< The type used for ECS system IDs.
 
     /**
      * The ECS (Entity-Component-System) class is responsible for managing entities, components, and systems.
@@ -31,13 +33,13 @@ namespace rpp
      * #define CLICKABLE_COMPONENT_ID 3 // If have this component, entity will be passed into input system.
      *
      * ComponentId renderingSystemRequirements[] = {GEOMETRY_COMPONENT_ID, TEXTURE_COMPONENT_ID};
-     * ECS::RegisterSystem(CreateScope<RenderingSystem>(), renderingSystemRequirements, 2);
+     * ECS::RegisterSystem(RPP_NEW(RenderingSystem), renderingSystemRequirements, 2);
      *
      * ComponentId inputSystemRequirements[] = {CLICKABLE_COMPONENT_ID};
-     * ECS::RegisterSystem(CreateScope<InputSystem>(), inputSystemRequirements, 1);
+     * ECS::RegisterSystem(RPP_NEW(InputSystem), inputSystemRequirements, 1);
      *
      * ComponentId collisionSystemRequirements[] = {GEOMETRY_COMPONENT_ID};
-     * ECS::RegisterSystem(CreateScope<CollisionSystem>(), collisionSystemRequirements, 1);
+     * ECS::RegisterSystem(RPP_NEW(CollisionSystem), collisionSystemRequirements, 1);
      *
      * geometryData = {...}; // The user-defined data for the geometry component.
      * Component geometryComponent = {GEOMETRY_COMPONENT_ID, &geometryData, sizeof(geometryData)};
@@ -62,6 +64,9 @@ namespace rpp
      */
     class ECS
     {
+    public:
+        friend class ECSAssert; ///< Used only for testing purpose.
+
     private:
         struct ECSData
         {
@@ -69,12 +74,51 @@ namespace rpp
             {
                 ComponentId *pRequiredComponents; ///< The list of component IDs which are required by the system.
                 u32 numberOfRequiredComponents;   ///< The number of required components in the list.
-                Scope<System> system;             ///< The user-custom system.
+                System *pSystem;                  ///< The user-custom system.
+                b8 isActive;                      ///< If not active, the system will not be updated each frame.
             };
 
-            Scope<Storage<Entity>> entityStorage; ///< The storage for entities.
-            Scope<List<SystemData>> systems;      ///< The list of systems.
+            Scope<Storage<Entity>> entityStorage;     ///< The storage for entities.
+            Scope<Storage<SystemData>> systemStorage; ///< The storage for systems.
+
+            enum class Operation
+            {
+                DELETE,      ///< The entity needs to be removed.
+                CHANGE_STATE ///< The entity needs to be modified (like activate/deactivate, add/remove component, etc.).
+            }; ///< The operation to perform on the entity.
+
+            struct DirtyEntity
+            {
+                Operation operation; ///< The operation to perform on the entity.
+                EntityId entityId;   ///< The ID of the entity which needs to be added/removed or modified.
+            };
+            Queue<DirtyEntity> dirtyEntities; ///< The list of entities which need to be added/removed or modified.
+
+            struct DirtyComponent
+            {
+                Operation operation;     ///< The operation to perform on the component.
+                EntityId entityId;       ///< The ID of the entity which has the component to be modified.
+                ComponentId componentId; ///< The ID of the component to be modified.
+                b8 isActive;             ///< The new active status of the component (if the operation is CHANGE_STATE or be ignored).
+            };
+            Queue<DirtyComponent> dirtyComponents; ///< The list of components which need to be modified.
+
+            struct DirtySystem
+            {
+                Operation operation; ///< The operation to perform on the system.
+                u32 systemId;        ///< The ID of the system to be modified.
+            };
+            Queue<DirtySystem> dirtySystems; ///< The list of systems which need to be modified.
         };
+
+    private:
+        /**
+         * Used internally for testing whether an entity matches the required components of a system.
+         *
+         * @param pEntity The entity to check.
+         * @param pSystemData The system data which contains the required components.
+         */
+        static b8 IsEntityMatchSystem(Entity *pEntity, ECSData::SystemData *pSystemData);
 
     public:
         /**
@@ -115,6 +159,8 @@ namespace rpp
          * @param numberOfComponents The number of components in the list.
          *
          * @return The ID of the created entity. Returns `INVALID_ID` if the entity could not be created.
+         *
+         * @note actually add the entity after call `Update` method of the ECS class.
          */
         static EntityId CreateEntity(Component **ppComponents, u32 numberOfComponents);
 
@@ -132,6 +178,35 @@ namespace rpp
          */
         static Entity *GetEntity(EntityId entityId);
 
+        // Delay operations like activating/deactivating entities, removing components will be applied after all the systems are updated.
+    public:
+        /**
+         * Delay operations like activating/deactivating entities.
+         *
+         * @param entityId The ID of the entity to modify.
+         * @param isActive The new active status of the entity.
+         *
+         * @note actually modify the entity after call `Update` method of the ECS class.
+         */
+        static void ModifyEntityStatus(EntityId entityId, b8 isActive);
+
+        /**
+         * Delay operations like activating/deactivating components.
+         * @param entityId The ID of the entity which has the component to modify.
+         * @param componentId The ID of the component to modify.
+         * @param isActive The new active status of the component.
+         * @note actually modify the component after call `Update` method of the ECS class.
+         */
+        static void ModifyComponentStatus(EntityId entityId, ComponentId componentId, b8 isActive);
+
+        /**
+         * Delay operations like activating/deactivating systems.
+         * @param systemId The ID of the system to modify.
+         * @param isActive The new active status of the system.
+         * @note actually modify the system after call `Update` method of the ECS class.
+         */
+        static void ModifySystemStatus(u32 systemId, b8 isActive);
+
     public:
         /**
          * Attach a user-custom system into the current ECS system instance. The system will process all the entities
@@ -141,7 +216,7 @@ namespace rpp
          * @param pRequiredComponents The list of component IDs which are required by the system.
          * @param numberOfRequiredComponents The number of required components in the list.
          */
-        void RegisterSystem(Scope<System> system, ComponentId *pRequiredComponents, u32 numberOfRequiredComponents);
+        static u32 RegisterSystem(System *system, ComponentId *pRequiredComponents, u32 numberOfRequiredComponents);
 
         /**
          * Update all the systems in the current ECS system instance. Each system will process all the entities

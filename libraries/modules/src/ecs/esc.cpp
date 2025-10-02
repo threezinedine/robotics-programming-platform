@@ -5,6 +5,37 @@ namespace rpp
     Scope<Storage<ECS::ECSData>> ECS::s_ecsStorage = nullptr;
     ECSId ECS::s_currentEcsIndex = INVALID_ID;
 
+    b8 ECS::IsEntityMatchSystem(Entity *pEntity, ECSData::SystemData *pSystemData)
+    {
+        RPP_ASSERT(pEntity != nullptr);
+
+        u32 systemRequiredComponentCount = pSystemData->numberOfRequiredComponents;
+        u32 entityComponentCount = pEntity->numberOfComponents;
+
+        for (u32 requirementIndex = 0; requirementIndex < systemRequiredComponentCount; ++requirementIndex)
+        {
+            b8 isRequirementMet = FALSE;
+            ComponentId requiredComponentId = pSystemData->pRequiredComponents[requirementIndex];
+
+            for (u32 entityComponentIndex = 0; entityComponentIndex < entityComponentCount; ++entityComponentIndex)
+            {
+                Component *entityComponent = pEntity->ppComponents[entityComponentIndex];
+                if (entityComponent->id == requiredComponentId)
+                {
+                    isRequirementMet = entityComponent->isActive;
+                    break;
+                }
+            }
+
+            if (!isRequirementMet)
+            {
+                return FALSE;
+            }
+        }
+
+        return TRUE;
+    }
+
     void ECS::Initialize()
     {
         RPP_ASSERT(s_ecsStorage == nullptr);
@@ -15,6 +46,7 @@ namespace rpp
             RPP_ASSERT(data != nullptr);
 
             data->entityStorage.reset();
+            data->systemStorage.reset();
 
             RPP_DELETE(data);
         };
@@ -27,6 +59,7 @@ namespace rpp
         RPP_ASSERT(s_ecsStorage != nullptr);
 
         s_ecsStorage.reset();
+        s_currentEcsIndex = INVALID_ID;
     }
 
     ECSId ECS::Create()
@@ -58,14 +91,21 @@ namespace rpp
         auto DeallocateSystemData = [](ECSData::SystemData *systemData)
         {
             RPP_ASSERT(systemData != nullptr);
-
             RPP_DELETE(systemData->pRequiredComponents);
-            systemData->system.reset();
+            RPP_DELETE(systemData->pSystem);
 
             RPP_DELETE(systemData);
         };
 
-        ecsData->systems = CreateScope<List<ECSData::SystemData>>(DeallocateSystemData);
+        ecsData->systemStorage = CreateScope<Storage<ECSData::SystemData>>(DeallocateSystemData);
+
+        // reset dirty lists
+        ecsData->dirtyEntities.Clear();
+        RPP_ASSERT(ecsData->dirtyEntities.Size() == 0);
+        ecsData->dirtyComponents.Clear();
+        RPP_ASSERT(ecsData->dirtyComponents.Size() == 0);
+        ecsData->dirtySystems.Clear();
+        RPP_ASSERT(ecsData->dirtySystems.Size() == 0);
 
         return ecsId;
     }
@@ -125,7 +165,11 @@ namespace rpp
             (*pDstComponent)->pData = RPP_MALLOC(componentSize);
 
             memcpy((*pDstComponent)->pData, (*pSrcComponent)->pData, componentSize);
+
+            entity->componentIds[(*pDstComponent)->id] = componentIndex;
         }
+
+        return entityId;
     }
 
     void ECS::DestroyEntity(EntityId entityId)
@@ -150,7 +194,40 @@ namespace rpp
         return currentEcs->entityStorage->Get(entityId);
     }
 
-    void ECS::RegisterSystem(Scope<System> system, ComponentId *pRequiredComponents, u32 numberOfRequiredComponents)
+    void ECS::ModifyEntityStatus(EntityId entityId, b8 isActive)
+    {
+    }
+
+    void ECS::ModifyComponentStatus(EntityId entityId, ComponentId componentId, b8 isActive)
+    {
+        RPP_ASSERT(s_ecsStorage != nullptr);
+        RPP_ASSERT(s_currentEcsIndex != INVALID_ID);
+
+        ECSData *currentEcs = s_ecsStorage->Get(s_currentEcsIndex);
+        RPP_ASSERT(currentEcs != nullptr);
+
+        ECS::ECSData::DirtyComponent dirtyComponent;
+        dirtyComponent.operation = ECSData::Operation::CHANGE_STATE;
+        dirtyComponent.entityId = entityId;
+        dirtyComponent.componentId = componentId;
+        dirtyComponent.isActive = isActive;
+
+        currentEcs->dirtyComponents.Push(dirtyComponent);
+    }
+
+    void ECS::ModifySystemStatus(u32 systemId, b8 isActive)
+    {
+        RPP_ASSERT(s_ecsStorage != nullptr);
+        RPP_ASSERT(s_currentEcsIndex != INVALID_ID);
+        ECSData *currentEcs = s_ecsStorage->Get(s_currentEcsIndex);
+        RPP_ASSERT(currentEcs != nullptr);
+
+        ECS::ECSData::SystemData *systemData = currentEcs->systemStorage->Get(systemId);
+        RPP_ASSERT(systemData != nullptr);
+        systemData->isActive = isActive;
+    }
+
+    u32 ECS::RegisterSystem(System *system, ComponentId *pRequiredComponents, u32 numberOfRequiredComponents)
     {
         RPP_ASSERT(s_ecsStorage != nullptr);
         RPP_ASSERT(s_currentEcsIndex != INVALID_ID);
@@ -159,19 +236,57 @@ namespace rpp
         RPP_ASSERT(currentEcs != nullptr);
         RPP_ASSERT(system != nullptr);
 
-        ECSData::SystemData systemData;
-        currentEcs->systems->Push(systemData);
+        SystemId systemId = currentEcs->systemStorage->Create();
+        ECSData::SystemData *currentSystemData = currentEcs->systemStorage->Get(systemId);
+        RPP_ASSERT(currentSystemData != nullptr);
 
-        u32 currentSystemIndex = currentEcs->systems->Size() - 1;
-        ECSData::SystemData &currentSystemData = (*currentEcs->systems)[currentSystemIndex];
+        currentSystemData->pRequiredComponents = (ComponentId *)RPP_MALLOC(sizeof(ComponentId) * numberOfRequiredComponents);
 
-        currentSystemData.pRequiredComponents = (ComponentId *)RPP_MALLOC(sizeof(ComponentId) * numberOfRequiredComponents);
-        currentSystemData.numberOfRequiredComponents = numberOfRequiredComponents;
-        currentSystemData.system = std::move(system);
+        for (u32 componentIndex = 0; componentIndex < numberOfRequiredComponents; ++componentIndex)
+        {
+            currentSystemData->pRequiredComponents[componentIndex] = pRequiredComponents[componentIndex];
+        }
+
+        currentSystemData->numberOfRequiredComponents = numberOfRequiredComponents;
+        currentSystemData->isActive = TRUE;
+        currentSystemData->pSystem = system;
+
+        return systemId;
     }
 
     void ECS::Update(f32 deltaTime)
     {
-        // Currently nothing to do here.
+        RPP_ASSERT(s_ecsStorage != nullptr);
+        RPP_ASSERT(s_currentEcsIndex != INVALID_ID);
+        ECSData *currentEcs = s_ecsStorage->Get(s_currentEcsIndex);
+        RPP_ASSERT(currentEcs != nullptr);
+
+        // process dirty components
+        while (!currentEcs->dirtyComponents.Empty())
+        {
+            ECSData::DirtyComponent &dirtyComponent = currentEcs->dirtyComponents.Front();
+            Entity *entity = currentEcs->entityStorage->Get(dirtyComponent.entityId);
+
+            if (entity == nullptr) ///< the entity is deleted above
+            {
+                continue;
+            }
+
+            ComponentId componentId = dirtyComponent.componentId;
+            Component *component = entity->ppComponents[entity->componentIds[componentId]];
+            RPP_ASSERT(component != nullptr);
+
+            if (dirtyComponent.operation == ECSData::Operation::CHANGE_STATE)
+            {
+                component->isActive = dirtyComponent.isActive;
+            }
+
+            currentEcs->dirtyComponents.Pop();
+        }
+
+        // after the update, all the dirty entities, components, systems will be processed and the dirty lists will be empty.
+        RPP_ASSERT(currentEcs->dirtyEntities.Size() == 0);
+        RPP_ASSERT(currentEcs->dirtyComponents.Size() == 0);
+        RPP_ASSERT(currentEcs->dirtySystems.Size() == 0);
     }
 } // namespace rpp

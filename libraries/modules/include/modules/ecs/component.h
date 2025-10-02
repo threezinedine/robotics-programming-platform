@@ -1,9 +1,9 @@
 #pragma once
 #include "core/core.h"
+#include "type.h"
 
 namespace rpp
 {
-    typedef u32 ComponentId; ///< The type used for component IDs.
 
     /**
      * The data structure which holds the metadata information of a custom component.

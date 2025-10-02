@@ -25,7 +25,7 @@ namespace rpp
     {
     public:
         Storage(StorageDeallocator<T> deallocator = nullptr)
-            : m_deallocator(deallocator), m_elements(), m_freeIds()
+            : m_deallocator(deallocator), m_elements(), m_freeIds(), m_count(0)
         {
         }
 
@@ -61,6 +61,7 @@ namespace rpp
         template <typename... Args>
         u32 Create(Args &&...args)
         {
+            m_count++;
             if (m_freeIds.Size() == 0)
             {
                 T *object = RPP_NEW(T(std::forward<Args>(args)...));
@@ -91,6 +92,7 @@ namespace rpp
          */
         void Free(u32 id)
         {
+            m_count--;
             T *object = m_elements[id];
             if (object != nullptr)
             {
@@ -107,9 +109,15 @@ namespace rpp
             }
         }
 
+        /**
+         * Retrieve the number of elements in the storage (including the deleted elements).
+         */
+        inline u32 GetNumberOfElements() const { return m_count; }
+
     private:
         Array<T *> m_elements;                      ///< The storage for the objects of type T. Each object will be deleted manually (not by Array) when the storage is destroyed.
         Set<u32, defaultComparator<u32>> m_freeIds; ///< The free ids for the objects in the storage. The id of the deleted object can be reused for the new object.
         StorageDeallocator<T> m_deallocator;        ///< The deallocator function to free the memory of the stored object.
+        u32 m_count;
     };
 } // namespace rpp

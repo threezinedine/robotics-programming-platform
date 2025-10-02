@@ -104,6 +104,7 @@ TEST(ListTest, InsertEmptyArrayWithInvalidIndex)
 
 TEST(ListTest, InsertObject)
 {
+
     List<TestObject> list;
 
     {
