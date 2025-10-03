@@ -1,5 +1,6 @@
 #pragma once
 #include "platforms/platforms.h"
+#include "containers/storage.h"
 #include "string.h"
 
 namespace rpp
@@ -23,6 +24,18 @@ namespace rpp
      */
     class FileSystem
     {
+    private:
+        /**
+         * Represents an entry in the file system, which could be a file or a directory.
+         * This structure holds metadata about the entry, such as its name, path,
+         * size, and type (file or directory).
+         */
+        struct FileEntry
+        {
+            FileHandle id; ///< The unique identifier for the file or directory.
+            String name;   ///< The name of the file or directory.
+        };
+
     public:
         /**
          * Initializes the file system module.
@@ -64,5 +77,8 @@ namespace rpp
          * @param file The handle of the file to close.
          */
         static void CloseFile(FileHandle file);
+
+    private:
+        static Scope<Storage<FileEntry>> s_fileEntries; ///< Storage for file entries.
     };
 } // namespace rpp
