@@ -2,6 +2,10 @@
 
 #define ECS_TEST_DELTA_TIME 0.016f
 
+#define COMPONENT_A_ID 1
+#define COMPONENT_B_ID 2
+#define COMPONENT_C_ID 3
+
 class TestSystem : public System
 {
 public:
@@ -24,13 +28,20 @@ u32 TestSystem::initialCallCount = 0;
 u32 TestSystem::updateCallCount = 0;
 u32 TestSystem::shutdownCallCount = 0;
 
-#define COMPONENT_A_ID 1
-#define COMPONENT_B_ID 2
-#define COMPONENT_C_ID 3
-
 struct ComponentA
 {
     int a;
+};
+
+class AddComponentASystem : public System
+{
+protected:
+    void UpdateImpl(ECSId ecsId, EntityId entityId, f32 deltaTime) override
+    {
+        Component *pComponent = ECS::GetComponent(entityId, COMPONENT_A_ID);
+        ComponentA *pData = (ComponentA *)pComponent->pData;
+        pData->a++;
+    }
 };
 
 struct ComponentB
@@ -118,24 +129,24 @@ protected:
     ComponentId requiredComponents[] = {__VA_ARGS__}; \
     u32 systemId = ECS::RegisterSystem(RPP_NEW(system()), requiredComponents, sizeof(requiredComponents) / sizeof(ComponentId));
 
-#define CREATE_ENTITY_WITH_AB_COMPONENTS()                                \
-    ComponentA aData = {42};                                              \
+#define CREATE_ENTITY_WITH_AB_COMPONENTS(valueA, valueB)                  \
+    ComponentA aData = {u32(valueA)};                                     \
     Component aComponent = {COMPONENT_A_ID, TRUE, &aData, sizeof(aData)}; \
-    ComponentB bData = {3.14f};                                           \
+    ComponentB bData = {f32(valueB)};                                     \
     Component bComponent = {COMPONENT_B_ID, TRUE, &bData, sizeof(bData)}; \
     Component *components[] = {&aComponent, &bComponent};                 \
     EntityId entityId = ECS::CreateEntity(components, 2);                 \
     Entity *entity = ECS::GetEntity(entityId);
 
-#define CREATE_ENTITY_WITH_A_COMPONENT()                                  \
-    ComponentA aData = {42};                                              \
+#define CREATE_ENTITY_WITH_A_COMPONENT(valueA)                            \
+    ComponentA aData = {u32(valueA)};                                     \
     Component aComponent = {COMPONENT_A_ID, TRUE, &aData, sizeof(aData)}; \
     Component *components[] = {&aComponent};                              \
     EntityId entityId = ECS::CreateEntity(components, 1);                 \
     Entity *entity = ECS::GetEntity(entityId);
 
-#define CREATE_ENTITY_WITH_B_COMPONENT()                                  \
-    ComponentB bData = {3.14f};                                           \
+#define CREATE_ENTITY_WITH_B_COMPONENT(valueB)                            \
+    ComponentB bData = {f32(valueB)};                                     \
     Component bComponent = {COMPONENT_B_ID, TRUE, &bData, sizeof(bData)}; \
     Component *components[] = {&bComponent};                              \
     EntityId entityId = ECS::CreateEntity(components, 1);                 \
@@ -343,4 +354,23 @@ TEST_F(ECSTest, CreateEntityMatchSystem)
     ASSERT_EQ(TestSystem::initialCallCount, 1);
     ASSERT_EQ(TestSystem::updateCallCount, 3);
     ASSERT_EQ(TestSystem::shutdownCallCount, 1);
+}
+
+TEST_F(ECSTest, UpdateComponentAWithTheSystem)
+{
+    SINGLE_ECS_SETUP();
+    SYSTEM_SETUP(AddComponentASystem, COMPONENT_A_ID);
+    CREATE_ENTITY_WITH_A_COMPONENT(5);
+
+    Component *pComponent = ECS::GetComponent(entityId, COMPONENT_A_ID);
+    ComponentA *pData = (ComponentA *)pComponent->pData;
+
+    ECS::Update(ECS_TEST_DELTA_TIME);
+    EXPECT_EQ(pData->a, 5);
+
+    ECS::Update(ECS_TEST_DELTA_TIME);
+    EXPECT_EQ(pData->a, 6);
+
+    ECS::Update(ECS_TEST_DELTA_TIME);
+    EXPECT_EQ(pData->a, 7);
 }
