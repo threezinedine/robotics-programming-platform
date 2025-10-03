@@ -358,29 +358,49 @@ namespace rpp
 
             if (dirtyEntity.operation == ECSData::Operation::CHANGE_STATE)
             {
+                b8 previousStatus = pEntity->isActive;
                 pEntity->isActive = dirtyEntity.isActive;
 
-                if (!pEntity->isActive)
+                if (previousStatus != pEntity->isActive)
                 {
-                    // TODO: use another mechanism for calling the suspend later (need to store the entity id and system id)
-                    u32 numberOfSystems = pCurrentEcs->systemStorage->GetNumberOfElements();
-                    for (u32 systemIndex = 0; systemIndex < numberOfSystems; ++systemIndex)
+                    if (!pEntity->isActive)
                     {
-                        ECSData::SystemData *pSystemData = pCurrentEcs->systemStorage->Get(systemIndex);
-                        RPP_ASSERT(pSystemData != nullptr);
-
-                        if (pSystemData->isActive)
+                        // TODO: use another mechanism for calling the suspend later (need to store the entity id and system id)
+                        u32 numberOfSystems = pCurrentEcs->systemStorage->GetNumberOfElements();
+                        for (u32 systemIndex = 0; systemIndex < numberOfSystems; ++systemIndex)
                         {
-                            u32 matchedEntitiesCount = pSystemData->matchedEntities.Size();
-                            // check if the entity is in the matched list
-                            for (u32 matchedEntityIndex = 0; matchedEntityIndex < matchedEntitiesCount; ++matchedEntityIndex)
+                            ECSData::SystemData *pSystemData = pCurrentEcs->systemStorage->Get(systemIndex);
+                            RPP_ASSERT(pSystemData != nullptr);
+
+                            if (pSystemData->isActive)
                             {
-                                if (pSystemData->matchedEntities[matchedEntityIndex] == pEntity->id)
+                                u32 matchedEntitiesCount = pSystemData->matchedEntities.Size();
+                                // check if the entity is in the matched list
+                                for (u32 matchedEntityIndex = 0; matchedEntityIndex < matchedEntitiesCount; ++matchedEntityIndex)
                                 {
-                                    pSystemData->pSystem->Suspend(s_currentEcsIndex, pEntity->id);
-                                    pSystemData->matchedEntities.Erase(matchedEntityIndex);
-                                    break;
+                                    if (pSystemData->matchedEntities[matchedEntityIndex] == pEntity->id)
+                                    {
+                                        pSystemData->pSystem->Suspend(s_currentEcsIndex, pEntity->id);
+                                        pSystemData->matchedEntities.Erase(matchedEntityIndex);
+                                        break;
+                                    }
                                 }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // entity is activated
+                        u32 numberOfSystems = pCurrentEcs->systemStorage->GetNumberOfElements();
+                        for (u32 systemIndex = 0; systemIndex < numberOfSystems; ++systemIndex)
+                        {
+                            ECSData::SystemData *pSystemData = pCurrentEcs->systemStorage->Get(systemIndex);
+                            RPP_ASSERT(pSystemData != nullptr);
+
+                            if (pSystemData->isActive && IsEntityMatchSystem(pEntity, pSystemData))
+                            {
+                                pSystemData->matchedEntities.Push(pEntity->id);
+                                pSystemData->pSystem->Resume(s_currentEcsIndex, pEntity->id);
                             }
                         }
                     }

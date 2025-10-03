@@ -436,4 +436,19 @@ TEST_F(ECSTest, EntityIsDeactivate)
     ASSERT_EQ(TestSystem::updateCallCount, 3);
     ASSERT_EQ(TestSystem::resumeCallCount, 0);
     ASSERT_EQ(TestSystem::shutdownCallCount, 0);
+
+    ECS::ModifyEntityStatus(entityId, TRUE);
+    ECS::Update(ECS_TEST_DELTA_TIME);
+    ASSERT_EQ(TestSystem::initialCallCount, 1);
+    ASSERT_EQ(TestSystem::suspendCallCount, 1);
+    ASSERT_EQ(TestSystem::updateCallCount, 3);
+    ASSERT_EQ(TestSystem::resumeCallCount, 1);
+    ASSERT_EQ(TestSystem::shutdownCallCount, 0);
+
+    ECS::Update(ECS_TEST_DELTA_TIME);
+    ASSERT_EQ(TestSystem::initialCallCount, 1);
+    ASSERT_EQ(TestSystem::suspendCallCount, 1);
+    ASSERT_EQ(TestSystem::updateCallCount, 4);
+    ASSERT_EQ(TestSystem::resumeCallCount, 1);
+    ASSERT_EQ(TestSystem::shutdownCallCount, 0);
 }
