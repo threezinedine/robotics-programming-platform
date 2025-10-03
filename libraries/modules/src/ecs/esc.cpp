@@ -455,22 +455,63 @@ namespace rpp
         // process dirty components
         while (!pCurrentEcs->dirtyComponents.Empty())
         {
+            // TODO: refactor this to avoid code duplication with the entity activation/deactivation above
             ECSData::DirtyComponent &dirtyComponent = pCurrentEcs->dirtyComponents.Front();
-            Entity *entity = pCurrentEcs->entityStorage->Get(dirtyComponent.entityId);
+            Entity *pEntity = pCurrentEcs->entityStorage->Get(dirtyComponent.entityId);
 
-            if (entity == nullptr) ///< the entity is deleted above
+            if (pEntity != nullptr) ///< the entity is deleted above
             {
-                pCurrentEcs->dirtyComponents.Pop();
-                continue;
-            }
+                ComponentId componentId = dirtyComponent.componentId;
+                Component *pComponent = pEntity->ppComponents[pEntity->componentIds[componentId]];
+                RPP_ASSERT(pComponent != nullptr);
 
-            ComponentId componentId = dirtyComponent.componentId;
-            Component *pComponent = entity->ppComponents[entity->componentIds[componentId]];
-            RPP_ASSERT(pComponent != nullptr);
+                if (dirtyComponent.operation == ECSData::Operation::CHANGE_STATE)
+                {
+                    b8 previousStatus = pComponent->isActive;
+                    pComponent->isActive = dirtyComponent.isActive;
 
-            if (dirtyComponent.operation == ECSData::Operation::CHANGE_STATE)
-            {
-                pComponent->isActive = dirtyComponent.isActive;
+                    if (previousStatus != pComponent->isActive)
+                    {
+                        if (!pComponent->isActive)
+                        {
+                            for (u32 systemIndex = 0; systemIndex < pCurrentEcs->systemStorage->GetNumberOfElements(); ++systemIndex)
+                            {
+                                ECSData::SystemData *pSystemData = pCurrentEcs->systemStorage->Get(systemIndex);
+                                RPP_ASSERT(pSystemData != nullptr);
+
+                                if (pSystemData->isActive)
+                                {
+                                    u32 matchedEntitiesCount = pSystemData->matchedEntities.Size();
+                                    // check if the entity is in the matched list
+                                    for (u32 matchedEntityIndex = 0; matchedEntityIndex < matchedEntitiesCount; ++matchedEntityIndex)
+                                    {
+                                        if (pSystemData->matchedEntities[matchedEntityIndex] == pEntity->id)
+                                        {
+                                            pSystemData->pSystem->Suspend(s_currentEcsIndex, pEntity->id);
+                                            pSystemData->matchedEntities.Erase(matchedEntityIndex);
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            // component is activated
+                            for (u32 systemIndex = 0; systemIndex < pCurrentEcs->systemStorage->GetNumberOfElements(); ++systemIndex)
+                            {
+                                ECSData::SystemData *pSystemData = pCurrentEcs->systemStorage->Get(systemIndex);
+                                RPP_ASSERT(pSystemData != nullptr);
+
+                                if (pSystemData->isActive && IsEntityMatchSystem(pEntity, pSystemData))
+                                {
+                                    pSystemData->matchedEntities.Push(pEntity->id);
+                                    pSystemData->pSystem->Resume(s_currentEcsIndex, pEntity->id);
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
             pCurrentEcs->dirtyComponents.Pop();

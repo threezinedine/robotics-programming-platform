@@ -452,3 +452,62 @@ TEST_F(ECSTest, EntityIsDeactivate)
     ASSERT_EQ(TestSystem::resumeCallCount, 1);
     ASSERT_EQ(TestSystem::shutdownCallCount, 0);
 }
+
+TEST_F(ECSTest, ComponentIsDeactivate)
+{
+    SINGLE_ECS_SETUP();
+    SYSTEM_SETUP(TestSystem, COMPONENT_A_ID);
+    CREATE_ENTITY_WITH_A_COMPONENT(5);
+
+    ECS::Update(ECS_TEST_DELTA_TIME);
+    ASSERT_EQ(TestSystem::initialCallCount, 1);
+    ASSERT_EQ(TestSystem::suspendCallCount, 0);
+    ASSERT_EQ(TestSystem::updateCallCount, 0);
+    ASSERT_EQ(TestSystem::resumeCallCount, 0);
+    ASSERT_EQ(TestSystem::shutdownCallCount, 0);
+
+    ECS::Update(ECS_TEST_DELTA_TIME);
+    ASSERT_EQ(TestSystem::initialCallCount, 1);
+    ASSERT_EQ(TestSystem::suspendCallCount, 0);
+    ASSERT_EQ(TestSystem::updateCallCount, 1);
+    ASSERT_EQ(TestSystem::resumeCallCount, 0);
+    ASSERT_EQ(TestSystem::shutdownCallCount, 0);
+
+    ECS::ModifyComponentStatus(entityId, COMPONENT_A_ID, TRUE); // no effect
+    ECS::Update(ECS_TEST_DELTA_TIME);
+    ASSERT_EQ(TestSystem::initialCallCount, 1);
+    ASSERT_EQ(TestSystem::suspendCallCount, 0);
+    ASSERT_EQ(TestSystem::updateCallCount, 2);
+    ASSERT_EQ(TestSystem::resumeCallCount, 0);
+    ASSERT_EQ(TestSystem::shutdownCallCount, 0);
+
+    ECS::ModifyComponentStatus(entityId, COMPONENT_A_ID, FALSE);
+    ECS::Update(ECS_TEST_DELTA_TIME);
+    ASSERT_EQ(TestSystem::initialCallCount, 1);
+    ASSERT_EQ(TestSystem::suspendCallCount, 1);
+    ASSERT_EQ(TestSystem::updateCallCount, 3);
+    ASSERT_EQ(TestSystem::resumeCallCount, 0);
+    ASSERT_EQ(TestSystem::shutdownCallCount, 0);
+
+    ECS::Update(ECS_TEST_DELTA_TIME);
+    ASSERT_EQ(TestSystem::initialCallCount, 1);
+    ASSERT_EQ(TestSystem::suspendCallCount, 1);
+    ASSERT_EQ(TestSystem::updateCallCount, 3);
+    ASSERT_EQ(TestSystem::resumeCallCount, 0);
+    ASSERT_EQ(TestSystem::shutdownCallCount, 0);
+
+    ECS::ModifyComponentStatus(entityId, COMPONENT_A_ID, TRUE);
+    ECS::Update(ECS_TEST_DELTA_TIME);
+    ASSERT_EQ(TestSystem::initialCallCount, 1);
+    ASSERT_EQ(TestSystem::suspendCallCount, 1);
+    ASSERT_EQ(TestSystem::updateCallCount, 3);
+    ASSERT_EQ(TestSystem::resumeCallCount, 1);
+    ASSERT_EQ(TestSystem::shutdownCallCount, 0);
+
+    ECS::Update(ECS_TEST_DELTA_TIME);
+    ASSERT_EQ(TestSystem::initialCallCount, 1);
+    ASSERT_EQ(TestSystem::suspendCallCount, 1);
+    ASSERT_EQ(TestSystem::updateCallCount, 4);
+    ASSERT_EQ(TestSystem::resumeCallCount, 1);
+    ASSERT_EQ(TestSystem::shutdownCallCount, 0);
+}
