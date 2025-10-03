@@ -23,6 +23,15 @@ namespace rpp
         void Initial(ECSId ecsId, EntityId entityId);
 
         /**
+         * Be called each time when an entity or its matched components are deactivated.
+         *
+         * The default implementation does nothing. The derived class can override this method to perform the suspension.
+         * @param ecsId The ID of the ECS system instance.
+         * @param entityId The ID of the entity being suspended.
+         */
+        void Suspend(ECSId ecsId, EntityId entityId);
+
+        /**
          * Be called each frame to update the system.
          *
          * The default implementation does nothing. The derived class can override this method to perform the update.
@@ -31,6 +40,14 @@ namespace rpp
          * @param deltaTime The time elapsed since the last frame in seconds.
          */
         void Update(ECSId ecsId, EntityId entityId, f32 deltaTime);
+
+        /**
+         * Be called each time when an entity or its matched components are re-activated.
+         * The default implementation does nothing. The derived class can override this method to perform the resumption.
+         * @param ecsId The ID of the ECS system instance.
+         * @param entityId The ID of the entity being resumed.
+         */
+        void Resume(ECSId ecsId, EntityId entityId);
 
         /**
          * Be called each frame to render the system.
@@ -50,12 +67,26 @@ namespace rpp
         virtual void InitialImpl(ECSId ecsId, EntityId entityId);
 
         /**
+         * The implementation of the Suspend method. The derived class can override this method to perform the suspension.
+         * @param ecsId The ID of the ECS system instance.
+         * @param entityId The ID of the entity being suspended.
+         */
+        virtual void SuspendImpl(ECSId ecsId, EntityId entityId);
+
+        /**
          * The implementation of the Update method. The derived class can override this method to perform the update.
          * @param ecsId The ID of the ECS system instance.
          * @param entityId The ID of the entity being updated.
          * @param deltaTime The time elapsed since the last frame in seconds.
          */
         virtual void UpdateImpl(ECSId ecsId, EntityId entityId, f32 deltaTime);
+
+        /**
+         * The implementation of the Resume method. The derived class can override this method to perform the resumption.
+         * @param ecsId The ID of the ECS system instance.
+         * @param entityId The ID of the entity being resumed.
+         */
+        virtual void ResumeImpl(ECSId ecsId, EntityId entityId);
 
         /**
          * The implementation of the Shutdown method. The derived class can override this method to perform the shutdown.
