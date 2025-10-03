@@ -344,7 +344,17 @@ namespace rpp
             }
             else if (dirtyEntity.operation == ECSData::Operation::CREATE)
             {
-                // TODO: implement internal update
+                u32 numberOfSystems = currentEcs->systemStorage->GetNumberOfElements();
+                for (u32 systemIndex = 0; systemIndex < numberOfSystems; ++systemIndex)
+                {
+                    ECSData::SystemData *systemData = currentEcs->systemStorage->Get(systemIndex);
+                    RPP_ASSERT(systemData != nullptr);
+
+                    if (systemData->isActive && IsEntityMatchSystem(entity, systemData))
+                    {
+                        systemData->matchedEntities.Push(entity->id);
+                    }
+                }
             }
 
             currentEcs->dirtyEntities.Pop();

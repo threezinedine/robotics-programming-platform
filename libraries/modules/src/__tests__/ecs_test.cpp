@@ -24,6 +24,7 @@ u32 TestSystem::shutdownCallCount = 0;
 
 #define COMPONENT_A_ID 1
 #define COMPONENT_B_ID 2
+#define COMPONENT_C_ID 3
 
 struct ComponentA
 {
@@ -34,6 +35,12 @@ struct ComponentB
 {
     float b;
 };
+
+struct ComponentC
+{
+    char c;
+};
+
 class ECSAssert
 {
 public:
@@ -49,15 +56,37 @@ public:
         RPP_ASSERT(ECS::s_ecsStorage != nullptr);
         RPP_ASSERT(ecsId != INVALID_ID);
 
-        ECS::ECSData *currentECS = ECS::s_ecsStorage->Get(ecsId);
-        RPP_ASSERT(currentECS != nullptr);
+        ECS::ECSData *pCurrentECS = ECS::s_ecsStorage->Get(ecsId);
+        RPP_ASSERT(pCurrentECS != nullptr);
 
-        return currentECS->systemStorage->Get(systemId);
+        return pCurrentECS->systemStorage->Get(systemId);
     }
 
     static b8 IsEntityMatchSystem(Entity *pEntity, ECS::ECSData::SystemData *pSystemData)
     {
         return ECS::IsEntityMatchSystem(pEntity, pSystemData);
+    }
+
+    static b8 IsEntityInSystemMatchEntities(ECSId ecsId, SystemId systemId, EntityId entityId)
+    {
+        RPP_ASSERT(ECS::s_ecsStorage != nullptr);
+        RPP_ASSERT(ecsId != INVALID_ID);
+
+        ECS::ECSData *currentECS = ECS::s_ecsStorage->Get(ecsId);
+        RPP_ASSERT(currentECS != nullptr);
+
+        ECS::ECSData::SystemData *pSystemData = currentECS->systemStorage->Get(systemId);
+
+        u32 matchEntitiesCount = pSystemData->matchedEntities.Size();
+        for (u32 matchEntityIdIndex = 0; matchEntityIdIndex < matchEntitiesCount; ++matchEntityIdIndex)
+        {
+            if (pSystemData->matchedEntities[matchEntityIdIndex] == entityId)
+            {
+                return TRUE;
+            }
+        }
+
+        return FALSE;
     }
 };
 
@@ -259,6 +288,20 @@ TEST_F(ECSTest, RetrieveTheComponentFromEntity)
 
     Component *nonExistComponent = ECS::GetComponent(entityId, COMPONENT_B_ID);
     ASSERT_TRUE(nonExistComponent == nullptr);
+}
+
+TEST_F(ECSTest, EntityIdIsInSystemListIfMatch)
+{
+    SINGLE_ECS_SETUP();
+    SYSTEM_SETUP(TestSystem, COMPONENT_A_ID);
+    CREATE_ENTITY_WITH_AB_COMPONENTS();
+
+    auto pSystemData = ECSAssert::GetSystemData(id, systemId);
+    ASSERT_FALSE(ECSAssert::IsEntityInSystemMatchEntities(id, systemId, entityId));
+
+    ECS::Update(0.016f);
+
+    ASSERT_TRUE(ECSAssert::IsEntityInSystemMatchEntities(id, systemId, entityId));
 }
 
 TEST_F(ECSTest, DISABLED_CreateEntityMatchSystem)

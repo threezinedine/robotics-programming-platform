@@ -76,6 +76,7 @@ namespace rpp
                 u32 numberOfRequiredComponents;   ///< The number of required components in the list.
                 System *pSystem;                  ///< The user-custom system.
                 b8 isActive;                      ///< If not active, the system will not be updated each frame.
+                Array<EntityId> matchedEntities;  ///< The list of entities which match the required components of the system.
             };
 
             Scope<Storage<Entity>> entityStorage;     ///< The storage for entities.
