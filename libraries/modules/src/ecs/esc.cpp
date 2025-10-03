@@ -313,16 +313,36 @@ namespace rpp
         ECSData *pCurrentEcs = s_ecsStorage->Get(s_currentEcsIndex);
         RPP_ASSERT(pCurrentEcs != nullptr);
 
+        // update all active systems
+        u32 numberOfSystems = pCurrentEcs->systemStorage->GetNumberOfElements();
+        for (u32 systemIndex = 0; systemIndex < numberOfSystems; ++systemIndex)
+        {
+            ECSData::SystemData *pSystemData = pCurrentEcs->systemStorage->Get(systemIndex);
+            RPP_ASSERT(pSystemData != nullptr);
+
+            if (!pSystemData->isActive)
+            {
+                continue;
+            }
+
+            u32 numberOfMatchedEntities = pSystemData->matchedEntities.Size();
+            for (u32 entityIndex = 0; entityIndex < numberOfMatchedEntities; ++entityIndex)
+            {
+                EntityId entityId = pSystemData->matchedEntities[entityIndex];
+                pSystemData->pSystem->Update(s_currentEcsIndex, entityId, deltaTime);
+            }
+        }
+
         // process dirty systems
         while (!pCurrentEcs->dirtySystems.Empty())
         {
             ECSData::DirtySystem &dirtySystem = pCurrentEcs->dirtySystems.Front();
-            ECSData::SystemData *systemData = pCurrentEcs->systemStorage->Get(dirtySystem.systemId);
-            RPP_ASSERT(systemData != nullptr);
+            ECSData::SystemData *pSystemData = pCurrentEcs->systemStorage->Get(dirtySystem.systemId);
+            RPP_ASSERT(pSystemData != nullptr);
 
             if (dirtySystem.operation == ECSData::Operation::CHANGE_STATE)
             {
-                systemData->isActive = dirtySystem.isActive;
+                pSystemData->isActive = dirtySystem.isActive;
             }
 
             pCurrentEcs->dirtySystems.Pop();
@@ -332,15 +352,38 @@ namespace rpp
         while (!pCurrentEcs->dirtyEntities.Empty())
         {
             ECSData::DirtyEntity &dirtyEntity = pCurrentEcs->dirtyEntities.Front();
-            Entity *entity = pCurrentEcs->entityStorage->Get(dirtyEntity.entityId);
-            RPP_ASSERT(entity != nullptr);
+            Entity *pEntity = pCurrentEcs->entityStorage->Get(dirtyEntity.entityId);
+            RPP_ASSERT(pEntity != nullptr);
 
             if (dirtyEntity.operation == ECSData::Operation::CHANGE_STATE)
             {
-                entity->isActive = !entity->isActive;
+                pEntity->isActive = !pEntity->isActive;
             }
             else if (dirtyEntity.operation == ECSData::Operation::DELETE)
             {
+                // TODO: use another mechanism for calling the shutdown later
+                u32 numberOfSystems = pCurrentEcs->systemStorage->GetNumberOfElements();
+                for (u32 systemIndex = 0; systemIndex < numberOfSystems; ++systemIndex)
+                {
+                    ECSData::SystemData *pSystemData = pCurrentEcs->systemStorage->Get(systemIndex);
+                    RPP_ASSERT(pSystemData != nullptr);
+
+                    if (pSystemData->isActive)
+                    {
+                        u32 matchedEntitiesCount = pSystemData->matchedEntities.Size();
+                        // check if the entity is in the matched list
+                        for (u32 matchedEntityIndex = 0; matchedEntityIndex < matchedEntitiesCount; ++matchedEntityIndex)
+                        {
+                            if (pSystemData->matchedEntities[matchedEntityIndex] == pEntity->id)
+                            {
+                                pSystemData->pSystem->Shutdown(s_currentEcsIndex, pEntity->id);
+                                pSystemData->matchedEntities.Erase(matchedEntityIndex);
+                                break;
+                            }
+                        }
+                    }
+                }
+
                 pCurrentEcs->entityStorage->Free(dirtyEntity.entityId);
             }
             else if (dirtyEntity.operation == ECSData::Operation::CREATE)
@@ -348,12 +391,13 @@ namespace rpp
                 u32 numberOfSystems = pCurrentEcs->systemStorage->GetNumberOfElements();
                 for (u32 systemIndex = 0; systemIndex < numberOfSystems; ++systemIndex)
                 {
-                    ECSData::SystemData *systemData = pCurrentEcs->systemStorage->Get(systemIndex);
-                    RPP_ASSERT(systemData != nullptr);
+                    ECSData::SystemData *pSystemData = pCurrentEcs->systemStorage->Get(systemIndex);
+                    RPP_ASSERT(pSystemData != nullptr);
 
-                    if (systemData->isActive && IsEntityMatchSystem(entity, systemData))
+                    if (pSystemData->isActive && IsEntityMatchSystem(pEntity, pSystemData))
                     {
-                        systemData->matchedEntities.Push(entity->id);
+                        pSystemData->matchedEntities.Push(pEntity->id);
+                        pSystemData->pSystem->Initial(s_currentEcsIndex, pEntity->id);
                     }
                 }
             }
@@ -374,12 +418,12 @@ namespace rpp
             }
 
             ComponentId componentId = dirtyComponent.componentId;
-            Component *component = entity->ppComponents[entity->componentIds[componentId]];
-            RPP_ASSERT(component != nullptr);
+            Component *pComponent = entity->ppComponents[entity->componentIds[componentId]];
+            RPP_ASSERT(pComponent != nullptr);
 
             if (dirtyComponent.operation == ECSData::Operation::CHANGE_STATE)
             {
-                component->isActive = dirtyComponent.isActive;
+                pComponent->isActive = dirtyComponent.isActive;
             }
 
             pCurrentEcs->dirtyComponents.Pop();

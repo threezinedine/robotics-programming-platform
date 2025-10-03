@@ -2,34 +2,37 @@
 
 namespace rpp
 {
-    void System::Initial(ECSId ecsId)
+    void System::Initial(ECSId ecsId, EntityId entityId)
     {
-        InitialImpl(ecsId);
+        InitialImpl(ecsId, entityId);
     }
 
-    void System::Update(ECSId ecsId, f32 deltaTime)
+    void System::Update(ECSId ecsId, EntityId entityId, f32 deltaTime)
     {
-        UpdateImpl(ecsId, deltaTime);
+        UpdateImpl(ecsId, entityId, deltaTime);
     }
 
-    void System::Shutdown(ECSId ecsId)
+    void System::Shutdown(ECSId ecsId, EntityId entityId)
     {
-        ShutdownImpl(ecsId);
+        ShutdownImpl(ecsId, entityId);
     }
 
-    void System::InitialImpl(ECSId ecsId)
+    void System::InitialImpl(ECSId ecsId, EntityId entityId)
     {
         RPP_UNUSED(ecsId);
+        RPP_UNUSED(entityId);
     }
 
-    void System::UpdateImpl(ECSId ecsId, f32 deltaTime)
+    void System::UpdateImpl(ECSId ecsId, EntityId entityId, f32 deltaTime)
     {
         RPP_UNUSED(ecsId);
+        RPP_UNUSED(entityId);
         RPP_UNUSED(deltaTime);
     }
 
-    void System::ShutdownImpl(ECSId ecsId)
+    void System::ShutdownImpl(ECSId ecsId, EntityId entityId)
     {
         RPP_UNUSED(ecsId);
+        RPP_UNUSED(entityId);
     }
 } // namespace rpp
