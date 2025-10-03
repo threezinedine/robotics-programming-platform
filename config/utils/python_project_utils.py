@@ -221,24 +221,24 @@ def RunPythonProject(
             "writer_output.cpp",
         )
 
-        pyiBindingOutput = os.path.join(
-            Constants.ABSOLUTE_BASE_DIR,
-            "editor",
-            "Engine",
-            "core.pyi",
-        )
+        # pyiBindingOutput = os.path.join(
+        #     Constants.ABSOLUTE_BASE_DIR,
+        #     "editor",
+        #     "Engine",
+        #     "core.pyi",
+        # )
 
         isAnyHeaderFileChanged = any(
             IsFileModified(headerFile)
             for headerFile in allHeaderFiles + allTemplateFiles + [typeMapFiles]
         )
 
-        isPyiFileExists = os.path.isfile(pyiBindingOutput)
+        # isPyiFileExists = os.path.isfile(pyiBindingOutput)
         isCppBindingFileExists = os.path.isfile(cppBindingOutput)
 
         if (
             not isAnyHeaderFileChanged
-            and isPyiFileExists
+            # and isPyiFileExists
             and isCppBindingFileExists
             and not reset
             and not force

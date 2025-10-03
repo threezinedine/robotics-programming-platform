@@ -83,9 +83,10 @@ namespace rpp
 
             enum class Operation
             {
-                DELETE,      ///< The entity needs to be removed.
-                CHANGE_STATE ///< The entity needs to be modified (like activate/deactivate, add/remove component, etc.).
-            }; ///< The operation to perform on the entity.
+                CREATE,      ///< The entity/component/system needs to be added.
+                DELETE,      ///< The entity/component/system needs to be removed.
+                CHANGE_STATE ///< The entity/component/system needs to be modified (like activate/deactivate, add/remove component, etc.).
+            }; ///< The operation to perform on the entity/component/system.
 
             struct DirtyEntity
             {
@@ -102,7 +103,7 @@ namespace rpp
                 ComponentId componentId; ///< The ID of the component to be modified.
                 b8 isActive;             ///< The new active status of the component (if the operation is CHANGE_STATE or be ignored).
             };
-            Queue<DirtyComponent> dirtyComponents; ///< The list of components which need to be modified.
+            Queue<DirtyComponent> dirtyComponents; ///< The list of components which need to be modified. Has no CREATE or DELETE operation.
 
             struct DirtySystem
             {
@@ -110,7 +111,7 @@ namespace rpp
                 u32 systemId;        ///< The ID of the system to be modified.
                 b8 isActive;         ///< The new active status of the system (if the operation is CHANGE_STATE or be ignored).
             };
-            Queue<DirtySystem> dirtySystems; ///< The list of systems which need to be modified.
+            Queue<DirtySystem> dirtySystems; ///< The list of systems which need to be modified. Has no CREATE operation.
         };
 
     private:
@@ -153,6 +154,23 @@ namespace rpp
 
     public:
         /**
+         * Retrieve the entity by its ID in the current ECS system instance.
+         * @param entityId The ID of the entity to retrieve.
+         * @return The pointer to the entity. Returns `nullptr` if the entity does not exist.
+         */
+        static Entity *GetEntity(EntityId entityId);
+
+        /**
+         * Retrieve the component by its ID from an entity in the current ECS system instance.
+         * @param entityId The ID of the entity which has the component to retrieve.
+         * @param componentId The ID of the component to retrieve.
+         * @return The pointer to the component. Returns `nullptr` if the entity or the component does not exist.
+         */
+        static Component *GetComponent(EntityId entityId, ComponentId componentId);
+
+        // Delay operations like activating/deactivating entities, removing components will be applied after all the systems are updated.
+    public:
+        /**
          * Create a new entity in the current ECS system instance.
          *
          * @param ppComponents The list of components to add to the entity. The data of the components will be copied into the heap memory.
@@ -166,15 +184,6 @@ namespace rpp
          */
         static EntityId CreateEntity(Component **ppComponents, u32 numberOfComponents);
 
-        /**
-         * Retrieve the entity by its ID in the current ECS system instance.
-         * @param entityId The ID of the entity to retrieve.
-         * @return The pointer to the entity. Returns `nullptr` if the entity does not exist.
-         */
-        static Entity *GetEntity(EntityId entityId);
-
-        // Delay operations like activating/deactivating entities, removing components will be applied after all the systems are updated.
-    public:
         /**
          * Destroy an entity in the current ECS system instance.
          *

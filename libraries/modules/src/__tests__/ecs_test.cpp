@@ -248,27 +248,31 @@ TEST_F(ECSTest, ModifyStatusOfTheSystem)
     ASSERT_FALSE(pSystemData->isActive);
 }
 
+TEST_F(ECSTest, RetrieveTheComponentFromEntity)
+{
+    SINGLE_ECS_SETUP();
+    CREATE_ENTITY_WITH_A_COMPONENT();
+
+    Component *component = ECS::GetComponent(entityId, COMPONENT_A_ID);
+    ASSERT_TRUE(component != nullptr);
+    ASSERT_EQ(component->id, COMPONENT_A_ID);
+
+    Component *nonExistComponent = ECS::GetComponent(entityId, COMPONENT_B_ID);
+    ASSERT_TRUE(nonExistComponent == nullptr);
+}
+
 TEST_F(ECSTest, DISABLED_CreateEntityMatchSystem)
 {
-    ECSId id = ECS::Create();
+    SINGLE_ECS_SETUP();
+    SYSTEM_SETUP(TestSystem, COMPONENT_A_ID);
 
-    ECS::Activate(id);
-
-    ComponentId requiredComponents[] = {COMPONENT_A_ID};
-    ECS::RegisterSystem(RPP_NEW(TestSystem()), requiredComponents, 1);
     ASSERT_EQ(TestSystem::initialCallCount, 0);
     ASSERT_EQ(TestSystem::numberOfObjects, 1);
     ASSERT_EQ(TestSystem::updateCallCount, 0);
     ASSERT_EQ(TestSystem::shutdownCallCount, 0);
     ASSERT_EQ(TestSystem::numberOfObjects, 1);
 
-    ComponentA aData = {42};
-    Component aComponent = {COMPONENT_A_ID, TRUE, &aData, sizeof(aData)};
-    ComponentB bData = {3.14f};
-    Component bComponent = {COMPONENT_B_ID, TRUE, &bData, sizeof(bData)};
-    Component *components[] = {&aComponent, &bComponent};
-
-    EntityId entityId = ECS::CreateEntity(components, 2);
+    CREATE_ENTITY_WITH_AB_COMPONENTS();
     ASSERT_EQ(TestSystem::initialCallCount, 1);
     ASSERT_EQ(TestSystem::updateCallCount, 0);
     ASSERT_EQ(TestSystem::shutdownCallCount, 0);
