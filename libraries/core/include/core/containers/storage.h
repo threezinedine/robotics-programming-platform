@@ -1,5 +1,7 @@
 #pragma once
-#include "core/core.h"
+#include "platforms/platforms.h"
+#include "array.h"
+#include "set.h"
 #include <functional>
 
 namespace rpp

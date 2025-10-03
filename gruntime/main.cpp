@@ -53,8 +53,15 @@ private:
 int main(void)
 {
     SingletonManager::Initialize();
+    FileSystem::Initialize();
     Logging::GetInstance()->Setup(u8(HandlerType::CONSOLE), LogLevel::DEBUG);
     Renderer::Initialize();
+
+    FileHandle file = FileSystem::OpenFile("C:\\Users\\APC\\Downloads\\test.txt");
+    if (FileSystem::IsFileOpen(file))
+    {
+        print(Format("File content: {}\n", FileSystem::Read(file)).CStr());
+    }
 
     {
         CREATE_SESSION(TestSession, 800, 600, "Test2", TRUE);
@@ -71,6 +78,7 @@ int main(void)
     GraphicSessionManager::GetInstance()->ClearSessions();
 
     Renderer::Shutdown();
+    FileSystem::Shutdown();
     SingletonManager::Shutdown();
     return 0;
 }

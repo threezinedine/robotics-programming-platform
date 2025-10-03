@@ -13,6 +13,17 @@ namespace rpp
     typedef u32 FileHandle;
 
     /**
+     * All possible modes for opening a file.
+     */
+    enum class FileMode : u8
+    {
+        READ,      ///< Open the file for reading.
+        WRITE,     ///< Open the file for writing (overwrites existing content).
+        APPEND,    ///< Open the file for appending (adds to the end of the file).
+        READ_WRITE ///< Open the file for both reading and writing.
+    };
+
+    /**
      * The file system module provides functionalities for file and directory operations.
      * It includes functions for reading and writing files, checking file existence,
      * and manipulating file paths. The side features of the module include:
@@ -32,8 +43,10 @@ namespace rpp
          */
         struct FileEntry
         {
-            FileHandle id; ///< The unique identifier for the file or directory.
-            String name;   ///< The name of the file or directory.
+            FileHandle id;     ///< The unique identifier for the file or directory.
+            String name;       ///< The name of the file or directory.
+            void *pFileHandle; ///< Pointer to the underlying file handle (platform-specific).
+            FileMode mode;     ///< The mode in which the file was opened (if applicable).
         };
 
     public:
@@ -54,9 +67,12 @@ namespace rpp
         /**
          * @brief Checks if a file exists at the specified path.
          * @param filePath The path to the file to check.
+         * @param mode The mode in which to open the file. Default is READ. With READ mode,
+         * the function checks if the file can be opened for reading. With WRITE or APPEND mode,
+         * the function checks if the file can be opened for writing.
          * @return The id of the file if it exists, or INVALID_ID if it does not.
          */
-        static FileHandle OpenFile(const String &filePath);
+        static FileHandle OpenFile(const String &filePath, FileMode mode = FileMode::READ);
 
         /**
          * @brief Check if current file id is opened or not.
@@ -71,6 +87,14 @@ namespace rpp
          * @return A String containing the content of the file.
          */
         static String Read(FileHandle file);
+
+        /**
+         * @brief Writes data to an open file.
+         * @param file The handle of the file to write to.
+         * @param data The data to write to the file. The data can be appended to the existing content of the file or overwrite it.
+         * (default is to overwrite the existing content)
+         */
+        static void Write(FileHandle file, const String &data);
 
         /**
          * Closes an open file identified by the given file handle.
