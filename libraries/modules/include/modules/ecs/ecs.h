@@ -3,7 +3,6 @@
 #include "entity.h"
 #include "component.h"
 #include "system.h"
-#include "modules/storage.h"
 #include "type.h"
 
 class ECSAssert; ///< Used only for testing purpose.

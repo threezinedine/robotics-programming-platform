@@ -1,6 +1,5 @@
 #pragma once
 #include "core/core.h"
-#include "modules/storage.h"
 #include "modules/renderer/type.h"
 
 #define INVALID_RENDERER_INDEX u32(-1)

@@ -1,5 +1,5 @@
 #include "test_common.h"
-#include "modules/storage.h"
+#include "core/containers/storage.h"
 
 namespace
 {
