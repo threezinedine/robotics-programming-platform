@@ -50,30 +50,6 @@ private:
     u32 m_texture = INVALID_ID;
 };
 
-struct SignalTestParam
-{
-    SignalId mainSignal;
-    SignalId threadSignal;
-};
-
-void SignalTestThread(void *pParam)
-{
-    SignalTestParam *testParam = static_cast<SignalTestParam *>(pParam);
-    SignalId signal = testParam->threadSignal;
-    SignalId mainSignal = testParam->mainSignal;
-
-    print("Push 3\n", ConsoleColor::YELLOW);
-    Signal::Active(mainSignal); // Notify main thread
-
-    Signal::Wait(signal);       // Wait for the signal to be activated
-    print("Push 5\n", ConsoleColor::YELLOW);
-    Signal::Active(mainSignal); // Notify main thread
-
-    Signal::Wait(signal); // Wait for the signal to be activated
-    print("Push 7\n", ConsoleColor::YELLOW);
-    Signal::Active(mainSignal); // Notify main thread
-}
-
 int main(void)
 {
     SingletonManager::Initialize();
@@ -83,45 +59,49 @@ int main(void)
     Thread::Initialize();
     Signal::Initialize();
 
-    SignalTestParam testParam = {};
-    testParam.mainSignal = Signal::Create();
-    testParam.threadSignal = Signal::Create();
-
-    ThreadId signalThreadId = Thread::Create(SignalTestThread, &testParam, sizeof(testParam));
-
-    Thread::Start(signalThreadId); // Start the thread
-
-    Signal::Wait(testParam.mainSignal); // Wait for the thread to notify
-    print("Push 4\n", ConsoleColor::YELLOW);
-    Signal::Active(testParam.threadSignal); // Activate the signal to let the thread proceed
-
-    Signal::Wait(testParam.mainSignal); // Wait for the thread to notify
-    print("Push 6\n", ConsoleColor::YELLOW);
-    Signal::Active(testParam.threadSignal); // Activate the signal to let the thread proceed
-
-    Signal::Wait(testParam.mainSignal); // Wait for the thread to notify
-
-    Thread::Destroy(signalThreadId);
-
-    print("\n");
-
-    FileHandle file = FileSystem::OpenFile("C:\\Users\\APC\\Downloads\\test.txt");
-    if (FileSystem::IsFileOpen(file))
-    {
-        print(Format("File content: {}\n", FileSystem::Read(file)).CStr());
-    }
+#if defined(RPP_USE_TEST)
+    TestSystem::Initialize(
+        String("C:\\Users\\APC\\Projects\\robotics-programming-platform\\e2e-gruntime\\TestReports\\result.json"),
+        String(""),
+        String("C:\\Users\\APC\\Projects\\robotics-programming-platform\\e2e-gruntime\\empty_scenario.py"));
+#endif
 
     {
         CREATE_SESSION(TestSession, 800, 600, "Test2", TRUE);
 
         while (TRUE)
         {
+#if defined(RPP_USE_TEST)
+            if (!TestSystem::ShouldApplicationClose())
+            {
+                TestSystem::Update(0.0f);
+            }
+#endif
+
             if (GraphicSessionManager::GetInstance()->Update(0.0f))
             {
                 break;
             }
+
+#if defined(RPP_USE_TEST)
+            if (TestSystem::ShouldApplicationClose())
+            {
+                // Close all the sessions when the test thread ends
+                u32 sessionCount = GraphicSessionManager::GetInstance()->GetSessionCount();
+                for (u32 i = 0; i < sessionCount; i++)
+                {
+                    u32 rendererId = GraphicSessionManager::GetInstance()->GetSession(i)->GetRendererId();
+                    Renderer::Activate(rendererId);
+                    Renderer::CloseWindow();
+                }
+            }
+#endif
         }
     }
+
+#if defined(RPP_USE_TEST)
+    TestSystem::Shutdown();
+#endif
 
     GraphicSessionManager::GetInstance()->ClearSessions();
 

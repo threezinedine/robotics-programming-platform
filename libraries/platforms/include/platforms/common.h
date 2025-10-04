@@ -67,3 +67,6 @@ Ref<T> CreateRef(Args &&...args)
  * Later used for modifying the flags of the compiler to not ignore the unused variable warning.
  */
 #define RPP_UNUSED(x) (void)(x)
+
+#define STRINGIFY_INNER(x) #x
+#define STRINGIFY(x) STRINGIFY_INNER(x)

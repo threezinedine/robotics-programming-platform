@@ -4,14 +4,16 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/../externals/**"
+                "${workspaceFolder}/../externals/**",
+                "@@PYTHON_PATH@@"
             ],
             "defines": [
                 "_DEBUG",
                 "UNICODE",
                 "_UNICODE",
                 "RPP_PLATFORM_WINDOWS",
-                "RPP_DEBUG"
+                "RPP_DEBUG",
+                "RPP_PYTHON_HOME"
             ],
             "windowsSdkVersion": "10.0.26100.0",
             "compilerPath": "cl.exe",

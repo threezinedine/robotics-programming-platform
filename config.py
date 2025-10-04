@@ -11,6 +11,8 @@ from config.utils.cpp_project_utils import (
     BuildProject,
     RunCppProject,
     RunLibrariesTest,
+    RunCppProjectTest,
+    BuildCPPPropertiesJson,
 )
 
 
@@ -22,6 +24,8 @@ def main():
     ValidateCommandExists("pip")
     ValidateCommandExists("g++")
     ValidateCommandExists("gcc")
+
+    BuildCPPPropertiesJson("libraries")
 
     if args.Project in PythonProjectNames:
         ValidateEnvDirExists(
@@ -72,6 +76,11 @@ def main():
                         projectType=args.Type,
                         filter=args.TestFilter,
                     )
+            else:
+                RunCppProjectTest(
+                    projectDir=args.Project,
+                    projectType=args.Type,
+                )
         else:
             RunPythonProjectTest(
                 projectDir=args.Project,
@@ -80,7 +89,13 @@ def main():
 
     if args.IsRun:
         if args.Project in CppProjectNames:
-            RunCppProject(projectDir=args.Project, projectType=args.Type)
+            if args.IsTest:
+                RunCppProjectTest(
+                    projectDir=args.Project,
+                    projectType=args.Type,
+                )
+            else:
+                RunCppProject(projectDir=args.Project, projectType=args.Type)
         else:
             RunPythonProject(
                 projectDir=args.Project,

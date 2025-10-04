@@ -25,6 +25,10 @@
 			"path": "cmake"
 		},
 		{
+			"name": "e2e-gruntime",
+			"path": "e2e-gruntime"
+		},
+		{
 			"name": "robotics-programming-platform",
 			"path": "."
 		}

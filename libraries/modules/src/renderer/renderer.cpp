@@ -229,6 +229,19 @@ namespace rpp
         ImGuiImpl::DrawRenderingScene(GetCurrentRenderer()->imguiId);
     }
 
+    void Renderer::CloseWindow()
+    {
+        RPP_ASSERT(s_currentRenderers != nullptr);
+        RPP_ASSERT(s_currentRendererIndex != INVALID_RENDERER_INDEX);
+
+        RendererData *current = s_currentRenderers->Get(s_currentRendererIndex);
+        RPP_ASSERT(current != nullptr);
+
+        CloseWindowCommandData closeWindowData = {};
+        GraphicsCommandData commandData = {GraphicsCommandType::CLOSE_WINDOW, &closeWindowData};
+        current->window->ExecuteCommand(commandData);
+    }
+
     void Renderer::Destroy(u32 renderId)
     {
         RPP_ASSERT(s_currentRenderers != nullptr);

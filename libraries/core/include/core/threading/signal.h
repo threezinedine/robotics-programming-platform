@@ -28,8 +28,7 @@ namespace rpp
 
     public:
         /// @brief Initializes the signal handling system.
-        static void
-        Initialize();
+        static void Initialize();
 
         /**
          * @brief Shuts down the signal handling system.
@@ -64,7 +63,7 @@ namespace rpp
          *
          * @note the current thread will not be suspended after calling this function.
          */
-        static void Active(SignalId signal);
+        static void Notify(SignalId signal);
 
     private:
         static Scope<Storage<SignalData>> s_signals; ///< Storage for signal context data.

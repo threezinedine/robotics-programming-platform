@@ -1,4 +1,4 @@
-if (rpp-glm_FOUND)
+if (TARGET rpp-glm)
     return()
 endif()
 
@@ -7,5 +7,3 @@ add_subdirectory(${rpp-glm_DIR} ${CMAKE_BINARY_DIR}/externals/glm)
 
 add_library(rpp-glm INTERFACE)
 target_link_libraries(rpp-glm INTERFACE glm::glm)
-
-set(rpp-glm_FOUND TRUE)

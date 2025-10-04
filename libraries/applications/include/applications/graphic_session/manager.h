@@ -30,6 +30,20 @@ namespace rpp
          */
         void ClearSessions();
 
+        /**
+         * @brief Get the number of sessions inside the manager.
+         * @return The number of sessions inside the manager.
+         */
+        u32 GetSessionCount() const;
+
+        /**
+         * @brief Get the session at the given index.
+         * @param index The index of the session to get.
+         * @return The session at the given index.
+         * @note If the index is out of bounds, an exception will be thrown.
+         */
+        Scope<GraphicSession> &GetSession(u32 index) const;
+
     private:
         Scope<Array<Scope<GraphicSession>>> m_sessions; ///< All the graphic sessions inside the application.
     };

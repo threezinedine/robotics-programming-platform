@@ -90,4 +90,17 @@ namespace rpp
 
         m_sessions->Clear();
     }
+
+    u32 GraphicSessionManager::GetSessionCount() const
+    {
+        RPP_ASSERT(m_sessions != nullptr);
+        return m_sessions->Size();
+    }
+
+    Scope<GraphicSession> &GraphicSessionManager::GetSession(u32 index) const
+    {
+        RPP_ASSERT(m_sessions != nullptr);
+        RPP_ASSERT(index < m_sessions->Size());
+        return (*m_sessions)[index];
+    }
 } // namespace rpp

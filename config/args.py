@@ -123,6 +123,17 @@ class Args:
             help="Optional module to build (default: None) only works for `libraries`",
         )
 
+        e2eGRuntimeParser = subparsers.add_parser(
+            "e2e-gruntime",
+            help="Run the end-to-end tests for the gruntime project",
+        )
+
+        e2eGRuntimeParser.add_argument(
+            "--open-ui",
+            action="store_true",
+            help="Used for operning the UI for testing purposes",
+        )
+
         self.args = parser.parse_args()
 
         if self.args.verbose:
@@ -240,3 +251,19 @@ class Args:
         if self.IsTest and self.args.module:
             return self.args.module
         return "all"  # Default to 'all' if not specified
+
+    @property
+    def IsE2EGRuntime(self) -> bool:
+        """
+        Returns true if the command is to run the end-to-end tests for the gruntime project.
+        """
+        return self.args.command == "e2e-gruntime"
+
+    @property
+    def IsOpenE2EUI(self) -> bool:
+        """
+        Returns true if the open-ui flag is set when running the end-to-end tests for the gruntime project.
+        """
+        if self.IsE2EGRuntime:
+            return self.args.open_ui
+        return False
