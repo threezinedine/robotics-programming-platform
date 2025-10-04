@@ -1,5 +1,6 @@
 #pragma once
 #include "platforms/platforms.h"
+#include "core/containers/storage.h"
 
 #define INFINITE_WAIT 0
 
@@ -15,9 +16,20 @@ namespace rpp
      */
     class Signal
     {
+    private:
+        /**
+         * Hold context information for a signal.
+         * @note Currently this struct is empty, but it can be extended in the future if needed.
+         */
+        struct SignalData
+        {
+            void *pData; ///< Pointer to user-defined data associated with the signal.
+        };
+
     public:
         /// @brief Initializes the signal handling system.
-        static void Initialize();
+        static void
+        Initialize();
 
         /**
          * @brief Shuts down the signal handling system.
@@ -55,5 +67,6 @@ namespace rpp
         static void Active(SignalId signal);
 
     private:
+        static Scope<Storage<SignalData>> s_signals; ///< Storage for signal context data.
     };
 } // namespace rpp
