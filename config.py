@@ -56,18 +56,21 @@ def main():
                     RunLibrariesTest(
                         projectDir="core",
                         projectType=args.Type,
+                        filter=args.TestFilter,
                     )
 
                 if args.Module in ["all", "modules"]:
                     RunLibrariesTest(
                         projectDir="modules",
                         projectType=args.Type,
+                        filter=args.TestFilter,
                     )
 
                 if args.Module in ["all", "applications"]:
                     RunLibrariesTest(
                         projectDir="applications",
                         projectType=args.Type,
+                        filter=args.TestFilter,
                     )
         else:
             RunPythonProjectTest(

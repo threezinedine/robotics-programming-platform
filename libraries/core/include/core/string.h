@@ -1,6 +1,6 @@
 #pragma once
 #include "platforms/platforms.h"
-#include <string>
+#include "containers/array.h"
 
 namespace rpp
 {
@@ -103,6 +103,35 @@ namespace rpp
          * @return A new String object containing the concatenated result.
          */
         String Concat(const String &other) const;
+
+        /**
+         * Split the string into an array of substrings based on a delimiter.
+         * @param delimiter The delimiter string to split by.
+         * @param outParts The array to store the resulting substrings.
+         */
+        void Split(Array<String> &outParts, const String &delimiter) const;
+
+        /**
+         * @brief Checks if the string ends with the specified suffix.
+         * @param suffix The suffix to check.
+         * @return TRUE if the string ends with the suffix, FALSE otherwise.
+         */
+        b8 EndsWith(const String &suffix) const;
+
+        /**
+         * @brief Converts the string to lowercase.
+         * @return A new String object containing the lowercase version of the string.
+         * @note This function does not modify the original string.
+         */
+        String ToLowerCase() const;
+
+        /**
+         * @brief Joins an array of strings into a single string with a specified delimiter.
+         * @param parts The array of strings to join.
+         * @param delimiter The delimiter to insert between each string.
+         * @return A new String object containing the joined result.
+         */
+        static String Join(const Array<String> &parts, const String &delimiter);
 
     private:
         char *m_data;

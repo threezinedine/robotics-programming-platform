@@ -87,7 +87,6 @@ TEST(StringTest, ReplaceString)
     String str("The quick brown fox jumps over the lazy dog. The fox is quick.");
     String replaced = str.Replace("fox", "cat");
     EXPECT_STREQ(replaced.CStr(), "The quick brown cat jumps over the lazy dog. The fox is quick.");
-
 }
 
 TEST(StringTest, ReplaceStringAll)
@@ -96,4 +95,59 @@ TEST(StringTest, ReplaceStringAll)
 
     String replacedAll = str.Replace("fox", "cat", true);
     EXPECT_STREQ(replacedAll.CStr(), "The quick brown cat jumps over the lazy dog. The cat is quick.");
+}
+
+TEST(StringTest, Split)
+{
+    String str("one,two,three,four");
+    Array<String> parts;
+    str.Split(parts, ",");
+    ASSERT_EQ(parts.Size(), 4);
+    EXPECT_STREQ(parts[0].CStr(), "one");
+    EXPECT_STREQ(parts[1].CStr(), "two");
+    EXPECT_STREQ(parts[2].CStr(), "three");
+    EXPECT_STREQ(parts[3].CStr(), "four");
+}
+
+TEST(StringTest, SplitNoDelimiter)
+{
+    String str("nodelimiterhere");
+    Array<String> parts;
+    str.Split(parts, ",");
+    ASSERT_EQ(parts.Size(), 1);
+    EXPECT_STREQ(parts[0].CStr(), "nodelimiterhere");
+}
+
+TEST(StringTest, SplitWithTrailingDelimiter)
+{
+    String str("endwithdelimiter,");
+    Array<String> parts;
+    str.Split(parts, ",");
+    ASSERT_EQ(parts.Size(), 2);
+    EXPECT_STREQ(parts[0].CStr(), "endwithdelimiter");
+    EXPECT_STREQ(parts[1].CStr(), "");
+}
+
+TEST(StringTest, EndsWith)
+{
+    String str("filename.txt");
+    EXPECT_TRUE(str.EndsWith(".txt"));
+    EXPECT_FALSE(str.EndsWith(".jpg"));
+}
+
+TEST(StringTest, ToLowerCase)
+{
+    String str("HeLLo WoRLd!");
+    String lowerStr = str.ToLowerCase();
+    EXPECT_STREQ(lowerStr.CStr(), "hello world!");
+}
+
+TEST(StringTest, Join)
+{
+    Array<String> parts;
+    parts.Push(String("apple"));
+    parts.Push(String("banana"));
+    parts.Push(String("cherry"));
+    String joined = String::Join(parts, ", ");
+    EXPECT_STREQ(joined.CStr(), "apple, banana, cherry");
 }

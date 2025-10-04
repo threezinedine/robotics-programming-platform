@@ -119,7 +119,8 @@
 			"complex": "cpp",
 			"stack": "cpp",
 			"typeindex": "cpp",
-			"*.rh": "cpp"
+			"*.rh": "cpp",
+			"queue": "cpp"
 		}
 	}
 }

@@ -138,7 +138,9 @@ def RunCppProject(projectDir: str, projectType: str) -> None:
         raise RuntimeError(f"Failed to run project '{projectDir}'.") from e
 
 
-def RunLibrariesTest(projectDir: str, projectType: str) -> None:
+def RunLibrariesTest(
+    projectDir: str, projectType: str, filter: str | None = None
+) -> None:
     """
     Runs components tests in the `libraries` project (assumes the project has been built already).
 
@@ -149,6 +151,9 @@ def RunLibrariesTest(projectDir: str, projectType: str) -> None:
 
     projectType : str, optional
         The build type which is either 'dev' or 'prod'. Default is 'dev'.
+
+    filter : str, optional
+        An optional filter to pass to the test executable to run specific tests only.
     """
 
     buildDir = GetAbsoluteBuildDir("libraries", projectType)
@@ -181,9 +186,12 @@ def RunLibrariesTest(projectDir: str, projectType: str) -> None:
             cwd=buildDir,
         )
 
+        command = [executable, f"--gtest_filter={filter}"] if filter else [executable]
+
         logger.info(f"Running project '{projectDir}'...")
+        logger.debug(f"Executing command: {command}")
         subprocess.run(
-            [executable],
+            command,
             cwd=buildDir,
         )
     except Exception as e:

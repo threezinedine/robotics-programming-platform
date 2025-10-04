@@ -1,14 +1,30 @@
 #include "core/filesystem.h"
 #include <fstream>
 #include "core/assertions.h"
+#include <direct.h>
+
+/**
+ * @note not using the FileSystem interface because it can be messed up with the testing environment
+ */
 
 namespace rpp
 {
     Scope<Storage<FileSystem::FileEntry>> FileSystem::s_fileEntries = nullptr;
+    String FileSystem::s_temporaryPathRoot = "";
 
-    void FileSystem::Initialize(b8 testingEnviroment)
+    void FileSystem::Initialize(const String &temporaryPathRoot)
     {
-        RPP_UNUSED(testingEnviroment);
+        if (temporaryPathRoot.Length() > 0) /// testing environment
+        {
+            char buffer[1024];
+            RPP_ASSERT(getcwd(buffer, sizeof(buffer)) != nullptr);
+            String cwd(buffer);
+            s_temporaryPathRoot = cwd + "/" + temporaryPathRoot;
+
+            // create the temporary directory if it does not exist
+            _mkdir(s_temporaryPathRoot.CStr());
+        }
+
         RPP_ASSERT(s_fileEntries == nullptr);
 
         auto DeallocateFileEntry = [](FileEntry *pFileEntry)
@@ -31,6 +47,53 @@ namespace rpp
         RPP_ASSERT(s_fileEntries != nullptr);
 
         s_fileEntries.reset();
+
+        // clean up the temporary directory if in testing environment
+        if (s_temporaryPathRoot.Length() > 0)
+        {
+            // Note: This is a simple implementation and may not handle all cases (e.g., nested directories).
+            // For a robust solution, consider using a library like Boost.Filesystem or std::filesystem (C++17).
+            _rmdir(s_temporaryPathRoot.CStr());
+            s_temporaryPathRoot = "";
+        }
+    }
+
+    String FileSystem::getPhysicalPath(const String &path)
+    {
+        if (s_temporaryPathRoot.Length() == 0)
+        {
+            return path;
+        }
+
+        // In testing environment, prepend the temporary path root
+#if RPP_PLATFORM_WINDOWS
+        // TODO: Need a better way to handle drive letters in paths, maybe use Regex?
+
+        String physicalPath = s_temporaryPathRoot + "/" + path;
+        physicalPath.Replace("C:/", "c/");
+        physicalPath.Replace("D:/", "d/");
+        physicalPath.Replace("E:/", "e/");
+        physicalPath.Replace("F:/", "f/");
+        physicalPath.Replace("G:/", "g/");
+        physicalPath.Replace("H:/", "h/");
+        physicalPath.Replace("I:/", "i/");
+        physicalPath.Replace("\\", "/", TRUE);
+        return physicalPath;
+#else
+#error "FileSystem is only implemented for Windows platform."
+#endif
+    }
+
+    b8 FileSystem::IsPhysicalPathExists(const String &path)
+    {
+        std::ifstream file(path.CStr());
+        return file.good();
+    }
+
+    void FileSystem::CreatePhysicalDirectory(const String &path, b8 isRecursive)
+    {
+        Array<String> parts;
+        SplitPath(parts, path);
     }
 
     FileHandle FileSystem::OpenFile(const String &filePath, FileMode mode)
@@ -42,7 +105,7 @@ namespace rpp
         RPP_ASSERT(pFileEntry != nullptr);
 
         pFileEntry->id = fileHandle;
-        pFileEntry->name = filePath;
+        pFileEntry->name = getPhysicalPath(filePath);
         pFileEntry->mode = mode;
 
         std::ios_base::openmode openMode;
@@ -118,5 +181,44 @@ namespace rpp
         RPP_ASSERT(s_fileEntries != nullptr);
 
         s_fileEntries->Free(file);
+    }
+
+    String FileSystem::CWD()
+    {
+        char buffer[1024];
+        if (getcwd(buffer, sizeof(buffer)) != nullptr)
+        {
+            return String(buffer);
+        }
+        return String();
+    }
+
+    void FileSystem::SplitPath(Array<String> &outParts, const String &path)
+    {
+        outParts.Clear();
+
+        String finalPath = path;
+        finalPath = finalPath.Replace("\\", "/", TRUE); // replace all backslashes with forward slashes
+
+        finalPath.Split(outParts, "/");
+        u32 partsCount = outParts.Size();
+        u32 index = 0;
+
+        while (index < outParts.Size())
+        {
+            if (outParts[index].Length() == 0)
+            {
+                outParts.Erase(index);
+            }
+            else
+            {
+                if (outParts[index].EndsWith(":"))
+                {
+                    outParts[index] = outParts[index].ToLowerCase();
+                    outParts[index] = outParts[index].SubString(0, outParts[index].Length() - 1);
+                }
+                index++;
+            }
+        }
     }
 } // namespace rpp

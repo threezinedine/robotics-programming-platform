@@ -166,4 +166,71 @@ namespace rpp
         return result;
     }
 
+    void String::Split(Array<String> &outParts, const String &delimiter) const
+    {
+        u32 start = 0;
+        u32 delimLength = delimiter.Length();
+
+        while (start <= Length())
+        {
+            if (start == Length())
+            {
+                outParts.Push(String());
+                break;
+            }
+
+            i32 delimIndex = Find(delimiter, start);
+            if (delimIndex == -1)
+            {
+                outParts.Push(SubString(start));
+                break;
+            }
+            outParts.Push(SubString(start, delimIndex - start));
+            start = delimIndex + delimLength;
+        }
+    }
+
+    b8 String::EndsWith(const String &suffix) const
+    {
+        // TODO: Next can be used with regex for more complex patterns
+        u32 strLength = Length();
+        u32 suffixLength = suffix.Length();
+
+        if (suffixLength > strLength)
+        {
+            return FALSE;
+        }
+
+        return std::strcmp(m_data + strLength - suffixLength, suffix.m_data) == 0;
+    }
+
+    String String::ToLowerCase() const
+    {
+        size_t len = std::strlen(m_data);
+        char *lowerData = RPP_NEW(char[len + 1]);
+        for (size_t i = 0; i < len; i++)
+        {
+            lowerData[i] = static_cast<char>(std::tolower(m_data[i]));
+        }
+        lowerData[len] = '\0';
+        String result(lowerData);
+        delete[] lowerData;
+        return result;
+    }
+
+    String String::Join(const Array<String> &parts, const String &delimiter)
+    {
+        if (parts.Size() == 0)
+        {
+            return String();
+        }
+
+        String result = parts[0];
+        for (u32 i = 1; i < parts.Size(); i++)
+        {
+            result += delimiter;
+            result += parts[i];
+        }
+        return result;
+    }
 } // namespace rpp
