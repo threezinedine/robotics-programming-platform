@@ -1,5 +1,5 @@
 #pragma once
-#include "platforms/common.h"
+#include "platforms/platforms.h"
 
 #define RPP_MAX_THREAD_COUNT 64 ///< The maximum number of threads that can be created.
 

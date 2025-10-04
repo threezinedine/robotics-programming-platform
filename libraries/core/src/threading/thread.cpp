@@ -1,5 +1,4 @@
-#include "platforms/threading/thread.h"
-#include "platforms/memory.h"
+#include "core/threading/thread.h"
 
 #if defined(RPP_PLATFORM_WINDOWS)
 #include <thread>
