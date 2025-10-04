@@ -44,13 +44,28 @@ private:
     u32 m_texture = INVALID_ID;
 };
 
-void SortingTestThread(void *param)
+struct SignalTestParam
 {
-    i32 *pElement = static_cast<i32 *>(param);
+    SignalId mainSignal;
+    SignalId threadSignal;
+};
 
-    Thread::Sleep(*pElement * 10); // sleep for element * 10 milliseconds
+void SignalTestThread(void *pParam)
+{
+    SignalTestParam *testParam = static_cast<SignalTestParam *>(pParam);
+    SignalId signal = testParam->threadSignal;
+    SignalId mainSignal = testParam->mainSignal;
 
-    print(Format("{}, ", *pElement).CStr(), ConsoleColor::GREEN);
+    print("Push 3\n", ConsoleColor::YELLOW);
+    Signal::Active(mainSignal); // Notify main thread
+
+    Signal::Wait(signal);       // Wait for the signal to be activated
+    print("Push 5\n", ConsoleColor::YELLOW);
+    Signal::Active(mainSignal); // Notify main thread
+
+    Signal::Wait(signal); // Wait for the signal to be activated
+    print("Push 7\n", ConsoleColor::YELLOW);
+    Signal::Active(mainSignal); // Notify main thread
 }
 
 int main(void)
@@ -60,22 +75,29 @@ int main(void)
     Logging::GetInstance()->Setup(u8(HandlerType::CONSOLE), LogLevel::DEBUG);
     Renderer::Initialize();
     Thread::Initialize();
+    Signal::Initialize();
 
-    i32 array[] = {2, 1, 4, 2, 5};
-    Array<ThreadId> threads;
+    SignalTestParam testParam = {};
+    testParam.mainSignal = Signal::Create();
+    testParam.threadSignal = Signal::Create();
 
-    // thread sorting for testing purpose
-    for (u32 i = 0; i < sizeof(array) / sizeof(i32); i++)
-    {
-        ThreadId threadId = Thread::Create(SortingTestThread, &array[i], sizeof(i32));
-        threads.Push(threadId);
-    }
+    ThreadId signalThreadId = Thread::Create(SignalTestThread, &testParam, sizeof(testParam));
 
-    u32 threadCount = threads.Size();
-    for (u32 i = 0; i < threadCount; i++)
-    {
-        Thread::Start(threads[i]);
-    }
+    Thread::Start(signalThreadId); // Start the thread
+
+    Signal::Wait(testParam.mainSignal); // Wait for the thread to notify
+    print("Push 4\n", ConsoleColor::YELLOW);
+    Signal::Active(testParam.threadSignal); // Activate the signal to let the thread proceed
+
+    Signal::Wait(testParam.mainSignal); // Wait for the thread to notify
+    print("Push 6\n", ConsoleColor::YELLOW);
+    Signal::Active(testParam.threadSignal); // Activate the signal to let the thread proceed
+
+    Signal::Wait(testParam.mainSignal); // Wait for the thread to notify
+
+    Thread::Destroy(signalThreadId);
+
+    print("\n");
 
     // FileHandle file = FileSystem::OpenFile("");
     // if (FileSystem::IsFileOpen(file))
@@ -97,6 +119,7 @@ int main(void)
 
     GraphicSessionManager::GetInstance()->ClearSessions();
 
+    Signal::Shutdown();
     Thread::Shutdown();
     Renderer::Shutdown();
     FileSystem::Shutdown();
