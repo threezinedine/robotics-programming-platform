@@ -20,7 +20,7 @@ void SortingTestThread(void *param)
 {
     i32 *pElement = static_cast<i32 *>(param);
 
-    Thread::Sleep(*pElement * 10); // sleep for element * 10 milliseconds
+    Thread::Sleep(*pElement * 40); // sleep for element * 10 milliseconds
     sortedElements.Push(*pElement);
 }
 

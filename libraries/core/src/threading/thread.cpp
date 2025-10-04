@@ -1,128 +1,91 @@
 #include "core/threading/thread.h"
+#include "core/assertions.h"
 
 #if defined(RPP_PLATFORM_WINDOWS)
 #include <thread>
 
 namespace rpp
 {
-    Thread::ThreadData *Thread::s_threadData[RPP_MAX_THREAD_COUNT];
+    Scope<Storage<Thread::ThreadData>> Thread::s_threads = nullptr;
 
     void Thread::Initialize()
     {
-        memset(s_threadData, 0, sizeof(s_threadData));
+        RPP_ASSERT(s_threads == nullptr);
+
+        auto Deallocator = [](Thread::ThreadData *pData)
+        {
+            RPP_ASSERT(pData != nullptr);
+
+            if (pData->pData != nullptr)
+            {
+                RPP_FREE(pData->pData);
+                pData->pData = nullptr;
+            }
+
+            if (pData->pHandle != nullptr)
+            {
+                std::thread *pThread = static_cast<std::thread *>(pData->pHandle);
+                if (pThread->joinable())
+                {
+                    pThread->join();
+                }
+                RPP_DELETE(pThread);
+                pData->pHandle = nullptr;
+            }
+
+            RPP_DELETE(pData);
+        };
+
+        s_threads = CreateScope<Storage<ThreadData>>(Deallocator);
     }
 
     void Thread::Shutdown()
     {
-        u32 threadId = 0;
-        while (threadId < RPP_MAX_THREAD_COUNT)
-        {
-            if (s_threadData[threadId] != nullptr)
-            {
-                Destroy(threadId);
-            }
-            threadId++;
-        }
+        RPP_ASSERT(s_threads != nullptr);
+        s_threads.reset();
     }
 
     ThreadId Thread::Create(ThreadEntry entry, void *pParam, u32 paramSize)
     {
-        ThreadId threadId = 0;
+        RPP_ASSERT(s_threads != nullptr);
 
-        while (threadId <= RPP_MAX_THREAD_COUNT)
-        {
-            if (threadId == RPP_MAX_THREAD_COUNT)
-            {
-                RPP_UNREACHABLE(); // Exceeded maximum thread count
-            }
+        ThreadId threadId = s_threads->Create();
+        ThreadData *pData = s_threads->Get(threadId);
+        RPP_ASSERT(pData != nullptr);
 
-            Thread::ThreadData *data = s_threadData[threadId];
-
-            if (data == nullptr)
-            {
-                break;
-            }
-            else
-            {
-                threadId++;
-            }
-        }
-
-        Thread::ThreadData *data = RPP_NEW(Thread::ThreadData{});
         if (pParam != nullptr && paramSize > 0)
         {
-            data->dataSize = paramSize;
-            data->pData = RPP_MALLOC(paramSize);
-            memcpy(data->pData, pParam, paramSize);
+            pData->dataSize = paramSize;
+            pData->pData = RPP_MALLOC(paramSize);
+            memcpy(pData->pData, pParam, paramSize);
         }
         else
         {
-            data->dataSize = 0;
-            data->pData = nullptr;
+            pData->dataSize = 0;
+            pData->pData = nullptr;
         }
 
-        data->entry = entry;
-        data->isRunning = FALSE;
-        data->pHandle = nullptr;
-
-        s_threadData[threadId] = data;
+        pData->entry = entry;
+        pData->isRunning = FALSE;
+        pData->pHandle = nullptr;
 
         return threadId;
     }
 
     void Thread::Destroy(ThreadId threadId)
     {
-        if (threadId >= RPP_MAX_THREAD_COUNT)
-        {
-            RPP_UNREACHABLE(); // Invalid thread ID
-        }
+        RPP_ASSERT(s_threads != nullptr);
 
-        Thread::ThreadData *pData = s_threadData[threadId];
-
-        if (pData == nullptr)
-        {
-            RPP_UNREACHABLE(); // Thread not found
-        }
-
-        if (pData->pHandle != nullptr)
-        {
-            std::thread *pThread = static_cast<std::thread *>(pData->pHandle);
-            if (pThread->joinable())
-            {
-                pThread->join();
-            }
-            RPP_DELETE(pThread);
-            pData->pHandle = nullptr;
-        }
-
-        if (pData->pData != nullptr)
-        {
-            RPP_FREE(pData->pData);
-            pData->pData = nullptr;
-        }
-
-        RPP_DELETE(pData);
-        s_threadData[threadId] = nullptr;
+        s_threads->Free(threadId);
     }
 
     void Thread::Start(ThreadId threadId)
     {
-        if (threadId >= RPP_MAX_THREAD_COUNT)
-        {
-            RPP_UNREACHABLE(); // Invalid thread ID
-        }
+        RPP_ASSERT(s_threads != nullptr);
 
-        Thread::ThreadData *pData = s_threadData[threadId];
-
-        if (pData == nullptr)
-        {
-            RPP_UNREACHABLE(); // Thread not found
-        }
-
-        if (pData->isRunning)
-        {
-            RPP_UNREACHABLE(); // Thread already running
-        }
+        Thread::ThreadData *pData = s_threads->Get(threadId);
+        RPP_ASSERT(pData != nullptr);
+        RPP_ASSERT(!pData->isRunning);
 
         pData->isRunning = TRUE;
         std::thread *pThread = RPP_NEW(std::thread(pData->entry, pData->pData));
@@ -131,17 +94,9 @@ namespace rpp
 
     void Thread::Join(ThreadId threadId)
     {
-        if (threadId >= RPP_MAX_THREAD_COUNT)
-        {
-            RPP_UNREACHABLE(); // Invalid thread ID
-        }
-
-        Thread::ThreadData *data = s_threadData[threadId];
-
-        if (data == nullptr)
-        {
-            RPP_UNREACHABLE(); // Thread not found
-        }
+        RPP_ASSERT(s_threads != nullptr);
+        Thread::ThreadData *data = s_threads->Get(threadId);
+        RPP_ASSERT(data != nullptr);
 
         if (!data->isRunning)
         {
