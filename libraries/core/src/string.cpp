@@ -80,6 +80,11 @@ namespace rpp
         *this = result;
     }
 
+    b8 String::operator==(const String &other) const
+    {
+        return std::strcmp(m_data, other.m_data) == 0;
+    }
+
     i32 String::Find(const String &substr, u32 startIndex) const
     {
         if (startIndex >= Length())

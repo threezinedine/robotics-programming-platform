@@ -18,7 +18,7 @@ protected:
     }
 };
 
-TEST_F(FileSystemTest, DISABLED_CreateAndReadAFile)
+TEST_F(FileSystemTest, CreateAndReadAFile)
 {
     String cwd = rpp::FileSystem::CWD();
     String filePath = cwd + "/test_file.txt";

@@ -59,17 +59,18 @@ namespace rpp
 
         /**
          * @brief Checks if a physical file/folder exists on the filesystem.
-         * @param path The physical path to check.
+         * @param path The physical path to check. The path is the ABSOLUTE path (physical not the logical path).
          * @return TRUE if the path exists, FALSE otherwise.
          */
         static b8 IsPhysicalPathExists(const String &path);
 
         /**
          * @brief Creates a physical directory on the filesystem.
-         * @param path The physical path where the directory should be created (the ABSOLUTE path).
-         * @param isRecursive If TRUE, creates all necessary parent directories. Default is TRUE.
+         * @param path The physical path where the directory should be created (the ABSOLUTE path)
+         * @note The function will create any necessary parent directories as well.
+         * @note The directory is the physical path, not the logical path.
          */
-        static void CreatePhysicalDirectory(const String &path, b8 isRecursive = TRUE);
+        static void CreatePhysicalDirectory(const String &path);
 
     public:
         /**
@@ -175,6 +176,8 @@ namespace rpp
 
     private:
         static String s_temporaryPathRoot; ///< Root path for temporary files in testing environment.
+        static String s_cwd;               ///< Current working directory of the application, only being used in testing environment.
+        static String s_convertedCWD;      ///< Converted CWD for testing environment (with drive letters replaced).
 
         static Scope<Storage<FileEntry>> s_fileEntries; ///< Storage for file entries.
     };

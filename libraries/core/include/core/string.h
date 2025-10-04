@@ -64,6 +64,16 @@ namespace rpp
          */
         void operator+=(const String &other);
 
+        /**
+         * @brief Equality operator. Compares this string with another for equality.
+         */
+        b8 operator==(const String &other) const;
+
+        /**
+         * @brief Inequality operator. Compares this string with another for inequality.
+         */
+        inline b8 operator!=(const String &other) const { return !(*this == other); }
+
     public:
         /**
          * @brief Finds the first occurrence of a substring within the string, starting from an optional index.
