@@ -58,10 +58,9 @@ int main(void)
     Renderer::Initialize();
 
     FileHandle file = FileSystem::OpenFile("C:\\Users\\APC\\Downloads\\test.txt");
-    if (FileSystem::IsFileOpen(file))
-    {
-        print(Format("File content: {}\n", FileSystem::Read(file)).CStr());
-    }
+    RPP_ASSERT(FileSystem::IsFileOpen(file));
+    print(Format("File content: {}\n", FileSystem::Read(file)).CStr());
+    FileSystem::CloseFile(file);
 
     {
         CREATE_SESSION(TestSession, 800, 600, "Test2", TRUE);
