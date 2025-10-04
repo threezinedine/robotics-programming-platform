@@ -12,6 +12,8 @@ from config.utils.cpp_project_utils import (
     BuildProject,
     RunCppProject,
     RunLibrariesTest,
+    RunCppProjectTest,
+    BuildCPPPropertiesJson,
 )
 
 
@@ -23,6 +25,8 @@ def main():
     # ================== System Validation ==================
     ValidateCommandExists(Constants.PYTHON_SCRIPT)
     ValidateCommandExists("pip3")
+
+    BuildCPPPropertiesJson("libraries")
 
     if args.Project in PythonProjectNames:
         ValidateEnvDirExists(
@@ -73,6 +77,11 @@ def main():
                         projectType=args.Type,
                         filter=args.TestFilter,
                     )
+            else:
+                RunCppProjectTest(
+                    projectDir=args.Project,
+                    projectType=args.Type,
+                )
         else:
             RunPythonProjectTest(
                 projectDir=args.Project,

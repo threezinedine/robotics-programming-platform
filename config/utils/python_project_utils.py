@@ -195,14 +195,19 @@ def RunPythonProject(
             "tmp",
         )
 
-        cppBindingOutput = os.path.join(
-            librariesTempDir,
-            "binding.cpp",
-        )
+        # cppBindingOutput = os.path.join(
+        #     librariesTempDir,
+        #     "binding.cpp",
+        # )
 
         writerOutput = os.path.join(
             librariesTempDir,
             "writer_output.cpp",
+        )
+
+        e2eOutput = os.path.join(
+            librariesTempDir,
+            "e2e_test_binding.cpp",
         )
 
         # pyiBindingOutput = os.path.join(
@@ -217,13 +222,15 @@ def RunPythonProject(
             for headerFile in allHeaderFiles + allTemplateFiles + [typeMapFiles]
         )
 
+        isE2EOutputFileExists = os.path.isfile(e2eOutput)
         # isPyiFileExists = os.path.isfile(pyiBindingOutput)
-        isCppBindingFileExists = os.path.isfile(cppBindingOutput)
+        # isCppBindingFileExists = os.path.isfile(cppBindingOutput)
 
         if (
             not isAnyHeaderFileChanged
             # and isPyiFileExists
-            and isCppBindingFileExists
+            # and isCppBindingFileExists
+            and isE2EOutputFileExists
             and not reset
             and not force
         ):
@@ -283,11 +290,18 @@ def RunPythonProject(
         #     cppBindingOutput,
         # ]
 
-        arg3 = argCommon + [
+        writerOutputArgs = argCommon + [
             "--template",
             os.path.join(cwd, "templates", "writer_binding.j2"),
             "--output",
             writerOutput,
+        ]
+
+        e2eOutputArgs = argCommon + [
+            "--template",
+            os.path.join(cwd, "templates", "e2e_test_cpp_binding.j2"),
+            "--output",
+            e2eOutput,
         ]
 
         logger.info("Header files have changed. Running autogen...")
@@ -317,14 +331,25 @@ def RunPythonProject(
             #     cwd=cwd,
             # )
 
-            RunCommand(
-                " ".join(
-                    [
-                        pythonExe,
-                        mainScript,
-                    ]
-                    + arg3
-                ),
+            subprocess.run(
+                [
+                    pythonExe,
+                    mainScript,
+                ]
+                + writerOutputArgs,
+                check=True,
+                shell=True,
+                cwd=cwd,
+            )
+
+            subprocess.run(
+                [
+                    pythonExe,
+                    mainScript,
+                ]
+                + e2eOutputArgs,
+                check=True,
+                shell=True,
                 cwd=cwd,
             )
 

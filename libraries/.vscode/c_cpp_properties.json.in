@@ -4,15 +4,22 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/../externals/**"
+                "${workspaceFolder}/../externals/**",
+                "@@PYTHON_PATH@@"
             ],
             "defines": [
                 "_DEBUG",
                 "UNICODE",
                 "_UNICODE",
+<<<<<<< HEAD:libraries/.vscode/c_cpp_properties.json
                 "RPP_PLATFORM_LINUX",
                 "RPP_DEBUG",
                 "RPP_TEST_MODE"
+=======
+                "RPP_PLATFORM_WINDOWS",
+                "RPP_DEBUG",
+                "RPP_PYTHON_HOME"
+>>>>>>> 72dcf1c ([feautre] first simple e2e test with python):libraries/.vscode/c_cpp_properties.json.in
             ],
             "windowsSdkVersion": "10.0.26100.0",
             "compilerPath": "cl.exe",

@@ -16,12 +16,13 @@ find_package(Python REQUIRED)
 # trick for always running autogen when building
 set(BINDING_FILE ${RPP_BASE_DIR}/libraries/tmp/binding.cpp)
 set(WRITER_FILE ${RPP_BASE_DIR}/libraries/tmp/writer_output.cpp)
+set(E2E_FILE ${RPP_BASE_DIR}/libraries/tmp/e2e_test_binding.cpp)
 
 add_custom_target(
     Autogen ALL
     COMMAND ${Python_EXECUTABLE} ${RPP_BASE_DIR}/config.py -p autogen run
     WORKING_DIRECTORY ${RPP_BASE_DIR}
-    COMMENT "Running autogen..."
+    COMMENT "========== Running autogen... =========="
 )
 
 # -------------- Subdirectories --------------
@@ -31,26 +32,38 @@ add_subdirectory(modules)
 add_subdirectory(applications)
 
 # -------------- Python binding --------------
-# RPPFindPackage(rpp-pybind "Dependencies")
+RPPFindPackage(rpp-pybind "Dependencies")
 
-# set(CMAKE_FOLDER "Bindings")
-# Python_add_library(Engine ${BINDING_FILE})
-# target_link_libraries(Engine PUBLIC rpp-pybind RPPApplications)
-# set_target_properties(Engine PROPERTIES
-#                                 INTERPROCEDURAL_OPTIMIZATION ON
-#                                 CXX_VISIBILITY_PRESET hidden
-#                                 VISIBILITY_INLINES_HIDDEN ON)
+set(CMAKE_FOLDER "Bindings")
 
-# set(TARGET_OUTPUT_DIR ${RPP_BASE_DIR}/editor/Engine)
-# set(TARGET_OUTPUT_PATH ${TARGET_OUTPUT_DIR}/Engine.pyd)
+add_library(
+    Engine 
+    MODULE 
+    ${E2E_FILE}
+)
 
-# add_custom_command(
-#     OUTPUT ${TARGET_OUTPUT_PATH}
-#     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:Engine> ${TARGET_OUTPUT_PATH}
-#     DEPENDS Engine
-#     COMMENT "Copying Engine.pyd to editor folder..."
-# )
+target_link_libraries(
+    Engine 
+    PUBLIC 
+    rpp-pybind
+    RPPApplications
+)
 
-# add_custom_target(CopyEngine ALL
-#     DEPENDS ${TARGET_OUTPUT_PATH}
-# )
+set_target_properties(Engine PROPERTIES
+                                INTERPROCEDURAL_OPTIMIZATION ON
+                                CXX_VISIBILITY_PRESET hidden
+                                VISIBILITY_INLINES_HIDDEN ON)
+
+set_target_properties(Engine PROPERTIES
+                                PREFIX ""
+                                OUTPUT_NAME "Engine"
+                                SUFFIX ".pyd")
+
+set(SOURCE_FILE ${CMAKE_CURRENT_BINARY_DIR}/Debug/Engine.pyd)
+set(TARGET_FILE ${CMAKE_BINARY_DIR}/Engine.pyd)
+
+add_custom_command(
+    TARGET Engine POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SOURCE_FILE} ${TARGET_FILE}
+    COMMENT "========== Copying Engine.pyd to runtime folder... =========="
+)

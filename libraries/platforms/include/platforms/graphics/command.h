@@ -36,6 +36,8 @@ namespace rpp
         RESIZE_FRAMEBUFFER, ///< Resize a framebuffer object.
         BIND_FRAMEBUFFER,   ///< Bind a framebuffer object.
         UNBIND_FRAMEBUFFER, ///< Unbind the currently bound framebuffer object.
+
+        CLOSE_WINDOW, ///< Close the rendering window.
         COUNT,
     };
 
@@ -273,6 +275,10 @@ namespace rpp
     };
 
     struct UnbindFrameBufferCommandData
+    {
+    };
+
+    struct CloseWindowCommandData
     {
     };
 } // namespace rpp

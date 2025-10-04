@@ -8,4 +8,7 @@ set(rpp-pybind_DIRS ${RPP_EXTERNALS_DIR}/pybind)
 add_subdirectory(${rpp-pybind_DIRS} ${CMAKE_BINARY_DIR}/externals/pybind)
 
 add_library(rpp-pybind INTERFACE)
-target_link_libraries(rpp-pybind INTERFACE pybind11::pybind11)
+target_link_libraries(rpp-pybind INTERFACE pybind11::pybind11 Python::Python)
+
+add_library(rpp-pybind-embed INTERFACE)
+target_link_libraries(rpp-pybind-embed INTERFACE pybind11::embed Python::Python)

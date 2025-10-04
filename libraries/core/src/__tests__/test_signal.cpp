@@ -33,12 +33,12 @@ void SignalTestThread(void *pParam)
 
     sortedElements.Push(3);
 
-    Signal::Active(mainSignal); // Notify main thread
+    Signal::Notify(mainSignal); // Notify main thread
     Signal::Wait(signal);       // Wait for the signal to be activated
 
     sortedElements.Push(5);
 
-    Signal::Active(mainSignal); // Notify main thread
+    Signal::Notify(mainSignal); // Notify main thread
 }
 
 TEST_F(SignalTest, CoroutineUsage)
@@ -53,7 +53,7 @@ TEST_F(SignalTest, CoroutineUsage)
 
     Signal::Wait(mainSignal); // Wait for the thread to notify
     sortedElements.Push(4);
-    Signal::Active(signal); // Activate the signal to let the thread proceed
+    Signal::Notify(signal); // Activate the signal to let the thread proceed
 
     Signal::Wait(mainSignal); // Wait for the thread to notify
 

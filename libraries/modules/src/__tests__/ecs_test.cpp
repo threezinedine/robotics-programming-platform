@@ -6,106 +6,111 @@
 #define COMPONENT_B_ID 2
 #define COMPONENT_C_ID 3
 
-class TestSystem : public System
+namespace
 {
-public:
-    static u32 numberOfObjects;
-    static u32 initialCallCount;
-    static u32 suspendCallCount;
-    static u32 updateCallCount;
-    static u32 resumeCallCount;
-    static u32 shutdownCallCount;
+	class TestSystem : public System
+	{
+	public:
+		static u32 numberOfObjects;
+		static u32 initialCallCount;
+		static u32 suspendCallCount;
+		static u32 updateCallCount;
+		static u32 resumeCallCount;
+		static u32 shutdownCallCount;
 
-    TestSystem() { numberOfObjects++; }
-    ~TestSystem() override { numberOfObjects--; }
+		TestSystem() { numberOfObjects++; }
+		~TestSystem() override { numberOfObjects--; }
 
-protected:
-    void InitialImpl(ECSId id, EntityId entityId) override { initialCallCount++; }
-    void SuspendImpl(ECSId id, EntityId entityId) override { suspendCallCount++; }
-    void UpdateImpl(ECSId id, EntityId entityId, f32 deltaTime) override { updateCallCount++; }
-    void ResumeImpl(ECSId id, EntityId entityId) override { resumeCallCount++; }
-    void ShutdownImpl(ECSId id, EntityId entityId) override { shutdownCallCount++; }
-};
+	protected:
+		void InitialImpl(ECSId id, EntityId entityId) override { initialCallCount++; }
+		void SuspendImpl(ECSId id, EntityId entityId) override { suspendCallCount++; }
+		void UpdateImpl(ECSId id, EntityId entityId, f32 deltaTime) override { updateCallCount++; }
+		void ResumeImpl(ECSId id, EntityId entityId) override { resumeCallCount++; }
+		void ShutdownImpl(ECSId id, EntityId entityId) override { shutdownCallCount++; }
+	};
 
-u32 TestSystem::numberOfObjects = 0;
-u32 TestSystem::initialCallCount = 0;
-u32 TestSystem::suspendCallCount = 0;
-u32 TestSystem::updateCallCount = 0;
-u32 TestSystem::resumeCallCount = 0;
-u32 TestSystem::shutdownCallCount = 0;
+	u32 TestSystem::numberOfObjects = 0;
+	u32 TestSystem::initialCallCount = 0;
+	u32 TestSystem::suspendCallCount = 0;
+	u32 TestSystem::updateCallCount = 0;
+	u32 TestSystem::resumeCallCount = 0;
+	u32 TestSystem::shutdownCallCount = 0;
 
-struct ComponentA
-{
-    int a;
-};
+	struct ComponentA
+	{
+		int a;
+	};
 
-class AddComponentASystem : public System
-{
-protected:
-    void UpdateImpl(ECSId ecsId, EntityId entityId, f32 deltaTime) override
-    {
-        Component *pComponent = ECS::GetComponent(entityId, COMPONENT_A_ID);
-        ComponentA *pData = (ComponentA *)pComponent->pData;
-        pData->a++;
-    }
-};
+	class AddComponentASystem : public System
+	{
+	protected:
+		void UpdateImpl(ECSId ecsId, EntityId entityId, f32 deltaTime) override
+		{
+			Component *pComponent = ECS::GetComponent(entityId, COMPONENT_A_ID);
+			ComponentA *pData = (ComponentA *)pComponent->pData;
+			pData->a++;
+		}
+	};
 
-struct ComponentB
-{
-    float b;
-};
+	struct ComponentB
+	{
+		float b;
+	};
 
-struct ComponentC
-{
-    char c;
-};
+	struct ComponentC
+	{
+		char c;
+	};
+
+
+}
 
 class ECSAssert
 {
 public:
-    static void AssertNumberOfEntities(u32 expectedNumberOfEntities)
-    {
-        auto ecsData = ECS::s_ecsStorage->GetNumberOfElements();
-        ASSERT_EQ(ecsData, expectedNumberOfEntities);
-    }
+	static void AssertNumberOfEntities(u32 expectedNumberOfEntities)
+	{
+		auto ecsData = ECS::s_ecsStorage->GetNumberOfElements();
+		ASSERT_EQ(ecsData, expectedNumberOfEntities);
+	}
 
-    static ECS::ECSData::SystemData *GetSystemData(ECSId ecsId, SystemId systemId)
-    {
-        RPP_ASSERT(ECS::s_ecsStorage != nullptr);
-        RPP_ASSERT(ecsId != INVALID_ID);
+	static ECS::ECSData::SystemData *GetSystemData(ECSId ecsId, SystemId systemId)
+	{
+		RPP_ASSERT(ECS::s_ecsStorage != nullptr);
+		RPP_ASSERT(ecsId != INVALID_ID);
 
-        ECS::ECSData *pCurrentECS = ECS::s_ecsStorage->Get(ecsId);
-        RPP_ASSERT(pCurrentECS != nullptr);
+		ECS::ECSData *pCurrentECS = ECS::s_ecsStorage->Get(ecsId);
+		RPP_ASSERT(pCurrentECS != nullptr);
 
-        return pCurrentECS->systemStorage->Get(systemId);
-    }
+		return pCurrentECS->systemStorage->Get(systemId);
+	}
 
-    static b8 IsEntityMatchSystem(Entity *pEntity, ECS::ECSData::SystemData *pSystemData)
-    {
-        return ECS::IsEntityMatchSystem(pEntity, pSystemData);
-    }
+	static b8 IsEntityMatchSystem(Entity *pEntity, ECS::ECSData::SystemData *pSystemData)
+	{
+		return ECS::IsEntityMatchSystem(pEntity, pSystemData);
+	}
 
-    static b8 IsEntityInSystemMatchEntities(ECSId ecsId, SystemId systemId, EntityId entityId)
-    {
-        RPP_ASSERT(ECS::s_ecsStorage != nullptr);
-        RPP_ASSERT(ecsId != INVALID_ID);
+	static b8 IsEntityInSystemMatchEntities(ECSId ecsId, SystemId systemId, EntityId entityId)
+	{
+		RPP_ASSERT(ECS::s_ecsStorage != nullptr);
+		RPP_ASSERT(ecsId != INVALID_ID);
 
-        ECS::ECSData *currentECS = ECS::s_ecsStorage->Get(ecsId);
-        RPP_ASSERT(currentECS != nullptr);
+		ECS::ECSData *currentECS = ECS::s_ecsStorage->Get(ecsId);
+		RPP_ASSERT(currentECS != nullptr);
 
-        ECS::ECSData::SystemData *pSystemData = currentECS->systemStorage->Get(systemId);
+		ECS::ECSData::SystemData *pSystemData = currentECS->systemStorage->Get(systemId);
 
-        u32 matchEntitiesCount = pSystemData->matchedEntities.Size();
-        for (u32 matchEntityIdIndex = 0; matchEntityIdIndex < matchEntitiesCount; ++matchEntityIdIndex)
-        {
-            if (pSystemData->matchedEntities[matchEntityIdIndex] == entityId)
-            {
-                return TRUE;
-            }
-        }
+		u32 matchEntitiesCount = pSystemData->matchedEntities.Size();
+		for (u32 matchEntityIdIndex = 0; matchEntityIdIndex < matchEntitiesCount; ++matchEntityIdIndex)
+		{
+			if (pSystemData->matchedEntities[matchEntityIdIndex] == entityId)
+			{
+				return TRUE;
+			}
+		}
 
-        return FALSE;
-    }
+		return FALSE;
+	}
 };
 
 class ECSTest : public ::testing::Test

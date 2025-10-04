@@ -7,6 +7,11 @@
 #define RPP_PYTHON_BINDING
 
 /**
+ * @brief Used for marking the object should be exposed to be binded into Python Module.
+ */
+#define RPP_E2E_BINDING
+
+/**
  * @brief Used for marking the object as deprecated. A warning will be shown when the object is used.
  */
 #define RPP_DEPRECATED
@@ -35,6 +40,11 @@
  * @brief Used for marking the object should be exposed to be binded into Python Module.
  */
 #define RPP_PYTHON_BINDING __attribute__((annotate("python")))
+
+/**
+ * @brief Used for marking the object should be exposed to be binded into Python Module.
+ */
+#define RPP_E2E_BINDING __attribute__((annotate("e2e")))
 
 /**
  * @brief Used for marking the object as deprecated. A warning will be shown when the object is used.

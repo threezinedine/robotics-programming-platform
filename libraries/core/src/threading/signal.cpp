@@ -69,14 +69,14 @@ namespace rpp
         if (timeout == INFINITE_WAIT)
         {
             timeout = std::numeric_limits<u32>::max();
-		}
+        }
 
         SignalData *data = s_signals->Get(signal);
         RPP_ASSERT(data != nullptr);
 
         SignalDataImpl *pImplData = static_cast<SignalDataImpl *>(data->pData);
 
-		pImplData->isSignaled = FALSE;
+        pImplData->isSignaled = FALSE;
 
         b8 gotSignal = pImplData->handle.wait_for(
             std::unique_lock<std::mutex>(pImplData->mtx),
@@ -89,7 +89,7 @@ namespace rpp
         return gotSignal;
     }
 
-    void Signal::Active(SignalId signal)
+    void Signal::Notify(SignalId signal)
     {
         RPP_ASSERT(s_signals != nullptr);
 

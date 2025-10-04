@@ -125,6 +125,12 @@ namespace rpp
         static void DrawingSceneInImGui();
 
         /**
+         * @brief Close the window associated with the current active renderer.
+         * After calling this function, the renderer will no longer be usable.
+         */
+        static void CloseWindow();
+
+        /**
          * @brief Destroy the renderer with the given id. If the renderer is currently active, it will be deactivated first.
          *
          * @param renderId The id of the renderer to destroy.

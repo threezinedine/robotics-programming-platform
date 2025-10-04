@@ -26,10 +26,10 @@ class Constants:
         Called at the start of the program to detect the platform and set up constants (os-dependent).
         """
 
-        if os.name == "nt": # Windows
+        if os.name == "nt":  # Windows
             Constants.PLATFORM = "Windows"
             Constants.PYTHON_SCRIPT = "python"
-        else: # POSIX (Linux, macOS, etc.)
+        else:  # POSIX (Linux, macOS, etc.)
             if os.uname().sysname == "Darwin":
                 Constants.PLATFORM = "macOS"
             elif os.uname().sysname == "Linux":
@@ -52,6 +52,6 @@ class Constants:
     def IsWindowsPlatform() -> bool:
         return Constants.PLATFORM == "Windows"
 
-    @staticmethod   
+    @staticmethod
     def IsLinuxPlatform() -> bool:
         return Constants.PLATFORM == "Linux"

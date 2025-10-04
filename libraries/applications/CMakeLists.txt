@@ -31,6 +31,8 @@ foreach (APPLICATIONS_TEST_SRC_FILE ${APPLICATIONS_TEST_SRC})
     list(REMOVE_ITEM APPLICATIONS_SRC ${APPLICATIONS_TEST_SRC_FILE})
 endforeach()
 
+RPPFindPackage(rpp-pybind "Dependencies")
+
 set(CMAKE_FOLDER "Libraries")
 add_library(
     ${PROJECT_NAME} 
@@ -45,6 +47,7 @@ target_link_libraries(
     PUBLIC 
     RPPCore 
     RPPModules
+    rpp-pybind
 )
 
 target_include_directories(

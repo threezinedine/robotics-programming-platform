@@ -5,9 +5,118 @@ import shutil
 from config.utils.validation_utils import ValidateCommandExists
 
 from .path_utils import GetAbsoluteBuildDir
+from .path_utils import GetAbsoluteBuildDir, CreateRecursiveDirIfNotExists
+from .cache_file_utils import IsFileModified, UpdateFileCache
 from ..logger import logger
 from ..constants import Constants
 from .run_command import RunCommand
+
+
+def GetGlobalPythonExePath() -> str:
+    """
+    Get the global Python executable path using the `where` command.
+    Returns
+    -------
+    str
+        The global Python executable path.
+    """
+    try:
+        text = subprocess.run(
+            ["where", "python"],
+            check=True,
+            shell=True,
+            cwd=Constants.ABSOLUTE_BASE_DIR,
+            capture_output=True,
+            text=True,
+        )
+        pythonExes = text.stdout.splitlines()
+
+        assert len(pythonExes) > 0, "No python executable found."
+
+        chosenPythonExe = pythonExes[0]
+        return chosenPythonExe
+
+    except Exception as e:
+        logger.error(f"Failed to find python executable: {e}")
+        raise RuntimeError("Failed to find python executable.") from e
+
+
+def BuildCPPPropertiesJson(folderDir: str) -> None:
+    """
+    Because the pybind11 need Python.h which is located based on the current Python environment,
+    we need to generate the c_cpp_properties.json file for VSCode intellisense to work properly.
+    This function will create the c_cpp_properties.json file in the given folder directory from the
+    c_cpp_properties.json.in template file.
+
+    Notes
+    -----
+    If the c_cpp_properties.json.in file does not exist, this function will do nothing.
+
+    If the c_cpp_properties.json file already exists, nothing will be done.
+
+    Parameters
+    ----------
+    folderDir : str
+        The folder directory where the c_cpp_properties.json file will be created (relative to the `ABSOLUTE_BASE_DIR`).
+    """
+    folder = os.path.join(
+        Constants.ABSOLUTE_BASE_DIR,
+        folderDir,
+    )
+
+    vsfolder = os.path.join(
+        folder,
+        ".vscode",
+    )
+
+    if not os.path.exists(vsfolder):
+        return
+
+    outputPath = os.path.join(vsfolder, "c_cpp_properties.json")
+
+    templatePath = os.path.join(vsfolder, "c_cpp_properties.json.in")
+    if not os.path.exists(templatePath):
+        return
+
+    if not IsFileModified(templatePath) and os.path.exists(outputPath):
+        return
+
+    templateContent = ""
+
+    with open(templatePath, "r", encoding="utf-8") as templateFile:
+        templateContent = templateFile.read()
+
+    try:
+        text = subprocess.run(
+            ["where", "python"],
+            check=True,
+            shell=True,
+            cwd=folder,
+            capture_output=True,
+            text=True,
+        )
+        pythonExes = text.stdout.splitlines()
+
+        assert len(pythonExes) > 0, "No python executable found."
+
+        chosenPythonExe = pythonExes[0]
+        pythonDir = os.path.dirname(chosenPythonExe)
+        pythonIncludeDir = os.path.join(pythonDir, "include")
+        pythonIncludeDir = pythonIncludeDir.replace("\\", "/")
+        templateContent = templateContent.replace(
+            "@@PYTHON_PATH@@", f"{pythonIncludeDir}"
+        )
+
+    except Exception as e:
+        logger.error(f"Failed to find python executable: {e}")
+        raise RuntimeError("Failed to find python executable.") from e
+
+    logger.info("Generating c_cpp_properties.json...")
+
+    with open(outputPath, "w", encoding="utf-8") as outputFile:
+        outputFile.write(templateContent)
+
+    UpdateFileCache(templatePath)
 
 
 def BuildProject(
@@ -54,6 +163,10 @@ def BuildProject(
     if buildOptions:
         for option in buildOptions:
             finalOptions.append(f"-D{option}")
+
+    globalPythonExe = GetGlobalPythonExePath()
+    globalPythonExe = globalPythonExe.replace("\\", "/")
+    pythonHome = os.path.dirname(globalPythonExe)
 
     try:
         logger.info(f"Building project in '{projectDir}'...")
@@ -137,6 +250,67 @@ def RunCppProject(projectDir: str, projectType: str, memoryCheck: bool = False) 
     except Exception as e:
         logger.error(f"Failed to run project '{projectDir}': {e}")
         raise RuntimeError(f"Failed to run project '{projectDir}'.") from e
+
+
+def RunCppProjectTest(projectDir: str, projectType: str) -> None:
+    """
+    Run the testing suite for a C/C++ project. The testing version will be run.
+
+    Parameters
+    ----------
+    projectDir : str
+        The project directory where the CMakeLists.txt file is located (relative to the `ABSOLUTE_BASE_DIR`).
+
+    projectType : str, optional
+        The build type which is either 'dev' or 'prod'. Default is 'dev'.
+    """
+    buildDir = GetAbsoluteBuildDir(projectDir, projectType)
+    cmakeBuildType = "Debug" if projectType == "dev" else "Release"
+    executableDir = os.path.join(buildDir, cmakeBuildType)
+
+    # create temp e2e folder
+
+    # Prepare e2e directory
+    e2eDir = os.path.join(Constants.ABSOLUTE_BASE_DIR, f"e2e-{projectDir}")
+    CreateRecursiveDirIfNotExists(os.path.join(e2eDir, "Engine"))
+    CreateRecursiveDirIfNotExists(os.path.join(e2eDir, "TestReports"))
+
+    files = os.listdir(executableDir)
+    executable = None
+    for file in files:
+        if file.endswith("test.exe"):
+            executable = os.path.join(executableDir, file)
+            break
+
+    assert executable is not None, f"No test executable found in '{executableDir}'."
+
+    try:
+        logger.info(f"Building project in '{projectDir}'...")
+        subprocess.run(
+            [
+                "cmake",
+                "--build",
+                buildDir,
+                "--config",
+                cmakeBuildType,
+            ],
+            check=True,
+            shell=True,
+            cwd=buildDir,
+        )
+
+        logger.info(f"Running tests for project '{projectDir}'...")
+        subprocess.run(
+            [
+                executable,
+            ],
+            check=True,
+            shell=True,
+            cwd=buildDir,
+        )
+    except Exception as e:
+        logger.error(f"Failed to run tests for project '{projectDir}': {e}")
+        raise RuntimeError(f"Failed to run tests for project '{projectDir}'.") from e
 
 
 def RunLibrariesTest(

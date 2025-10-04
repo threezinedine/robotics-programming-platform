@@ -10,7 +10,8 @@
             "defines": [
                 "_DEBUG",
                 "UNICODE",
-                "_UNICODE"
+                "_UNICODE",
+                "RPP_USE_TEST"
             ],
             "windowsSdkVersion": "10.0.26100.0",
             "compilerPath": "cl.exe",

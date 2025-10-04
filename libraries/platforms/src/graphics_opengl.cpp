@@ -623,6 +623,11 @@ namespace rpp
             GL_ASSERT(glBindFramebuffer(GL_FRAMEBUFFER, 0));
             return TRUE;
         }
+        case GraphicsCommandType::CLOSE_WINDOW:
+        {
+            glfwSetWindowShouldClose((GLFWwindow *)m_window, TRUE);
+            return TRUE;
+        }
         default:
             RPP_UNREACHABLE();
         }
