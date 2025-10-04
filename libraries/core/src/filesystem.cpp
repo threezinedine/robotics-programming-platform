@@ -70,10 +70,14 @@ namespace rpp
         {
             // Note: This is a simple implementation and may not handle all cases (e.g., nested directories).
             // For a robust solution, consider using a library like Boost.Filesystem or std::filesystem (C++17).
-			std::filesystem::remove_all(s_temporaryPathRoot.CStr());
+            std::filesystem::remove_all(s_temporaryPathRoot.CStr());
             //_rmdir(s_temporaryPathRoot.CStr());
             s_temporaryPathRoot = "";
         }
+
+        s_convertedCWD.~String();
+        s_cwd.~String();
+        s_temporaryPathRoot.~String();
     }
 
     String FileSystem::getPhysicalPath(const String &path)
