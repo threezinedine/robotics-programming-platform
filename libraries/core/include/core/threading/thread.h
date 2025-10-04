@@ -1,7 +1,6 @@
 #pragma once
 #include "platforms/platforms.h"
-
-#define RPP_MAX_THREAD_COUNT 64 ///< The maximum number of threads that can be created.
+#include "core/containers/storage.h"
 
 namespace rpp
 {
@@ -78,6 +77,6 @@ namespace rpp
         static void Destroy(ThreadId threadId);
 
     private:
-        static ThreadData *s_threadData[RPP_MAX_THREAD_COUNT]; ///< Storage for thread context data.
+        static Scope<Storage<ThreadData>> s_threads; ///< Storage for thread context data.
     };
 } // namespace rpp
