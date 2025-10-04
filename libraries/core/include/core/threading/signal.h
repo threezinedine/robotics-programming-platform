@@ -1,5 +1,5 @@
 #pragma once
-#include "platforms/common.h"
+#include "platforms/platforms.h"
 
 #define INFINITE_WAIT 0
 
