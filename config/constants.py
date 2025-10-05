@@ -16,6 +16,8 @@ class Constants:
     AUTOGEN_DIR = "autogen"
     ABSOLUTE_AUTOGEN_DIR = os.path.join(ABSOLUTE_BASE_DIR, AUTOGEN_DIR)
 
+    E2E_DIR = "e2e"
+    ABSOLUTE_E2E_DIR = os.path.join(ABSOLUTE_BASE_DIR, E2E_DIR)
     PYTHON_SCRIPT = "python"
 
     PLATFORM: Literal["Windows", "Linux", "macOS", "Unknown"] = "Windows"

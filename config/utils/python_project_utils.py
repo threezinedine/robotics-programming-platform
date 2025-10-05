@@ -247,6 +247,7 @@ def RunPythonProject(
             return
 
         if Constants.IsWindowsPlatform():
+<<<<<<< HEAD
             try:
                 temp = RunCommand("where clang", capture=True)
                 if temp is None:
@@ -263,6 +264,25 @@ def RunPythonProject(
                 Constants.ABSOLUTE_BASE_DIR,
                 "assets",
                 "libclang.so",
+=======
+            ValidateCommandExists("clang")
+
+            findClangCommand = (
+                "where clang" if Constants.IsWindowsPlatform() else "which clang"
+            )
+            clangPathResult = RunCommand(findClangCommand)
+
+            assert clangPathResult is not None, "Failed to find clang executable."
+
+            clangPath = clangPathResult.strip()
+            if not clangPath:
+                raise FileNotFoundError("Clang executable not found in PATH.")
+
+            clangPathDll = clangPath.replace("clang.exe", "libclang.dll")
+        else:
+            clangPathDll = os.path.join(
+                Constants.ABSOLUTE_BASE_DIR, "assets", "libclang.so"
+>>>>>>> c91c84c ([feature] convert libraires and autogen to linux)
             )
 
         logger.debug(f"Using Clang library at: {clangPathDll}")
@@ -347,36 +367,14 @@ def RunPythonProject(
             #     cwd=cwd,
             # )
 
-            subprocess.run(
-                [
-                    pythonExe,
-                    mainScript,
-                ]
-                + writerOutputArgs,
-                check=True,
-                shell=True,
-                cwd=cwd,
-            )
-
-            subprocess.run(
-                [
-                    pythonExe,
-                    mainScript,
-                ]
-                + e2eOutputArgs,
-                check=True,
-                shell=True,
-                cwd=cwd,
-            )
-
-            subprocess.run(
-                [
-                    pythonExe,
-                    mainScript,
-                ]
-                + pyiE2EGRuntimeOutputArgs,
-                check=True,
-                shell=True,
+            RunCommand(
+                " ".join(
+                    [
+                        pythonExe,
+                        mainScript,
+                    ]
+                    + writerOutputArgs
+                ),
                 cwd=cwd,
             )
 

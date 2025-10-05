@@ -357,11 +357,7 @@ def RunLibrariesTest(
                     break
             else:
                 fileCompletePath = os.path.join(executableDir, file)
-                if (
-                    os.access(fileCompletePath, os.X_OK)
-                    and os.path.isfile(fileCompletePath)
-                    and "tests" in file
-                ):
+                if os.access(fileCompletePath, os.X_OK) and "tests" in file:
                     executable = fileCompletePath
                     break
 

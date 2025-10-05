@@ -28,17 +28,30 @@ def RunCommand(
     appliedCwd = cwd if cwd is not None else Constants.ABSOLUTE_BASE_DIR
 
     try:
-        result = subprocess.run(
-            command,
-            check=True,
-            shell=True,
-            cwd=appliedCwd,
-            capture_output=capture,
-        )
+        if Constants.IsWindowsPlatform():
+            result = subprocess.run(
+                command.split(" "),
+                check=True,
+                shell=True,
+                cwd=appliedCwd,
+                capture_output=capture,
+            )
 
-        if capture:
-            return result.stdout.decode("utf-8").strip() if result.stdout else None
-        return None
+            if capture:
+                return result.stdout.decode("utf-8").strip() if result.stdout else None
+            return None
+        else:
+            result = subprocess.run(
+                command,
+                check=True,
+                shell=True,
+                cwd=appliedCwd,
+                capture_output=capture,
+            )
+
+            if capture:
+                return result.stdout.decode("utf-8").strip() if result.stdout else None
+            return None
 
     except subprocess.CalledProcessError as e:
         logger.error(f"Command '{command}' failed with exit code {e.returncode}.")
