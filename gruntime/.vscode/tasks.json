@@ -4,8 +4,9 @@
         {
             "label": "build graphical runtime",
             "type": "shell",
-            "command": "python",
+            "command": "sudo", // TODO: Change to python if needed using .in file
             "args": [
+                "python3", // TODO: Change to python if needed using .in file
                 "${workspaceFolder}/../config.py",
                 "-p",
                 "gruntime",

@@ -1,7 +1,8 @@
+#include "platforms/memory.h"
+RPP_ENABLE_MEMORY_TRACKING;
+
 #include "applications/applications.h"
 #include "glm/gtc/matrix_transform.hpp"
-
-RPP_ENABLE_MEMORY_TRACKING;
 
 using namespace rpp;
 
@@ -20,16 +21,12 @@ public:
 protected:
     void InitializeImpl() override
     {
-        m_texture = Texture::Create("C:\\Users\\APC\\Pictures\\Screenshots\\Screenshot 2025-08-19 222422.png");
-        RPP_ASSERT(m_texture != INVALID_ID);
     }
 
     void RenderImpl() override
     {
-        RPP_ASSERT(m_texture != INVALID_ID);
-
-        Renderer::DrawRectangle({0, 0, 100, 100}, m_texture);
-        Renderer::DrawCircle({50, 50}, 50, m_texture);
+        Renderer::DrawRectangle({0, 0, 100, 100});
+        Renderer::DrawCircle({50, 50}, 50);
 
         ImGui::ShowDemoWindow();
 
@@ -40,9 +37,6 @@ protected:
 
     void ShutdownImpl() override
     {
-        RPP_ASSERT(m_texture != INVALID_ID);
-
-        Texture::Destroy(m_texture);
         m_texture = INVALID_ID;
     }
 
@@ -59,12 +53,20 @@ int main(void)
     Thread::Initialize();
     Signal::Initialize();
 
+<<<<<<< HEAD
 #if defined(RPP_USE_TEST)
     TestSystem::GetInstance()->Initialize(
         String("C:\\Users\\APC\\Projects\\robotics-programming-platform\\e2e-gruntime\\TestReports\\result.json"),
         String(""),
         String("C:\\Users\\APC\\Projects\\robotics-programming-platform\\e2e-gruntime\\empty_scenario.py"));
 #endif
+=======
+    // FileHandle file = FileSystem::OpenFile("");
+    // if (FileSystem::IsFileOpen(file))
+    // {
+    //     print(Format("File content: {}\n", FileSystem::Read(file)).CStr());
+    // }
+>>>>>>> 806335d ([config] memory check feature for linux)
 
     {
         CREATE_SESSION(TestSession, 800, 600, "Test2", TRUE);
