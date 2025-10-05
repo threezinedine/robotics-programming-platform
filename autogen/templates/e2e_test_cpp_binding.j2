@@ -38,4 +38,12 @@ namespace detail
 
 PYBIND11_MODULE(Engine, m) {
     {% include "e2e_test_cpp_function_binding.j2" %}
+
+    {% include "e2e_test_cpp_class_binding.j2" %}
+
+    m.attr("CommandStack") = &TestSystem::GetInstance()->GetCommandStack();
+
+    m.def("Wait", [](f32 milliseconds) {
+        TestSystem::GetInstance()->GetCommandStack().Push(Command::COMMAND_WAIT);
+    }, "Waits for the specified number of milliseconds.");
 }

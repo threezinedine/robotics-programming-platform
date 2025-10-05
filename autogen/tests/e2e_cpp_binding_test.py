@@ -8,7 +8,7 @@ def test_bind_function(generateFunc: GenerateFuncType) -> None:
 /// @brief Add two integers
 int RPP_E2E_BINDING Add(int a, int b);
 """,
-        "cpp_function_binding.j2",
+        "e2e_test_cpp_function_binding.j2",
         [],
     )
 

@@ -1,3 +1,5 @@
 from Engine import *  # type: ignore
 
-Print("Hello from empty_scenario.py")
+TestLog("Hello from empty_scenario.py")
+
+Wait(1000)  # Wait for 1 second

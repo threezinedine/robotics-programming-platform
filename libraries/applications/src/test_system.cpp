@@ -40,124 +40,163 @@ namespace rpp
         }
     } // namespace anonymous
 
-    String TestSystem::s_setupScriptContent = "";
-    String TestSystem::s_updateScriptContent = "";
-    String TestSystem::s_shutdownScriptContent = "";
-    String TestSystem::s_resultFilePath = "";
+    RPP_SINGLETON_IMPLEMENT(TestSystem);
 
-    SignalId TestSystem::s_testThreadSignal = INVALID_ID;
-    SignalId TestSystem::s_mainThreadSignal = INVALID_ID;
-    ThreadId TestSystem::s_testThreadId = INVALID_ID;
-    b8 TestSystem::s_shouldApplicationClose = FALSE;
+    TestSystem::TestSystem()
+        : m_resultFilePath(""),
+          m_setupScriptContent(""),
+          m_updateScriptContent(""),
+          m_shutdownScriptContent(""),
+          m_testThreadSignal(INVALID_ID),
+          m_mainThreadSignal(INVALID_ID),
+          m_testThreadId(INVALID_ID),
+          m_shouldApplicationClose(FALSE)
+    {
+    }
+
+    TestSystem::~TestSystem()
+    {
+    }
 
     void TestSystem::Initialize(const String &resultFilePath,
                                 const String &setupFilePath,
                                 const String &updateFilePath,
                                 const String &shutdownFilePath)
     {
-        s_resultFilePath = resultFilePath;
-        s_shouldApplicationClose = FALSE;
+        m_resultFilePath = resultFilePath;
+        m_shouldApplicationClose = FALSE;
 
         // TODO: Loading scripts later
         if (setupFilePath.Length() > 0)
         {
-            s_setupScriptContent = ReadPythonFile(setupFilePath);
+            m_setupScriptContent = ReadPythonFile(setupFilePath);
         }
         else
         {
-            s_setupScriptContent = "";
+            m_setupScriptContent = "";
         }
 
         if (updateFilePath.Length() > 0)
         {
-            s_updateScriptContent = ReadPythonFile(updateFilePath);
+            m_updateScriptContent = ReadPythonFile(updateFilePath);
         }
         else
         {
-            s_updateScriptContent = "";
+            m_updateScriptContent = "";
         }
 
         if (shutdownFilePath.Length() > 0)
         {
-            s_shutdownScriptContent = ReadPythonFile(shutdownFilePath);
+            m_shutdownScriptContent = ReadPythonFile(shutdownFilePath);
         }
         else
         {
-            s_shutdownScriptContent = "";
+            m_shutdownScriptContent = "";
         }
 
-        RPP_ASSERT(s_testThreadSignal == INVALID_ID && s_mainThreadSignal == INVALID_ID);
-        RPP_ASSERT(s_testThreadId == INVALID_ID);
+        RPP_ASSERT(m_testThreadSignal == INVALID_ID && m_mainThreadSignal == INVALID_ID);
+        RPP_ASSERT(m_testThreadId == INVALID_ID);
 
-        s_testThreadSignal = Signal::Create();
-        s_mainThreadSignal = Signal::Create();
-        s_testThreadId = Thread::Create(TestThreadFunction);
+        m_testThreadSignal = Signal::Create();
+        m_mainThreadSignal = Signal::Create();
+        m_testThreadId = Thread::Create(TestThreadStaticFunction);
 
         Py_SetPythonHome(ConvertCharToWChar(STRINGIFY(RPP_PYTHON_HOME)));
 
         // TODO: Run setup script if provided
 
-        Thread::Start(s_testThreadId);
+        Thread::Start(m_testThreadId);
+    }
+
+    void TestSystem::TestThreadStaticFunction(void *pParam)
+    {
+        TestSystem::GetInstance()->TestThreadFunction(pParam);
     }
 
     void TestSystem::Shutdown()
     {
-        // TODO: Run shutdown script if provided
-
-        Signal::Destroy(s_testThreadSignal);
-        Signal::Destroy(s_mainThreadSignal);
-        Thread::Destroy(s_testThreadId);
-
-        s_resultFilePath.~String();
-        s_setupScriptContent.~String();
-        s_updateScriptContent.~String();
-        s_shutdownScriptContent.~String();
     }
 
     void TestSystem::Yield()
     {
-        Signal::Notify(s_mainThreadSignal);
-        Signal::Wait(s_testThreadSignal);
+        Signal::Notify(m_mainThreadSignal);
+        Signal::Wait(m_testThreadSignal);
+    }
+
+    void TestSystem::Wait(f32 milliseconds)
+    {
+        m_timer.Start();
+        RPP_LOG_DEBUG("TestSystem::Wait for {} milliseconds", milliseconds);
+        return;
+
+        while (TRUE)
+        {
+            u32 elapsed = static_cast<u32>(m_timer.GetElapsedTimeInMilliseconds());
+            if (elapsed >= static_cast<u32>(milliseconds))
+            {
+                break;
+            }
+
+            Yield();
+        }
     }
 
     void TestSystem::TestThreadFunction(void *arg)
     {
         RPP_UNUSED(arg);
-        Signal::Wait(s_testThreadSignal);
+        Signal::Wait(m_testThreadSignal);
 
         Array<String> lineOfCodes;
-        s_updateScriptContent.Split(lineOfCodes, "\n");
+        m_updateScriptContent.Split(lineOfCodes, "\n");
 
         u32 numberOfLines = lineOfCodes.Size();
         pybind11::scoped_interpreter guard{};
 
-        for (u32 lineIndex = 0; lineIndex < numberOfLines; ++lineIndex)
+        for (u32 lineIndex = 0; lineIndex < numberOfLines; lineIndex++)
         {
             const String &line = lineOfCodes[lineIndex];
+
             try
             {
                 pybind11::exec(line.CStr());
+
+                if (!m_commandStack.Empty())
+                {
+                    Command command = m_commandStack.Pop();
+                    switch (command)
+                    {
+                    case Command::COMMAND_WAIT:
+                        Wait(1000); // wait for 100 milliseconds
+                        break;
+                    default:
+                        RPP_UNREACHABLE();
+                        break;
+                    }
+                }
             }
             catch (const std::exception &e)
             {
                 RPP_LOG_ERROR("Exception occurred while executing python line {}: {}\n\t", lineIndex + 1, String(e.what()), line);
                 break;
             }
+
+            m_shouldApplicationClose = TRUE;
+            Signal::Notify(m_mainThreadSignal); // exit the test thread
         }
 
-        s_shouldApplicationClose = TRUE;
-        Signal::Notify(s_mainThreadSignal); // exit the test thread
+        m_shouldApplicationClose = TRUE;
+        Signal::Notify(m_mainThreadSignal); // exit the test thread
     }
 
     void TestSystem::Update(f32 deltaTime)
     {
         RPP_UNUSED(deltaTime);
-        Signal::Notify(s_testThreadSignal);
-        Signal::Wait(s_mainThreadSignal);
+        Signal::Notify(m_testThreadSignal);
+        Signal::Wait(m_mainThreadSignal);
     }
 
     b8 TestSystem::ShouldApplicationClose()
     {
-        return s_shouldApplicationClose;
+        return m_shouldApplicationClose;
     };
 } // namespace rpp

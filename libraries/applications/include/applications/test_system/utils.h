@@ -3,5 +3,5 @@
 
 namespace rpp
 {
-    void RPP_E2E_BINDING Print(const String &message);
+    void RPP_E2E_BINDING TestLog(const String &message);
 } // namespace rpp

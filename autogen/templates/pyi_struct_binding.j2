@@ -1,5 +1,5 @@
 {% for struct in structs %}
-    {% if "python" in struct.annotations %}
+    {% if "e2e" in struct.annotations %}
 class {{ struct.name }}:
     {% if struct.comment-%}
     """ 
