@@ -53,42 +53,12 @@ int main(void)
     Thread::Initialize();
     Signal::Initialize();
 
-<<<<<<< HEAD
-    SignalTestParam testParam = {};
-    testParam.mainSignal = Signal::Create();
-    testParam.threadSignal = Signal::Create();
-
-    ThreadId signalThreadId = Thread::Create(SignalTestThread, &testParam, sizeof(testParam));
-
-    Thread::Start(signalThreadId); // Start the thread
-
-    Signal::Wait(testParam.mainSignal); // Wait for the thread to notify
-    print("Push 4\n", ConsoleColor::YELLOW);
-    Signal::Active(testParam.threadSignal); // Activate the signal to let the thread proceed
-
-    Signal::Wait(testParam.mainSignal); // Wait for the thread to notify
-    print("Push 6\n", ConsoleColor::YELLOW);
-    Signal::Active(testParam.threadSignal); // Activate the signal to let the thread proceed
-
-    Signal::Wait(testParam.mainSignal); // Wait for the thread to notify
-
-    Thread::Destroy(signalThreadId);
-
-    print("\n");
-
-    // FileHandle file = FileSystem::OpenFile("");
-    // if (FileSystem::IsFileOpen(file))
-    // {
-    //     print(Format("File content: {}\n", FileSystem::Read(file)).CStr());
-    // }
-=======
 #if defined(RPP_USE_TEST)
     TestSystem::GetInstance()->Initialize(
         String("C:\\Users\\APC\\Projects\\robotics-programming-platform\\e2e-gruntime\\TestReports\\result.json"),
         String(""),
         String("C:\\Users\\APC\\Projects\\robotics-programming-platform\\e2e-gruntime\\empty_scenario.py"));
 #endif
->>>>>>> 72dcf1c ([feautre] first simple e2e test with python)
 
     {
         CREATE_SESSION(TestSession, 800, 600, "Test2", TRUE);

@@ -7,6 +7,9 @@ from config.utils.validation_utils import ValidateCommandExists
 from .path_utils import GetAbsoluteBuildDir
 from .path_utils import GetAbsoluteBuildDir, CreateRecursiveDirIfNotExists
 from .cache_file_utils import IsFileModified, UpdateFileCache
+from config.utils.validation_utils import ValidateCommandExists
+
+from .path_utils import GetAbsoluteBuildDir
 from ..logger import logger
 from ..constants import Constants
 from .run_command import RunCommand
@@ -357,7 +360,11 @@ def RunLibrariesTest(
                     break
             else:
                 fileCompletePath = os.path.join(executableDir, file)
-                if os.access(fileCompletePath, os.X_OK) and "tests" in file:
+                if (
+                    os.access(fileCompletePath, os.X_OK)
+                    and os.path.isfile(fileCompletePath)
+                    and "tests" in file
+                ):
                     executable = fileCompletePath
                     break
 

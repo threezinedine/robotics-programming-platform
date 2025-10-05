@@ -258,15 +258,6 @@ class Args:
             return self.args.module
         return "all"  # Default to 'all' if not specified
 
-    @property
-    def CheckMemoryLeaks(self) -> bool:
-        """
-        Returns true if the check flag is set when running the project.
-        """
-        if self.IsRun:
-            return self.args.check
-        return False
-
     def IsE2EGRuntime(self) -> bool:
         """
         Returns true if the command is to run the end-to-end tests for the gruntime project.
@@ -280,4 +271,12 @@ class Args:
         """
         if self.IsE2EGRuntime:
             return self.args.open_ui
+        return False
+
+    def CheckMemoryLeaks(self) -> bool:
+        """
+        Returns true if the check flag is set when running the project.
+        """
+        if self.IsRun:
+            return self.args.check
         return False
