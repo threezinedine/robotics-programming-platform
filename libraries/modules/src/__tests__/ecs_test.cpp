@@ -1,6 +1,5 @@
 #include "test_common.h"
 
-#if defined(RPP_PLATFORM_WINDOWS)
 #define ECS_TEST_DELTA_TIME 0.016f
 
 #define COMPONENT_A_ID 1
@@ -172,7 +171,7 @@ TEST_F(ECSTest, CheckAnEntityMatchASystem)
     SINGLE_ECS_SETUP();
 
     SYSTEM_SETUP(TestSystem, COMPONENT_A_ID);
-    CREATE_ENTITY_WITH_AB_COMPONENTS();
+    CREATE_ENTITY_WITH_AB_COMPONENTS(32, 23);
 
     auto pSystemData = ECSAssert::GetSystemData(id, 0);
     ASSERT_TRUE(ECSAssert::IsEntityMatchSystem(entity, pSystemData));
@@ -315,7 +314,7 @@ TEST_F(ECSTest, EntityIdIsInSystemListIfMatch)
 {
     SINGLE_ECS_SETUP();
     SYSTEM_SETUP(TestSystem, COMPONENT_A_ID);
-    CREATE_ENTITY_WITH_AB_COMPONENTS();
+    CREATE_ENTITY_WITH_AB_COMPONENTS(12, 12);
 
     auto pSystemData = ECSAssert::GetSystemData(id, systemId);
     ASSERT_FALSE(ECSAssert::IsEntityInSystemMatchEntities(id, systemId, entityId));
@@ -337,7 +336,7 @@ TEST_F(ECSTest, CreateEntityMatchSystem)
     ASSERT_EQ(TestSystem::resumeCallCount, 0);
     ASSERT_EQ(TestSystem::shutdownCallCount, 0);
 
-    CREATE_ENTITY_WITH_AB_COMPONENTS();
+    CREATE_ENTITY_WITH_AB_COMPONENTS(32, 23);
     ASSERT_EQ(TestSystem::initialCallCount, 0);
     ASSERT_EQ(TestSystem::suspendCallCount, 0);
     ASSERT_EQ(TestSystem::updateCallCount, 0);
@@ -512,4 +511,3 @@ TEST_F(ECSTest, ComponentIsDeactivate)
     ASSERT_EQ(TestSystem::resumeCallCount, 1);
     ASSERT_EQ(TestSystem::shutdownCallCount, 0);
 }
-#endif // defined(RPP_PLATFORM_WINDOWS)

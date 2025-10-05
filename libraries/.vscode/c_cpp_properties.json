@@ -11,7 +11,8 @@
                 "UNICODE",
                 "_UNICODE",
                 "RPP_PLATFORM_LINUX",
-                "RPP_DEBUG"
+                "RPP_DEBUG",
+                "RPP_TEST_MODE"
             ],
             "windowsSdkVersion": "10.0.26100.0",
             "compilerPath": "cl.exe",

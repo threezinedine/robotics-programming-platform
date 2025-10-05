@@ -5,7 +5,10 @@
 #include "system.h"
 #include "type.h"
 
-class ECSAssert; ///< Used only for testing purpose.
+#if defined(RPP_TEST_MODE)
+#define private public // For testing purpose only.
+#define protected public
+#endif
 
 namespace rpp
 {
@@ -63,11 +66,6 @@ namespace rpp
      */
     class ECS
     {
-#if defined(RPP_PLATFORM_WINDOWS)
-    public:
-        friend class ECSAssert; ///< Used only for testing purpose.
-#endif
-
     private:
         struct ECSData
         {
@@ -247,3 +245,8 @@ namespace rpp
         static ECSId s_currentEcsIndex;              ///< The index of the current ECS system instance.
     };
 } // namespace rpp
+
+#if defined(RPP_TEST_MODE)
+#undef private public // For testing purpose only.
+#undef protected public
+#endif
