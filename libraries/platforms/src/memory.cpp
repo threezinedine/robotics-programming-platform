@@ -1,3 +1,5 @@
+#if defined(RPP_PLATFORM_WINDOWS) && defined(RPP_DEBUG)
+
 #include <cstdlib>
 #include "platforms/console.h"
 #include <cstdio>
@@ -238,3 +240,5 @@ void GetMemoryAllocated(char *buffer, size_t bufferSize)
         snprintf(buffer, bufferSize, "No memory leaks detected.\n");
     }
 }
+
+#endif // RPP_PLATFORM_WINDOWS
