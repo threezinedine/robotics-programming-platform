@@ -1,5 +1,5 @@
 {% for enum in enums %}
-    {% if "python" in enum.annotations %}
+    {% if "e2e" in enum.annotations %}
 class {{ enum.name }}(Enum):
     {% if enum.comment-%}
     """ 

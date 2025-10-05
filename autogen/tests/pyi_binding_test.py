@@ -10,7 +10,7 @@ def test_bind_enum(generateFunc: GenerateFuncType) -> None:
     result = generateFunc(
         """
 /// @brief Color enumeration
-enum RPP_PYTHON_BINDING Color {
+enum RPP_E2E_BINDING Color {
     RED,
     GREEN, ///< Green color
     BLUE RPP_HIDE = 10,
@@ -58,7 +58,7 @@ def test_binding_struct(generateFunc: GenerateFuncType) -> None:
     result = generateFunc(
         """
 /// @brief Point structure
-struct RPP_PYTHON_BINDING Point {
+struct RPP_E2E_BINDING Point {
     int x; ///< X coordinate
     int y; ///< Y coordinate
     std::string label;
@@ -106,7 +106,7 @@ struct Point {
 def test_not_bind_protected_or_private_fields(generateFunc: GenerateFuncType) -> None:
     result = generateFunc(
         """
-struct RPP_PYTHON_BINDING Point {
+struct RPP_E2E_BINDING Point {
     int x;
 private:
     int y;
@@ -130,12 +130,12 @@ def test_bind_class(generateFunc: GenerateFuncType) -> None:
     result = generateFunc(
         """
 /// @brief Person class
-class RPP_PYTHON_BINDING Person {
+class RPP_E2E_BINDING Person {
 public:
     Person();
 
     /// @brief Get the name of the person
-    std::string getName() const RPP_PYTHON_BINDING;
+    std::string getName() const RPP_E2E_BINDING;
 };
 """,
         "pyi_class_binding.j2",
@@ -163,12 +163,12 @@ class Person:
 def test_bind_class_with_fields(generateFunc: GenerateFuncType) -> None:
     result = generateFunc(
         """
-class RPP_PYTHON_BINDING Person {
+class RPP_E2E_BINDING Person {
 public:
     Person();
 
-    std::string getName() const RPP_PYTHON_BINDING;
-    void setName(const std::string& name) RPP_PYTHON_BINDING;
+    std::string getName() const RPP_E2E_BINDING;
+    void setName(const std::string& name) RPP_E2E_BINDING;
 
     int getAge() const;
 
@@ -209,10 +209,10 @@ class Person:
 def test_bind_static_method(generateFunc: GenerateFuncType) -> None:
     result = generateFunc(
         """
-class RPP_PYTHON_BINDING MathUtils {
+class RPP_E2E_BINDING MathUtils {
 public:
-    static int add(int a, int b) RPP_PYTHON_BINDING;
-    static float multiply(float x, float y) RPP_PYTHON_BINDING;
+    static int add(int a, int b) RPP_E2E_BINDING;
+    static float multiply(float x, float y) RPP_E2E_BINDING;
     static void log(const std::string& message);
 };
 """,
@@ -240,9 +240,9 @@ class MathUtils:
 def test_bind_singleton_class(generateFunc: GenerateFuncType) -> None:
     result = generateFunc(
         """
-class RPP_PYTHON_BINDING RPP_SINGLETON ConfigManager {
+class RPP_E2E_BINDING RPP_SINGLETON ConfigManager {
     public:
-        void loadConfig(const std::string& filepath) RPP_PYTHON_BINDING;
+        void loadConfig(const std::string& filepath) RPP_E2E_BINDING;
 
         void saveConfig(const std::string& filepath);
 };
@@ -265,14 +265,14 @@ class ConfigManager:
 def test_bind_class_with_static_method(generateFunc: GenerateFuncType) -> None:
     result = generateFunc(
         """
-class RPP_PYTHON_BINDING Timer {
+class RPP_E2E_BINDING Timer {
 public:
     Timer();
 
-    void Start() RPP_PYTHON_BINDING;
-    float Elapsed() const RPP_PYTHON_BINDING;
+    void Start() RPP_E2E_BINDING;
+    float Elapsed() const RPP_E2E_BINDING;
 
-    static float GetCurrentTime() RPP_PYTHON_BINDING;
+    static float GetCurrentTime() RPP_E2E_BINDING;
 };
 """,
         "pyi_class_binding.j2",
@@ -301,11 +301,11 @@ class Timer:
 def test_bind_class_with_constructor_arguments(generateFunc: GenerateFuncType) -> None:
     result = generateFunc(
         """
-class RPP_PYTHON_BINDING Rectangle {
+class RPP_E2E_BINDING Rectangle {
 public:
-    Rectangle(int width, int height) RPP_PYTHON_BINDING;
+    Rectangle(int width, int height) RPP_E2E_BINDING;
 
-    int area() const RPP_PYTHON_BINDING;
+    int area() const RPP_E2E_BINDING;
 };""",
         "pyi_class_binding.j2",
         [],
@@ -325,12 +325,12 @@ class Rectangle:
 def test_bind_multiple_constructors(generateFunc: GenerateFuncType) -> None:
     result = generateFunc(
         """
-class RPP_PYTHON_BINDING Rectangle {
+class RPP_E2E_BINDING Rectangle {
 public:
     Rectangle();
     Rectangle(int width, int height);
 
-    int area() const RPP_PYTHON_BINDING;
+    int area() const RPP_E2E_BINDING;
 };""",
         "pyi_class_binding.j2",
         [],
@@ -355,7 +355,7 @@ class Rectangle:
 def test_bind_function(generateFunc: GenerateFuncType) -> None:
     result = generateFunc(
         """
-void testFunction(int a, float b) RPP_PYTHON_BINDING;
+void testFunction(int a, float b) RPP_E2E_BINDING;
 """,
         "pyi_function_binding.j2",
         [],
@@ -404,7 +404,7 @@ def FromString_Work(s: str) -> Work:
 def test_bind_float_attributes(generateFunc: GenerateFuncType) -> None:
     result = generateFunc(
         """
-struct RPP_PYTHON_BINDING Rect {
+struct RPP_E2E_BINDING Rect {
     float centerX;
     float centerY;
     float width;

@@ -83,7 +83,7 @@ int main(void)
     // }
 =======
 #if defined(RPP_USE_TEST)
-    TestSystem::Initialize(
+    TestSystem::GetInstance()->Initialize(
         String("C:\\Users\\APC\\Projects\\robotics-programming-platform\\e2e-gruntime\\TestReports\\result.json"),
         String(""),
         String("C:\\Users\\APC\\Projects\\robotics-programming-platform\\e2e-gruntime\\empty_scenario.py"));
@@ -96,9 +96,9 @@ int main(void)
         while (TRUE)
         {
 #if defined(RPP_USE_TEST)
-            if (!TestSystem::ShouldApplicationClose())
+            if (!TestSystem::GetInstance()->ShouldApplicationClose())
             {
-                TestSystem::Update(0.0f);
+                TestSystem::GetInstance()->Update(0.0f);
             }
 #endif
 
@@ -108,7 +108,7 @@ int main(void)
             }
 
 #if defined(RPP_USE_TEST)
-            if (TestSystem::ShouldApplicationClose())
+            if (TestSystem::GetInstance()->ShouldApplicationClose())
             {
                 // Close all the sessions when the test thread ends
                 u32 sessionCount = GraphicSessionManager::GetInstance()->GetSessionCount();
@@ -124,7 +124,7 @@ int main(void)
     }
 
 #if defined(RPP_USE_TEST)
-    TestSystem::Shutdown();
+    TestSystem::GetInstance()->Shutdown();
 #endif
 
     GraphicSessionManager::GetInstance()->ClearSessions();

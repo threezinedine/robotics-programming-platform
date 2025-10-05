@@ -1,13 +1,16 @@
 #pragma once
 #include "modules/modules.h"
+#include "command_stack.h"
 
 namespace rpp
 {
     /**
      * Used for e2e testing of the applications module
      */
-    class TestSystem
+    class RPP_SINGLETON TestSystem
     {
+        RPP_SINGLETON_DEFINE(TestSystem);
+
     public:
         /**
          * Starting the test system with the given scripts (these scripts is python scripts).
@@ -20,15 +23,15 @@ namespace rpp
          * @note these scripts' paths must be ABSOLUTE physical paths, so inside this module, we dont use the `FileSystem` module
          * to read these files, instead, we use the native file reading APIs.
          */
-        static void Initialize(const String &resultFilePath,
-                               const String &setupFilePath = "",
-                               const String &updateFilePath = "",
-                               const String &shutdownFilePath = "");
+        void Initialize(const String &resultFilePath,
+                        const String &setupFilePath = "",
+                        const String &updateFilePath = "",
+                        const String &shutdownFilePath = "");
 
         /**
          * Shuts down the test system, releasing all resources.
          */
-        static void Shutdown();
+        void Shutdown();
 
     public:
         /**
@@ -38,13 +41,16 @@ namespace rpp
          *
          * @note this function will be called from the main thread, with locking mechanism for coroutine behavior
          */
-        static void Update(f32 deltaTime);
+        void Update(f32 deltaTime);
 
         /**
          * @brief Checks if the test system should close, typically when all tests are done.
          * @return TRUE if the test system should close, FALSE otherwise.
          */
-        static b8 ShouldApplicationClose();
+        b8 ShouldApplicationClose();
+
+        inline const CommandStack &GetCommandStack() const { return m_commandStack; }
+        inline CommandStack &GetCommandStack() { return m_commandStack; }
 
     public:
         /**
@@ -52,21 +58,39 @@ namespace rpp
          * @note This function is useful for implementing coroutine-like behavior in the test system. Only
          * be called from the test thread.
          */
-        static void Yield();
+        void Yield() RPP_E2E_BINDING;
+
+        /**
+         * @brief Pauses the execution of the current thread for a specified duration in milliseconds.
+         * @param milliseconds The duration to wait in milliseconds.
+         * @note This function can be called from test thread only.
+         */
+        void Wait(f32 milliseconds) RPP_E2E_BINDING;
 
     private:
-        static void TestThreadFunction(void *pParam);
+        /**
+         * The function executed by the test thread.
+         * @param arg Pointer to any arguments passed to the thread (not used here).
+         */
+        void TestThreadFunction(void *pParam);
+
+        static void TestThreadStaticFunction(void *pParam);
 
     private:
-        static String s_resultFilePath;        ///< The path to the result file.
-        static String s_setupScriptContent;    ///< The content of the setup script.
-        static String s_updateScriptContent;   ///< The content of the update script.
-        static String s_shutdownScriptContent; ///< The content of the shutdown script.
+        String m_resultFilePath;        ///< The path to the result file.
+        String m_setupScriptContent;    ///< The content of the setup script.
+        String m_updateScriptContent;   ///< The content of the update script.
+        String m_shutdownScriptContent; ///< The content of the shutdown script.
 
-        static SignalId s_testThreadSignal; ///< Signal to control the test thread.
-        static SignalId s_mainThreadSignal; ///< Signal to control the main thread.
-        static ThreadId s_testThreadId;     ///< The ID of the test thread.
+        SignalId m_testThreadSignal; ///< Signal to control the test thread.
+        SignalId m_mainThreadSignal; ///< Signal to control the main thread.
+        ThreadId m_testThreadId;     ///< The ID of the test thread.
 
-        static b8 s_shouldApplicationClose; ///< Flag indicating if the application should close.
+        b8 m_shouldApplicationClose; ///< Flag indicating if the application should close.
+
+        HighResTimer m_timer; ///< Used for testing time-related functionalities.
+
+        CommandStack m_commandStack; ///< Stack to keep track of commands executed in the test system.
+                                     ///< TODO: use stack later
     };
 } // namespace rpp

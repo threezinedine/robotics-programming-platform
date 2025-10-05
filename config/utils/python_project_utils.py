@@ -217,12 +217,20 @@ def RunPythonProject(
         #     "core.pyi",
         # )
 
+        pyiE2EGRuntimeOutput = os.path.join(
+            Constants.ABSOLUTE_BASE_DIR,
+            "e2e-gruntime",
+            "Engine",
+            "__init__.pyi",
+        )
+
         isAnyHeaderFileChanged = any(
             IsFileModified(headerFile)
             for headerFile in allHeaderFiles + allTemplateFiles + [typeMapFiles]
         )
 
         isE2EOutputFileExists = os.path.isfile(e2eOutput)
+        isPyiE2EGRuntimeFileExists = os.path.isfile(pyiE2EGRuntimeOutput)
         # isPyiFileExists = os.path.isfile(pyiBindingOutput)
         # isCppBindingFileExists = os.path.isfile(cppBindingOutput)
 
@@ -231,6 +239,7 @@ def RunPythonProject(
             # and isPyiFileExists
             # and isCppBindingFileExists
             and isE2EOutputFileExists
+            and isPyiE2EGRuntimeFileExists
             and not reset
             and not force
         ):
@@ -304,6 +313,13 @@ def RunPythonProject(
             e2eOutput,
         ]
 
+        pyiE2EGRuntimeOutputArgs = argCommon + [
+            "--template",
+            os.path.join(cwd, "templates", "pyi_binding.j2"),
+            "--output",
+            pyiE2EGRuntimeOutput,
+        ]
+
         logger.info("Header files have changed. Running autogen...")
 
         try:
@@ -348,6 +364,17 @@ def RunPythonProject(
                     mainScript,
                 ]
                 + e2eOutputArgs,
+                check=True,
+                shell=True,
+                cwd=cwd,
+            )
+
+            subprocess.run(
+                [
+                    pythonExe,
+                    mainScript,
+                ]
+                + pyiE2EGRuntimeOutputArgs,
                 check=True,
                 shell=True,
                 cwd=cwd,

@@ -1,5 +1,5 @@
 {% for class in classes %}
-    {% if "python" in class.annotations %}
+    {% if "e2e" in class.annotations %}
 class {{ class.name }}:
     {%if class.comment-%}
     """
@@ -21,7 +21,7 @@ class {{ class.name }}:
     {% endif %}
     {% endif %}
         {% for method in class.methods-%}  
-            {%-if "python" in method.annotations %}  
+            {%-if "e2e" in method.annotations %}  
     {% if method.isStatic or "singleton" in class.annotations -%} @staticmethod {%- endif %}
     def {{ method.name }}({% if not method.isStatic and "singleton" not in class.annotations -%} 
         self 

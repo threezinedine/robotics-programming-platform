@@ -62,8 +62,10 @@ set_target_properties(Engine PROPERTIES
 set(SOURCE_FILE ${CMAKE_CURRENT_BINARY_DIR}/Debug/Engine.pyd)
 set(TARGET_FILE ${CMAKE_BINARY_DIR}/Engine.pyd)
 
-add_custom_command(
-    TARGET Engine POST_BUILD
+add_custom_target(
+    EngineCopy ALL
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SOURCE_FILE} ${TARGET_FILE}
     COMMENT "========== Copying Engine.pyd to runtime folder... =========="
 )
+
+add_dependencies(EngineCopy RPPApplications)

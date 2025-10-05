@@ -25,6 +25,7 @@ def ParserContentWrapper(text: str, includeLibs: list[str] = []) -> str:
 #define RPP_SINGLETON __attribute__((annotate("singleton")))
 #define RPP_JSON __attribute__((annotate("json")))
 #define RPP_JSON_KEY(name) __attribute__((annotate("key:" name)))
+#define RPP_E2E_BINDING __attribute__((annotate("e2e")))
 
 #define RPP_HIDE __attribute__((annotate("hide")))
 

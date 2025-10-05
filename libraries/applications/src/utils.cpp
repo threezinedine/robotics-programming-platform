@@ -2,7 +2,7 @@
 
 namespace rpp
 {
-    void Print(const String &message)
+    void TestLog(const String &message)
     {
         print(message.CStr());
         print("\n");

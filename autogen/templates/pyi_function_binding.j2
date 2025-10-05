@@ -1,5 +1,5 @@
 {% for function in functions %}
-{% if "python" in function.annotations %}
+{% if "e2e" in function.annotations %}
 def {{ function.name }}({{ methodParametersPyi(function, true) }}) -> {{ convertCppTypeToPyType(function.returnType) }}:
     {{ objectComment(function, "") }}
     ...
