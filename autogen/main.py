@@ -10,6 +10,11 @@ def ConfigureClangLibrary(clangPath: str) -> None:
 def main():
     args = Args()
 
+    print("Clang Path:", args.ClangPath)
+    with open(args.ClangPath, "r", encoding="utf-8") as f:
+        print("Clang exist")
+    
+
     ConfigureClangLibrary(args.ClangPath)
     output = Generate(args.InputFiles, args.TemplateFile)
 

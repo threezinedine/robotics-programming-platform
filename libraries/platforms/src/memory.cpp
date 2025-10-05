@@ -2,6 +2,7 @@
 #include "platforms/console.h"
 #include <cstdio>
 #include <stdexcept>
+#include <cstring>
 
 #include "platforms/memory.h"
 
@@ -217,7 +218,7 @@ u64 GetMemoryAllocated()
 
 void GetMemoryAllocated(char *buffer, size_t bufferSize)
 {
-    memset(buffer, 0, bufferSize);
+    std::memset(buffer, 0, bufferSize);
     MemHeader *node = g_memList.head;
     u64 total = 0;
 

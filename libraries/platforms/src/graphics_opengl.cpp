@@ -8,8 +8,10 @@
 #include <functional>
 #include <stdexcept>
 #include "platforms/memory.h"
+#include <cstring>
 
 #if defined(RPP_DEBUG)
+
 #define GL_ASSERT(expression)                                                                                                        \
     do                                                                                                                               \
     {                                                                                                                                \
@@ -26,7 +28,7 @@
                 getError(error, errorMessage, &size);                                                                                \
                 std::snprintf(finalMessage, sizeof(finalMessage), "OpenGL Error: %s at: %s:%d\n", errorMessage, __FILE__, __LINE__); \
                 print(finalMessage, ConsoleColor::RED);                                                                              \
-                __debugbreak();                                                                                                      \
+                debugbreak();                                                                                                        \
             }                                                                                                                        \
         }                                                                                                                            \
     } while (0)

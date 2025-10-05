@@ -56,12 +56,28 @@ Ref<T> CreateRef(Args &&...args)
     return std::make_shared<T>(std::forward<Args>(args)...);
 }
 
+#if defined(_MSC_VER)
+#define debugbreak() __debugbreak()
+#elif defined(__GNUC__) || defined(__clang__)
+#include <csignal>
+#define debugbreak() raise(SIGTRAP)
+#endif
+
+#if defined(_MSC_VER)
 /**
  * Used for marking the block of code in switch-case statement which should never be reached or the debugger should break when it is reached.
  */
 #define RPP_UNREACHABLE() \
     __debugbreak();       \
     __assume(0)
+#elif defined(__GNUC__) || defined(__clang__)
+/**
+ * Used for marking the block of code in switch-case statement which should never be reached or the debugger should break when it is reached.
+ */
+#define RPP_UNREACHABLE() assert(false && "This code should never be reached")
+#else
+#error "Unsupported compiler"
+#endif
 
 /**
  * Later used for modifying the flags of the compiler to not ignore the unused variable warning.

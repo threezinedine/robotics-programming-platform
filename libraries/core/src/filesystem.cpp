@@ -2,7 +2,11 @@
 #include <fstream>
 #include <filesystem>
 #include "core/assertions.h"
+
+#if defined(RPP_PLATFORM_WINDOWS)
 #include <direct.h>
+#else
+#endif
 
 /**
  * @note not using the FileSystem interface because it can be messed up with the testing environment
@@ -39,7 +43,11 @@ namespace rpp
             s_convertedCWD = s_convertedCWD.Replace("I:/", "i/");
 
             // create the temporary directory if it does not exist
+#if defined(RPP_PLATFORM_WINDOWS)
             _mkdir(s_temporaryPathRoot.CStr());
+#else
+            std::filesystem::create_directory(s_temporaryPathRoot.CStr());
+#endif
         }
 
         RPP_ASSERT(s_fileEntries == nullptr);
@@ -87,11 +95,12 @@ namespace rpp
             return path;
         }
 
+        String physicalPath = path;
+
         // In testing environment, prepend the temporary path root
 #if RPP_PLATFORM_WINDOWS
         // TODO: Need a better way to handle drive letters in paths, maybe use Regex?
 
-        String physicalPath = path;
         physicalPath = physicalPath.Replace("\\", "/", TRUE);
         physicalPath = physicalPath.Replace("C:/", "c/");
         physicalPath = physicalPath.Replace("D:/", "d/");
@@ -100,6 +109,9 @@ namespace rpp
         physicalPath = physicalPath.Replace("G:/", "g/");
         physicalPath = physicalPath.Replace("H:/", "h/");
         physicalPath = physicalPath.Replace("I:/", "i/");
+
+#else
+#endif
 
         if (physicalPath.SubString(0, s_convertedCWD.Length()) != s_convertedCWD)
         {
@@ -110,9 +122,6 @@ namespace rpp
             physicalPath = s_temporaryPathRoot + "/" + physicalPath;
         }
         return physicalPath;
-#else
-#error "FileSystem is only implemented for Windows platform."
-#endif
     }
 
     b8 FileSystem::IsPhysicalPathExists(const String &path)
@@ -137,7 +146,11 @@ namespace rpp
                 continue;
             }
 
+#if defined(RPP_PLATFORM_WINDOWS)
             _mkdir(currentFolder.CStr());
+#else
+            std::filesystem::create_directory(currentFolder.CStr());
+#endif
         }
     }
 

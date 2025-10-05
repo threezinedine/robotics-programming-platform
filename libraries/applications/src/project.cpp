@@ -22,7 +22,7 @@ namespace rpp
     {
     }
 
-    Project Project::CreateProject(const ProjectDescription &desc) RPP_PYTHON_BINDING
+    Project Project::CreateProject(const ProjectDescription &desc)
     {
         return Project(desc);
     }

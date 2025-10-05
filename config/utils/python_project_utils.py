@@ -3,12 +3,14 @@ import subprocess
 from .path_utils import (
     CreateRecursiveDirIfNotExists,
     GetAbosolutePythonExecutable,
+    GetAbsolutePipExecutable,
     GetAbsoluteVirtualEnvDir,
 )
 from ..logger import logger
 from ..constants import Constants
 from .cache_file_utils import IsFileModified, UpdateFileCache
 from .validation_utils import ValidateCommandExists
+from .run_command import RunCommand
 
 
 def InstallPackages(
@@ -27,41 +29,23 @@ def InstallPackages(
         The list of packages to install.
     """
 
-    pythonExe = GetAbosolutePythonExecutable(projectDir)
+    pipExe = GetAbsolutePipExecutable(projectDir)
     cwd = os.path.join(Constants.ABSOLUTE_BASE_DIR, projectDir)
 
     try:
         logger.info(f"Installing packages in '{projectDir}': {', '.join(packages)}")
-        subprocess.run(
-            [
-                pythonExe,
-                "-m",
-                "pip",
-                "install",
-            ]
-            + packages,
-            check=True,
-            shell=True,
-            capture_output=True,
-            cwd=cwd,
-        )
+
+        installPackagesCommand = f"{pipExe} install " + " ".join(packages)
+
+        RunCommand(installPackagesCommand, cwd=cwd)
+
         logger.info("Packages installed successfully.")
 
         logger.info("Update the requirements.txt file...")
-        subprocess.run(
-            [
-                pythonExe,
-                "-m",
-                "pip",
-                "freeze",
-                ">",
-                "requirements.txt",
-            ],
-            check=True,
-            shell=True,
-            capture_output=True,
-            cwd=cwd,
-        )
+        updateRequirementsCommand = f"{pipExe} freeze > requirements.txt"
+
+        RunCommand(updateRequirementsCommand, cwd=cwd)
+
         logger.info("requirements.txt file updated successfully.")
 
     except subprocess.CalledProcessError as e:
@@ -262,23 +246,25 @@ def RunPythonProject(
             logger.info("No header files have changed. Skipping autogen.")
             return
 
-        ValidateCommandExists("clang")
+        if Constants.IsWindowsPlatform():
+            ValidateCommandExists("clang")
 
-        clangPathResult = subprocess.run(
-            [
-                "where",
-                "clang",
-            ],
-            check=True,
-            shell=True,
-            capture_output=True,
-        )
+            findClangCommand = (
+                "where clang" if Constants.IsWindowsPlatform() else "which clang"
+            )
+            clangPathResult = RunCommand(findClangCommand)
 
-        clangPath = clangPathResult.stdout.decode().strip()
-        if not clangPath:
-            raise FileNotFoundError("Clang executable not found in PATH.")
+            assert clangPathResult is not None, "Failed to find clang executable."
 
-        clangPathDll = clangPath.replace("clang.exe", "libclang.dll")
+            clangPath = clangPathResult.strip()
+            if not clangPath:
+                raise FileNotFoundError("Clang executable not found in PATH.")
+
+            clangPathDll = clangPath.replace("clang.exe", "libclang.dll")
+        else:
+            clangPathDll = os.path.join(
+                Constants.ABSOLUTE_BASE_DIR, "assets", "libclang.so"
+            )
 
         logger.debug(f"Using Clang library at: {clangPathDll}")
 
@@ -362,36 +348,14 @@ def RunPythonProject(
             #     cwd=cwd,
             # )
 
-            subprocess.run(
-                [
-                    pythonExe,
-                    mainScript,
-                ]
-                + writerOutputArgs,
-                check=True,
-                shell=True,
-                cwd=cwd,
-            )
-
-            subprocess.run(
-                [
-                    pythonExe,
-                    mainScript,
-                ]
-                + e2eOutputArgs,
-                check=True,
-                shell=True,
-                cwd=cwd,
-            )
-
-            subprocess.run(
-                [
-                    pythonExe,
-                    mainScript,
-                ]
-                + pyiE2EGRuntimeOutputArgs,
-                check=True,
-                shell=True,
+            RunCommand(
+                " ".join(
+                    [
+                        pythonExe,
+                        mainScript,
+                    ]
+                    + writerOutputArgs
+                ),
                 cwd=cwd,
             )
 
@@ -426,20 +390,9 @@ def RunPythonProject(
 
         try:
             logger.info("Build the libraries project...")
-            subprocess.run(
-                [
-                    "python",
-                    "config.py",
-                    "-p",
-                    "libraries",
-                    "build",
-                    "--options",
-                    "RPP_EDITOR=ON",
-                ],
-                check=True,
-                shell=True,
-                cwd=Constants.ABSOLUTE_BASE_DIR,
-            )
+
+            buildLibrariesCommand = f"{Constants.PYTHON_SCRIPT} config.py -p libraries build --options RPP_EDITOR=ON"
+            RunCommand(buildLibrariesCommand)
 
             if len(uiFilesChanged) > 0:
                 logger.info("Converting .ui files to .py files...")
@@ -503,24 +456,25 @@ def RunPythonProjectTest(projectDir: str, filter: str | None = None) -> None:
         Optional filter to pass to pytest to run specific tests only (default is None).
     """
 
-    pytestExe = os.path.join(
-        GetAbsoluteVirtualEnvDir(projectDir),
-        "Scripts",
-        "pytest.exe",
-    )
+    if Constants.IsWindowsPlatform():
+        pytestExe = os.path.join(
+            GetAbsoluteVirtualEnvDir(projectDir),
+            "Scripts",
+            "pytest.exe",
+        )
+    else:
+        pytestExe = os.path.join(
+            GetAbsoluteVirtualEnvDir(projectDir),
+            "bin",
+            "pytest",
+        )
+
     cwd = os.path.join(Constants.ABSOLUTE_BASE_DIR, projectDir)
 
     try:
         logger.info(f"Running Python project in '{projectDir}' in test mode...")
-        subprocess.run(
-            [
-                pytestExe,
-                f"-k {filter}" if filter else "",
-            ],
-            check=True,
-            shell=True,
-            cwd=cwd,
-        )
+        runTestCommand = f"{pytestExe} " + (f"-k {filter}" if filter else "")
+        RunCommand(runTestCommand, cwd=cwd, capture=False)
         logger.info(f"Python project '{projectDir}' finished successfully.")
 
     except Exception as e:

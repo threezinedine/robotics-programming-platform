@@ -1,6 +1,7 @@
 from config.dependency import InstallCppDependencies
 from config.utils.validation_utils import ValidateCommandExists, ValidateEnvDirExists
 from config.args import Args, CppProjectNames, PythonProjectNames
+from config.constants import Constants
 from config.utils.python_project_utils import (
     InstallPackages,
     RunPythonProject,
@@ -19,9 +20,11 @@ from config.utils.cpp_project_utils import (
 def main():
     args = Args()
 
+    Constants.Setup()
+
     # ================== System Validation ==================
-    ValidateCommandExists("python")
-    ValidateCommandExists("pip")
+    ValidateCommandExists(Constants.PYTHON_SCRIPT)
+    ValidateCommandExists("pip3")
     ValidateCommandExists("g++")
     ValidateCommandExists("gcc")
 

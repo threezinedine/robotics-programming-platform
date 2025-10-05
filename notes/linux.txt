@@ -1,0 +1,3 @@
+sudo apt install xorg-dev
+sudo apt install libwayland-dev libxkbcommon-dev wayland-protocols extra-cmake-modules
+sudo apt install clang libclang-dev

@@ -34,14 +34,43 @@ def GetAbosolutePythonExecutable(projectName: str) -> str:
     """
     Solid way to retrieve the absolute path of the Python executable within the virtual environment for a given project.
     """
-    return os.path.normpath(
-        os.path.join(
-            GetAbsoluteVirtualEnvDir(projectName),
-            "Scripts",
-            "python.exe",
+    if Constants.IsWindowsPlatform():
+        return os.path.normpath(
+            os.path.join(
+                GetAbsoluteVirtualEnvDir(projectName),
+                "Scripts",
+                "python.exe",
+            )
         )
-    )
+    else:
+        return os.path.normpath(
+            os.path.join(
+                GetAbsoluteVirtualEnvDir(projectName),
+                "bin",
+                "python3",
+            )
+        )
 
+def GetAbsolutePipExecutable(projectName: str) -> str:
+    """
+    Solid way to retrieve the absolute path of the pip executable within the virtual environment for a given project.
+    """
+    if Constants.IsWindowsPlatform():
+        return os.path.normpath(
+            os.path.join(
+                GetAbsoluteVirtualEnvDir(projectName),
+                "Scripts",
+                "pip.exe",
+            )
+        )
+    else:
+        return os.path.normpath(
+            os.path.join(
+                GetAbsoluteVirtualEnvDir(projectName),
+                "bin",
+                "pip3",
+            )
+        )
 
 def GetAbsoluteBuildDir(projectName: str, buildType: str) -> str:
     """
