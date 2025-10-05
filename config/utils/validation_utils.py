@@ -28,7 +28,7 @@ def ValidateCommandExists(command: str, required: bool = True) -> None:
 
     try:
         logger.debug(f"Checking if command '{command}' exists...")
-        RunCommand(f"{command} --version", cwd=Constants.ABSOLUTE_BASE_DIR)
+        RunCommand(f"{command} --version", capture=False)
         logger.debug(f"Command '{command}' exists.")
     except Exception as e:
         if required:

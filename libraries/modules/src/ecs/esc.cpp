@@ -80,7 +80,11 @@ namespace rpp
             for (u32 componentIndex = 0; componentIndex < entity->numberOfComponents; ++componentIndex)
             {
                 RPP_FREE(entity->ppComponents[componentIndex]->pData);
+<<<<<<< HEAD
                 RPP_FREE(entity->ppComponents[componentIndex]);
+=======
+                RPP_DELETE(entity->ppComponents[componentIndex]);
+>>>>>>> 4ba3f7c ([feature] complete linux project setup)
             }
 
             RPP_FREE(entity->ppComponents);
