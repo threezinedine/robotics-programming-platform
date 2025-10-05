@@ -9,6 +9,7 @@ import shutil
 from ..logger import logger
 from ..constants import Constants
 from .path_utils import GetAbosolutePythonExecutable
+from .run_command import RunCommand
 
 
 def ValidateCommandExists(command: str, required: bool = True) -> None:
@@ -27,13 +28,7 @@ def ValidateCommandExists(command: str, required: bool = True) -> None:
 
     try:
         logger.debug(f"Checking if command '{command}' exists...")
-        subprocess.run(
-            [command, "--version"],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            check=True,
-            cwd=Constants.ABSOLUTE_BASE_DIR,
-        )
+        RunCommand(f"{command} --version", cwd=Constants.ABSOLUTE_BASE_DIR)
         logger.debug(f"Command '{command}' exists.")
     except Exception as e:
         if required:
@@ -94,52 +89,18 @@ def ValidateEnvDirExists(projectDir: str, recreate: bool = False) -> None:
 
     try:
         logger.info(f"Creating virtual environment in '{projectDir}'...")
-        subprocess.run(
-            [
-                "python",
-                "-m",
-                "venv",
-                "venv",
-            ],
-            check=True,
-            shell=True,
-            capture_output=True,
-            cwd=cwd,
-        )
+        createVenvCommand = f"{Constants.PYTHON_SCRIPT} -m venv venv"
+        RunCommand(createVenvCommand, cwd=cwd)
         logger.info(f"Virtual environment created in '{projectDir}'.")
 
         logger.info("Upgrading pip in the virtual environment...")
-        subprocess.run(
-            [
-                pythonExe,
-                "-m",
-                "pip",
-                "install",
-                "--upgrade",
-                "pip",
-            ],
-            check=True,
-            shell=True,
-            capture_output=True,
-            cwd=cwd,
-        )
+        upgradePipCommand = f"{pythonExe} -m pip install --upgrade pip"
+        RunCommand(upgradePipCommand, cwd=cwd)
         logger.info("pip upgraded successfully.")
 
         logger.info("Installing dependencies in the virtual environment...")
-        subprocess.run(
-            [
-                pythonExe,
-                "-m",
-                "pip",
-                "install",
-                "-r",
-                "requirements.txt",
-            ],
-            check=True,
-            shell=True,
-            capture_output=True,
-            cwd=cwd,
-        )
+        installDepsCommand = f"{pythonExe} -m pip install -r requirements.txt"
+        RunCommand(installDepsCommand, cwd=cwd)
         logger.info("Dependencies installed successfully.")
     except Exception as e:
         logger.error(f"Failed to create virtual environment in '{projectDir}': {e}")

@@ -10,7 +10,7 @@
                 "_DEBUG",
                 "UNICODE",
                 "_UNICODE",
-                "RPP_PLATFORM_WINDOWS",
+                "RPP_PLATFORM_LINUX",
                 "RPP_DEBUG"
             ],
             "windowsSdkVersion": "10.0.26100.0",

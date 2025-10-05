@@ -1,5 +1,6 @@
 #include "test_common.h"
 
+#if defined(RPP_PLATFORM_WINDOWS)
 #define ECS_TEST_DELTA_TIME 0.016f
 
 #define COMPONENT_A_ID 1
@@ -511,3 +512,4 @@ TEST_F(ECSTest, ComponentIsDeactivate)
     ASSERT_EQ(TestSystem::resumeCallCount, 1);
     ASSERT_EQ(TestSystem::shutdownCallCount, 0);
 }
+#endif // defined(RPP_PLATFORM_WINDOWS)

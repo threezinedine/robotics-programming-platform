@@ -1,4 +1,5 @@
 #include "modules/ecs/ecs.h"
+#include <cstring>
 
 namespace rpp
 {

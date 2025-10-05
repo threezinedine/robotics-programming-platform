@@ -8,8 +8,10 @@
 #include <functional>
 #include <stdexcept>
 #include "platforms/memory.h"
+#include <cstring>
 
 #if defined(RPP_DEBUG)
+
 #define GL_ASSERT(expression)                                                                                                        \
     do                                                                                                                               \
     {                                                                                                                                \
@@ -26,7 +28,7 @@
                 getError(error, errorMessage, &size);                                                                                \
                 std::snprintf(finalMessage, sizeof(finalMessage), "OpenGL Error: %s at: %s:%d\n", errorMessage, __FILE__, __LINE__); \
                 print(finalMessage, ConsoleColor::RED);                                                                              \
-                __debugbreak();                                                                                                      \
+                debugbreak();                                                                                                        \
             }                                                                                                                        \
         }                                                                                                                            \
     } while (0)
@@ -174,7 +176,7 @@ namespace rpp
         }
 
         glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         // set window resize callback
         glfwSetWindowUserPointer((GLFWwindow *)m_window, this);

@@ -5,6 +5,7 @@ import shutil
 from .path_utils import GetAbsoluteBuildDir
 from ..logger import logger
 from ..constants import Constants
+from .run_command import RunCommand
 
 
 def BuildProject(
@@ -35,7 +36,13 @@ def BuildProject(
     buildDir = GetAbsoluteBuildDir(projectDir, projectType)
 
     cmakeBuildType = "Debug" if projectType == "dev" else "Release"
-    makefile = "Visual Studio 17 2022"
+
+    if Constants.IsWindowsPlatform():
+        makefile = "Visual Studio 17 2022"
+    elif Constants.IsLinuxPlatform():
+        makefile = "Unix Makefiles"
+    else:
+        raise RuntimeError("Unsupported platform for building C/C++ projects.")
 
     if os.path.exists(buildDir) and recreate:
         logger.info(f"Recreating build directory '{buildDir}'...")
@@ -48,35 +55,14 @@ def BuildProject(
 
     try:
         logger.info(f"Building project in '{projectDir}'...")
-        subprocess.run(
-            [
-                "cmake",
-                "-S",
-                absoluteProjectDir,
-                "-B",
-                buildDir,
-                f"-G {makefile}",
-                f"-DCMAKE_BUILD_TYPE={cmakeBuildType}",
-            ]
-            + finalOptions,
-            check=True,
-            shell=True,
-            cwd=absoluteProjectDir,
-        )
+        cmakeGenerateCommand = f"cmake -S {absoluteProjectDir} -B {buildDir} -G \"{makefile}\" " \
+                                    f" -DCMAKE_BUILD_TYPE={cmakeBuildType} {' '.join(finalOptions)}"
+
+        RunCommand(cmakeGenerateCommand, cwd=absoluteProjectDir)
 
         logger.info("Compiling the project...")
-        subprocess.run(
-            [
-                "cmake",
-                "--build",
-                buildDir,
-                "--config",
-                cmakeBuildType,
-            ],
-            check=True,
-            shell=True,
-            cwd=absoluteProjectDir,
-        )
+        buildCommand = f"cmake --build {buildDir} --config {cmakeBuildType}"
+        RunCommand(buildCommand, cwd=absoluteProjectDir, capture=False)
 
     except Exception as e:
         logger.error(f"Failed to build project in '{projectDir}': {e}")
@@ -158,35 +144,36 @@ def RunLibrariesTest(
 
     buildDir = GetAbsoluteBuildDir("libraries", projectType)
     cmakeBuildType = "Debug" if projectType == "dev" else "Release"
-    executableDir = os.path.join(buildDir, projectDir, cmakeBuildType)
 
-    # find executable file
-    files = os.listdir(executableDir)
-    executable = None
-    for file in files:
-        if file.endswith("tests.exe"):
-            executable = os.path.join(executableDir, file)
-            break
-
-    if executable is None:
-        raise FileNotFoundError(f"No executable found in '{executableDir}'.")
+    if Constants.IsWindowsPlatform():
+        executableDir = os.path.join(buildDir, projectDir, cmakeBuildType)
+    else:
+        executableDir = os.path.join(buildDir, projectDir,)
 
     try:
         logger.info(f"Building project in '{projectDir}'...")
-        subprocess.run(
-            [
-                "cmake",
-                "--build",
-                buildDir,
-                "--config",
-                cmakeBuildType,
-            ],
-            check=True,
-            shell=True,
-            cwd=buildDir,
-        )
+        buildCommand = f"cmake --build {buildDir} --config {cmakeBuildType}"
+        RunCommand(buildCommand, cwd=buildDir)
 
-        command = [executable, f"--gtest_filter={filter}"] if filter else [executable]
+
+        # find executable file
+        files = os.listdir(executableDir)
+        executable = None
+        for file in files:
+            if Constants.IsWindowsPlatform():
+                if file.endswith("tests.exe"):
+                    executable = os.path.join(executableDir, file)
+                    break
+            else:
+                fileCompletePath = os.path.join(executableDir, file)
+                if os.access(fileCompletePath, os.X_OK) and "tests" in file:
+                    executable = fileCompletePath
+                    break
+
+        if executable is None:
+            raise FileNotFoundError(f"No executable found in '{executableDir}'.")
+
+        command = f"{executable} --gtest_filter={filter}" if filter else executable
 
         logger.info(f"Running project '{projectDir}'...")
         logger.debug(f"Executing command: {command}")

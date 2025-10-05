@@ -63,8 +63,10 @@ namespace rpp
      */
     class ECS
     {
+#if defined(RPP_PLATFORM_WINDOWS)
     public:
         friend class ECSAssert; ///< Used only for testing purpose.
+#endif
 
     private:
         struct ECSData

@@ -6,6 +6,7 @@ import typing
 
 from .constants import Constants
 from .logger import logger
+from .utils.run_command import RunCommand
 
 
 @dataclass
@@ -43,18 +44,14 @@ def InstallCppDependencies() -> None:
                 logger.info(f"Dependency '{dep.name}' already exists. Skipping...")
                 continue
 
-            command = ["git", "clone", dep.url]
-            if dep.commit is not None:
-                command += ["--revision", dep.commit]
-            command += [dependenciesDir]
+            command = f"git clone {dep.url} {dependenciesDir} {'--recurse-submodules' if not Constants.IsWindowsPlatform() else ''}"
 
             logger.info(f"Installing C/C++ dependency '{dep.name}'...")
-            subprocess.run(
-                command,
-                check=True,
-                shell=True,
-                cwd=Constants.ABSOLUTE_BASE_DIR,
-            )
+
+            RunCommand(command)
+
+            if dep.commit is not None:
+                RunCommand(f"git checkout {dep.commit}", cwd=dependenciesDir)
 
             logger.debug(f"Dependency '{dep.name}' installed successfully.")
         except Exception as e:
