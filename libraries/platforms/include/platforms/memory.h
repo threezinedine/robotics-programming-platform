@@ -3,6 +3,7 @@
 
 // ================== Operator overloads for new/delete ==================
 
+#if defined(RPP_PLATFORM_WINDOWS) && defined(RPP_DEBUG)
 void *operator new(size_t size);
 void *operator new[](size_t size);
 
@@ -105,3 +106,16 @@ u64 GetMemoryAllocated();
  * @param bufferSize Size of the buffer.
  */
 void GetMemoryAllocated(char *buffer, size_t bufferSize);
+#elif defined(RPP_PLATFORM_LINUX)
+#define RPP_NEW(obj) new obj
+
+#define RPP_NEW_REPLACE(addr, obj) new (addr) obj
+#define RPP_DELETE(ptr) delete ptr
+
+#define RPP_MALLOC(size) malloc(size)
+#define RPP_FREE(ptr) free(ptr)
+
+#define RPP_ENABLE_MEMORY_TRACKING
+#else
+#error "Memory tracking is only supported on Windows and Linux platforms."
+#endif
