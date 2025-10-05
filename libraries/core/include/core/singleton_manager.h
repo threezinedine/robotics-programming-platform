@@ -45,18 +45,18 @@ namespace rpp
      *
      * ```
      */
-    class RPP_PYTHON_BINDING SingletonManager
+    class SingletonManager
     {
     public:
         /**
          * @brief Starting the manager and resource allocation.
          */
-        static b8 Initialize() RPP_PYTHON_BINDING;
+        static b8 Initialize();
 
         /**
          * @brief Shutdown the manager and release all resources.
          */
-        static void Shutdown() RPP_PYTHON_BINDING;
+        static void Shutdown();
 
         /**
          * @brief Register a singleton object with the manager.

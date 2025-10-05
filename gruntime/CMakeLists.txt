@@ -41,8 +41,10 @@ target_compile_definitions(
     ${RPP_BUILD_TYPE_DEFINE}
 )
 
-# set project as default startup project
-set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
+if (MSVC)
+    # set project as default startup project
+    set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
+endif()
 
 # -------------- Tests ----------------
 set(RUNTIME_TEST "${PROJECT_NAME}_test")

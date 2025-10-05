@@ -7,7 +7,7 @@ namespace rpp
     /**
      * Used to measure high resolution time intervals.
      */
-    class RPP_PYTHON_BINDING HighResTimer
+    class HighResTimer
     {
     public:
         HighResTimer();

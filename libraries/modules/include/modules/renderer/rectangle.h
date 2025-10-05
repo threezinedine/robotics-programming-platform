@@ -7,7 +7,7 @@ namespace rpp
     /**
      * @brief Simple instance which is used for rendering rectangles.
      */
-    class RPP_PYTHON_BINDING Rectangle
+    class Rectangle
     {
     private:
         struct RectangleData
@@ -35,14 +35,14 @@ namespace rpp
          *
          * @return The ID of the created rectangle instance.
          */
-        static u32 Create() RPP_PYTHON_BINDING;
+        static u32 Create();
 
         /**
          * @brief Destroy the rectangle instance and free associated resources.
          *
          * @param rectangleId The ID of the rectangle instance to destroy.
          */
-        static void Destroy(u32 rectangleId) RPP_PYTHON_BINDING;
+        static void Destroy(u32 rectangleId);
 
         /**
          * @brief Draw the rectangle using the associated renderer.

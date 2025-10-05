@@ -7,7 +7,7 @@ namespace rpp
     /**
      * @brief Store a 2D point with x and y coordinates.
      */
-    struct RPP_JSON RPP_PYTHON_BINDING Point
+    struct RPP_JSON Point
     {
         f32 x RPP_JSON_KEY("x"); ///< The x-coordinate of the point.
         f32 y RPP_JSON_KEY("y"); ///< The y-coordinate of the point.
@@ -16,7 +16,7 @@ namespace rpp
     /**
      * @brief Store a color with red, green, blue, and alpha components in floating point precision from 0.0 to 1.0.
      */
-    struct RPP_JSON RPP_PYTHON_BINDING Color
+    struct RPP_JSON Color
     {
         f32 r RPP_JSON_KEY("r"); ///< The red component of the color (0.0 to 1.0).
         f32 g RPP_JSON_KEY("g"); ///< The green component of the color (0.0 to 1.0).
@@ -27,7 +27,7 @@ namespace rpp
     /**
      * @brief Store a rectangle defined by its center coordinates, width, and height.
      */
-    struct RPP_JSON RPP_PYTHON_BINDING Rect
+    struct RPP_JSON Rect
     {
         f32 centerX RPP_JSON_KEY("x");     ///< The x-coordinate of the rectangle's center.
         f32 centerY RPP_JSON_KEY("y");     ///< The y-coordinate of the rectangle's center.

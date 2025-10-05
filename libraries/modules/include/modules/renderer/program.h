@@ -7,7 +7,7 @@ namespace rpp
      * @brief Each graphics pipeline is represented by a Program object, which encapsulates the vertex and fragment shaders (maybe include compute shaders).
      * The Program class is responsible for compiling, linking, and managing the lifecycle of the shader program.
      */
-    class RPP_PYTHON_BINDING Program
+    class Program
     {
     private:
         /**
@@ -37,17 +37,17 @@ namespace rpp
          * @param vertexSource The source code for the vertex shader.
          * @param fragmentSource The source code for the fragment shader.
          */
-        static u32 Create(const String &vertexSource, const String &fragmentSource) RPP_PYTHON_BINDING;
+        static u32 Create(const String &vertexSource, const String &fragmentSource);
 
         /**
          * @brief Destroy the graphics pipeline (shader program) and free associated resources.
          */
-        static void Destroy(u32 programId) RPP_PYTHON_BINDING;
+        static void Destroy(u32 programId);
 
         /**
          * @brief Use for activating the graphics pipeline (shader program) for rendering.
          */
-        static void Use(u32 programId) RPP_PYTHON_BINDING;
+        static void Use(u32 programId);
 
         /**
          * @brief Set a float uniform variable in the shader program. The current program must be active (used) before calling this method.
