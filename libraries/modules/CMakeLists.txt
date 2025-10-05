@@ -61,12 +61,41 @@ target_compile_definitions(
 
 RPPTargetDefines(${PROJECT_NAME})
 
+# -------------- Testing Libraries --------------
+set(CMAKE_FOLDER "TestLib")
+set(PROJECT_NAME_TEST_LIB ${PROJECT_NAME}_test_lib)
+add_library(${PROJECT_NAME_TEST_LIB} STATIC ${MODULES_SRC} ${MODULES_HDR})
+
+target_link_libraries(
+    ${PROJECT_NAME_TEST_LIB}
+    PUBLIC
+    RPPCore
+    rpp-imgui
+    rpp-glm
+    rpp-luna
+)
+
+target_include_directories(
+    ${PROJECT_NAME_TEST_LIB} 
+    PUBLIC 
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+
+target_compile_definitions(
+    ${PROJECT_NAME_TEST_LIB}
+    PUBLIC 
+    ${RPP_BUILD_TYPE_DEFINE}
+    RPP_TEST_MODE # Enable test mode for testing purposes only.
+)
+
+RPPTargetDefines(${PROJECT_NAME_TEST_LIB})
+
 RPPFindPackage(rpp-googletest "Dependencies")
 
 # -------------- Test target --------------
 set(CMAKE_FOLDER "Tests")
 set(PROJECT_TEST_NAME ${PROJECT_NAME}_tests)
 add_executable(${PROJECT_TEST_NAME} ${MODULES_SRC_TEST})
-target_link_libraries(${PROJECT_TEST_NAME} PRIVATE rpp-googletest ${PROJECT_NAME})
+target_link_libraries(${PROJECT_TEST_NAME} PRIVATE rpp-googletest ${PROJECT_NAME_TEST_LIB})
 target_include_directories(${PROJECT_TEST_NAME} PRIVATE ${TEST_FOLDER})
 target_precompile_headers(${PROJECT_TEST_NAME} PRIVATE "${TEST_FOLDER}/test_common.h")
