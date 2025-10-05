@@ -42,10 +42,11 @@ macro(RPPProjectSetup)
 
         if (CMAKE_BUILD_TYPE STREQUAL "Debug")
             set(RPP_BUILD_TYPE_DEFINE -DRPP_DEBUG)
-            message("Build type: Debug")
+            message("=============== Build type: Debug ===============")
+            add_compile_options(-Wno-attributes -Wno-dev)
         else()
             set(RPP_BUILD_TYPE_DEFINE -DRPP_RELEASE)
-            message("Build type: Release")
+            message("=============== Build type: Release ===============")
         endif()
 
         set(RPPProjectSetup_DONE TRUE)

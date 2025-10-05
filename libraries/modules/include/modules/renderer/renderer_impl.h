@@ -20,7 +20,7 @@ namespace rpp
     /**
      * @brief Instance for working with drawing in 1 window (each window has its own renderer as 1-1 relation).
      */
-    class RPP_PYTHON_BINDING Renderer
+    class Renderer
     {
     public:
         friend class ImGuiImpl;
@@ -44,12 +44,12 @@ namespace rpp
         /**
          * @brief Initialize the rendering system, should be called once before using any rendering related features.
          */
-        static void Initialize() RPP_PYTHON_BINDING;
+        static void Initialize();
 
         /**
          * @brief Shutdown the rendering system, must be called once before exiting the application.
          */
-        static void Shutdown() RPP_PYTHON_BINDING;
+        static void Shutdown();
 
     private:
         /**
@@ -95,7 +95,7 @@ namespace rpp
         /**
          * @brief Activate the renderer with the given id. This will deactivate any other active renderer.
          */
-        static void Activate(u32 renderId) RPP_PYTHON_BINDING;
+        static void Activate(u32 renderId);
 
         /**
          * @brief Draw a rectangle on the current active renderer.
@@ -131,21 +131,21 @@ namespace rpp
          *
          * @throws std::runtime_error if the renderId is invalid.
          */
-        static void Destroy(u32 renderId) RPP_PYTHON_BINDING;
+        static void Destroy(u32 renderId);
 
         /**
          * @brief All operations to be done before drawing the frame.
          */
-        static void PreDraw() RPP_PYTHON_BINDING;
+        static void PreDraw();
 
         /**
          * @brief All operations to be done after drawing the frame.
          */
-        static void PostDraw() RPP_PYTHON_BINDING;
+        static void PostDraw();
 
         /**
          * @brief Present the rendered frame to the window.
          */
-        static void Present() RPP_PYTHON_BINDING;
+        static void Present();
     };
 } // namespace rpp

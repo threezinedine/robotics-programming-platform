@@ -11,7 +11,7 @@ namespace rpp
      * @brief All predefined types of the message log where the log message can be categorized based
      *      on the severity level.
      */
-    enum class RPP_PYTHON_BINDING LogLevel
+    enum class LogLevel
     {
         TRACE,   ///< Very detailed information, typically of interest only when diagnosing problems.
         DEBUG,   ///< Detailed information, typically of interest only when diagnosing problems.
@@ -26,7 +26,7 @@ namespace rpp
      * @brief an object which stores all needed information for a single log entry. This object must be handled
      *      by the handler of the logging system.
      */
-    struct RPP_PYTHON_BINDING LogRecord
+    struct LogRecord
     {
         LogLevel level; ///< The severity level of the log message.
         String message; ///< The log message to be recorded.
@@ -41,7 +41,7 @@ namespace rpp
      *
      * @note CUSTOM type is reserved for user-defined handlers and is not associated with any predefined handler implementation.
      */
-    enum class RPP_PYTHON_BINDING HandlerType : u8
+    enum class HandlerType : u8
     {
         CONSOLE = (0x01),      ///< Output log messages to the console (standard output).
         FILE = (0x01 << 1),    ///< Write log messages to a file.
@@ -82,7 +82,7 @@ namespace rpp
     /**
      * The logging system (singleton class) that provides logging functionalities.
      */
-    class RPP_SINGLETON RPP_PYTHON_BINDING Logging
+    class RPP_SINGLETON Logging
     {
         RPP_SINGLETON_DEFINE(Logging);
 
@@ -100,7 +100,7 @@ namespace rpp
          *
          * @note only callable once (the first call will be effective, subsequent calls will be ignored).
          */
-        void Setup(u8 type, LogLevel level = LogLevel::INFO) RPP_PYTHON_BINDING;
+        void Setup(u8 type, LogLevel level = LogLevel::INFO);
 
         /**
          * @brief Log a message with the specified log level, file name, and line number.
@@ -109,7 +109,7 @@ namespace rpp
          * @param file The name of the source file where the log message originated.
          * @param line The line number in the source file where the log message originated.
          */
-        void Log(LogLevel level, const String &message, const String &file, i32 line) RPP_PYTHON_BINDING;
+        void Log(LogLevel level, const String &message, const String &file, i32 line);
 
         /**
          * @brief Set up a new handler for processing log records. The logging system takes ownership of the handler.
