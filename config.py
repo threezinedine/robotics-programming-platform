@@ -83,7 +83,11 @@ def main():
 
     if args.IsRun:
         if args.Project in CppProjectNames:
-            RunCppProject(projectDir=args.Project, projectType=args.Type)
+            RunCppProject(
+                projectDir=args.Project,
+                projectType=args.Type,
+                memoryCheck=args.CheckMemoryLeaks,
+            )
         else:
             RunPythonProject(
                 projectDir=args.Project,

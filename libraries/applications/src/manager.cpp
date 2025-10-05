@@ -63,8 +63,10 @@ namespace rpp
         {
             u32 indexToRemove = closedSessionIndices.Front();
             closedSessionIndices.Pop();
+
             Scope<GraphicSession> &session = (*m_sessions)[indexToRemove];
             session->Shutdown();
+
             m_sessions->Erase(indexToRemove);
         }
 

@@ -80,10 +80,10 @@ namespace rpp
             for (u32 componentIndex = 0; componentIndex < entity->numberOfComponents; ++componentIndex)
             {
                 RPP_FREE(entity->ppComponents[componentIndex]->pData);
-                RPP_DELETE(entity->ppComponents[componentIndex]);
+                RPP_FREE(entity->ppComponents[componentIndex]);
             }
 
-            RPP_DELETE(entity->ppComponents);
+            RPP_FREE(entity->ppComponents);
 
             RPP_DELETE(entity);
         };

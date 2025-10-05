@@ -86,8 +86,12 @@ struct MemoryObject
     ~MemoryObject();
 };
 
+#if defined(RPP_PLATFORM_WINDOWS)
 // Used at main.cpp to enable memory tracking.
 #define RPP_ENABLE_MEMORY_TRACKING MemoryObject __rpp_memory_object
+#else
+#define RPP_ENABLE_MEMORY_TRACKING
+#endif
 
 /**
  * @brief Get the total memory allocated (in bytes).

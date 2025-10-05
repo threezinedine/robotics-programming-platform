@@ -2,6 +2,8 @@ import os
 import subprocess
 import shutil
 
+from config.utils.validation_utils import ValidateCommandExists
+
 from .path_utils import GetAbsoluteBuildDir
 from ..logger import logger
 from ..constants import Constants
@@ -55,8 +57,10 @@ def BuildProject(
 
     try:
         logger.info(f"Building project in '{projectDir}'...")
-        cmakeGenerateCommand = f"cmake -S {absoluteProjectDir} -B {buildDir} -G \"{makefile}\" " \
-                                    f" -DCMAKE_BUILD_TYPE={cmakeBuildType} {' '.join(finalOptions)}"
+        cmakeGenerateCommand = (
+            f'cmake -S {absoluteProjectDir} -B {buildDir} -G "{makefile}" '
+            f" -DCMAKE_BUILD_TYPE={cmakeBuildType} {' '.join(finalOptions)}"
+        )
 
         RunCommand(cmakeGenerateCommand, cwd=absoluteProjectDir)
 
@@ -69,7 +73,7 @@ def BuildProject(
         raise RuntimeError(f"Failed to build project in '{projectDir}'.") from e
 
 
-def RunCppProject(projectDir: str, projectType: str) -> None:
+def RunCppProject(projectDir: str, projectType: str, memoryCheck: bool = False) -> None:
     """
     Runs the compiled C/C++ project (assumes the project has been built already).
 
@@ -80,45 +84,56 @@ def RunCppProject(projectDir: str, projectType: str) -> None:
 
     projectType : str, optional
         The build type which is either 'dev' or 'prod'. Default is 'dev'.
+
+    memoryCheck : bool, optional
+        Whether to check for memory leaks using Valgrind (only on Linux). Default is False, on windows, the memory check
+        is performed using code built-in memory tracking, see `platforms/include/platforms/memory.h`. and this flag is ignored.
     """
 
     buildDir = GetAbsoluteBuildDir(projectDir, projectType)
     cmakeBuildType = "Debug" if projectType == "dev" else "Release"
-    executableDir = os.path.join(buildDir, cmakeBuildType)
+
+    if Constants.IsWindowsPlatform():
+        executableDir = os.path.join(buildDir, cmakeBuildType)
+    else:
+        executableDir = buildDir
 
     # find executable file
     files = os.listdir(executableDir)
     executable = None
-    for file in files:
-        if file.endswith(".exe") and not file.endswith("tests.exe"):
-            executable = os.path.join(executableDir, file)
-            break
+    if Constants.IsWindowsPlatform():
+        for file in files:
+            if file.endswith(".exe") and not file.endswith("tests.exe"):
+                executable = os.path.join(executableDir, file)
+                break
+    else:
+        for file in files:
+            fileCompletePath = os.path.join(executableDir, file)
+            if (
+                os.access(fileCompletePath, os.X_OK)
+                and os.path.isfile(fileCompletePath)
+                and not "tests" in file
+            ):
+                executable = fileCompletePath
+                break
 
     if executable is None:
         raise FileNotFoundError(f"No executable found in '{executableDir}'.")
 
     try:
         logger.info(f"Building project in '{projectDir}'...")
-        subprocess.run(
-            [
-                "cmake",
-                "--build",
-                buildDir,
-                "--config",
-                cmakeBuildType,
-            ],
-            check=True,
-            shell=True,
-            cwd=buildDir,
-        )
+        buildCommand = f"cmake --build {buildDir} --config {cmakeBuildType}"
+        RunCommand(buildCommand, cwd=buildDir)
 
-        logger.info(f"Running project '{projectDir}'...")
-        subprocess.run(
-            [executable],
-            check=True,
-            shell=True,
-            cwd=buildDir,
-        )
+        if Constants.IsLinuxPlatform() and memoryCheck:
+            ValidateCommandExists("valgrind")
+            memoryLeakCheckCommand = f"valgrind {executable}"
+            logger.info("Checking for memory leaks using Valgrind...")
+            RunCommand(memoryLeakCheckCommand, cwd=buildDir)
+        else:
+            logger.info(f"Running project '{projectDir}'...")
+            RunCommand(executable, cwd=buildDir)
+
     except Exception as e:
         logger.error(f"Failed to run project '{projectDir}': {e}")
         raise RuntimeError(f"Failed to run project '{projectDir}'.") from e
@@ -148,13 +163,15 @@ def RunLibrariesTest(
     if Constants.IsWindowsPlatform():
         executableDir = os.path.join(buildDir, projectDir, cmakeBuildType)
     else:
-        executableDir = os.path.join(buildDir, projectDir,)
+        executableDir = os.path.join(
+            buildDir,
+            projectDir,
+        )
 
     try:
         logger.info(f"Building project in '{projectDir}'...")
         buildCommand = f"cmake --build {buildDir} --config {cmakeBuildType}"
         RunCommand(buildCommand, cwd=buildDir)
-
 
         # find executable file
         files = os.listdir(executableDir)
@@ -166,7 +183,11 @@ def RunLibrariesTest(
                     break
             else:
                 fileCompletePath = os.path.join(executableDir, file)
-                if os.access(fileCompletePath, os.X_OK) and "tests" in file:
+                if (
+                    os.access(fileCompletePath, os.X_OK)
+                    and os.path.isfile(fileCompletePath)
+                    and "tests" in file
+                ):
                     executable = fileCompletePath
                     break
 

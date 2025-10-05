@@ -2,12 +2,11 @@
     "configurations": [
         {
             "name": "Graphical runtime",
-            "type": "cppvsdbg",
+            "type": "cppdbg", // TODO: Change to cppvsdbg if needed using .in file
             "request": "launch",
-            "preLaunchTask": "build graphical runtime",
-            "program": "${workspaceFolder}/build/dev/Debug/RPPGraphicRuntime.exe",
+            "program": "${workspaceFolder}/build/dev/RPPGraphicRuntime", // TODO: modify later
             "args": [],
-            "cwd": "${workspaceRoot}"
+            "cwd": "${workspaceRoot}",
         }
     ]
 }

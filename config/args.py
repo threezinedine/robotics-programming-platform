@@ -91,16 +91,22 @@ class Args:
             help="Run the specified project",
         )
 
-        subparsers.add_parser(
-            "designer",
-            help="Launch the GUI designer tool",
-        )
-
         runSubParser.add_argument(
             "-r",
             "--reset",
             action="store_true",
             help="Reset the project state before running",
+        )
+
+        runSubParser.add_argument(
+            "--check",
+            action="store_true",
+            help="Check for memory leaks when running the project (only for C++ projects)",
+        )
+
+        subparsers.add_parser(
+            "designer",
+            help="Launch the GUI designer tool",
         )
 
         testParser = subparsers.add_parser(
@@ -240,3 +246,12 @@ class Args:
         if self.IsTest and self.args.module:
             return self.args.module
         return "all"  # Default to 'all' if not specified
+
+    @property
+    def CheckMemoryLeaks(self) -> bool:
+        """
+        Returns true if the check flag is set when running the project.
+        """
+        if self.IsRun:
+            return self.args.check
+        return False
