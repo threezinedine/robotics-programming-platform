@@ -297,3 +297,5 @@ externals
 externals/*
 
 tmp/*
+!assets/libclang.so
+!assets/libclang.dll
