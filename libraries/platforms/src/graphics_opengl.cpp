@@ -118,11 +118,11 @@ namespace rpp
 
     b8 Graphics::Init()
     {
-        glfwSetErrorCallback([](int error, const char *description)
-                             {
-            char errorMessage[256];
-            std::snprintf(errorMessage, sizeof(errorMessage), "GLFW Error (code %d): %s\n", error, description);
-            print(errorMessage, ConsoleColor::RED); });
+        // glfwSetErrorCallback([](int error, const char *description)
+        //                      {
+        //     char errorMessage[256];
+        //     std::snprintf(errorMessage, sizeof(errorMessage), "GLFW Error (code %d): %s\n", error, description);
+        //     print(errorMessage, ConsoleColor::RED); });
 
         if (!glfwInit())
         {
@@ -132,6 +132,7 @@ namespace rpp
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         return TRUE;
     }
 

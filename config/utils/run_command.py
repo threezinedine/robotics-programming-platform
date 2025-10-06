@@ -3,7 +3,10 @@ import typing
 from ..logger import logger
 from ..constants import Constants
 
-def RunCommand(command: str, cwd: typing.Optional[str] = None, capture: bool = False) -> str | None:
+
+def RunCommand(
+    command: str, cwd: typing.Optional[str] = None, capture: bool = False
+) -> str | None:
     """
     The interface for running the command in the shell with the mimimum boilerplate.
 
@@ -25,30 +28,17 @@ def RunCommand(command: str, cwd: typing.Optional[str] = None, capture: bool = F
     appliedCwd = cwd if cwd is not None else Constants.ABSOLUTE_BASE_DIR
 
     try:
-        if Constants.IsWindowsPlatform():
-            result = subprocess.run(
-                command.split(" "),
-                check=True,
-                shell=True,
-                cwd=appliedCwd,
-                capture_output=capture,
-            )
+        result = subprocess.run(
+            command,
+            check=True,
+            shell=True,
+            cwd=appliedCwd,
+            capture_output=capture,
+        )
 
-            if capture:
-                return result.stdout.decode("utf-8").strip() if result.stdout else None
-            return None
-        else:
-            result = subprocess.run(
-                command,
-                check=True,
-                shell=True,
-                cwd=appliedCwd,
-                capture_output=capture,
-            )
-
-            if capture:
-                return result.stdout.decode("utf-8").strip() if result.stdout else None
-            return None
+        if capture:
+            return result.stdout.decode("utf-8").strip() if result.stdout else None
+        return None
 
     except subprocess.CalledProcessError as e:
         logger.error(f"Command '{command}' failed with exit code {e.returncode}.")

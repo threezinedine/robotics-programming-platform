@@ -230,11 +230,24 @@ def RunPythonProject(
             logger.info("No header files have changed. Skipping autogen.")
             return
 
-        clangPathDll = os.path.join(
-            Constants.ABSOLUTE_BASE_DIR,
-            "assets",
-            "libclang.so" if not Constants.IsWindowsPlatform() else "libclang.dll",
-        )
+        if Constants.IsWindowsPlatform():
+            try:
+                temp = RunCommand("where clang", capture=True)
+                if temp is None:
+                    raise FileNotFoundError("clang not found in PATH")
+                clangPathDll = os.path.join(os.path.dirname(temp), "libclang.dll")
+                clangPathDll = f'"{clangPathDll}"'
+
+            except Exception as e:
+                logger.error(f"Failed to find clang: {e}")
+                raise
+
+        else:
+            clangPathDll = os.path.join(
+                Constants.ABSOLUTE_BASE_DIR,
+                "assets",
+                "libclang.so",
+            )
 
         logger.debug(f"Using Clang library at: {clangPathDll}")
 

@@ -23,8 +23,6 @@ def main():
     # ================== System Validation ==================
     ValidateCommandExists(Constants.PYTHON_SCRIPT)
     ValidateCommandExists("pip3")
-    ValidateCommandExists("g++")
-    ValidateCommandExists("gcc")
 
     if args.Project in PythonProjectNames:
         ValidateEnvDirExists(
