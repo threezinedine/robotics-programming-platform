@@ -21,4 +21,4 @@ class PyStruct(PyObject):
                 self.methods.append(PyMethod(child))
 
     def __repr__(self) -> str:
-        return f"<PyStruct name='{self.name}'/>"
+        return f"<PyStruct name='{self.name}' annotations={self.annotations}/>"

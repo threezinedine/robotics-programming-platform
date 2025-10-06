@@ -25,8 +25,6 @@ def main():
     # ================== System Validation ==================
     ValidateCommandExists(Constants.PYTHON_SCRIPT)
     ValidateCommandExists("pip3")
-    ValidateCommandExists("g++")
-    ValidateCommandExists("gcc")
 
     BuildCPPPropertiesJson("libraries")
 
@@ -92,21 +90,11 @@ def main():
 
     if args.IsRun:
         if args.Project in CppProjectNames:
-<<<<<<< HEAD
-            if args.IsTest:
-                RunCppProjectTest(
-                    projectDir=args.Project,
-                    projectType=args.Type,
-                )
-            else:
-                RunCppProject(projectDir=args.Project, projectType=args.Type)
-=======
             RunCppProject(
                 projectDir=args.Project,
                 projectType=args.Type,
                 memoryCheck=args.CheckMemoryLeaks,
             )
->>>>>>> 806335d ([config] memory check feature for linux)
         else:
             RunPythonProject(
                 projectDir=args.Project,
