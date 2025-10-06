@@ -220,7 +220,6 @@ def RunPythonProject(
         # isPyiFileExists = os.path.isfile(pyiBindingOutput)
         isCppBindingFileExists = os.path.isfile(cppBindingOutput)
 
-
         if (
             not isAnyHeaderFileChanged
             # and isPyiFileExists
@@ -231,22 +230,11 @@ def RunPythonProject(
             logger.info("No header files have changed. Skipping autogen.")
             return
 
-
-        if Constants.IsWindowsPlatform():
-            ValidateCommandExists("clang")
-
-            findClangCommand = "where clang" if Constants.IsWindowsPlatform() else "which clang"
-            clangPathResult = RunCommand(findClangCommand)
-
-            assert clangPathResult is not None, "Failed to find clang executable."
-
-            clangPath = clangPathResult.strip()
-            if not clangPath:
-                raise FileNotFoundError("Clang executable not found in PATH.")
-
-            clangPathDll = clangPath.replace("clang.exe", "libclang.dll")
-        else:
-            clangPathDll = os.path.join(Constants.ABSOLUTE_BASE_DIR, "assets", "libclang.so")
+        clangPathDll = os.path.join(
+            Constants.ABSOLUTE_BASE_DIR,
+            "assets",
+            "libclang.so" if not Constants.IsWindowsPlatform() else "libclang.dll",
+        )
 
         logger.debug(f"Using Clang library at: {clangPathDll}")
 
@@ -317,11 +305,13 @@ def RunPythonProject(
             # )
 
             RunCommand(
-                ' '.join([
-                    pythonExe,
-                    mainScript,
-                ]
-                + arg3),
+                " ".join(
+                    [
+                        pythonExe,
+                        mainScript,
+                    ]
+                    + arg3
+                ),
                 cwd=cwd,
             )
 
