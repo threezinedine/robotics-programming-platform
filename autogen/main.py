@@ -10,6 +10,8 @@ def ConfigureClangLibrary(clangPath: str) -> None:
 def main():
     args = Args()
 
+    import os
+
     ConfigureClangLibrary(args.ClangPath)
     output = Generate(args.InputFiles, args.TemplateFile)
 

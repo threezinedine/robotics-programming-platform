@@ -54,7 +54,6 @@ namespace rpp
 
         auto DeallocateFileEntry = [](FileEntry *pFileEntry)
         {
-            RPP_LOG_DEBUG("Deallocating file entry: {}", pFileEntry->name);
             RPP_ASSERT(pFileEntry != nullptr);
 
             if (pFileEntry->pFileHandle != nullptr)
