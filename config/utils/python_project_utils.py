@@ -217,10 +217,16 @@ def RunPythonProject(
         #     "core.pyi",
         # )
 
-        pyiE2EGRuntimeOutput = os.path.join(
+        pyiE2EGRuntimeOutputDir = os.path.join(
             Constants.ABSOLUTE_BASE_DIR,
             "e2e-gruntime",
             "TestSystem",
+        )
+
+        CreateRecursiveDirIfNotExists(pyiE2EGRuntimeOutputDir)
+
+        pyiE2EGRuntimeOutput = os.path.join(
+            pyiE2EGRuntimeOutputDir,
             "__init__.pyi",
         )
 
