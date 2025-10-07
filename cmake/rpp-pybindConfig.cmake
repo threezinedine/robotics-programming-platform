@@ -11,4 +11,4 @@ add_library(rpp-pybind INTERFACE)
 target_link_libraries(rpp-pybind INTERFACE pybind11::pybind11 Python::Python)
 
 add_library(rpp-pybind-embed INTERFACE)
-target_link_libraries(rpp-pybind-embed INTERFACE pybind11::embed Python::Python)
+target_link_libraries(rpp-pybind-embed INTERFACE Python::Python)

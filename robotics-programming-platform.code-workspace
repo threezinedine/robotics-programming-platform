@@ -124,7 +124,14 @@
 			"stack": "cpp",
 			"typeindex": "cpp",
 			"*.rh": "cpp",
-			"queue": "cpp"
+			"queue": "cpp",
+			"bitset": "cpp",
+			"cwctype": "cpp",
+			"memory_resource": "cpp",
+			"string_view": "cpp",
+			"numbers": "cpp",
+			"semaphore": "cpp",
+			"cinttypes": "cpp"
 		}
 	}
 }

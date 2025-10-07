@@ -1,0 +1,20 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build Libraries",
+            "type": "shell",
+            "command": "sudo",
+            "args": [
+                "python3",
+                "${workspaceFolder}/../config.py",
+                "-p",
+                "libraries",
+                "build"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/.."
+            }
+        }
+    ]
+}

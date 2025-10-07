@@ -1,9 +1,9 @@
 #include "core/threading/threading.h"
 #include "core/assertions.h"
-#include <condition_variable>
-#include <mutex>
 
 #if defined(RPP_PLATFORM_WINDOWS)
+#include <mutex>
+#include <condition_variable>
 
 namespace rpp
 {

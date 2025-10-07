@@ -367,16 +367,11 @@ def RunPythonProject(
             #     cwd=cwd,
             # )
 
-            RunCommand(
-                " ".join(
-                    [
-                        pythonExe,
-                        mainScript,
-                    ]
-                    + writerOutputArgs
-                ),
-                cwd=cwd,
-            )
+            e2eCommand = " ".join([pythonExe, mainScript] + e2eOutputArgs)
+            RunCommand(e2eCommand, cwd=cwd)
+
+            writerOutputCommand = " ".join([pythonExe, mainScript] + writerOutputArgs)
+            RunCommand(writerOutputCommand, cwd=cwd)
 
             logger.info(f"Python project '{projectDir}' finished successfully.")
 

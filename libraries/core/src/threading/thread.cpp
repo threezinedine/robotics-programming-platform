@@ -1,7 +1,8 @@
 #include "core/threading/thread.h"
 #include "core/assertions.h"
+#include <cstring>
 
-#if defined(RPP_PLATFORM_WINDOWS)
+#if defined(RPP_PLATFORM_WINDOWS) || defined(RPP_PLATFORM_LINUX)
 #include <thread>
 
 namespace rpp
@@ -57,7 +58,7 @@ namespace rpp
         {
             pData->dataSize = paramSize;
             pData->pData = RPP_MALLOC(paramSize);
-            memcpy(pData->pData, pParam, paramSize);
+            std::memcpy(pData->pData, pParam, paramSize);
         }
         else
         {
