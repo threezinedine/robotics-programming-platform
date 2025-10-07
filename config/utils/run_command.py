@@ -5,7 +5,9 @@ from ..constants import Constants
 
 
 def RunCommand(
-    command: str, cwd: typing.Optional[str] = None, capture: bool = False
+    command: str,
+    cwd: typing.Optional[str] = None,
+    capture: bool = False,
 ) -> str | None:
     """
     The interface for running the command in the shell with the mimimum boilerplate.
@@ -41,7 +43,9 @@ def RunCommand(
         return None
 
     except subprocess.CalledProcessError as e:
-        logger.error(f"Command '{command}' failed with exit code {e.returncode}.")
+        logger.error(
+            f"Command '{command}' failed with exit code {e.returncode}: {e.stderr.decode().strip()}."
+        )
         raise e
     except Exception as e:
         logger.error(f"An error occurred while running command '{command}': {e}")
