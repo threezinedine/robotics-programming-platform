@@ -247,24 +247,6 @@ def RunPythonProject(
             return
 
         if Constants.IsWindowsPlatform():
-<<<<<<< HEAD
-            try:
-                temp = RunCommand("where clang", capture=True)
-                if temp is None:
-                    raise FileNotFoundError("clang not found in PATH")
-                clangPathDll = os.path.join(os.path.dirname(temp), "libclang.dll")
-                clangPathDll = f'"{clangPathDll}"'
-
-            except Exception as e:
-                logger.error(f"Failed to find clang: {e}")
-                raise
-
-        else:
-            clangPathDll = os.path.join(
-                Constants.ABSOLUTE_BASE_DIR,
-                "assets",
-                "libclang.so",
-=======
             ValidateCommandExists("clang")
 
             findClangCommand = (
@@ -282,7 +264,6 @@ def RunPythonProject(
         else:
             clangPathDll = os.path.join(
                 Constants.ABSOLUTE_BASE_DIR, "assets", "libclang.so"
->>>>>>> c91c84c ([feature] convert libraires and autogen to linux)
             )
 
         logger.debug(f"Using Clang library at: {clangPathDll}")
@@ -367,11 +348,16 @@ def RunPythonProject(
             #     cwd=cwd,
             # )
 
-            e2eCommand = " ".join([pythonExe, mainScript] + e2eOutputArgs)
-            RunCommand(e2eCommand, cwd=cwd)
-
-            writerOutputCommand = " ".join([pythonExe, mainScript] + writerOutputArgs)
-            RunCommand(writerOutputCommand, cwd=cwd)
+            RunCommand(
+                " ".join(
+                    [
+                        pythonExe,
+                        mainScript,
+                    ]
+                    + writerOutputArgs
+                ),
+                cwd=cwd,
+            )
 
             logger.info(f"Python project '{projectDir}' finished successfully.")
 
