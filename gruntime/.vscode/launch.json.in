@@ -1,0 +1,20 @@
+{
+    "configurations": [
+        {
+            "name": "Graphical runtime",
+            "type": "@@CPP_DEBUG_TYPE@@",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/dev/RPPGraphicRuntime",
+            "args": [],
+            "cwd": "${workspaceRoot}"
+        },
+        {
+            "name": "Graphical runtime test",
+            "type": "@@CPP_DEBUG_TYPE@@",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/dev/RPPGraphicRuntime_test",
+            "args": [],
+            "cwd": "${workspaceRoot}"
+        }
+    ]
+}

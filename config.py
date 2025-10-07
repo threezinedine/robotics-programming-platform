@@ -13,8 +13,8 @@ from config.utils.cpp_project_utils import (
     RunCppProject,
     RunLibrariesTest,
     RunCppProjectTest,
-    BuildCPPPropertiesJson,
 )
+from config.utils.configure_template_utils import GenerateTemplate
 
 
 def main():
@@ -25,8 +25,11 @@ def main():
     # ================== System Validation ==================
     ValidateCommandExists(Constants.PYTHON_SCRIPT)
     ValidateCommandExists("pip3")
+    GenerateTemplate("libraries/.vscode/c_cpp_properties.json.in")
 
-    BuildCPPPropertiesJson("libraries")
+    GenerateTemplate("gruntime/.vscode/c_cpp_properties.json.in")
+    GenerateTemplate("gruntime/.vscode/tasks.json.in")
+    GenerateTemplate("gruntime/.vscode/launch.json.in")
 
     if args.Project in PythonProjectNames:
         ValidateEnvDirExists(

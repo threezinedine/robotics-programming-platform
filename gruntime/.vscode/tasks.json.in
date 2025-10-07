@@ -4,9 +4,9 @@
         {
             "label": "build graphical runtime",
             "type": "shell",
-            "command": "sudo", // TODO: Change to python if needed using .in file
+            "command": "@@VSCODE_TASK_COMMAND@@",
             "args": [
-                "python3", // TODO: Change to python if needed using .in file
+                "@@VSCODE_FIRST_ARG@@",
                 "${workspaceFolder}/../config.py",
                 "-p",
                 "gruntime",
