@@ -274,6 +274,7 @@ class Args:
             return self.args.open_ui
         return False
 
+    @property
     def CheckMemoryLeaks(self) -> bool:
         """
         Returns true if the check flag is set when running the project.

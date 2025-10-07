@@ -4,19 +4,12 @@
 #include <fstream>
 #include <codecvt>
 
-#include "pybind11/pybind11.h"
-#include "pybind11/embed.h"
+#include <Python.h>
 
 namespace rpp
 {
     namespace
     {
-        const wchar_t *ConvertCharToWChar(const char *str)
-        {
-            static std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-            static std::wstring wideStr = converter.from_bytes(str);
-            return wideStr.c_str();
-        }
     } // namespace
 
     namespace
@@ -101,7 +94,7 @@ namespace rpp
         m_mainThreadSignal = Signal::Create();
         m_testThreadId = Thread::Create(TestThreadStaticFunction);
 
-        Py_SetPythonHome(ConvertCharToWChar(STRINGIFY(RPP_PYTHON_HOME)));
+        Py_Initialize();
 
         // TODO: Run setup script if provided
 
@@ -150,7 +143,6 @@ namespace rpp
         m_updateScriptContent.Split(lineOfCodes, "\n");
 
         u32 numberOfLines = lineOfCodes.Size();
-        pybind11::scoped_interpreter guard{};
 
         for (u32 lineIndex = 0; lineIndex < numberOfLines; lineIndex++)
         {
@@ -158,7 +150,7 @@ namespace rpp
 
             try
             {
-                pybind11::exec(line.CStr());
+                PyRun_SimpleString("print('Hello from Python!')");
 
                 if (!m_commandStack.Empty())
                 {

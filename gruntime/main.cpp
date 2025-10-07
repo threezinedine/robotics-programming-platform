@@ -53,20 +53,12 @@ int main(void)
     Thread::Initialize();
     Signal::Initialize();
 
-<<<<<<< HEAD
 #if defined(RPP_USE_TEST)
     TestSystem::GetInstance()->Initialize(
         String("C:\\Users\\APC\\Projects\\robotics-programming-platform\\e2e-gruntime\\TestReports\\result.json"),
         String(""),
         String("C:\\Users\\APC\\Projects\\robotics-programming-platform\\e2e-gruntime\\empty_scenario.py"));
 #endif
-=======
-    // FileHandle file = FileSystem::OpenFile("");
-    // if (FileSystem::IsFileOpen(file))
-    // {
-    //     print(Format("File content: {}\n", FileSystem::Read(file)).CStr());
-    // }
->>>>>>> 806335d ([config] memory check feature for linux)
 
     {
         CREATE_SESSION(TestSession, 800, 600, "Test2", TRUE);

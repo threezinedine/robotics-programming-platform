@@ -21,15 +21,20 @@ def GetGlobalPythonExePath() -> str:
         The global Python executable path.
     """
     try:
-        text = subprocess.run(
-            ["where", "python"],
-            check=True,
-            shell=True,
-            cwd=Constants.ABSOLUTE_BASE_DIR,
-            capture_output=True,
-            text=True,
-        )
-        pythonExes = text.stdout.splitlines()
+        if Constants.IsWindowsPlatform():
+            text = subprocess.run(
+                ["where", "python"],
+                check=True,
+                shell=True,
+                cwd=Constants.ABSOLUTE_BASE_DIR,
+                capture_output=True,
+                text=True,
+            )
+            pythonExes = text.stdout.splitlines()
+        else:
+            result = RunCommand(f"which {Constants.PYTHON_SCRIPT}", capture=True)
+            assert result is not None
+            pythonExes = result.splitlines()
 
         assert len(pythonExes) > 0, "No python executable found."
 
@@ -86,23 +91,35 @@ def BuildCPPPropertiesJson(folderDir: str) -> None:
     with open(templatePath, "r", encoding="utf-8") as templateFile:
         templateContent = templateFile.read()
 
+    pythonIncludeDir: None | str = None
+
     try:
-        text = subprocess.run(
-            ["where", "python"],
-            check=True,
-            shell=True,
-            cwd=folder,
-            capture_output=True,
-            text=True,
-        )
-        pythonExes = text.stdout.splitlines()
+        if Constants.IsLinuxPlatform():
+            result = RunCommand(f"find /usr/ -name Python.h", capture=True)
+            assert result is not None
+            pythonExes = result.splitlines()
+            assert len(pythonExes) > 0, "No python executable found."
+            pythonIncludeDir = os.path.dirname(pythonExes[0])
+        else:
+            text = subprocess.run(
+                ["where", "python"],
+                check=True,
+                shell=True,
+                cwd=folder,
+                capture_output=True,
+                text=True,
+            )
+            pythonExes = text.stdout.splitlines()
 
-        assert len(pythonExes) > 0, "No python executable found."
+            assert len(pythonExes) > 0, "No python executable found."
 
-        chosenPythonExe = pythonExes[0]
-        pythonDir = os.path.dirname(chosenPythonExe)
-        pythonIncludeDir = os.path.join(pythonDir, "include")
-        pythonIncludeDir = pythonIncludeDir.replace("\\", "/")
+            chosenPythonExe = pythonExes[0]
+            pythonDir = os.path.dirname(chosenPythonExe)
+            pythonIncludeDir = os.path.join(pythonDir, "include")
+            pythonIncludeDir = pythonIncludeDir.replace("\\", "/")
+
+        assert pythonIncludeDir is not None, "Failed to find python include directory."
+
         templateContent = templateContent.replace(
             "@@PYTHON_PATH@@", f"{pythonIncludeDir}"
         )
