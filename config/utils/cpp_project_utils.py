@@ -234,7 +234,7 @@ def RunCppProject(projectDir: str, projectType: str, memoryCheck: bool = False) 
 
     if Constants.IsWindowsPlatform():
         for file in files:
-            if file.endswith(".exe") and not file.endswith("tests.exe"):
+            if file.endswith(".exe") and not file.endswith("test.exe"):
                 executable = os.path.join(executableDir, file)
                 break
     else:
@@ -243,7 +243,7 @@ def RunCppProject(projectDir: str, projectType: str, memoryCheck: bool = False) 
             if (
                 os.access(fileCompletePath, os.X_OK)
                 and os.path.isfile(fileCompletePath)
-                and not "tests" in file
+                and not "test" in file
             ):
                 executable = fileCompletePath
                 break
@@ -284,7 +284,7 @@ def RunCppProjectTest(projectDir: str, projectType: str) -> None:
     """
     buildDir = GetAbsoluteBuildDir(projectDir, projectType)
     cmakeBuildType = "Debug" if projectType == "dev" else "Release"
-    executableDir = os.path.join(buildDir, cmakeBuildType)
+    executableDir: str | None = None
 
     # create temp e2e folder
 
@@ -293,39 +293,43 @@ def RunCppProjectTest(projectDir: str, projectType: str) -> None:
     CreateRecursiveDirIfNotExists(os.path.join(e2eDir, "Engine"))
     CreateRecursiveDirIfNotExists(os.path.join(e2eDir, "TestReports"))
 
+    if Constants.IsWindowsPlatform():
+        executableDir = os.path.join(buildDir, cmakeBuildType)
+    else:
+        executableDir = buildDir
+
+    # find executable file
     files = os.listdir(executableDir)
     executable = None
-    for file in files:
-        if file.endswith("test.exe"):
-            executable = os.path.join(executableDir, file)
-            break
+
+    if Constants.IsWindowsPlatform():
+        for file in files:
+            if file.endswith("test.exe"):
+                executable = os.path.join(executableDir, file)
+                break
+    else:
+        for file in files:
+            fileCompletePath = os.path.join(executableDir, file)
+            if (
+                os.access(fileCompletePath, os.X_OK)
+                and os.path.isfile(fileCompletePath)
+                and "test" in file
+            ):
+                executable = fileCompletePath
+                break
+
+    if executable is None:
+        raise FileNotFoundError(f"No executable found in '{executableDir}'.")
 
     assert executable is not None, f"No test executable found in '{executableDir}'."
 
     try:
         logger.info(f"Building project in '{projectDir}'...")
-        subprocess.run(
-            [
-                "cmake",
-                "--build",
-                buildDir,
-                "--config",
-                cmakeBuildType,
-            ],
-            check=True,
-            shell=True,
-            cwd=buildDir,
-        )
+        buildCommand = f"cmake --build {buildDir} --config {cmakeBuildType}"
+        RunCommand(buildCommand, cwd=buildDir)
 
         logger.info(f"Running tests for project '{projectDir}'...")
-        subprocess.run(
-            [
-                executable,
-            ],
-            check=True,
-            shell=True,
-            cwd=buildDir,
-        )
+        RunCommand(f"{executable}", cwd=buildDir)
     except Exception as e:
         logger.error(f"Failed to run tests for project '{projectDir}': {e}")
         raise RuntimeError(f"Failed to run tests for project '{projectDir}'.") from e

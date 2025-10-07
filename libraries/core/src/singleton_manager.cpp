@@ -19,10 +19,8 @@ namespace rpp
         RPP_ASSERT(s_singletonEntries != nullptr);
 
         u32 size = s_singletonEntries->Size();
-        RPP_LOG_DEBUG("Shutting down SingletonManager, destroying {} singleton entries", size);
         for (i32 i = i32(size - 1); i >= 0; --i)
         {
-            RPP_LOG_DEBUG("Destroying singleton entry: {}", s_singletonEntries->operator[](i).name);
             SingletonEntry &entry = s_singletonEntries->operator[](i);
             if (entry.destroyFunc)
             {

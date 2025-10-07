@@ -7,6 +7,14 @@
             "program": "${workspaceFolder}/build/dev/RPPGraphicRuntime", // TODO: modify later
             "args": [],
             "cwd": "${workspaceRoot}",
+        },
+        {
+            "name": "Graphical runtime test",
+            "type": "cppdbg", // TODO: Change to cppvsdbg if needed using .in file
+            "request": "launch",
+            "program": "${workspaceFolder}/build/dev/RPPGraphicRuntime_test", // TODO: modify later
+            "args": [],
+            "cwd": "${workspaceRoot}",
         }
     ]
 }
