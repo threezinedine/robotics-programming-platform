@@ -4,12 +4,44 @@
 #include <fstream>
 #include <codecvt>
 
+#if defined(_DEBUG)
+#undef _DEBUG
 #include <Python.h>
+#define _DEBUG
+#else
+#include <Python.h>
+#endif
 
 namespace rpp
 {
     namespace
     {
+        static PyObject *Wait(PyObject *self, PyObject *args)
+        {
+            float milliseconds;
+            if (!PyArg_ParseTuple(args, "f", &milliseconds))
+            {
+                return nullptr;
+            }
+
+            TestSystem::GetInstance()->Wait(milliseconds);
+
+            Py_RETURN_NONE;
+        }
+
+        static PyMethodDef TestSystemMethods[] = {
+            {"Wait", Wait, METH_VARARGS, "Wait for the specified milliseconds."},
+            {nullptr, nullptr, 0, nullptr} // Sentinel
+        };
+
+        static struct PyModuleDef TestSystemModule = {
+            PyModuleDef_HEAD_INIT,
+            "TestSystem", // name of module
+            nullptr,      // module documentation, may be NULL
+            -1,           // size of per-interpreter state of the module,
+                          // or -1 if the module keeps state in global variables.
+            TestSystemMethods};
+
     } // namespace
 
     namespace
@@ -24,8 +56,16 @@ namespace rpp
             std::ifstream fileStream(filePath.CStr(), std::ios::in | std::ios::binary);
             if (fileStream)
             {
-                std::string content((std::istreambuf_iterator<char>(fileStream)), std::istreambuf_iterator<char>());
-                return String(content.c_str());
+                try
+                {
+                    std::string content((std::istreambuf_iterator<char>(fileStream)), std::istreambuf_iterator<char>());
+                    return String(content.c_str());
+                }
+                catch (const std::exception &e)
+                {
+                    RPP_LOG_FATAL("Failed to read python file from path: {}, exception: {}", filePath, String(e.what()));
+                    exit(-1);
+                }
             }
 
             RPP_UNREACHABLE();
@@ -94,8 +134,6 @@ namespace rpp
         m_mainThreadSignal = Signal::Create();
         m_testThreadId = Thread::Create(TestThreadStaticFunction);
 
-        Py_Initialize();
-
         // TODO: Run setup script if provided
 
         Thread::Start(m_testThreadId);
@@ -119,8 +157,6 @@ namespace rpp
     void TestSystem::Wait(f32 milliseconds)
     {
         m_timer.Start();
-        RPP_LOG_DEBUG("TestSystem::Wait for {} milliseconds", milliseconds);
-        return;
 
         while (TRUE)
         {
@@ -132,10 +168,16 @@ namespace rpp
 
             Yield();
         }
+
+        Yield();
     }
 
     void TestSystem::TestThreadFunction(void *arg)
     {
+        PyImport_AppendInittab("TestSystem", [](void) -> PyObject *
+                               { return PyModule_Create(&TestSystemModule); });
+
+        Py_Initialize();
         RPP_UNUSED(arg);
         Signal::Wait(m_testThreadSignal);
 
@@ -150,21 +192,7 @@ namespace rpp
 
             try
             {
-                PyRun_SimpleString("print('Hello from Python!')");
-
-                if (!m_commandStack.Empty())
-                {
-                    Command command = m_commandStack.Pop();
-                    switch (command)
-                    {
-                    case Command::COMMAND_WAIT:
-                        Wait(1000); // wait for 100 milliseconds
-                        break;
-                    default:
-                        RPP_UNREACHABLE();
-                        break;
-                    }
-                }
+                PyRun_SimpleString(line.CStr());
             }
             catch (const std::exception &e)
             {
@@ -172,12 +200,14 @@ namespace rpp
                 break;
             }
 
-            m_shouldApplicationClose = TRUE;
+            m_shouldApplicationClose = FALSE;
             Signal::Notify(m_mainThreadSignal); // exit the test thread
         }
 
         m_shouldApplicationClose = TRUE;
         Signal::Notify(m_mainThreadSignal); // exit the test thread
+
+        Py_Finalize();
     }
 
     void TestSystem::Update(f32 deltaTime)
