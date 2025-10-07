@@ -84,13 +84,13 @@ def Generate(
                 params.append(f"{param.type} {param.name}")
         return ", ".join(params)
 
-    def MethodParametersCall(method: PyObject) -> str:
+    def MethodParametersCall(method: PyObject, useCStr: bool = True) -> str:
         assert isinstance(method, PyFunction)
 
         params: list[str] = []
 
         for param in method.parameters:
-            if typeMap.Convert(param.type) == "str":
+            if typeMap.Convert(param.type) == "str" and useCStr:
                 params.append(f"{param.name}.c_str()")
             else:
                 params.append(f"{param.name}")
@@ -115,6 +115,52 @@ def Generate(
     def ObjectComment(obj: PyObject, default: str) -> str:
         return obj.comment if obj.comment else default
 
+    def E2EBindingType(type: str) -> str:
+        assert type in [
+            "int",
+            "i8",
+            "i16",
+            "i32",
+            "i64",
+            "unsigned int",
+            "u8",
+            "u16",
+            "u32",
+            "u64",
+            "double",
+            "float",
+            "f32",
+            "f64",
+            "std::string",
+            "char *",
+            "str",
+            "String",
+            "bool",
+            "None",
+        ], f"Unsupported type: {type}"
+
+        if type in ["int", "i32", "i64"]:
+            return "i"
+        elif type in ["float", "double", "f32", "f64"]:
+            return "f"
+        elif type in ["std::string", "char *", "String", "str"]:
+            return "s"
+        elif type in ["bool"]:
+            return "p"
+        elif type == ["None"]:
+            return ""
+        else:
+            raise ValueError(f"Unsupported type: {type}")
+
+    def ConvertAllFunctionParametersToE2EBindingTypeList(method: PyObject) -> str:
+        assert isinstance(method, PyFunction)
+
+        params: list[str] = []
+
+        for param in method.parameters:
+            params.append(E2EBindingType(typeMap.Convert(param.type)))
+        return "".join(params)
+
     allJsonMappedClasses: list[str] = []
     for struct in parser["structs"]:
         if "json" in struct.annotations:
@@ -128,5 +174,9 @@ def Generate(
     template.globals["isContainsJsonKeyAnnotation"] = IsContainsJsonKeyAnnotation
     template.globals["methodParametersTypeList"] = MethodParametersTypeList
     template.globals["allJsonMappedClasses"] = allJsonMappedClasses
+    template.globals["e2eBindingType"] = E2EBindingType
+    template.globals["convertAllFunctionParametersToE2EBindingTypeList"] = (
+        ConvertAllFunctionParametersToE2EBindingTypeList
+    )
 
     return template.render(**parser)

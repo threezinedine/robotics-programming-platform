@@ -67,6 +67,8 @@ namespace rpp
          */
         void Wait(f32 milliseconds) RPP_E2E_BINDING;
 
+        void Log(const String &message) RPP_E2E_BINDING;
+
     private:
         /**
          * The function executed by the test thread.

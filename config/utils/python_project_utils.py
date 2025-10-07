@@ -220,7 +220,7 @@ def RunPythonProject(
         pyiE2EGRuntimeOutput = os.path.join(
             Constants.ABSOLUTE_BASE_DIR,
             "e2e-gruntime",
-            "Engine",
+            "TestSystem",
             "__init__.pyi",
         )
 
@@ -316,7 +316,7 @@ def RunPythonProject(
 
         pyiE2EGRuntimeOutputArgs = argCommon + [
             "--template",
-            os.path.join(cwd, "templates", "pyi_binding.j2"),
+            os.path.join(cwd, "templates", "e2e_python_binding.j2"),
             "--output",
             pyiE2EGRuntimeOutput,
         ]
@@ -353,6 +353,11 @@ def RunPythonProject(
 
             writerOutputCommand = " ".join([pythonExe, mainScript] + writerOutputArgs)
             RunCommand(writerOutputCommand, cwd=cwd)
+
+            pyiE2EGRuntimeCommand = f"{pythonExe} {mainScript} " + " ".join(
+                pyiE2EGRuntimeOutputArgs
+            )
+            RunCommand(pyiE2EGRuntimeCommand, cwd=cwd)
 
             logger.info(f"Python project '{projectDir}' finished successfully.")
 

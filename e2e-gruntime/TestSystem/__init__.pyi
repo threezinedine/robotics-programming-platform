@@ -1,1 +1,89 @@
-def Wait(milliseconds: float) -> None: ...
+from typing import * # type: ignore
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def Yield() -> None:
+    ...
+
+
+
+def Wait(milliseconds: float) -> None:
+    ...
+
+
+
+def Log(message: str) -> None:
+    ...
+
+
+
+
+
+
+

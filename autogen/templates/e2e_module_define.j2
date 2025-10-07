@@ -1,0 +1,12 @@
+static PyMethodDef TestSystemMethods[] = {
+{% for class in classes %}
+{% if class.name == "TestSystem" %}
+{% for method in class.methods %}
+{% if "e2e" in method.annotations and not method.isStatic and method.access == "public" %}
+    {"{{ method.name }}", {{ method.name }}, {{  "METH_NOARGS" if method.parameters|length == 0 else "METH_VARARGS" }}, ""},
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endfor %}
+    {nullptr, nullptr, 0, nullptr}
+};

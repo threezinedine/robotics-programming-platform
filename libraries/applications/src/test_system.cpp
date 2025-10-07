@@ -16,23 +16,7 @@ namespace rpp
 {
     namespace
     {
-        static PyObject *Wait(PyObject *self, PyObject *args)
-        {
-            float milliseconds;
-            if (!PyArg_ParseTuple(args, "f", &milliseconds))
-            {
-                return nullptr;
-            }
-
-            TestSystem::GetInstance()->Wait(milliseconds);
-
-            Py_RETURN_NONE;
-        }
-
-        static PyMethodDef TestSystemMethods[] = {
-            {"Wait", Wait, METH_VARARGS, "Wait for the specified milliseconds."},
-            {nullptr, nullptr, 0, nullptr} // Sentinel
-        };
+#include "tmp/e2e_test_binding.cpp"
 
         static struct PyModuleDef TestSystemModule = {
             PyModuleDef_HEAD_INIT,
@@ -170,6 +154,11 @@ namespace rpp
         }
 
         Yield();
+    }
+
+    void TestSystem::Log(const String &message)
+    {
+        RPP_LOG_INFO("[TestSystem] {}", message);
     }
 
     void TestSystem::TestThreadFunction(void *arg)
