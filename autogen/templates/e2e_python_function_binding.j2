@@ -1,0 +1,10 @@
+{% for class in classes %}
+{% if class.name == "TestSystem" %}
+{% for method in class.methods %}
+{% if "e2e" in method.annotations and not method.isStatic and method.access == "public" %}
+def {{ method.name }}({{ methodParametersPyi(method, true) }}) -> {{ convertCppTypeToPyType(method.returnType) }}:
+    ...
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endfor %}

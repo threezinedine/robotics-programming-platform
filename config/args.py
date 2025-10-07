@@ -258,6 +258,7 @@ class Args:
             return self.args.module
         return "all"  # Default to 'all' if not specified
 
+    @property
     def IsE2EGRuntime(self) -> bool:
         """
         Returns true if the command is to run the end-to-end tests for the gruntime project.

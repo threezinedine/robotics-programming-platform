@@ -2,9 +2,6 @@ import os
 import subprocess
 import shutil
 
-from config.utils.validation_utils import ValidateCommandExists
-
-from .path_utils import GetAbsoluteBuildDir
 from .path_utils import GetAbsoluteBuildDir, CreateRecursiveDirIfNotExists
 from .cache_file_utils import IsFileModified, UpdateFileCache
 from config.utils.validation_utils import ValidateCommandExists
@@ -192,7 +189,7 @@ def BuildProject(
         logger.info(f"Building project in '{projectDir}'...")
         cmakeGenerateCommand = (
             f'cmake -S {absoluteProjectDir} -B {buildDir} -G "{makefile}" '
-            f" -DCMAKE_BUILD_TYPE={cmakeBuildType} {' '.join(finalOptions)}"
+            f" -DCMAKE_BUILD_TYPE={cmakeBuildType} -DRPP_PYTHON_HOME={pythonHome} {' '.join(finalOptions)}"
         )
 
         RunCommand(cmakeGenerateCommand, cwd=absoluteProjectDir)
