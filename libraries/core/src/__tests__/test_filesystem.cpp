@@ -23,7 +23,7 @@ TEST_F(FileSystemTest, CreateAndReadAFile)
     String cwd = rpp::FileSystem::CWD();
     String filePath = cwd + "/test_file.txt";
 
-    FileHandle file = FileSystem::OpenFile(filePath, FileMode::WRITE);
+    FileHandle file = FileSystem::OpenFile(filePath, FILE_MODE_WRITE);
     ASSERT_NE(file, INVALID_ID);
     ASSERT_TRUE(FileSystem::IsFileOpen(file));
 
@@ -31,7 +31,7 @@ TEST_F(FileSystemTest, CreateAndReadAFile)
     FileSystem::Write(file, data);
     FileSystem::CloseFile(file);
 
-    file = FileSystem::OpenFile(filePath, FileMode::READ);
+    file = FileSystem::OpenFile(filePath, FILE_MODE_READ);
     ASSERT_NE(file, INVALID_ID);
     String content = FileSystem::Read(file);
     FileSystem::CloseFile(file);

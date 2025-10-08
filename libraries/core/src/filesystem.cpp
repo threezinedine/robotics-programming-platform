@@ -154,7 +154,7 @@ namespace rpp
         }
     }
 
-    FileHandle FileSystem::OpenFile(const String &filePath, FileMode mode)
+    FileHandle FileSystem::OpenFile(const String &filePath, u8 mode)
     {
         RPP_ASSERT(s_fileEntries != nullptr);
 
@@ -168,7 +168,7 @@ namespace rpp
 
         String physicalPath = getPhysicalPath(filePath);
 
-        if (mode == FileMode::WRITE || mode == FileMode::APPEND || mode == FileMode::READ_WRITE)
+        if (mode == FILE_MODE_WRITE || mode == FILE_MODE_APPEND || mode == FILE_MODE_READ_WRITE)
         {
             // ensure the directory exists
 
@@ -184,7 +184,7 @@ namespace rpp
 
         switch (mode)
         {
-        case FileMode::READ:
+        case FILE_MODE_READ:
         {
             pFileEntry->pFileHandle = new std::ifstream(getPhysicalPath(filePath).CStr(), std::ios::in);
             openMode = std::ios::in;
@@ -195,7 +195,7 @@ namespace rpp
 
             break;
         }
-        case FileMode::WRITE:
+        case FILE_MODE_WRITE:
         {
             openMode = std::ios::out | std::ios::trunc;
             pFileEntry->pFileHandle = new std::ofstream(getPhysicalPath(filePath).CStr(), openMode);
@@ -205,7 +205,7 @@ namespace rpp
             }
             break;
         }
-        case FileMode::APPEND:
+        case FILE_MODE_APPEND:
         {
             openMode = std::ios::out | std::ios::app;
             pFileEntry->pFileHandle = new std::ofstream(getPhysicalPath(filePath).CStr(), openMode);
@@ -215,7 +215,7 @@ namespace rpp
             }
             break;
         }
-        case FileMode::READ_WRITE:
+        case FILE_MODE_READ_WRITE:
         {
             openMode = std::ios::in | std::ios::out;
             pFileEntry->pFileHandle = new std::fstream(getPhysicalPath(filePath).CStr(), openMode);
@@ -247,7 +247,7 @@ namespace rpp
         FileEntry *pFileEntry = s_fileEntries->Get(file);
         RPP_ASSERT(pFileEntry != nullptr);
         RPP_ASSERT(pFileEntry->pFileHandle != nullptr);
-        RPP_ASSERT(pFileEntry->mode == FileMode::READ || pFileEntry->mode == FileMode::READ_WRITE);
+        RPP_ASSERT(pFileEntry->mode == FILE_MODE_READ || pFileEntry->mode == FILE_MODE_READ_WRITE);
 
         String content;
         std::ifstream *pFileStream = static_cast<std::ifstream *>(pFileEntry->pFileHandle);
@@ -270,12 +270,12 @@ namespace rpp
         FileEntry *pFileEntry = s_fileEntries->Get(file);
         RPP_ASSERT(pFileEntry != nullptr);
         RPP_ASSERT(pFileEntry->pFileHandle != nullptr);
-        RPP_ASSERT(pFileEntry->mode == FileMode::WRITE || pFileEntry->mode == FileMode::APPEND || pFileEntry->mode == FileMode::READ_WRITE);
+        RPP_ASSERT(pFileEntry->mode == FILE_MODE_WRITE || pFileEntry->mode == FILE_MODE_APPEND || pFileEntry->mode == FILE_MODE_READ_WRITE);
 
         switch (pFileEntry->mode)
         {
-        case FileMode::WRITE:
-        case FileMode::APPEND:
+        case FILE_MODE_WRITE:
+        case FILE_MODE_APPEND:
         {
             std::ofstream *pFileStream = static_cast<std::ofstream *>(pFileEntry->pFileHandle);
             (*pFileStream) << data.CStr();

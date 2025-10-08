@@ -158,16 +158,18 @@ public:
     )
 
     expected = """
-def Add(a: int, b: int) -> int:
-    ...
+class TestSystem:
+    @staticmethod
+    def Add(a: int, b: int) -> int:
+        ...
 
+    @staticmethod
+    def Log(message: str) -> None:
+        ...
 
-def Log(message: str) -> None:
-    ...
-
-
-def Count() -> None:
-    ...
+    @staticmethod
+    def Count() -> None:
+        ...
 
 """
 
@@ -288,6 +290,59 @@ PyImport_AppendInittab("FileSystem", [](void) -> PyObject* {
     return PyModule_Create(&FileSystemModule);
 });
 
+"""
+
+    AssertGenerateResult(expected, result)
+
+
+def test_python_pyi_module_bind_enum(generateFunc: GenerateFuncType) -> None:
+    result = generateFunc(
+        """
+enum class RPP_E2E_BINDING Color
+{
+    Red = 0,
+    Green = 1,
+    Blue = 2
+};
+""",
+        "e2e_python_enum_binding.j2",
+        [],
+    )
+
+    expected = """
+class Color(Enum):
+    Red = 0
+    Green = 1
+    Blue = 2
+
+"""
+
+    AssertGenerateResult(expected, result)
+
+
+def test_enum_define_binding(generateFunc: GenerateFuncType) -> None:
+    result = generateFunc(
+        """
+enum class RPP_E2E_BINDING Color
+{
+    Red = 0,
+    Green = 1,
+    Blue = 2
+};
+""",
+        "e2e_module_enum_create.j2",
+        [],
+    )
+
+    expected = """
+PyRun_SimpleString(R"(
+from enum import *
+
+class Color(Enum):
+    Red = 0
+    Green = 1
+    Blue = 2
+)");
 """
 
     AssertGenerateResult(expected, result)

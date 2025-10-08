@@ -1,9 +1,11 @@
 {% for class in classes %}
 {% if "e2e" in class.annotations %}
+class {{ class.name }}:
 {% for method in class.methods %}
-{% if "e2e" in method.annotations and not method.isStatic and method.access == "public" %}
-def {{ method.name }}({{ methodParametersPyi(method, true) }}) -> {{ convertCppTypeToPyType(method.returnType) }}:
-    ...
+{% if "e2e" in method.annotations and method.access == "public" %}
+    @staticmethod
+    def {{ method.name }}({{ methodParametersPyi(method, true) }}) -> {{ convertCppTypeToPyType(method.returnType) }}:
+        ...
 {% endif %}
 {% endfor %}
 {% endif %}

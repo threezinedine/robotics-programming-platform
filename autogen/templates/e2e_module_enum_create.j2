@@ -1,0 +1,12 @@
+{% for enum in enums %}
+{% if "e2e" in enum.annotations %}
+PyRun_SimpleString(R"(
+from enum import *
+
+class {{ enum.name }}(Enum):
+{% for constant in enum.constants %}
+    {{ constant.name }} = {{ constant.value }}
+{% endfor %}
+)");
+{% endif %}
+{% endfor %}

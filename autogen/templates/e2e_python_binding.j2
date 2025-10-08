@@ -1,3 +1,9 @@
 from typing import * # type: ignore
+from enum import * # type: ignore
+
+FileHandle: TypeAlias = int
+b8: TypeAlias = bool
+
+{% include "e2e_python_enum_binding.j2" %}
 
 {% include "e2e_python_function_binding.j2" %}

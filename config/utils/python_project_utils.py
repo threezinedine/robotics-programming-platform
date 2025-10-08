@@ -195,11 +195,6 @@ def RunPythonProject(
             "tmp",
         )
 
-        # cppBindingOutput = os.path.join(
-        #     librariesTempDir,
-        #     "binding.cpp",
-        # )
-
         writerOutput = os.path.join(
             librariesTempDir,
             "writer_output.cpp",
@@ -215,17 +210,20 @@ def RunPythonProject(
             "e2e_test_append.cpp",
         )
 
-        # pyiBindingOutput = os.path.join(
-        #     Constants.ABSOLUTE_BASE_DIR,
-        #     "editor",
-        #     "Engine",
-        #     "core.pyi",
-        # )
+        e2ePythonModuleImportOutput = os.path.join(
+            librariesTempDir,
+            "e2e_python_module_import.cpp",
+        )
+
+        e2ePythonModuleCreateEnumOutput = os.path.join(
+            librariesTempDir,
+            "e2e_python_module_create_enum.cpp",
+        )
 
         pyiE2EGRuntimeOutputDir = os.path.join(
             Constants.ABSOLUTE_BASE_DIR,
             "e2e-gruntime",
-            "TestSystem",
+            "packages",
         )
 
         CreateRecursiveDirIfNotExists(pyiE2EGRuntimeOutputDir)
@@ -243,6 +241,9 @@ def RunPythonProject(
         isE2EOutputFileExists = os.path.isfile(e2eOutput)
         isPyiE2EGRuntimeFileExists = os.path.isfile(pyiE2EGRuntimeOutput)
         isE2EAppendOutputFileExists = os.path.isfile(e2eAppendOutput)
+        isE2EPythonModuleImportOutputFileExists = os.path.isfile(
+            e2ePythonModuleImportOutput
+        )
         # isPyiFileExists = os.path.isfile(pyiBindingOutput)
         # isCppBindingFileExists = os.path.isfile(cppBindingOutput)
 
@@ -253,6 +254,7 @@ def RunPythonProject(
             and isE2EOutputFileExists
             and isPyiE2EGRuntimeFileExists
             and isE2EAppendOutputFileExists
+            and isE2EPythonModuleImportOutputFileExists
             and not reset
             and not force
         ):
@@ -297,21 +299,7 @@ def RunPythonProject(
             applicationHeaderFile,
         ]
 
-        # args = argCommon + [
-        #     "--template",
-        #     os.path.join(cwd, "templates", "pyi_binding.j2"),
-        #     "--output",
-        #     pyiBindingOutput,
-        # ]
-
         CreateRecursiveDirIfNotExists(librariesTempDir)
-
-        # arg2 = argCommon + [
-        #     "--template",
-        #     os.path.join(cwd, "templates", "cpp_binding.j2"),
-        #     "--output",
-        #     cppBindingOutput,
-        # ]
 
         writerOutputArgs = argCommon + [
             "--template",
@@ -334,6 +322,20 @@ def RunPythonProject(
             e2eAppendOutput,
         ]
 
+        e2ePythonModuleImportOutputArgs = argCommon + [
+            "--template",
+            os.path.join(cwd, "templates", "e2e_module_import.j2"),
+            "--output",
+            e2ePythonModuleImportOutput,
+        ]
+
+        e2ePythonModuleEnumCreatedOutputArgs = argCommon + [
+            "--template",
+            os.path.join(cwd, "templates", "e2e_module_enum_create.j2"),
+            "--output",
+            e2ePythonModuleCreateEnumOutput,
+        ]
+
         pyiE2EGRuntimeOutputArgs = argCommon + [
             "--template",
             os.path.join(cwd, "templates", "e2e_python_binding.j2"),
@@ -346,27 +348,6 @@ def RunPythonProject(
         try:
 
             logger.info(f"Running Python project in '{projectDir}'...")
-            # subprocess.run(
-            #     [
-            #         pythonExe,
-            #         mainScript,
-            #     ]
-            #     + args,
-            #     check=True,
-            #     shell=True,
-            #     cwd=cwd,
-            # )
-
-            # subprocess.run(
-            #     [
-            #         pythonExe,
-            #         mainScript,
-            #     ]
-            #     + arg2,
-            #     check=True,
-            #     shell=True,
-            #     cwd=cwd,
-            # )
 
             e2eCommand = " ".join([pythonExe, mainScript] + e2eOutputArgs)
             RunCommand(e2eCommand, cwd=cwd)
@@ -381,6 +362,16 @@ def RunPythonProject(
 
             e2eAppendCommand = " ".join([pythonExe, mainScript] + e2eAppendOutputArgs)
             RunCommand(e2eAppendCommand, cwd=cwd)
+
+            e2ePythonModuleImportCommand = " ".join(
+                [pythonExe, mainScript] + e2ePythonModuleImportOutputArgs
+            )
+            RunCommand(e2ePythonModuleImportCommand, cwd=cwd)
+
+            e2ePythonModuleEnumCreatedCommand = " ".join(
+                [pythonExe, mainScript] + e2ePythonModuleEnumCreatedOutputArgs
+            )
+            RunCommand(e2ePythonModuleEnumCreatedCommand, cwd=cwd)
 
             logger.info(f"Python project '{projectDir}' finished successfully.")
 

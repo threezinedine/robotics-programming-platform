@@ -1,0 +1,5 @@
+{% for class in classes %}
+{% if "e2e" in class.annotations %}
+PyRun_SimpleString("import {{ class.name }}");
+{% endif %}
+{% endfor %}

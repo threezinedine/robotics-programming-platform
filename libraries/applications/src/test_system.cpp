@@ -160,6 +160,9 @@ namespace rpp
         RPP_UNUSED(arg);
         Signal::Wait(m_testThreadSignal);
 
+#include "tmp/e2e_python_module_import.cpp"
+
+#if 0
         Array<String> lineOfCodes;
         m_updateScriptContent.Split(lineOfCodes, "\n");
 
@@ -168,6 +171,11 @@ namespace rpp
         for (u32 lineIndex = 0; lineIndex < numberOfLines; lineIndex++)
         {
             const String &line = lineOfCodes[lineIndex];
+
+            if (lineIndex == 0)
+            {
+                continue; // skip the first line, which is used for typing hint only. (from packages import *)
+            }
 
             try
             {
@@ -182,6 +190,22 @@ namespace rpp
             m_shouldApplicationClose = FALSE;
             Signal::Notify(m_mainThreadSignal); // exit the test thread
         }
+#else
+        m_updateScriptContent = m_updateScriptContent.Replace("from packages import *", ""); // remove the first line, which is used for typing hint only. (from packages import *)
+
+#include "tmp/e2e_python_module_create_enum.cpp"
+
+        try
+        {
+            PyRun_SimpleString(m_updateScriptContent.CStr());
+        }
+        catch (const std::exception &e)
+        {
+            RPP_LOG_ERROR("Exception occurred while executing python script: {}", String(e.what()));
+            PyErr_Print();
+        }
+
+#endif
 
         m_shouldApplicationClose = TRUE;
         Signal::Notify(m_mainThreadSignal); // exit the test thread

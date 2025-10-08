@@ -150,6 +150,12 @@ def Generate(
             "u64",
             "FileHandle",
             "FileMode",
+            "i8",
+            "i16",
+            "u8",
+            "u16",
+            "unsigned short",
+            "short",
         ]:
             return "i"
         elif type in ["float", "double", "f32", "f64"]:

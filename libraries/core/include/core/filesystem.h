@@ -13,16 +13,10 @@ namespace rpp
      */
     typedef u32 FileHandle;
 
-    /**
-     * All possible modes for opening a file.
-     */
-    enum class FileMode : u8
-    {
-        READ,      ///< Open the file for reading.
-        WRITE,     ///< Open the file for writing (overwrites existing content).
-        APPEND,    ///< Open the file for appending (adds to the end of the file).
-        READ_WRITE ///< Open the file for both reading and writing.
-    };
+#define FILE_MODE_READ 0x00       ///< Open the file for reading.
+#define FILE_MODE_WRITE 0x01      ///< Open the file for writing (overwrites existing content).
+#define FILE_MODE_APPEND 0x02     ///< Open the file for appending (adds to the end of the file).
+#define FILE_MODE_READ_WRITE 0x03 ///< Open the file for both reading and writing.
 
     /**
      * The file system module provides functionalities for file and directory operations.
@@ -47,7 +41,7 @@ namespace rpp
             FileHandle id;     ///< The unique identifier for the file or directory.
             String name;       ///< The name of the file or directory.
             void *pFileHandle; ///< Pointer to the underlying file handle (platform-specific).
-            FileMode mode;     ///< The mode in which the file was opened (if applicable).
+            u8 mode;           ///< The mode in which the file was opened (if applicable).
         };
 
     private:
@@ -100,7 +94,7 @@ namespace rpp
          * the function checks if the file can be opened for writing.
          * @return The id of the file if it exists, or INVALID_ID if it does not.
          */
-        static FileHandle OpenFile(const String &filePath, FileMode mode = FileMode::READ) RPP_E2E_BINDING;
+        static FileHandle OpenFile(const String &filePath, u8 mode = FILE_MODE_READ) RPP_E2E_BINDING;
 
         /**
          * @brief Check if current file id is opened or not.
