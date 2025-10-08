@@ -186,10 +186,14 @@ def BuildProject(
     pythonHome = os.path.dirname(globalPythonExe)
 
     try:
+        projectDir = Constants.ABSOLUTE_BASE_DIR.replace("\\", "/")
+
         logger.info(f"Building project in '{projectDir}'...")
         cmakeGenerateCommand = (
             f'cmake -S {absoluteProjectDir} -B {buildDir} -G "{makefile}" '
-            f" -DCMAKE_BUILD_TYPE={cmakeBuildType} -DRPP_PYTHON_HOME={pythonHome} {' '.join(finalOptions)}"
+            f" -DCMAKE_BUILD_TYPE={cmakeBuildType} -DRPP_PYTHON_HOME={pythonHome}"
+            f' -DRPP_PROJECT_DIR="{projectDir}"'
+            f" {' '.join(finalOptions)}"
         )
 
         RunCommand(cmakeGenerateCommand, cwd=absoluteProjectDir)

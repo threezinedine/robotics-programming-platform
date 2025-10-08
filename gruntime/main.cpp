@@ -55,9 +55,9 @@ int main(void)
 
 #if defined(RPP_USE_TEST)
     TestSystem::GetInstance()->Initialize(
-        String("/home/threezinedine/Projects/robotics-programming-platform/e2e-gruntime/results.json"),
+        String(STRINGIFY(RPP_PROJECT_DIR) "/e2e-gruntime/results.json"),
         String(""),
-        String("/home/threezinedine/Projects/robotics-programming-platform/e2e-gruntime/empty_scenario.py"));
+        String(STRINGIFY(RPP_PROJECT_DIR) "/e2e-gruntime/empty_scenario.py"));
 #endif
 
     {

@@ -258,7 +258,7 @@ def RunPythonProject(
             findClangCommand = (
                 "where clang" if Constants.IsWindowsPlatform() else "which clang"
             )
-            clangPathResult = RunCommand(findClangCommand)
+            clangPathResult = RunCommand(findClangCommand, capture=True)
 
             assert clangPathResult is not None, "Failed to find clang executable."
 

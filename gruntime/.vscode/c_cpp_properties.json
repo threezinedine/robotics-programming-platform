@@ -12,7 +12,8 @@
                 "UNICODE",
                 "_UNICODE",
                 "RPP_USE_TEST",
-                "RPP_PLATFORM_LINUX"
+                "RPP_PLATFORM_LINUX",
+                "RPP_PROJECT_DIR=\"C:/Users/Acer/Project/robotics-programming-platform\""
             ],
             "windowsSdkVersion": "10.0.26100.0",
             "compilerPath": "cl.exe",
