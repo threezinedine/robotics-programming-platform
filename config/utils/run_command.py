@@ -43,9 +43,7 @@ def RunCommand(
         return None
 
     except subprocess.CalledProcessError as e:
-        logger.error(
-            f"Command '{command}' failed with exit code {e.returncode}: {e.stderr.decode().strip()}."
-        )
+        logger.error(f"Command '{command}' failed with exit code {e.returncode}: {e}.")
         raise e
     except Exception as e:
         logger.error(f"An error occurred while running command '{command}': {e}")

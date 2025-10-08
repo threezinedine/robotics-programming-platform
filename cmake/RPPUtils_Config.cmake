@@ -30,6 +30,7 @@ macro(RPPProjectSetup)
         message(STATUS "Setting up project ${PROJECT_NAME}")
         RPPOption(CMAKE_BUILD_TYPE "Debug")
         RPPDefineOption(RPP_EDITOR OFF)
+        RPPDefineOption(RPP_PROJECT_DIR "${CMAKE_CURRENT_LIST_DIR}/..")
 
         set(CMAKE_CXX_STANDARD 17)
         set(CMAKE_CXX_STANDARD_REQUIRED ON)
