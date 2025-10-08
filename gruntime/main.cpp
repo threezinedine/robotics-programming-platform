@@ -47,7 +47,11 @@ private:
 int main(void)
 {
     SingletonManager::Initialize();
+#if defined(RPP_USE_TEST)
+    FileSystem::Initialize("temp");
+#else
     FileSystem::Initialize();
+#endif
     Logging::GetInstance()->Setup(u8(HandlerType::CONSOLE), LogLevel::DEBUG);
     Renderer::Initialize();
     Thread::Initialize();

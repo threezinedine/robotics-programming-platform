@@ -116,7 +116,9 @@ def Generate(
         return obj.comment if obj.comment else default
 
     def E2EBindingType(type: str) -> str:
-        assert type in [
+        cleanType = type.strip().replace("const ", "").replace("&", "")
+
+        assert cleanType in [
             "int",
             "i8",
             "i16",
@@ -127,6 +129,7 @@ def Generate(
             "u16",
             "u32",
             "u64",
+            "b8",
             "FileHandle",
             "FileMode",
             "double",
@@ -141,7 +144,7 @@ def Generate(
             "None",
         ], f"Unsupported type: {type}"
 
-        if type in [
+        if cleanType in [
             "int",
             "i32",
             "i64",
@@ -162,8 +165,8 @@ def Generate(
             return "f"
         elif type in ["std::string", "char *", "String", "str"]:
             return "s"
-        elif type in ["bool"]:
-            return "p"
+        elif type in ["bool", "b8"]:
+            return "b"
         elif type == ["None"]:
             return ""
         else:

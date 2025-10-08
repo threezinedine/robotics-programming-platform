@@ -11,6 +11,16 @@ if FileSystem.IsFileOpen(file):
 else:
     TestSystem.Log("Failed to open file.")
 
+    newFile = FileSystem.OpenFile("output.txt", 1)  # 1 = write mode
+    FileSystem.Write(newFile, "This is a test write operation.\n")
+    FileSystem.CloseFile(newFile)
+
+    readFile = FileSystem.OpenFile("output.txt", 0)  # 0 = read mode
+    if FileSystem.IsFileOpen(readFile):
+        readContent = FileSystem.Read(readFile)
+        TestSystem.Log(f"Read from output.txt: {readContent}")
+        FileSystem.CloseFile(readFile)
+
 TestSystem.Wait(1000)  # Wait for 1 second
 
 TestSystem.Log("This is a log message from empty_scenario.py")

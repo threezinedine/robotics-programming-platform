@@ -95,6 +95,17 @@ def BuildProject(
     globalPythonExe = globalPythonExe.replace("\\", "/")
     pythonHome = os.path.dirname(globalPythonExe)
 
+    if Constants.IsWindowsPlatform():
+        RunCommand(
+            f"{Constants.PYTHON_SCRIPT} config.py -p autogen run",
+            cwd=Constants.ABSOLUTE_BASE_DIR,
+        )
+    else:
+        RunCommand(
+            f"{Constants.PYTHON_SCRIPT} config.py -p autogen run",
+            cwd=Constants.ABSOLUTE_BASE_DIR,
+        )
+
     try:
         projectDir = Constants.ABSOLUTE_BASE_DIR.replace("\\", "/")
 
@@ -136,6 +147,17 @@ def RunCppProject(projectDir: str, projectType: str, memoryCheck: bool = False) 
 
     buildDir = GetAbsoluteBuildDir(projectDir, projectType)
     cmakeBuildType = "Debug" if projectType == "dev" else "Release"
+
+    if Constants.IsWindowsPlatform():
+        RunCommand(
+            f"{Constants.PYTHON_SCRIPT} config.py -p autogen run",
+            cwd=Constants.ABSOLUTE_BASE_DIR,
+        )
+    else:
+        RunCommand(
+            f"{Constants.PYTHON_SCRIPT} config.py -p autogen run",
+            cwd=Constants.ABSOLUTE_BASE_DIR,
+        )
 
     if Constants.IsWindowsPlatform():
         executableDir = os.path.join(buildDir, cmakeBuildType)
@@ -203,7 +225,6 @@ def RunCppProjectTest(projectDir: str, projectType: str) -> None:
 
     # Prepare e2e directory
     e2eDir = os.path.join(Constants.ABSOLUTE_BASE_DIR, f"e2e-{projectDir}")
-    CreateRecursiveDirIfNotExists(os.path.join(e2eDir, "Engine"))
     CreateRecursiveDirIfNotExists(os.path.join(e2eDir, "TestReports"))
 
     if Constants.IsWindowsPlatform():

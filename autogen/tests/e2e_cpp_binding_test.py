@@ -209,6 +209,34 @@ static PyObject* OpenFile(PyObject* self, PyObject* args)
     AssertGenerateResult(expected, result)
 
 
+def test_parse_with_the_string_return_type(generateFunc: GenerateFuncType) -> None:
+    result = generateFunc(
+        """
+class RPP_E2E_BINDING RPP_SINGLETON TestSystem
+{
+public:
+    std::string GetName() RPP_E2E_BINDING;
+};
+""",
+        "e2e_test_cpp_function_binding.j2",
+        ["string"],
+    )
+
+    expected = """
+static PyObject* GetName(PyObject* self, PyObject* args)
+{
+    if (!PyArg_ParseTuple(args, ""))
+    {
+        return nullptr;
+    }
+    auto result = ::rpp::TestSystem::GetInstance()->GetName();
+    return Py_BuildValue("s", result.c_str());
+}
+    """
+
+    AssertGenerateResult(expected, result)
+
+
 def test_module_define(generateFunc: GenerateFuncType) -> None:
     result = generateFunc(
         """

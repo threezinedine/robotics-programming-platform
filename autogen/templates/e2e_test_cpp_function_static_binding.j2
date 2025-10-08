@@ -12,8 +12,17 @@ static PyObject* {{ method.name }}(PyObject* self, PyObject* args)
     }
 
     {% if method.returnType != "void" %}
+        {% if e2eBindingType(method.returnType) == "s" %}
+            {% if method.returnType in ["std::string", "const std::string&"] %}
+                {% set addingSufix = ".c_str()" %}
+            {% elif method.returnType in ["String", "const String&"] %}
+                {% set addingSufix = ".CStr()" %}
+            {% else %}
+                {% set addingSufix = "" %}
+            {% endif %}
+        {% endif %}
     auto result = ::rpp::{{ class.name }}::{{ method.name }}({{ methodParametersCall(method, False) }});
-    return Py_BuildValue("i", result);
+    return Py_BuildValue("{{e2eBindingType(method.returnType)}}", result{{ addingSufix }});
     {% else %}
     ::rpp::{{ class.name }}::{{ method.name }}({{ methodParametersCall(method, False) }});
     Py_RETURN_NONE;
