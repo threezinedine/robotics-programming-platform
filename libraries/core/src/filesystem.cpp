@@ -296,6 +296,24 @@ namespace rpp
         s_fileEntries->Free(file);
     }
 
+    b8 FileSystem::PathExists(const String &path)
+    {
+        RPP_UNUSED(path);
+        return IsPhysicalPathExists(getPhysicalPath(path));
+    }
+
+    b8 FileSystem::IsDirectory(const String &path)
+    {
+        String physicalPath = getPhysicalPath(path);
+        return IsPhysicalPathExists(physicalPath);
+    }
+
+    void FileSystem::CreateDirectory(const String &path)
+    {
+        String physicalPath = getPhysicalPath(path);
+        CreatePhysicalDirectory(physicalPath);
+    }
+
     String FileSystem::CWD()
     {
         return s_cwd;

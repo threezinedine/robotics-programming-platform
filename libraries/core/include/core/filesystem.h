@@ -1,4 +1,5 @@
 #pragma once
+#include "common.h"
 #include "platforms/platforms.h"
 #include "containers/storage.h"
 #include "string.h"
@@ -33,7 +34,7 @@ namespace rpp
      * - Testing environment setup for file system operations.
      * @note This module is designed to be used in conjunction with other core modules.
      */
-    class FileSystem
+    class RPP_E2E_BINDING FileSystem
     {
     private:
         /**
@@ -99,21 +100,21 @@ namespace rpp
          * the function checks if the file can be opened for writing.
          * @return The id of the file if it exists, or INVALID_ID if it does not.
          */
-        static FileHandle OpenFile(const String &filePath, FileMode mode = FileMode::READ);
+        static FileHandle OpenFile(const String &filePath, FileMode mode = FileMode::READ) RPP_E2E_BINDING;
 
         /**
          * @brief Check if current file id is opened or not.
          * @param file The handle of the file to check.
          * @return True if the file is open, false otherwise.
          */
-        static b8 IsFileOpen(FileHandle file);
+        static b8 IsFileOpen(FileHandle file) RPP_E2E_BINDING;
 
         /**
          * @brief Reads the entire content of an open file into a string.
          * @param file The handle of the file to read from.
          * @return A String containing the content of the file.
          */
-        static String Read(FileHandle file);
+        static String Read(FileHandle file) RPP_E2E_BINDING;
 
         /**
          * @brief Writes data to an open file.
@@ -121,13 +122,13 @@ namespace rpp
          * @param data The data to write to the file. The data can be appended to the existing content of the file or overwrite it.
          * (default is to overwrite the existing content)
          */
-        static void Write(FileHandle file, const String &data);
+        static void Write(FileHandle file, const String &data) RPP_E2E_BINDING;
 
         /**
          * Closes an open file identified by the given file handle.
          * @param file The handle of the file to close.
          */
-        static void CloseFile(FileHandle file);
+        static void CloseFile(FileHandle file) RPP_E2E_BINDING;
 
         /**
          * @brief Checks if a file/folder exists at the specified path.

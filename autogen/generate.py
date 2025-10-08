@@ -127,6 +127,8 @@ def Generate(
             "u16",
             "u32",
             "u64",
+            "FileHandle",
+            "FileMode",
             "double",
             "float",
             "f32",
@@ -139,7 +141,16 @@ def Generate(
             "None",
         ], f"Unsupported type: {type}"
 
-        if type in ["int", "i32", "i64"]:
+        if type in [
+            "int",
+            "i32",
+            "i64",
+            "unsigned int",
+            "u32",
+            "u64",
+            "FileHandle",
+            "FileMode",
+        ]:
             return "i"
         elif type in ["float", "double", "f32", "f64"]:
             return "f"
