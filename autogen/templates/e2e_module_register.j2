@@ -1,0 +1,7 @@
+{% for class in classes %}
+{% if "e2e" in class.annotations %}
+PyImport_AppendInittab("{{ class.name }}", [](void) -> PyObject* {
+    return PyModule_Create(&{{ class.name }}Module);
+});
+{% endif %}
+{% endfor %}

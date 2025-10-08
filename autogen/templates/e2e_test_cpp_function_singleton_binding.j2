@@ -1,0 +1,23 @@
+{% for method in class.methods %}
+{% if "e2e" in method.annotations and not method.isStatic and method.access == "public" %}
+static PyObject* {{ method.name }}(PyObject* self, PyObject* args)
+{
+    {% for param in method.parameters %}
+    {{ param.type.replace("const", "").replace("*", "").replace("&", "").replace("std::string", "const char*").replace("String", "const char*") }} {{ param.name }};
+    {% endfor %}
+
+    if (!PyArg_ParseTuple(args, "{{convertAllFunctionParametersToE2EBindingTypeList(method)}}"{% for param in method.parameters %}, &{{ param.name }}{% endfor %}))
+    {
+        return nullptr;
+    }
+
+    {% if method.returnType != "void" %}
+    auto result = ::rpp::{{ class.name }}::GetInstance()->{{ method.name }}({{ methodParametersCall(method, False) }});
+    return Py_BuildValue("i", result);
+    {% else %}
+    ::rpp::{{ class.name }}::GetInstance()->{{ method.name }}({{ methodParametersCall(method, False) }});
+    Py_RETURN_NONE;
+    {% endif %}
+}
+{% endif %}
+{% endfor %}

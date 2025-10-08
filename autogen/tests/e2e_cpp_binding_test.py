@@ -5,7 +5,7 @@ from .utils import GenerateFuncType, AssertGenerateResult
 def test_bind_function_which_static(generateFunc: GenerateFuncType) -> None:
     result = generateFunc(
         """
-class TestSystem
+class RPP_E2E_BINDING RPP_SINGLETON TestSystem
 {
 public:
     static int Add(int a, int b) RPP_E2E_BINDING;
@@ -42,7 +42,7 @@ public:
 def test_bind_function(generateFunc: GenerateFuncType) -> None:
     result = generateFunc(
         """
-class TestSystem
+class RPP_E2E_BINDING RPP_SINGLETON TestSystem
 {
 public:
     int Add(int a, int b) RPP_E2E_BINDING;
@@ -77,7 +77,7 @@ static PyObject* Add(PyObject* self, PyObject* args)
 def test_bind_function_with_no_return_type(generateFunc: GenerateFuncType) -> None:
     result = generateFunc(
         """
-class TestSystem
+class RPP_E2E_BINDING RPP_SINGLETON TestSystem
 {
 public:
     void Log(const std::string& message) RPP_E2E_BINDING;
@@ -107,7 +107,7 @@ static PyObject* Log(PyObject* self, PyObject* args)
 def test_methods_define(generateFunc: GenerateFuncType) -> None:
     result = generateFunc(
         """
-class TestSystem
+class RPP_E2E_BINDING RPP_SINGLETON TestSystem
 {
 public:
     int Add(int a, int b) RPP_E2E_BINDING;
@@ -127,6 +127,15 @@ static PyMethodDef TestSystemMethods[] = {
     {"Count", Count, METH_NOARGS, ""},
     {nullptr, nullptr, 0, nullptr}
 };
+
+static struct PyModuleDef TestSystemModule = {
+    PyModuleDef_HEAD_INIT,
+    "TestSystem",
+    nullptr,
+    -1,
+    TestSystemMethods
+};
+
 """
 
     AssertGenerateResult(expected, result)
@@ -135,7 +144,7 @@ static PyMethodDef TestSystemMethods[] = {
 def test_python_pyi_binding(generateFunc: GenerateFuncType) -> None:
     result = generateFunc(
         """
-class TestSystem
+class RPP_E2E_BINDING RPP_SINGLETON TestSystem
 {
 public:
     int Add(int a, int b) RPP_E2E_BINDING;
@@ -159,6 +168,125 @@ def Log(message: str) -> None:
 
 def Count() -> None:
     ...
+
+"""
+
+    AssertGenerateResult(expected, result)
+
+
+def test_parse_the_filesystem_utils(generateFunc: GenerateFuncType) -> None:
+    result = generateFunc(
+        """
+typedef unsigned int u32;
+
+class RPP_E2E_BINDING FileSystem
+{
+public:
+    static u32 OpenFile(const std::string& path) RPP_E2E_BINDING;
+};
+""",
+        "e2e_test_cpp_function_binding.j2",
+        ["string"],
+    )
+
+    expected = """
+static PyObject* OpenFile(PyObject* self, PyObject* args)
+{
+    const char* path;
+    if (!PyArg_ParseTuple(args, "s", &path))
+    {
+        return nullptr;
+    }
+
+    auto result = ::rpp::FileSystem::OpenFile(path);
+
+    return Py_BuildValue("i", result);
+}
+"""
+
+    AssertGenerateResult(expected, result)
+
+
+def test_module_define(generateFunc: GenerateFuncType) -> None:
+    result = generateFunc(
+        """
+class RPP_E2E_BINDING RPP_SINGLETON TestSystem
+{
+public:
+    int Add(int a, int b) RPP_E2E_BINDING;
+    void Log(const char* message) RPP_E2E_BINDING;
+};
+
+class RPP_E2E_BINDING FileSystem
+{
+public:
+    static unsigned int OpenFile(const std::string& path) RPP_E2E_BINDING;
+};
+""",
+        "e2e_module_define.j2",
+        [],
+    )
+
+    expected = """
+static PyMethodDef TestSystemMethods[] = {
+    {"Add", Add, METH_VARARGS, ""},
+    {"Log", Log, METH_VARARGS, ""},
+    {nullptr, nullptr, 0, nullptr}
+};
+
+static struct PyModuleDef TestSystemModule = {
+    PyModuleDef_HEAD_INIT,
+    "TestSystem",
+    nullptr,
+    -1,
+    TestSystemMethods
+};
+
+static PyMethodDef FileSystemMethods[] = {
+    {"OpenFile", OpenFile, METH_VARARGS, ""},
+    {nullptr, nullptr, 0, nullptr}
+};
+
+static struct PyModuleDef FileSystemModule = {
+    PyModuleDef_HEAD_INIT,
+    "FileSystem",
+    nullptr,
+    -1,
+    FileSystemMethods
+};
+"""
+
+    AssertGenerateResult(expected, result)
+
+
+def test_module_register(generateFunc: GenerateFuncType) -> None:
+    result = generateFunc(
+        """
+class RPP_E2E_BINDING RPP_SINGLETON TestSystem
+{
+public:
+    int Add(int a, int b) RPP_E2E_BINDING;
+    void Log(const char* message) RPP_E2E_BINDING;
+};
+
+class RPP_E2E_BINDING FileSystem
+{
+public:
+    static unsigned int OpenFile(const std::string& path) RPP_E2E_BINDING;
+};
+""",
+        "e2e_module_register.j2",
+        [],
+    )
+
+    expected = """
+PyImport_AppendInittab("TestSystem", [](void) -> PyObject* {
+    return PyModule_Create(&TestSystemModule);
+});
+
+PyImport_AppendInittab("FileSystem", [](void) -> PyObject* {
+    return PyModule_Create(&FileSystemModule);
+});
 
 """
 

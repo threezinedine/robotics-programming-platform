@@ -8,15 +8,15 @@ namespace rpp
         COMMAND_WAIT,
     };
 
-    class RPP_E2E_BINDING CommandStack
+    class CommandStack
     {
     public:
         CommandStack();
         ~CommandStack();
 
-        void Push(Command command) RPP_E2E_BINDING;
+        void Push(Command command);
 
-        Command Pop() RPP_E2E_BINDING;
+        Command Pop();
 
         inline b8 Empty() const { return m_commands.Size() == 0; }
 

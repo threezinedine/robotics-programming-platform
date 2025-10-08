@@ -210,6 +210,11 @@ def RunPythonProject(
             "e2e_test_binding.cpp",
         )
 
+        e2eAppendOutput = os.path.join(
+            librariesTempDir,
+            "e2e_test_append.cpp",
+        )
+
         # pyiBindingOutput = os.path.join(
         #     Constants.ABSOLUTE_BASE_DIR,
         #     "editor",
@@ -237,6 +242,7 @@ def RunPythonProject(
 
         isE2EOutputFileExists = os.path.isfile(e2eOutput)
         isPyiE2EGRuntimeFileExists = os.path.isfile(pyiE2EGRuntimeOutput)
+        isE2EAppendOutputFileExists = os.path.isfile(e2eAppendOutput)
         # isPyiFileExists = os.path.isfile(pyiBindingOutput)
         # isCppBindingFileExists = os.path.isfile(cppBindingOutput)
 
@@ -246,6 +252,7 @@ def RunPythonProject(
             # and isCppBindingFileExists
             and isE2EOutputFileExists
             and isPyiE2EGRuntimeFileExists
+            and isE2EAppendOutputFileExists
             and not reset
             and not force
         ):
@@ -320,6 +327,13 @@ def RunPythonProject(
             e2eOutput,
         ]
 
+        e2eAppendOutputArgs = argCommon + [
+            "--template",
+            os.path.join(cwd, "templates", "e2e_module_register.j2"),
+            "--output",
+            e2eAppendOutput,
+        ]
+
         pyiE2EGRuntimeOutputArgs = argCommon + [
             "--template",
             os.path.join(cwd, "templates", "e2e_python_binding.j2"),
@@ -364,6 +378,9 @@ def RunPythonProject(
                 pyiE2EGRuntimeOutputArgs
             )
             RunCommand(pyiE2EGRuntimeCommand, cwd=cwd)
+
+            e2eAppendCommand = " ".join([pythonExe, mainScript] + e2eAppendOutputArgs)
+            RunCommand(e2eAppendCommand, cwd=cwd)
 
             logger.info(f"Python project '{projectDir}' finished successfully.")
 

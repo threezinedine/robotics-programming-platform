@@ -7,7 +7,7 @@ namespace rpp
     /**
      * Used for e2e testing of the applications module
      */
-    class RPP_SINGLETON TestSystem
+    class RPP_SINGLETON RPP_E2E_BINDING TestSystem
     {
         RPP_SINGLETON_DEFINE(TestSystem);
 

@@ -17,15 +17,6 @@ namespace rpp
     namespace
     {
 #include "tmp/e2e_test_binding.cpp"
-
-        static struct PyModuleDef TestSystemModule = {
-            PyModuleDef_HEAD_INIT,
-            "TestSystem", // name of module
-            nullptr,      // module documentation, may be NULL
-            -1,           // size of per-interpreter state of the module,
-                          // or -1 if the module keeps state in global variables.
-            TestSystemMethods};
-
     } // namespace
 
     namespace
@@ -163,8 +154,7 @@ namespace rpp
 
     void TestSystem::TestThreadFunction(void *arg)
     {
-        PyImport_AppendInittab("TestSystem", [](void) -> PyObject *
-                               { return PyModule_Create(&TestSystemModule); });
+#include "tmp/e2e_test_append.cpp"
 
         Py_Initialize();
         RPP_UNUSED(arg);
