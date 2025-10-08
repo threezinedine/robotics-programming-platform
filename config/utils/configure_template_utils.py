@@ -22,6 +22,7 @@ def GenerateTemplate(templatePath: str) -> None:
         "PYTHON_SCRIPT": Constants.PYTHON_SCRIPT,
         "VSCODE_TASK_COMMAND": "sudo" if Constants.PLATFORM != "Windows" else "python",
         "VSCODE_FIRST_ARG": "python3" if Constants.PLATFORM != "Windows" else "",
+        "RPP_PROJECT_DIR": Constants.ABSOLUTE_BASE_DIR.replace("\\", "/"),
     }
 
     fullPath = os.path.join(Constants.ABSOLUTE_BASE_DIR, templatePath)

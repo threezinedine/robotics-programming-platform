@@ -12,7 +12,8 @@
                 "UNICODE",
                 "_UNICODE",
                 "RPP_USE_TEST",
-                "@@RPP_PLATFORM_DEFINE@@"
+                "@@RPP_PLATFORM_DEFINE@@",
+                "RPP_PROJECT_DIR=\"@@RPP_PROJECT_DIR@@\""
             ],
             "windowsSdkVersion": "10.0.26100.0",
             "compilerPath": "cl.exe",
