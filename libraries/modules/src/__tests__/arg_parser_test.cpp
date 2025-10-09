@@ -1,6 +1,16 @@
 #include "test_common.h"
 
-TEST(ArgParserTest, Empty)
+#define DEFINE_ARGS(...)          \
+    char *args[] = {__VA_ARGS__}; \
+    int argc = sizeof(args) / sizeof(char *)
+
+TEST(ArgParserTest, EmptyParser)
 {
-    ASSERT_TRUE(true);
+    DEFINE_ARGS("main.exe");
+
+    ArgParser parser;
+
+    Json result = parser.Parse(argc, args);
+
+    EXPECT_EQ(result.ToString(), "{}");
 }
