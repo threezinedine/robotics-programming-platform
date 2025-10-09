@@ -48,7 +48,7 @@ class Constants:
                 ["where", "python"],
                 check=True,
                 shell=True,
-                cwd=folder,
+                cwd=Constants.ABSOLUTE_BASE_DIR,
                 capture_output=True,
                 text=True,
             )
