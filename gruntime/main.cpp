@@ -66,10 +66,10 @@ int main(int argc, char **argv)
     Signal::Initialize();
 
 #if defined(RPP_USE_TEST)
-    String runtimeFilePath = Format("{}/e2e-gruntime/{}.py", String(STRINGIFY(RPP_PROJECT_DIR)), args.Get<String>("runtime", "basic"));
+    String runtimeFilePath = Format("{}/e2e/{}.py", String(STRINGIFY(RPP_PROJECT_DIR)), args.Get<String>("runtime", "basic"));
 
     TestSystem::GetInstance()->Initialize(
-        String(STRINGIFY(RPP_PROJECT_DIR) "/e2e-gruntime/results.json"),
+        String(STRINGIFY(RPP_PROJECT_DIR) "/e2e/results.json"),
         String(""),
         runtimeFilePath);
 #endif
