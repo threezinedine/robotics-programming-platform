@@ -44,8 +44,16 @@ private:
     u32 m_texture = INVALID_ID;
 };
 
-int main(void)
+int main(int argc, char **argv)
 {
+    ArgParser parser;
+
+#if defined(RPP_USE_TEST)
+    parser.AddArgument({"runtime"});
+#endif
+
+    Json args = parser.Parse(argc, argv);
+
     SingletonManager::Initialize();
 #if defined(RPP_USE_TEST)
     FileSystem::Initialize("temp");
@@ -58,10 +66,12 @@ int main(void)
     Signal::Initialize();
 
 #if defined(RPP_USE_TEST)
+    String runtimeFilePath = Format("{}/e2e-gruntime/{}.py", String(STRINGIFY(RPP_PROJECT_DIR)), args.Get<String>("runtime", "basic"));
+
     TestSystem::GetInstance()->Initialize(
         String(STRINGIFY(RPP_PROJECT_DIR) "/e2e-gruntime/results.json"),
         String(""),
-        String(STRINGIFY(RPP_PROJECT_DIR) "/e2e-gruntime/empty_scenario.py"));
+        runtimeFilePath);
 #endif
 
     {

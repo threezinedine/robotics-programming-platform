@@ -129,6 +129,13 @@ class Args:
             help="Optional module to build (default: None) only works for `libraries`",
         )
 
+        testParser.add_argument(
+            "--scenario",
+            type=str,
+            default="empty_scenario",
+            help="Specify the scenario to use when running the tests (default: empty_scenario)",
+        )
+
         e2eGRuntimeParser = subparsers.add_parser(
             "e2e-gruntime",
             help="Run the end-to-end tests for the gruntime project",
@@ -214,6 +221,15 @@ class Args:
         Returns true if the command is to run the tests.
         """
         return self.args.command == "test"
+
+    @property
+    def Scenario(self) -> str | None:
+        """
+        Returns the scenario to use when running the tests.
+        """
+        if self.IsTest:
+            return self.args.scenario
+        return None
 
     @property
     def IsReset(self) -> bool:

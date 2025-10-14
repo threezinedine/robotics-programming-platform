@@ -205,7 +205,11 @@ def RunCppProject(projectDir: str, projectType: str, memoryCheck: bool = False) 
         raise RuntimeError(f"Failed to run project '{projectDir}'.") from e
 
 
-def RunCppProjectTest(projectDir: str, projectType: str) -> None:
+def RunCppProjectTest(
+    projectDir: str,
+    projectType: str = "dev",
+    scenario: str | None = None,
+) -> None:
     """
     Run the testing suite for a C/C++ project. The testing version will be run.
 
@@ -216,6 +220,9 @@ def RunCppProjectTest(projectDir: str, projectType: str) -> None:
 
     projectType : str, optional
         The build type which is either 'dev' or 'prod'. Default is 'dev'.
+
+    scenario : str, optional
+        The scenario to use when running the tests. Only used for e2e testing (like `e2e-gruntime` or `e2e-editor`).
     """
     buildDir = GetAbsoluteBuildDir(projectDir, projectType)
     cmakeBuildType = "Debug" if projectType == "dev" else "Release"
@@ -262,8 +269,12 @@ def RunCppProjectTest(projectDir: str, projectType: str) -> None:
         buildCommand = f"cmake --build {buildDir} --config {cmakeBuildType}"
         RunCommand(buildCommand, cwd=buildDir)
 
+        runCommand = f"{executable}"
+        if scenario:
+            runCommand = f"{executable} {scenario}"
+
         logger.info(f"Running tests for project '{projectDir}'...")
-        RunCommand(f"{executable}", cwd=buildDir)
+        RunCommand(runCommand, cwd=buildDir)
     except Exception as e:
         logger.error(f"Failed to run tests for project '{projectDir}': {e}")
         raise RuntimeError(f"Failed to run tests for project '{projectDir}'.") from e

@@ -86,6 +86,7 @@ def main():
                 RunCppProjectTest(
                     projectDir=args.Project,
                     projectType=args.Type,
+                    scenario=args.Scenario,
                 )
         else:
             RunPythonProjectTest(
