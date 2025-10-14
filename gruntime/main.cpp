@@ -74,6 +74,11 @@ int main(void)
             {
                 TestSystem::GetInstance()->Update(0.0f);
             }
+            else
+            {
+                // If the test system indicates to close, break the loop to exit the application.
+                break;
+            }
 #endif
 
             if (GraphicSessionManager::GetInstance()->Update(0.0f))
