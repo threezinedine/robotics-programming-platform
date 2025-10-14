@@ -4,13 +4,16 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/../libraries/**",
-                "${workspaceFolder}/../externals/**"
+                "${workspaceFolder}/../externals/**",
+                "${workspaceFolder}/../libraries/**"
             ],
             "defines": [
                 "_DEBUG",
                 "UNICODE",
-                "_UNICODE"
+                "_UNICODE",
+                "RPP_USE_TEST",
+                "@@RPP_PLATFORM_DEFINE@@",
+                "RPP_PROJECT_DIR=\"@@RPP_PROJECT_DIR@@\""
             ],
             "windowsSdkVersion": "10.0.26100.0",
             "compilerPath": "cl.exe",
