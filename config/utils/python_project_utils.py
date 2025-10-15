@@ -402,6 +402,13 @@ def RunPythonProject(
 
         CreateRecursiveDirIfNotExists(targetConvertedUiDir)
 
+        initPyFile = os.path.join(targetConvertedUiDir, "__init__.py")
+        if not os.path.exists(initPyFile):
+            with open(initPyFile, "w", encoding="utf-8") as f:
+                f.write(
+                    "# This file is auto-generated to make this directory a package.\n"
+                )
+
         try:
             if len(uiFilesChanged) > 0:
                 logger.info("Converting .ui files to .py files...")

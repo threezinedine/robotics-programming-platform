@@ -29,6 +29,11 @@
 			"path": "e2e"
 		},
 		{
+			"name": "testui",
+			"path": "testui",
+			"python.pythonPath": "${workspaceFolder}/.venv/Scripts/python.exe"
+		},
+		{
 			"name": "robotics-programming-platform",
 			"path": "."
 		}
