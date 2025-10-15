@@ -222,7 +222,7 @@ def RunPythonProject(
 
         pyiE2EGRuntimeOutputDir = os.path.join(
             Constants.ABSOLUTE_BASE_DIR,
-            "e2e-gruntime",
+            "e2e",
             "packages",
         )
 

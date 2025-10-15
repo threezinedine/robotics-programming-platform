@@ -36,6 +36,7 @@
     <bool>false</bool>
    </attribute>
    <addaction name="openVSCodeAction"/>
+   <addaction name="settingAction"/>
   </widget>
   <action name="openVSCodeAction">
    <property name="icon">
@@ -47,6 +48,18 @@
    </property>
    <property name="toolTip">
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Open Setting for VSCode.exe path&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+  </action>
+  <action name="settingAction">
+   <property name="icon">
+    <iconset>
+     <normaloff>../images/setting.png</normaloff>../images/setting.png</iconset>
+   </property>
+   <property name="text">
+    <string>setting</string>
+   </property>
+   <property name="toolTip">
+    <string>OpenSettingMenu</string>
    </property>
   </action>
  </widget>
