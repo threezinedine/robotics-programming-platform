@@ -167,7 +167,7 @@ def Generate(
             return "s"
         elif type in ["bool", "b8"]:
             return "b"
-        elif type == ["None"]:
+        elif type in ["None"]:
             return ""
         else:
             raise ValueError(f"Unsupported type: {type}")

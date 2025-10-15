@@ -154,7 +154,7 @@ namespace rpp
         }
     }
 
-    FileHandle FileSystem::OpenFile(const String &filePath, u8 mode)
+    FileHandle FileSystem::OpenFile(const String &filePath, u32 mode)
     {
         RPP_ASSERT(s_fileEntries != nullptr);
 

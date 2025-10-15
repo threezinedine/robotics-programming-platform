@@ -12,6 +12,7 @@
                 "UNICODE",
                 "_UNICODE",
                 "RPP_USE_TEST",
+                "RPP_DEBUG",
                 "@@RPP_PLATFORM_DEFINE@@",
                 "RPP_PROJECT_DIR=\"@@RPP_PROJECT_DIR@@\""
             ],

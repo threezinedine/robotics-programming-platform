@@ -3,7 +3,6 @@ import subprocess
 import shutil
 
 from .path_utils import GetAbsoluteBuildDir, CreateRecursiveDirIfNotExists
-from .cache_file_utils import IsFileModified, UpdateFileCache
 from config.utils.validation_utils import ValidateCommandExists
 
 from .path_utils import GetAbsoluteBuildDir
