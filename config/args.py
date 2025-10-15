@@ -3,7 +3,7 @@ from .logger import logger
 from logging import DEBUG, INFO
 
 
-PythonProjectNames = ["autogen"]
+PythonProjectNames = ["autogen", "testui"]
 CppProjectNames = ["runtime", "gruntime", "libraries", "editor"]
 ProjectNames = [*PythonProjectNames, *CppProjectNames]
 Types = ["dev", "prod"]

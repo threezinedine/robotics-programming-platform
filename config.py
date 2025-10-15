@@ -109,6 +109,8 @@ def main():
             )
 
     if args.IsDesigner:
+        if Constants.IsLinuxPlatform():
+            raise Exception("The PyQt Designer tool is not supported on Linux.")
         OpenPyQtDesigner()
 
 

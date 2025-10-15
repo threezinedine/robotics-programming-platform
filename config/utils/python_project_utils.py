@@ -137,7 +137,7 @@ def _GetUIFileList() -> list[str]:
 
     uiDirectory = os.path.join(
         Constants.ABSOLUTE_BASE_DIR,
-        "editor",
+        "testui",
         "assets",
         "uis",
     )
@@ -381,7 +381,7 @@ def RunPythonProject(
         except Exception as e:
             logger.error(f"Failed to run Python project: {e}")
             raise RuntimeError(f"Failed to run Python project: {e}") from e
-    elif projectDir == "editor":
+    elif projectDir == "testui":
         uiFiles = _GetUIFileList()
         uiFilesChanged: list[str] = list(filter(lambda f: IsFileModified(f), uiFiles))
 
@@ -389,25 +389,20 @@ def RunPythonProject(
             uiFilesChanged = uiFiles
 
         uicExe = os.path.join(
-            GetAbsoluteVirtualEnvDir("editor"),
+            GetAbsoluteVirtualEnvDir(projectDir),
             "Scripts",
             "pyuic6.exe",
         )
 
         targetConvertedUiDir = os.path.join(
             Constants.ABSOLUTE_BASE_DIR,
-            "editor",
+            projectDir,
             "converted_uis",
         )
 
         CreateRecursiveDirIfNotExists(targetConvertedUiDir)
 
         try:
-            logger.info("Build the libraries project...")
-
-            buildLibrariesCommand = f"{Constants.PYTHON_SCRIPT} config.py -p libraries build --options RPP_EDITOR=ON"
-            RunCommand(buildLibrariesCommand)
-
             if len(uiFilesChanged) > 0:
                 logger.info("Converting .ui files to .py files...")
 
@@ -418,18 +413,9 @@ def RunPythonProject(
                         fileName.replace(".ui", "_ui.py"),
                     )
 
+                    convertUIFileCommand = f"{uicExe} {uiFile} -o {targetUiFile}"
                     try:
-                        subprocess.run(
-                            [
-                                uicExe,
-                                uiFile,
-                                "-o",
-                                targetUiFile,
-                            ],
-                            check=True,
-                            shell=True,
-                            cwd=cwd,
-                        )
+                        RunCommand(convertUIFileCommand, cwd=cwd)
                     except Exception as e:
                         logger.warning(f"Failed to convert {uiFile}: {e}")
 
@@ -438,15 +424,8 @@ def RunPythonProject(
                 logger.info("No .ui files have changed. Skipping conversion.")
 
             logger.info(f"Running Python project in '{projectDir}'...")
-            subprocess.run(
-                [
-                    pythonExe,
-                    mainScript,
-                ],
-                check=True,
-                shell=True,
-                cwd=cwd,
-            )
+            runCommand = f"{pythonExe} {mainScript}"
+            RunCommand(runCommand, cwd=cwd)
             logger.info(f"Python project '{projectDir}' finished successfully.")
 
             for uiFile in uiFilesChanged:
@@ -502,7 +481,7 @@ def OpenPyQtDesigner() -> None:
     """
 
     designgerExe = os.path.join(
-        GetAbsoluteVirtualEnvDir("editor"),
+        GetAbsoluteVirtualEnvDir("testui"),
         "Scripts",
         "pyqt6-tools.exe",
     )
@@ -516,7 +495,7 @@ def OpenPyQtDesigner() -> None:
             ],
             check=True,
             shell=True,
-            cwd=os.path.join(Constants.ABSOLUTE_BASE_DIR, "editor"),
+            cwd=os.path.join(Constants.ABSOLUTE_BASE_DIR, "testui"),
         )
         logger.info("PyQt Designer tool launched successfully.")
     except Exception as e:
