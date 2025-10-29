@@ -85,12 +85,13 @@ namespace rpp
          * @param height The height of the window.
          * @param title The title of the window.
          * @param useImGui Whether to initialize ImGui for this renderer. Default is FALSE.
+         * @param disableMouse Whether to disable mouse input for this window. Default is FALSE.
          *
          * @return The id of the created renderer instance. This id is used to activate or destroy the renderer later.
          *
          * @note The created renderer is not active by default. You need to call `Activate` with the returned id to make it active.
          */
-        static u32 Create(u32 width, u32 height, const String &title, b8 useImGui = FALSE);
+        static u32 Create(u32 width, u32 height, const String &title, b8 useImGui = FALSE, b8 disableMouse = FALSE);
 
         /**
          * @brief Activate the renderer with the given id. This will deactivate any other active renderer.

@@ -628,6 +628,11 @@ namespace rpp
             glfwSetWindowShouldClose((GLFWwindow *)m_window, TRUE);
             return TRUE;
         }
+        case GraphicsCommandType::DISABLE_MOUSE:
+        {
+            glfwSetInputMode((GLFWwindow *)m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+            return TRUE;
+        }
         default:
             RPP_UNREACHABLE();
         }

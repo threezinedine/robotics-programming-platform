@@ -38,6 +38,8 @@ namespace rpp
         UNBIND_FRAMEBUFFER, ///< Unbind the currently bound framebuffer object.
 
         CLOSE_WINDOW, ///< Close the rendering window.
+
+        DISABLE_MOUSE, ///< Use only for testing to remove the user mouse event.
         COUNT,
     };
 
@@ -279,6 +281,10 @@ namespace rpp
     };
 
     struct CloseWindowCommandData
+    {
+    };
+
+    struct DisableMouseCommandData
     {
     };
 } // namespace rpp
