@@ -382,61 +382,11 @@ def RunPythonProject(
             logger.error(f"Failed to run Python project: {e}")
             raise RuntimeError(f"Failed to run Python project: {e}") from e
     elif projectDir == "testui":
-        uiFiles = _GetUIFileList()
-        uiFilesChanged: list[str] = list(filter(lambda f: IsFileModified(f), uiFiles))
-
-        if reset or force:
-            uiFilesChanged = uiFiles
-
-        uicExe = os.path.join(
-            GetAbsoluteVirtualEnvDir(projectDir),
-            "Scripts",
-            "pyuic6.exe",
-        )
-
-        targetConvertedUiDir = os.path.join(
-            Constants.ABSOLUTE_BASE_DIR,
-            projectDir,
-            "converted_uis",
-        )
-
-        CreateRecursiveDirIfNotExists(targetConvertedUiDir)
-
-        initPyFile = os.path.join(targetConvertedUiDir, "__init__.py")
-        if not os.path.exists(initPyFile):
-            with open(initPyFile, "w", encoding="utf-8") as f:
-                f.write(
-                    "# This file is auto-generated to make this directory a package.\n"
-                )
-
         try:
-            if len(uiFilesChanged) > 0:
-                logger.info("Converting .ui files to .py files...")
-
-                for uiFile in uiFilesChanged:
-                    fileName = os.path.basename(uiFile)
-                    targetUiFile = os.path.join(
-                        targetConvertedUiDir,
-                        fileName.replace(".ui", "_ui.py"),
-                    )
-
-                    convertUIFileCommand = f"{uicExe} {uiFile} -o {targetUiFile}"
-                    try:
-                        RunCommand(convertUIFileCommand, cwd=cwd)
-                    except Exception as e:
-                        logger.warning(f"Failed to convert {uiFile}: {e}")
-
-                logger.info("All .ui files are converted to .py files.")
-            else:
-                logger.info("No .ui files have changed. Skipping conversion.")
-
             logger.info(f"Running Python project in '{projectDir}'...")
             runCommand = f"{pythonExe} {mainScript}"
             RunCommand(runCommand, cwd=cwd)
             logger.info(f"Python project '{projectDir}' finished successfully.")
-
-            for uiFile in uiFilesChanged:
-                UpdateFileCache(uiFile)
 
         except Exception as e:
             logger.error(f"Failed to run Python project: {e}")
