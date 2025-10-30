@@ -37,6 +37,16 @@ namespace rpp
         static inline f64 GetMouseY() { return m_mouseY; }
 
         /**
+         * @return The difference between current mouse position X with the previous frame
+         */
+        static inline f64 GetDeltaX() { return m_mouseX - m_previousMouseX; }
+
+        /**
+         * @return The difference between current mouse position Y with the previous frame
+         */
+        static inline f64 GetDeltaY() { return m_mouseY - m_previousMouseY; }
+
+        /**
          * @note used in testing only, if not in test mode, this method does nothing.
          * Updating the current mouse position to the given coordinates, this process will take time.
          *
@@ -66,5 +76,8 @@ namespace rpp
     private:
         static f64 m_mouseX;
         static f64 m_mouseY;
+
+        static f64 m_previousMouseX;
+        static f64 m_previousMouseY;
     };
 } // namespace rpp
