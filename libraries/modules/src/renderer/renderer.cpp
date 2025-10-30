@@ -7,6 +7,8 @@
 #include "modules/renderer/texture.h"
 #include "plutovg.h"
 
+#define MOUSE_CURSOR_SIZE (32.0f)
+
 namespace rpp
 {
     // TODO: Using command queue later.
@@ -161,6 +163,12 @@ namespace rpp
             plutovg_surface_destroy(surface);
         }
 
+        // loading mouse
+        {
+            currentRenderer->mouseTexture = Texture::Create("/home/threezinedine/Projects/robotics-programming-platform/assets/images/cursor.png");
+            RPP_ASSERT(currentRenderer->mouseTexture != INVALID_ID);
+        }
+
         if (useImGui)
         {
             currentRenderer->imguiId = ImGuiImpl::Create();
@@ -232,6 +240,18 @@ namespace rpp
         GetCurrentRenderer()->window->ExecuteCommand(commandData);
     }
 
+    void Renderer::DrawMouseCursor(const Point &position)
+    {
+        RPP_ASSERT(s_currentRenderers != nullptr);
+        RPP_ASSERT(s_currentRendererIndex != INVALID_RENDERER_INDEX);
+
+        RendererData *current = s_currentRenderers->Get(s_currentRendererIndex);
+        RPP_ASSERT(current != nullptr);
+        RPP_ASSERT(current->mouseTexture != INVALID_ID);
+
+        Renderer::DrawRectangle(Rect{position.x, position.y, MOUSE_CURSOR_SIZE, MOUSE_CURSOR_SIZE}, current->mouseTexture);
+    }
+
     void Renderer::DrawingSceneInImGui()
     {
         RPP_ASSERT(GetCurrentRenderer()->imguiId != INVALID_ID);
@@ -267,6 +287,7 @@ namespace rpp
 
         Texture::Destroy(data->circleMask);
         Texture::Destroy(data->rectangleMask);
+        Texture::Destroy(data->mouseTexture);
 
         Rectangle::Destroy(data->rectangleId);
         Line::Destroy(data->lineId);

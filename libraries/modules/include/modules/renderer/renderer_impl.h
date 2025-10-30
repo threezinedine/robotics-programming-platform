@@ -38,6 +38,7 @@ namespace rpp
             u32 lineId;           ///< The id of the line used for drawing.
             u32 circleMask;       ///< The circle mask texture id used for drawing circles.
             u32 rectangleMask;    ///< The rectangle mask texture id used for drawing rectangles (the default mask).
+            u32 mouseTexture;     ///< The texture id used for the mouse cursor.
         };
 
     public:
@@ -118,6 +119,13 @@ namespace rpp
          * @brief Draw a line on the current active renderer.
          */
         static void DrawLine(const Point &start, const Point &end);
+
+        /**
+         * @brief Draw the mouse cursor at the specified position on the current active renderer.
+         * @param position The position to draw the mouse cursor.
+         * @note This function requires a mouse texture to be loaded in the renderer.
+         */
+        static void DrawMouseCursor(const Point &position);
 
         /**
          * @brief Draw the rendering scene inside the ImGui frame. This function can be used to embed
