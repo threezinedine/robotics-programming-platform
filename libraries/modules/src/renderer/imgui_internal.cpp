@@ -11,6 +11,8 @@
 #error "ImGui is only supported with OpenGL backend!"
 #endif
 
+#include "modules/input/input.h"
+
 namespace rpp
 {
     Scope<Storage<ImGuiImpl::ImGuiData>>
@@ -119,14 +121,11 @@ namespace rpp
                 Renderer::GetWindow()->ExecuteCommand(commandData);
             });
 
-#if defined(RPP_USE_TEST)
         Renderer::GetWindow()->SetOnMouseMoveCallback(
-            [](f64 xPos, f64 yPos, void *userData)
+            [](f64 xPos, f64 yPos, void *pUserData)
             {
-                RPP_LOG_DEBUG("Mouse moved to position: ({}, {})", xPos, yPos);
-                Renderer::GetWindow()->SetMousePosition(100, 200);
+                InputSystem::OnMouseMoveCallback(xPos, yPos, pUserData);
             });
-#endif
 
         return id;
     }

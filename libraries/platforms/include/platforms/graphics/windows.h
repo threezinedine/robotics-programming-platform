@@ -70,9 +70,9 @@ namespace rpp
          * @brief A callback function type for window resize events.
          * @param width The new width of the window.
          * @param height The new height of the window.
-         * @param userData A pointer to user-defined data passed to the callback.
+         * @param pUserData A pointer to user-defined data passed to the callback.
          */
-        typedef void (*WindowResizeCallback)(u32 width, u32 height, void *userData);
+        typedef void (*WindowResizeCallback)(u32 width, u32 height, void *pUserData);
 
         inline void SetResizeCallback(WindowResizeCallback callback) { m_resizeCallback = callback; }
 
@@ -80,9 +80,9 @@ namespace rpp
          * @brief A callback function type for mouse move events.
          * @param xPos The new x position of the mouse.
          * @param yPos The new y position of the mouse.
-         * @param userData A pointer to user-defined data passed to the callback.
+         * @param pUserData A pointer to user-defined data passed to the callback.
          */
-        typedef void (*WindowOnMouseMoveCallback)(f64 xPos, f64 yPos, void *userData);
+        typedef void (*WindowOnMouseMoveCallback)(f64 xPos, f64 yPos, void *pUserData);
 
         inline void SetOnMouseMoveCallback(WindowOnMouseMoveCallback callback) { m_onMouseMoveCallback = callback; }
 

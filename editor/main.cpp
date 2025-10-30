@@ -22,7 +22,7 @@ protected:
     {
         ImGui::Begin("First Window");
         ImGui::Text("This is the first window.");
-        ImGui::Text(Format("Mouse Position: ({}, {})", ImGui::GetMousePos().x, ImGui::GetMousePos().y).CStr());
+        ImGui::Text(Format("Mouse Position: ({}, {})", InputSystem::GetMouseX(), InputSystem::GetMouseY()).CStr());
         ImGui::End();
     }
 };
@@ -63,6 +63,8 @@ int main(int argc, char **argv)
     FileSystem::Initialize();
 #endif
     Logging::GetInstance()->Setup(u8(HandlerType::CONSOLE), LogLevel::DEBUG);
+
+    InputSystem::Initialize();
     Renderer::Initialize();
     Thread::Initialize();
     Signal::Initialize();
@@ -122,6 +124,7 @@ int main(int argc, char **argv)
     Thread::Shutdown();
     GraphicSessionManager::GetInstance()->ClearSessions();
     Renderer::Shutdown();
+    InputSystem::Shutdown();
     FileSystem::Shutdown();
     SingletonManager::Shutdown();
     return 0;
