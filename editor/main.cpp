@@ -22,6 +22,7 @@ protected:
     {
         ImGui::Begin("First Window");
         ImGui::Text("This is the first window.");
+        ImGui::Text(Format("Mouse Position: ({}, {})", ImGui::GetMousePos().x, ImGui::GetMousePos().y).CStr());
         ImGui::End();
     }
 };

@@ -136,7 +136,8 @@
 			"string_view": "cpp",
 			"numbers": "cpp",
 			"semaphore": "cpp",
-			"cinttypes": "cpp"
+			"cinttypes": "cpp",
+			"common.h": "c"
 		}
 	}
 }

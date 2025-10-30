@@ -60,7 +60,7 @@ namespace rpp
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // Enable Gamepad Controls
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;     // Enable Docking
-        io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;   // Enable Multi-Viewport / Platform Windows
+        // io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;   // Enable Multi-Viewport / Platform Windows
         // io.ConfigViewportsNoAutoMerge = true;
         // io.ConfigViewportsNoTaskBarIcon = true;
 
@@ -119,6 +119,15 @@ namespace rpp
                 Renderer::GetWindow()->ExecuteCommand(commandData);
             });
 
+#if defined(RPP_USE_TEST)
+        Renderer::GetWindow()->SetOnMouseMoveCallback(
+            [](f64 xPos, f64 yPos, void *userData)
+            {
+                RPP_LOG_DEBUG("Mouse moved to position: ({}, {})", xPos, yPos);
+                Renderer::GetWindow()->SetMousePosition(100, 200);
+            });
+#endif
+
         return id;
     }
 
@@ -155,6 +164,19 @@ namespace rpp
         ImGuiData *data = s_imguis->Get(imguiId);
         RPP_ASSERT(data != nullptr);
         RPP_ASSERT(data->rendererId == Renderer::GetCurrentRendererId() && "ImGui instance was created with a different renderer!");
+
+#if defined(RPP_USE_TEST)
+        // Drawing the cursor for testing
+        {
+            ImDrawList *pDrawList = ImGui::GetForegroundDrawList();
+            ImVec2 mousePos = ImGui::GetIO().MousePos;
+
+            pDrawList->AddImage(
+                (void *)(intptr_t)Renderer::GetCurrentRenderer()->mouseTexture,
+                ImVec2(mousePos.x - 16, mousePos.y - 16),
+                ImVec2(mousePos.x + 16, mousePos.y + 16));
+        }
+#endif
 
         ImGui::Render();
         int display_w, display_h;

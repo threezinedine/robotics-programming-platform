@@ -155,7 +155,8 @@ namespace rpp
 
     Window::Window(u32 width, u32 height, const char *title, void *pData, u32 dataSize)
         : m_width(width), m_height(height),
-          m_title(title), m_resizeCallback(nullptr)
+          m_title(title), m_resizeCallback(nullptr),
+          m_onMouseMoveCallback(nullptr)
     {
         m_window = glfwCreateWindow(width, height, title, NULL, NULL);
         glfwMakeContextCurrent((GLFWwindow *)m_window);
@@ -181,15 +182,23 @@ namespace rpp
 
         // set window resize callback
         glfwSetWindowUserPointer((GLFWwindow *)m_window, this);
-        glfwSetFramebufferSizeCallback((GLFWwindow *)m_window, [](GLFWwindow *window, int width, int height)
+        glfwSetFramebufferSizeCallback((GLFWwindow *)m_window, [](GLFWwindow *window, i32 width, i32 height)
                                        {
             Window* win = (Window*)glfwGetWindowUserPointer(window);
-            win->m_width = width;
-            win->m_height = height; 
+            win->m_width = u32(width);
+            win->m_height = u32(height); 
             if (win->m_resizeCallback) {
-                win->m_resizeCallback(width, height, win->m_pData);
+                win->m_resizeCallback(win->m_width, win->m_height, win->m_pData);
             }
             glViewport(0, 0, width, height); });
+
+        glfwSetCursorPosCallback((GLFWwindow *)m_window, [](GLFWwindow *window, f64 xPos, f64 yPos)
+                                 {
+            Window *win = (Window *)glfwGetWindowUserPointer(window);
+            if (win->m_onMouseMoveCallback)
+            {
+                win->m_onMouseMoveCallback(xPos, yPos, win->m_pData);
+            } });
     }
 
     Window::Window(const Window &other)
@@ -638,6 +647,11 @@ namespace rpp
         }
 
         return FALSE;
+    }
+
+    void Window::SetMousePosition(f64 xPos, f64 yPos)
+    {
+        glfwSetCursorPos((GLFWwindow *)m_window, xPos, yPos);
     }
 } // namespace rpp
 

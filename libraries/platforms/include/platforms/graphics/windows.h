@@ -60,6 +60,13 @@ namespace rpp
         inline u32 GetHeight() const { return m_height; }
 
         /**
+         * Mocking the mouse position setting function.
+         * @param xPos The x position of the mouse.
+         * @param yPos The y position of the mouse.
+         */
+        void SetMousePosition(f64 xPos, f64 yPos);
+
+        /**
          * @brief A callback function type for window resize events.
          * @param width The new width of the window.
          * @param height The new height of the window.
@@ -69,6 +76,16 @@ namespace rpp
 
         inline void SetResizeCallback(WindowResizeCallback callback) { m_resizeCallback = callback; }
 
+        /**
+         * @brief A callback function type for mouse move events.
+         * @param xPos The new x position of the mouse.
+         * @param yPos The new y position of the mouse.
+         * @param userData A pointer to user-defined data passed to the callback.
+         */
+        typedef void (*WindowOnMouseMoveCallback)(f64 xPos, f64 yPos, void *userData);
+
+        inline void SetOnMouseMoveCallback(WindowOnMouseMoveCallback callback) { m_onMouseMoveCallback = callback; }
+
     private:
         u32 m_width;         ///< The width of the window.
         u32 m_height;        ///< The height of the window.
@@ -77,6 +94,7 @@ namespace rpp
 
         void *m_pData; ///< Pointer to the graphics backend specific data.
 
-        WindowResizeCallback m_resizeCallback; ///< The callback function for window resize events.
+        WindowResizeCallback m_resizeCallback;           ///< The callback function for window resize events.
+        WindowOnMouseMoveCallback m_onMouseMoveCallback; ///< The callback function for mouse move events.
     };
 } // namespace rpp

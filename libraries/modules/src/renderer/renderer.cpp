@@ -165,7 +165,7 @@ namespace rpp
 
         // loading mouse
         {
-            currentRenderer->mouseTexture = Texture::Create("/home/threezinedine/Projects/robotics-programming-platform/assets/images/cursor.png");
+            currentRenderer->mouseTexture = Texture::Create(STRINGIFY(RPP_PROJECT_DIR) "/assets/images/cursor.png");
             RPP_ASSERT(currentRenderer->mouseTexture != INVALID_ID);
         }
 
