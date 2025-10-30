@@ -3,7 +3,7 @@
 
 namespace rpp
 {
-    class InputSystem
+    class RPP_E2E_BINDING InputSystem
     {
     public:
         /**
@@ -63,7 +63,7 @@ namespace rpp
          * while (!inputSystem.MoveMouseTo(400.0, 300.0)); // Keep calling Update until the mouse reaches the target position
          * ```
          */
-        static b8 MoveMouseTo(f64 x, f64 y);
+        static b8 MoveMouseTo(f64 x, f64 y) RPP_E2E_BINDING;
 
         /**
          * The callback which is assigned into the windows to update the current state of the input system.

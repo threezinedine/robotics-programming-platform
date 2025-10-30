@@ -96,6 +96,8 @@ int main(int argc, char **argv)
             }
 #endif
 
+            InputSystem::Update(0.0f);
+
             if (GraphicSessionManager::GetInstance()->Update(0.0f))
             {
                 break;

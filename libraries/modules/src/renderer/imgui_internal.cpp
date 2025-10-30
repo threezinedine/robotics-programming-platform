@@ -121,11 +121,13 @@ namespace rpp
                 Renderer::GetWindow()->ExecuteCommand(commandData);
             });
 
+#if 0
         Renderer::GetWindow()->SetOnMouseMoveCallback(
             [](f64 xPos, f64 yPos, void *pUserData)
             {
                 InputSystem::OnMouseMoveCallback(xPos, yPos, pUserData);
             });
+#endif
 
         return id;
     }

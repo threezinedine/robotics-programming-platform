@@ -653,6 +653,20 @@ namespace rpp
     {
         glfwSetCursorPos((GLFWwindow *)m_window, xPos, yPos);
     }
+
+    f64 Window::GetMouseX() const
+    {
+        f64 mouseX, mouseY;
+        glfwGetCursorPos((GLFWwindow *)m_window, &mouseX, &mouseY);
+        return mouseX;
+    }
+
+    f64 Window::GetMouseY() const
+    {
+        f64 mouseX, mouseY;
+        glfwGetCursorPos((GLFWwindow *)m_window, &mouseX, &mouseY);
+        return mouseY;
+    }
 } // namespace rpp
 
 #endif

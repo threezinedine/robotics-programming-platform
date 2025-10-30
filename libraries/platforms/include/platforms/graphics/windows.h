@@ -67,6 +67,16 @@ namespace rpp
         void SetMousePosition(f64 xPos, f64 yPos);
 
         /**
+         * @return Get window mouse position X
+         */
+        f64 GetMouseX() const;
+
+        /**
+         * @return Get window mouse position Y
+         */
+        f64 GetMouseY() const;
+
+        /**
          * @brief A callback function type for window resize events.
          * @param width The new width of the window.
          * @param height The new height of the window.

@@ -1,4 +1,5 @@
 from packages import *  # this import will be deleted in the core, this line must be at the top of the file
+from time import sleep
 
 print("Hello from empty_scenario.py")
 
@@ -27,4 +28,9 @@ TestSystem.Log("This is a log message from empty_scenario.py")
 
 TestSystem.Wait(2000)
 
-print("Exiting empty_scenario.py")
+while True:
+    TestSystem.Wait(10)
+    if InputSystem.MoveMouseTo(600, 200):
+        break
+
+print("Exit Empty scenario")
