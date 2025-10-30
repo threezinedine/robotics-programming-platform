@@ -91,7 +91,7 @@ namespace rpp
          *
          * @note The created renderer is not active by default. You need to call `Activate` with the returned id to make it active.
          */
-        static u32 Create(u32 width, u32 height, const String &title, b8 useImGui = FALSE, b8 disableMouse = FALSE);
+        static u32 Create(u32 width, u32 height, const String &title, b8 useImGui = FALSE);
 
         /**
          * @brief Activate the renderer with the given id. This will deactivate any other active renderer.

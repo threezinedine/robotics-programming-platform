@@ -5,17 +5,11 @@ RPP_ENABLE_MEMORY_TRACKING;
 
 using namespace rpp;
 
-#if defined(RPP_USE_TEST)
-#define DISABLE_MOUSE TRUE
-#else
-#define DISABLE_MOUSE FALSE
-#endif
-
 class FirstWindow : public GraphicSession
 {
 public:
-    FirstWindow(u32 width, u32 height, const String &title, b8 enableImGui = FALSE, b8 disableMouse = FALSE)
-        : GraphicSession(width, height, title, enableImGui, disableMouse)
+    FirstWindow(u32 width, u32 height, const String &title, b8 enableImGui = FALSE)
+        : GraphicSession(width, height, title, enableImGui)
     {
     }
 
@@ -35,8 +29,8 @@ protected:
 class TestSession : public GraphicSession
 {
 public:
-    TestSession(u32 width, u32 height, const String &title, b8 enableImGui = FALSE, b8 disableMouse = FALSE)
-        : GraphicSession(width, height, title, enableImGui, disableMouse)
+    TestSession(u32 width, u32 height, const String &title, b8 enableImGui = FALSE)
+        : GraphicSession(width, height, title, enableImGui)
     {
     }
 
@@ -82,7 +76,7 @@ int main(int argc, char **argv)
 #endif
 
     {
-        CREATE_SESSION(FirstWindow, 800, 600, "Editor", TRUE, DISABLE_MOUSE);
+        CREATE_SESSION(FirstWindow, 800, 600, "Editor", TRUE);
 
         while (TRUE)
         {

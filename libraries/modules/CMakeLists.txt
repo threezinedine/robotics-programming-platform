@@ -85,7 +85,7 @@ target_compile_definitions(
     ${PROJECT_NAME_TEST_LIB}
     PUBLIC 
     ${RPP_BUILD_TYPE_DEFINE}
-    RPP_TEST_MODE # Enable test mode for testing purposes only.
+    RPP_USE_TEST # Enable test mode for testing purposes only.
 )
 
 RPPTargetDefines(${PROJECT_NAME_TEST_LIB})

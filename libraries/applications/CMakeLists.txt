@@ -65,6 +65,40 @@ target_compile_definitions(
 
 RPPTargetDefines(${PROJECT_NAME})
 
+# -------------- Test Lib ----------------
+set(CMAKE_FOLDER "TestLib")
+set(PROJECT_NAME_TEST_LIB ${PROJECT_NAME}_test_lib)
+
+add_library(
+    ${PROJECT_NAME_TEST_LIB} 
+    STATIC 
+    ${APPLICATIONS_SRC} 
+    ${APPLICATIONS_HDR}
+    ${WRITER_OUTPUT}
+)
+
+target_link_libraries(
+    ${PROJECT_NAME_TEST_LIB} 
+    PUBLIC 
+    RPPCore 
+    RPPModules_test_lib
+    rpp-pybind
+)
+
+target_include_directories(
+    ${PROJECT_NAME_TEST_LIB} 
+    PUBLIC 
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${RPP_BASE_DIR}/libraries
+)
+
+target_compile_definitions(
+    ${PROJECT_NAME_TEST_LIB} 
+    PUBLIC 
+    ${RPP_BUILD_TYPE_DEFINE}
+    RPP_USE_TEST # Enable test mode for testing purposes only.
+)
+
 
 # -------------- Test target --------------
 RPPFindPackage(rpp-googletest "Dependencies")

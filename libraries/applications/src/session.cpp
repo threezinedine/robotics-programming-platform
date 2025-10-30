@@ -2,16 +2,16 @@
 
 namespace rpp
 {
-    GraphicSession::GraphicSession(u32 width, u32 height, const String &title, b8 enableImGui, b8 disableMouse)
+    GraphicSession::GraphicSession(u32 width, u32 height, const String &title, b8 enableImGui)
         : m_rendererId(INVALID_ID), m_width(width),
           m_height(height), m_title(title),
-          m_enableImGui(enableImGui), m_disableMouse(disableMouse)
+          m_enableImGui(enableImGui)
     {
     }
 
     void GraphicSession::Initialize()
     {
-        m_rendererId = Renderer::Create(m_width, m_height, m_title, m_enableImGui, m_disableMouse);
+        m_rendererId = Renderer::Create(m_width, m_height, m_title, m_enableImGui);
         RPP_ASSERT(m_rendererId != INVALID_ID);
         Renderer::Activate(m_rendererId);
         InitializeImpl();

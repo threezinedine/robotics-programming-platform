@@ -87,7 +87,7 @@ namespace rpp
         return s_currentRenderers->Get(s_currentRendererIndex);
     }
 
-    u32 Renderer::Create(u32 width, u32 height, const String &title, b8 useImGui, b8 disableMouse)
+    u32 Renderer::Create(u32 width, u32 height, const String &title, b8 useImGui)
     {
         RPP_ASSERT(s_currentRenderers != nullptr);
         u32 rendererId = s_currentRenderers->Create();
@@ -98,13 +98,14 @@ namespace rpp
 
         currentRenderer->window = Graphics::CreateWindow(width, height, title.CStr(), &graphicData, sizeof(RendererGraphicData));
 
-        if (disableMouse)
+#if defined(RPP_USE_TEST)
         {
             RPP_LOG_INFO("Disabling mouse input for renderer id {}", rendererId);
             DisableMouseCommandData disableMouseData = {};
             GraphicsCommandData commandData = {GraphicsCommandType::DISABLE_MOUSE, &disableMouseData};
             currentRenderer->window->ExecuteCommand(commandData);
         }
+#endif
 
         Activate(rendererId);
         currentRenderer->rectangleId = Rectangle::Create();

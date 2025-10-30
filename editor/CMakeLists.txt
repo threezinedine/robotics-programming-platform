@@ -54,7 +54,7 @@ add_executable(
 target_link_libraries(
     ${EDITOR_TEST}
     PRIVATE 
-    RPPApplications
+    RPPApplications_test_lib
     rpp-pybind-embed
 )
 
