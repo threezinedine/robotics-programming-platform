@@ -2,16 +2,15 @@
 
 namespace rpp
 {
-    GraphicSession::GraphicSession(u32 width, u32 height, const String &title, b8 enableImGui)
+    GraphicSession::GraphicSession(u32 width, u32 height, const String &title)
         : m_rendererId(INVALID_ID), m_width(width),
-          m_height(height), m_title(title),
-          m_enableImGui(enableImGui)
+          m_height(height), m_title(title)
     {
     }
 
     void GraphicSession::Initialize()
     {
-        m_rendererId = Renderer::Create(m_width, m_height, m_title, m_enableImGui);
+        m_rendererId = Renderer::Create(m_width, m_height, m_title);
         RPP_ASSERT(m_rendererId != INVALID_ID);
         Renderer::Activate(m_rendererId);
         InitializeImpl();
@@ -21,6 +20,7 @@ namespace rpp
     {
         RPP_ASSERT(m_rendererId != INVALID_ID);
         Renderer::Activate(m_rendererId);
+        InputSystem::Update(deltaTime);
         UpdateImpl(deltaTime);
     }
 
@@ -55,7 +55,6 @@ namespace rpp
     void GraphicSession::UpdateImpl(f32 deltaTime)
     {
         // Default implementation does nothing.
-        RPP_UNUSED(deltaTime);
     }
 
     void GraphicSession::RenderImpl()

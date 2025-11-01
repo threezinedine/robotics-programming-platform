@@ -1,17 +1,36 @@
 #pragma once
 #include "core/core.h"
 
+#define MAX_INPUT_SYSTEMS 32
+
 namespace rpp
 {
+    /**
+     * The input system is used for working with the current input states of the current active renderer.
+     */
     class RPP_E2E_BINDING InputSystem
     {
+    public:
+        /**
+         * Stored the needed information for a renderer's input system.
+         */
+        struct RendererInputData
+        {
+            f64 m_mouseX;
+            f64 m_mouseY;
+
+            f64 m_previousMouseX;
+            f64 m_previousMouseY;
+        };
+
     public:
         /**
          * Starting the input system. Be called once at the beginning of the program.
          *
          * @note Must be called before initializing `Renderer`.
          */
-        static void Initialize();
+        static void
+        Initialize();
 
         /**
          * Release the input system. Be called once at the end of the program.
@@ -19,7 +38,7 @@ namespace rpp
         static void Shutdown();
 
         /**
-         * Update the input system. Be called once per frame.
+         * Update the input system. Be called once per frame for each active renderer.
          * @param delta Time elapsed since last frame in seconds.
          */
         static void Update(f32 delta);
@@ -28,23 +47,23 @@ namespace rpp
          * Get the mouse X position in screen coordinates.
          * @return Mouse X position in screen coordinates.
          */
-        static inline f64 GetMouseX() { return m_mouseX; }
+        static f64 GetMouseX();
 
         /**
          * Get the mouse Y position in screen coordinates.
          * @return Mouse Y position in screen coordinates.
          */
-        static inline f64 GetMouseY() { return m_mouseY; }
+        static f64 GetMouseY();
 
         /**
          * @return The difference between current mouse position X with the previous frame
          */
-        static inline f64 GetDeltaX() { return m_mouseX - m_previousMouseX; }
+        static f64 GetDeltaX();
 
         /**
          * @return The difference between current mouse position Y with the previous frame
          */
-        static inline f64 GetDeltaY() { return m_mouseY - m_previousMouseY; }
+        static f64 GetDeltaY();
 
         /**
          * @note used in testing only, if not in test mode, this method does nothing.
@@ -74,10 +93,14 @@ namespace rpp
         static void OnMouseMoveCallback(f64 xPos, f64 yPos, void *pUserData);
 
     private:
+#if 0
         static f64 m_mouseX;
         static f64 m_mouseY;
 
         static f64 m_previousMouseX;
         static f64 m_previousMouseY;
+#else
+        static RendererInputData s_inputSystemsData[MAX_INPUT_SYSTEMS]; ///< TODO: Use storage later
+#endif
     };
 } // namespace rpp

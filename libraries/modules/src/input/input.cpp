@@ -10,11 +10,7 @@
 
 namespace rpp
 {
-    f64 InputSystem::m_mouseX = 0.0;
-    f64 InputSystem::m_mouseY = 0.0;
-
-    f64 InputSystem::m_previousMouseX = 0.0;
-    f64 InputSystem::m_previousMouseY = 0.0;
+    InputSystem::RendererInputData InputSystem::s_inputSystemsData[MAX_INPUT_SYSTEMS];
 
     void InputSystem::Initialize()
     {
@@ -30,44 +26,51 @@ namespace rpp
 #if defined(RPP_USE_TEST)
         RPP_UNUSED(delta);
 #else
-        m_previousMouseX = m_mouseX;
-        m_previousMouseY = m_mouseY;
+        u32 rendererId = Renderer::GetCurrentRendererId();
+        RPP_ASSERT(rendererId < MAX_INPUT_SYSTEMS);
+        RendererInputData &data = s_inputSystemsData[rendererId];
+        data.m_previousMouseX = data.m_mouseX;
+        data.m_previousMouseY = data.m_mouseY;
 
-        m_mouseX = Renderer::GetWindow()->GetMouseX();
-        m_mouseY = Renderer::GetWindow()->GetMouseY();
+        data.m_mouseX = Renderer::GetWindow()->GetMouseX();
+        data.m_mouseY = Renderer::GetWindow()->GetMouseY();
 #endif
     }
 
     b8 InputSystem::MoveMouseTo(f64 x, f64 y)
     {
 #if defined(RPP_USE_TEST)
-        if (x == m_mouseX && y == m_mouseY)
+        u32 rendererId = Renderer::GetCurrentRendererId();
+        RPP_ASSERT(rendererId < MAX_INPUT_SYSTEMS);
+        RendererInputData &data = s_inputSystemsData[rendererId];
+
+        if (x == data.m_mouseX && y == data.m_mouseY)
         {
             return TRUE;
         }
 
-        m_previousMouseX = m_mouseX;
-        m_previousMouseY = m_mouseY;
+        data.m_previousMouseX = data.m_mouseX;
+        data.m_previousMouseY = data.m_mouseY;
 
-        f64 xDiff = x - m_mouseX;
-        f64 yDiff = y - m_mouseY;
+        f64 xDiff = x - data.m_mouseX;
+        f64 yDiff = y - data.m_mouseY;
 
         if (abs(xDiff) < MOUSE_TEST_MOVING_SPEED)
         {
-            m_mouseX = x;
+            data.m_mouseX = x;
         }
         else
         {
-            m_mouseX += f64(int(xDiff / (abs(xDiff) + abs(yDiff)) * MOUSE_TEST_MOVING_SPEED));
+            data.m_mouseX += f64(int(xDiff / (abs(xDiff) + abs(yDiff)) * MOUSE_TEST_MOVING_SPEED));
         }
 
         if (abs(yDiff) < MOUSE_TEST_MOVING_SPEED)
         {
-            m_mouseY = y;
+            data.m_mouseY = y;
         }
         else
         {
-            m_mouseY += f64(int(yDiff / (abs(xDiff) + abs(yDiff)) * MOUSE_TEST_MOVING_SPEED));
+            data.m_mouseY += f64(int(yDiff / (abs(xDiff) + abs(yDiff)) * MOUSE_TEST_MOVING_SPEED));
         }
 
         Renderer::GetWindow()->SetMousePosition(InputSystem::GetMouseX(), InputSystem::GetMouseY());
@@ -85,20 +88,56 @@ namespace rpp
 #if defined(RPP_USE_TEST)
         Renderer::GetWindow()->SetMousePosition(InputSystem::GetMouseX(), InputSystem::GetMouseY());
 #else
-        if (abs(xPos - m_mouseX) > MAX_MOUSE_DELTA || abs(yPos - m_mouseY) > MAX_MOUSE_DELTA)
+        u32 rendererId = Renderer::GetCurrentRendererId();
+        RPP_ASSERT(rendererId < MAX_INPUT_SYSTEMS);
+        RendererInputData &data = s_inputSystemsData[rendererId];
+
+        if (abs(xPos - data.m_mouseX) > MAX_MOUSE_DELTA || abs(yPos - data.m_mouseY) > MAX_MOUSE_DELTA)
         {
-            m_previousMouseX = xPos;
-            m_previousMouseY = yPos;
+            data.m_previousMouseX = xPos;
+            data.m_previousMouseY = yPos;
         }
         else
         {
-            m_previousMouseX = m_mouseX;
-            m_previousMouseY = m_mouseY;
+            data.m_previousMouseX = data.m_mouseX;
+            data.m_previousMouseY = data.m_mouseY;
         }
 
-        m_mouseX = xPos;
-        m_mouseY = yPos;
+        data.m_mouseX = xPos;
+        data.m_mouseY = yPos;
 
 #endif
+    }
+
+    f64 InputSystem::GetMouseX()
+    {
+        u32 rendererId = Renderer::GetCurrentRendererId();
+        RPP_ASSERT(rendererId < MAX_INPUT_SYSTEMS);
+        RendererInputData &data = s_inputSystemsData[rendererId];
+        return data.m_mouseX;
+    }
+
+    f64 InputSystem::GetMouseY()
+    {
+        u32 rendererId = Renderer::GetCurrentRendererId();
+        RPP_ASSERT(rendererId < MAX_INPUT_SYSTEMS);
+        RendererInputData &data = s_inputSystemsData[rendererId];
+        return data.m_mouseY;
+    }
+
+    f64 InputSystem::GetDeltaX()
+    {
+        u32 rendererId = Renderer::GetCurrentRendererId();
+        RPP_ASSERT(rendererId < MAX_INPUT_SYSTEMS);
+        RendererInputData &data = s_inputSystemsData[rendererId];
+        return data.m_mouseX - data.m_previousMouseX;
+    }
+
+    f64 InputSystem::GetDeltaY()
+    {
+        u32 rendererId = Renderer::GetCurrentRendererId();
+        RPP_ASSERT(rendererId < MAX_INPUT_SYSTEMS);
+        RendererInputData &data = s_inputSystemsData[rendererId];
+        return data.m_mouseY - data.m_previousMouseY;
     }
 } // namespace rpp

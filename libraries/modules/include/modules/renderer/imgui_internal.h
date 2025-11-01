@@ -11,6 +11,7 @@ namespace rpp
         {
             u32 rendererId;          ///< The id of the renderer associated with this ImGui instance.
             ImGuiIO *io;             ///< The ImGuiIO structure for input/output handling.
+            ImGuiContext *context;   ///< The ImGui context associated with this instance.
             u32 frameBufferId;       ///< The ID of the framebuffer in the graphics API.
             u32 textureId;           ///< The ID of the texture used by ImGui.
             u32 frameRenderBufferId; ///< The ID of the renderbuffer in the graphics API.

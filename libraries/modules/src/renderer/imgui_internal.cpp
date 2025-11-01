@@ -23,19 +23,21 @@ namespace rpp
     {
         RPP_ASSERT(s_imguis == nullptr);
 
-        auto ImGuiDeallocator = [](ImGuiData *data)
+        auto ImGuiDeallocator = [](ImGuiData *pData)
         {
             // Cleanup
-            RPP_ASSERT(data != nullptr);
+            RPP_ASSERT(pData != nullptr);
 
             DeleteFrameBufferCommandData fbData = {};
-            fbData.frameBufferId = data->frameBufferId;
-            fbData.textureId = data->textureId;
-            fbData.renderBufferId = data->frameRenderBufferId;
+            fbData.frameBufferId = pData->frameBufferId;
+            fbData.textureId = pData->textureId;
+            fbData.renderBufferId = pData->frameRenderBufferId;
+
+            ImGui::DestroyContext(pData->context);
 
             GraphicsCommandData commandData = {GraphicsCommandType::DELETE_FRAMEBUFFER, &fbData};
             Renderer::GetWindow()->ExecuteCommand(commandData);
-            RPP_DELETE(data);
+            RPP_DELETE(pData);
         };
 
         s_imguis = CreateScope<Storage<ImGuiData>>();
@@ -53,13 +55,14 @@ namespace rpp
         RPP_ASSERT(s_imguis != nullptr);
 
         u32 id = s_imguis->Create();
-        ImGuiData *data = s_imguis->Get(id);
-        data->rendererId = Renderer::GetCurrentRendererId();
+        ImGuiData *pData = s_imguis->Get(id);
+        pData->rendererId = Renderer::GetCurrentRendererId();
 
         IMGUI_CHECKVERSION();
-        ImGui::CreateContext();
+        pData->context = ImGui::CreateContext();
+        ImGui::SetCurrentContext(pData->context);
         ImGuiIO &io = ImGui::GetIO();
-        data->io = &io;
+        pData->io = &io;
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // Enable Gamepad Controls
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;     // Enable Docking
@@ -98,17 +101,17 @@ namespace rpp
         CreateFrameBufferCommandData fbData;
         fbData.width = 800;
         fbData.height = 600;
-        fbData.pFrameBufferId = &data->frameBufferId;
-        fbData.pTextureId = &data->textureId;
-        fbData.pRenderBufferId = &data->frameRenderBufferId;
+        fbData.pFrameBufferId = &pData->frameBufferId;
+        fbData.pTextureId = &pData->textureId;
+        fbData.pRenderBufferId = &pData->frameRenderBufferId;
 
         GraphicsCommandData commandData{GraphicsCommandType::CREATE_FRAMEBUFFER, &fbData};
         Renderer::GetWindow()->ExecuteCommand(commandData);
 
         Renderer::GetWindow()->SetResizeCallback(
-            [](u32 width, u32 height, void *pData)
+            [](u32 width, u32 height, void *pUserData)
             {
-                RendererGraphicData *graphicData = (RendererGraphicData *)pData;
+                RendererGraphicData *graphicData = (RendererGraphicData *)pUserData;
                 ResizeFrameBufferCommandData resizeData;
                 Renderer::RendererData *rendererData = Renderer::s_currentRenderers->Get(graphicData->rendererId);
                 ImGuiImpl::ImGuiData *imguiData = ImGuiImpl::s_imguis->Get(rendererData->imguiId);
@@ -136,12 +139,13 @@ namespace rpp
     void ImGuiImpl::PrepareFrame(u32 imguiId)
     {
         RPP_ASSERT(s_imguis != nullptr);
-        ImGuiData *data = s_imguis->Get(imguiId);
-        RPP_ASSERT(data != nullptr);
+        ImGuiData *pData = s_imguis->Get(imguiId);
+        RPP_ASSERT(pData != nullptr);
 
-        RPP_ASSERT(data->rendererId == Renderer::GetCurrentRendererId());
+        RPP_ASSERT(pData->rendererId == Renderer::GetCurrentRendererId());
 
         // Start the Dear ImGui frame
+        ImGui::SetCurrentContext(pData->context);
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
@@ -149,7 +153,7 @@ namespace rpp
 
         // Bind framebuffer
         BindFrameBufferCommandData bindData;
-        bindData.frameBufferId = data->frameBufferId;
+        bindData.frameBufferId = pData->frameBufferId;
 
         GraphicsCommandData commandData = {GraphicsCommandType::BIND_FRAMEBUFFER, &bindData};
         Renderer::GetWindow()->ExecuteCommand(commandData);

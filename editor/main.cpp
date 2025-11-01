@@ -8,8 +8,8 @@ using namespace rpp;
 class FirstWindow : public GraphicSession
 {
 public:
-    FirstWindow(u32 width, u32 height, const String &title, b8 enableImGui = FALSE)
-        : GraphicSession(width, height, title, enableImGui)
+    FirstWindow(u32 width, u32 height, const String &title)
+        : GraphicSession(width, height, title)
     {
     }
 
@@ -37,8 +37,8 @@ protected:
 class TestSession : public GraphicSession
 {
 public:
-    TestSession(u32 width, u32 height, const String &title, b8 enableImGui = FALSE)
-        : GraphicSession(width, height, title, enableImGui)
+    TestSession(u32 width, u32 height, const String &title)
+        : GraphicSession(width, height, title)
     {
     }
 
@@ -49,7 +49,10 @@ public:
 protected:
     void RenderImpl() override
     {
-        Renderer::DrawRectangle({0, 0, 100, 100});
+        ImGui::Begin("Test Session");
+        ImGui::Text(Format("Mouse Position: ({}, {})", InputSystem::GetMouseX(), InputSystem::GetMouseY()).CStr());
+        ImGui::Text(Format("Mouse Delta: ({}, {})", InputSystem::GetDeltaX(), InputSystem::GetDeltaY()).CStr());
+        ImGui::End();
     }
 };
 
@@ -86,7 +89,8 @@ int main(int argc, char **argv)
 #endif
 
     {
-        CREATE_SESSION(FirstWindow, 800, 600, "Editor", TRUE);
+        CREATE_SESSION(FirstWindow, 800, 600, "Editor");
+        CREATE_SESSION(TestSession, 800, 600, "TestSession");
 
         while (TRUE)
         {
@@ -101,8 +105,6 @@ int main(int argc, char **argv)
                 break;
             }
 #endif
-
-            InputSystem::Update(0.0f);
 
             if (GraphicSessionManager::GetInstance()->Update(0.0f))
             {

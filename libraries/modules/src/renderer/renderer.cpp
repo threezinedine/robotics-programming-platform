@@ -31,6 +31,7 @@ namespace rpp
         Rectangle::Initialize();
         Line::Initialize();
         ImGuiImpl::Initialize();
+
 #if defined(RPP_USE_TEST)
         ImGuiTestUtils::Initialize();
 #endif
@@ -57,10 +58,9 @@ namespace rpp
     {
         RendererData *current = GetCurrentRenderer();
 
-        if (current->imguiId != INVALID_ID)
-        {
-            ImGuiImpl::PrepareFrame(current->imguiId);
-        }
+        RPP_ASSERT(current != nullptr);
+        RPP_ASSERT(current->imguiId != INVALID_ID);
+        ImGuiImpl::PrepareFrame(current->imguiId);
 
         // Main loop
         current->window->PollEvents();
@@ -80,10 +80,9 @@ namespace rpp
     {
         RendererData *current = GetCurrentRenderer();
 
-        if (current->imguiId != INVALID_ID)
-        {
-            ImGuiImpl::Render(current->imguiId);
-        }
+        RPP_ASSERT(current != nullptr);
+        RPP_ASSERT(current->imguiId != INVALID_ID);
+        ImGuiImpl::Render(current->imguiId);
 
 #if defined(RPP_USE_TEST)
         ImGuiTestUtils::Update(0.0f);
@@ -100,7 +99,7 @@ namespace rpp
         return s_currentRenderers->Get(s_currentRendererIndex);
     }
 
-    u32 Renderer::Create(u32 width, u32 height, const String &title, b8 useImGui)
+    u32 Renderer::Create(u32 width, u32 height, const String &title)
     {
         RPP_ASSERT(s_currentRenderers != nullptr);
         u32 rendererId = s_currentRenderers->Create();
@@ -180,14 +179,11 @@ namespace rpp
             RPP_ASSERT(currentRenderer->mouseTexture != INVALID_ID);
         }
 
-        if (useImGui)
-        {
-            currentRenderer->imguiId = ImGuiImpl::Create();
-        }
-        else
-        {
-            currentRenderer->imguiId = INVALID_ID;
-        }
+        ActivateContextCommandData activateContextData = {};
+        GraphicsCommandData commandData = {GraphicsCommandType::ACTIVATE_CONTEXT, &activateContextData};
+        currentRenderer->window->ExecuteCommand(commandData);
+
+        currentRenderer->imguiId = ImGuiImpl::Create();
 
         return rendererId;
     }
@@ -290,12 +286,9 @@ namespace rpp
         RendererData *data = s_currentRenderers->Get(renderId);
 
         RPP_ASSERT(data != nullptr);
+        RPP_ASSERT(data->imguiId != INVALID_ID);
 
-        if (data->imguiId != INVALID_ID)
-        {
-            ImGuiImpl::Destroy(data->imguiId);
-        }
-
+        ImGuiImpl::Destroy(data->imguiId);
         Texture::Destroy(data->circleMask);
         Texture::Destroy(data->rectangleMask);
         Texture::Destroy(data->mouseTexture);

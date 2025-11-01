@@ -15,10 +15,9 @@ namespace rpp
          * @param width The width of the window.
          * @param height The height of the window.
          * @param title The title of the window.
-         * @param enableImGui Whether to enable ImGui for this window. Default is FALSE.
          * @param disableMouse Whether to disable mouse input for this window. Default is FALSE.
          */
-        GraphicSession(u32 width, u32 height, const String &title, b8 enableImGui = FALSE);
+        GraphicSession(u32 width, u32 height, const String &title);
         virtual ~GraphicSession();
 
     public:
@@ -90,9 +89,8 @@ namespace rpp
         u32 m_rendererId; ///< Each graphic session contains a renderer instance.
 
     private:
-        u32 m_width;      ///< The width of the window.
-        u32 m_height;     ///< The height of the window.
-        String m_title;   ///< The title of the window.
-        b8 m_enableImGui; ///< Whether to enable ImGui for this window.
+        u32 m_width;    ///< The width of the window.
+        u32 m_height;   ///< The height of the window.
+        String m_title; ///< The title of the window.
     };
 } // namespace rpp
