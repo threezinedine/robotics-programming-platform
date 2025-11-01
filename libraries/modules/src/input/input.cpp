@@ -106,6 +106,8 @@ namespace rpp
         data.m_mouseX = xPos;
         data.m_mouseY = yPos;
 
+        RPP_LOG_DEBUG("Mouse moved to position ({}, {})", xPos, yPos);
+
 #endif
     }
 

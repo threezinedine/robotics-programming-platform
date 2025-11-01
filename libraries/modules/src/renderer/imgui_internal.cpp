@@ -157,6 +157,15 @@ namespace rpp
 
         GraphicsCommandData commandData = {GraphicsCommandType::BIND_FRAMEBUFFER, &bindData};
         Renderer::GetWindow()->ExecuteCommand(commandData);
+
+#if defined(RPP_USE_TEST)
+        // sync mouse position
+        {
+            ImGuiIO &io = ImGui::GetIO();
+            io.MousePos = ImVec2(io.MousePos.x, io.MousePos.y);
+            io.AddMousePosEvent(f32(InputSystem::GetMouseX()), f32(InputSystem::GetMouseY()));
+        }
+#endif
     }
 
     void ImGuiImpl::Render(u32 imguiId)
@@ -223,7 +232,7 @@ namespace rpp
         ImGuiTestUtils::GlobalData *pTestData = ImGuiTestUtils::s_pData;
         RPP_ASSERT(pTestData != nullptr);
 
-        if (pTestData->label != label && ImGuiTestUtils::s_pCurrentItemData != nullptr)
+        if (ImGuiTestUtils::s_itemFound || pTestData->label != label)
         {
             return;
         }
@@ -232,6 +241,10 @@ namespace rpp
         ImGuiTestUtils::ItemData *pCurrentData = ImGuiTestUtils::s_pCurrentItemData;
         pCurrentData->label = label;
         pCurrentData->position = ImGui::GetItemRectMin();
+        pCurrentData->rendererId = Renderer::GetCurrentRendererId();
+
+        RPP_ASSERT(pCurrentData->rendererId != INVALID_ID);
+        ImGuiTestUtils::s_itemFound = TRUE;
     }
 
     void ImGuiImpl::Destroy(u32 imguiId)

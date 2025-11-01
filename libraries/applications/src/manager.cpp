@@ -70,6 +70,8 @@ namespace rpp
             m_sessions->Erase(indexToRemove);
         }
 
+        ImGuiTestUtils::SystemUpdate();
+
         return shouldApplicationClose;
     }
 

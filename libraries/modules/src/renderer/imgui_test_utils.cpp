@@ -6,6 +6,8 @@ namespace rpp
 {
     ImGuiTestUtils::GlobalData *ImGuiTestUtils::s_pData = nullptr;
     ImGuiTestUtils::ItemData *ImGuiTestUtils::s_pCurrentItemData = nullptr;
+    b8 ImGuiTestUtils::s_itemFound = FALSE;
+    u8 ImGuiTestUtils::s_findingFrameCount = 0;
 
     void ImGuiTestUtils::Initialize()
     {
@@ -29,18 +31,37 @@ namespace rpp
             return;
         }
 
+        if (s_findingFrameCount == 0)
+        {
+            return;
+        }
+
         switch (s_pData->action)
         {
         case ImGuiItemAction::IMGUI_ACTION_MOVE:
         {
-            if (s_pCurrentItemData != nullptr)
+            if (s_itemFound)
             {
+                RPP_ASSERT(s_pCurrentItemData != nullptr);
+
+                if (s_pCurrentItemData->rendererId != Renderer::GetCurrentRendererId())
+                {
+                    break;
+                }
+
                 b8 arrived = InputSystem::MoveMouseTo(s_pCurrentItemData->position.x, s_pCurrentItemData->position.y);
+
                 if (arrived)
                 {
                     TestSystem::GetInstance()->SetMainThreadWorking(FALSE);
                     ResetCurrentItem();
                 }
+            }
+            else
+            {
+                RPP_LOG_ERROR("Cannot find ImGui item with label '{}'", s_pData->label);
+                TestSystem::GetInstance()->SetMainThreadWorking(FALSE);
+                ResetCurrentItem();
             }
             break;
         }
@@ -53,6 +74,7 @@ namespace rpp
     {
         s_pData->label = "";
         s_pData->action = ImGuiItemAction::IMGUI_ACTION_COUNT;
+        s_itemFound = FALSE;
 
         if (s_pCurrentItemData != nullptr)
         {
@@ -66,6 +88,7 @@ namespace rpp
         RPP_ASSERT(s_pData != nullptr);
         s_pData->label = label;
         s_pData->action = ImGuiItemAction::IMGUI_ACTION_MOVE;
+        s_findingFrameCount = 0;
 
         TestSystem::GetInstance()->SetMainThreadWorking(TRUE);
         TestSystem::GetInstance()->Yield();

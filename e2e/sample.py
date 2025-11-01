@@ -4,4 +4,7 @@ print("Start")
 TestSystem.Wait(1000)
 ImGuiTestUtils.MoveToItem("Click Me")
 TestSystem.Wait(1000)
+
+ImGuiTestUtils.MoveToItem("Test Button")
+TestSystem.Wait(3000)
 print("End")

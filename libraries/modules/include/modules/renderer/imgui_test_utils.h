@@ -26,6 +26,8 @@ namespace rpp
             String label;
             /// @brief The position of the item.
             ImVec2 position;
+            /// @brief The renderer id associated with this item.
+            u32 rendererId;
         };
 
         /**
@@ -83,6 +85,9 @@ namespace rpp
          */
         static void ResetCurrentItem();
 
+    public:
+        static inline void SystemUpdate() { s_findingFrameCount++; }
+
     private:
         /**
          * Store the item which the test framework is currently interacting with. If no item
@@ -94,5 +99,17 @@ namespace rpp
          * Global data for the ImGui testing utilities.
          */
         static GlobalData *s_pData;
+
+        /**
+         * Tracking if an item was found, useful for multiple renderer scenarios so that the test framework
+         *  knows when to wait for the next frame.
+         */
+        static b8 s_itemFound;
+
+        /**
+         * Each time start searching the item, this counter is reset to 0 and be incremented each frame. If
+         * it's 0, then the update should not handle the action.
+         */
+        static u8 s_findingFrameCount;
     };
 } // namespace rpp

@@ -52,6 +52,11 @@ protected:
         ImGui::Begin("Test Session");
         ImGui::Text(Format("Mouse Position: ({}, {})", InputSystem::GetMouseX(), InputSystem::GetMouseY()).CStr());
         ImGui::Text(Format("Mouse Delta: ({}, {})", InputSystem::GetDeltaX(), InputSystem::GetDeltaY()).CStr());
+        if (ImGui::Button("Test Button"))
+        {
+            RPP_LOG_INFO("Test Button clicked!");
+        }
+        RPP_MARK_ITEM("Test Button");
         ImGui::End();
     }
 };
