@@ -1,6 +1,5 @@
 #pragma once
 #include "modules/modules.h"
-#include "command_stack.h"
 
 namespace rpp
 {
@@ -49,9 +48,6 @@ namespace rpp
          */
         b8 ShouldApplicationClose();
 
-        inline const CommandStack &GetCommandStack() const { return m_commandStack; }
-        inline CommandStack &GetCommandStack() { return m_commandStack; }
-
     public:
         /**
          * @brief Yields the execution of the current thread, allowing other threads to run.
@@ -68,6 +64,12 @@ namespace rpp
         void Wait(f32 milliseconds) RPP_E2E_BINDING;
 
         void Log(const String &message) RPP_E2E_BINDING;
+
+    public:
+        /**
+         * Used for the testing framework to delay for completing the current statement before moving to the test thread again.
+         */
+        inline void SetMainThreadWorking(b8 isWorking) { m_isMainThreadWorking = isWorking; }
 
     private:
         /**
@@ -90,9 +92,8 @@ namespace rpp
 
         b8 m_shouldApplicationClose; ///< Flag indicating if the application should close.
 
-        HighResTimer m_timer; ///< Used for testing time-related functionalities.
+        b8 m_isMainThreadWorking; ///< Indicates if the main thread is currently working, should not be moved to test routine
 
-        CommandStack m_commandStack; ///< Stack to keep track of commands executed in the test system.
-                                     ///< TODO: use stack later
+        HighResTimer m_timer; ///< Used for testing time-related functionalities.
     };
 } // namespace rpp

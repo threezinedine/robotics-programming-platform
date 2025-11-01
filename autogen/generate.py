@@ -161,10 +161,10 @@ def Generate(
             "short",
         ]:
             return "i"
-        elif type in ["float", "f32"]:
-            return "f"
         elif type in ["double", "f64"]:
             return "d"
+        elif type in ["float", "f32"]:
+            return "f"
         elif type in ["std::string", "char *", "String", "str"]:
             return "s"
         elif type in ["bool", "b8"]:

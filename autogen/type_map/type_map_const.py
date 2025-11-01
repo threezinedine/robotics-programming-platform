@@ -1,5 +1,6 @@
 maps: list[tuple[list[str], str]] = [
-    (["f32", "f64"], "float"),
+    (["f32"], "float"),
+    (["f64"], "double"),
     (["^std::string$", "^String$"], "str"),
     (["^void$"], "None"),
 ]

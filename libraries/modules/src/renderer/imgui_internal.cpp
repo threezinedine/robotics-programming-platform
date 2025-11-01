@@ -12,6 +12,7 @@
 #endif
 
 #include "modules/input/input.h"
+#include "modules/renderer/imgui_test_utils.h"
 
 namespace rpp
 {
@@ -173,10 +174,12 @@ namespace rpp
             ImVec2 mousePos = ImGui::GetIO().MousePos;
 
             pDrawList->AddImage(
-                (void *)(intptr_t)Renderer::GetCurrentRenderer()->mouseTexture,
-                ImVec2(mousePos.x - 16, mousePos.y - 16),
-                ImVec2(mousePos.x + 16, mousePos.y + 16));
+                (void *)(intptr_t)Renderer::GetCurrentRenderer()->circleMask,
+                ImVec2(mousePos.x, mousePos.y),
+                ImVec2(mousePos.x, mousePos.y));
         }
+
+        // Renderer::DrawMouseCursor({f32(InputSystem::GetMouseX()), f32(InputSystem::GetMouseY())});
 #endif
 
         ImGui::Render();
@@ -209,6 +212,22 @@ namespace rpp
 
         ImGui::Image((void *)(uintptr_t)data->textureId, ImVec2(displayWidth, displayHeight), ImVec2(0, 1), ImVec2(1, 0));
         ImGui::EndChild();
+    }
+
+    void ImGuiImpl::LabelItem(const String &label)
+    {
+        ImGuiTestUtils::GlobalData *pTestData = ImGuiTestUtils::s_pData;
+        RPP_ASSERT(pTestData != nullptr);
+
+        if (pTestData->label != label && ImGuiTestUtils::s_pCurrentItemData != nullptr)
+        {
+            return;
+        }
+
+        ImGuiTestUtils::s_pCurrentItemData = RPP_NEW(ImGuiTestUtils::ItemData());
+        ImGuiTestUtils::ItemData *pCurrentData = ImGuiTestUtils::s_pCurrentItemData;
+        pCurrentData->label = label;
+        pCurrentData->position = ImGui::GetItemRectMin();
     }
 
     void ImGuiImpl::Destroy(u32 imguiId)

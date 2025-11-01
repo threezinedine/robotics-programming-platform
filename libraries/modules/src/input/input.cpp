@@ -50,23 +50,24 @@ namespace rpp
         m_previousMouseY = m_mouseY;
 
         f64 xDiff = x - m_mouseX;
+        f64 yDiff = y - m_mouseY;
+
         if (abs(xDiff) < MOUSE_TEST_MOVING_SPEED)
         {
             m_mouseX = x;
         }
         else
         {
-            m_mouseX += xDiff / abs(xDiff) * MOUSE_TEST_MOVING_SPEED;
+            m_mouseX += f64(int(xDiff / (abs(xDiff) + abs(yDiff)) * MOUSE_TEST_MOVING_SPEED));
         }
 
-        f64 yDiff = y - m_mouseY;
         if (abs(yDiff) < MOUSE_TEST_MOVING_SPEED)
         {
             m_mouseY = y;
         }
         else
         {
-            m_mouseY += yDiff / abs(yDiff) * MOUSE_TEST_MOVING_SPEED;
+            m_mouseY += f64(int(yDiff / (abs(xDiff) + abs(yDiff)) * MOUSE_TEST_MOVING_SPEED));
         }
 
         Renderer::GetWindow()->SetMousePosition(InputSystem::GetMouseX(), InputSystem::GetMouseY());

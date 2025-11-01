@@ -5,6 +5,7 @@
 #include "modules/renderer/imgui_internal.h"
 #include "modules/renderer/line.h"
 #include "modules/renderer/texture.h"
+#include "modules/renderer/imgui_test_utils.h"
 #include "plutovg.h"
 
 #define MOUSE_CURSOR_SIZE (32.0f)
@@ -30,6 +31,9 @@ namespace rpp
         Rectangle::Initialize();
         Line::Initialize();
         ImGuiImpl::Initialize();
+#if defined(RPP_USE_TEST)
+        ImGuiTestUtils::Initialize();
+#endif
         s_currentRendererIndex = INVALID_RENDERER_INDEX;
     }
 
@@ -37,6 +41,9 @@ namespace rpp
     {
         RPP_ASSERT(s_currentRenderers != nullptr);
 
+#if defined(RPP_USE_TEST)
+        ImGuiTestUtils::Shutdown();
+#endif
         ImGuiImpl::Shutdown();
         Line::Shutdown();
         Rectangle::Shutdown();
@@ -77,6 +84,10 @@ namespace rpp
         {
             ImGuiImpl::Render(current->imguiId);
         }
+
+#if defined(RPP_USE_TEST)
+        ImGuiTestUtils::Update(0.0f);
+#endif
 
         GraphicsCommandData swapBuffersCommand = {GraphicsCommandType::SWAP_BUFFERS, nullptr};
         current->window->ExecuteCommand(swapBuffersCommand);

@@ -24,6 +24,12 @@ protected:
         ImGui::Text("This is the first window.");
         ImGui::Text(Format("Mouse Position: ({}, {})", InputSystem::GetMouseX(), InputSystem::GetMouseY()).CStr());
         ImGui::Text(Format("Mouse Delta: ({}, {})", InputSystem::GetDeltaX(), InputSystem::GetDeltaY()).CStr());
+
+        if (ImGui::Button("Click Me"))
+        {
+            RPP_LOG_INFO("Button clicked!");
+        }
+        RPP_MARK_ITEM("Click Me");
         ImGui::End();
     }
 };

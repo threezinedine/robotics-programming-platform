@@ -1,4 +1,4 @@
-#include "applications/test_system/utils.h"
+#include "modules/test_system/utils.h"
 
 namespace rpp
 {

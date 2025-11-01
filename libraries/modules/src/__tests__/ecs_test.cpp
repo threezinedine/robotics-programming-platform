@@ -8,109 +8,112 @@
 
 namespace
 {
-	class TestSystem : public System
-	{
-	public:
-		static u32 numberOfObjects;
-		static u32 initialCallCount;
-		static u32 suspendCallCount;
-		static u32 updateCallCount;
-		static u32 resumeCallCount;
-		static u32 shutdownCallCount;
+    namespace
+    {
+        class ECSTestSystem : public System
+        {
+        public:
+            static u32 numberOfObjects;
+            static u32 initialCallCount;
+            static u32 suspendCallCount;
+            static u32 updateCallCount;
+            static u32 resumeCallCount;
+            static u32 shutdownCallCount;
 
-		TestSystem() { numberOfObjects++; }
-		~TestSystem() override { numberOfObjects--; }
+            ECSTestSystem() { numberOfObjects++; }
+            ~ECSTestSystem() override { numberOfObjects--; }
 
-	protected:
-		void InitialImpl(ECSId id, EntityId entityId) override { initialCallCount++; }
-		void SuspendImpl(ECSId id, EntityId entityId) override { suspendCallCount++; }
-		void UpdateImpl(ECSId id, EntityId entityId, f32 deltaTime) override { updateCallCount++; }
-		void ResumeImpl(ECSId id, EntityId entityId) override { resumeCallCount++; }
-		void ShutdownImpl(ECSId id, EntityId entityId) override { shutdownCallCount++; }
-	};
+        protected:
+            void InitialImpl(ECSId id, EntityId entityId) override { initialCallCount++; }
+            void SuspendImpl(ECSId id, EntityId entityId) override { suspendCallCount++; }
+            void UpdateImpl(ECSId id, EntityId entityId, f32 deltaTime) override { updateCallCount++; }
+            void ResumeImpl(ECSId id, EntityId entityId) override { resumeCallCount++; }
+            void ShutdownImpl(ECSId id, EntityId entityId) override { shutdownCallCount++; }
+        };
 
-	u32 TestSystem::numberOfObjects = 0;
-	u32 TestSystem::initialCallCount = 0;
-	u32 TestSystem::suspendCallCount = 0;
-	u32 TestSystem::updateCallCount = 0;
-	u32 TestSystem::resumeCallCount = 0;
-	u32 TestSystem::shutdownCallCount = 0;
+        u32 ECSTestSystem::numberOfObjects = 0;
+        u32 ECSTestSystem::initialCallCount = 0;
+        u32 ECSTestSystem::suspendCallCount = 0;
+        u32 ECSTestSystem::updateCallCount = 0;
+        u32 ECSTestSystem::resumeCallCount = 0;
+        u32 ECSTestSystem::shutdownCallCount = 0;
 
-	struct ComponentA
-	{
-		int a;
-	};
+    } // namespace
 
-	class AddComponentASystem : public System
-	{
-	protected:
-		void UpdateImpl(ECSId ecsId, EntityId entityId, f32 deltaTime) override
-		{
-			Component *pComponent = ECS::GetComponent(entityId, COMPONENT_A_ID);
-			ComponentA *pData = (ComponentA *)pComponent->pData;
-			pData->a++;
-		}
-	};
+    struct ComponentA
+    {
+        int a;
+    };
 
-	struct ComponentB
-	{
-		float b;
-	};
+    class AddComponentASystem : public System
+    {
+    protected:
+        void UpdateImpl(ECSId ecsId, EntityId entityId, f32 deltaTime) override
+        {
+            Component *pComponent = ECS::GetComponent(entityId, COMPONENT_A_ID);
+            ComponentA *pData = (ComponentA *)pComponent->pData;
+            pData->a++;
+        }
+    };
 
-	struct ComponentC
-	{
-		char c;
-	};
+    struct ComponentB
+    {
+        float b;
+    };
 
+    struct ComponentC
+    {
+        char c;
+    };
 
 }
 
 class ECSAssert
 {
 public:
-	static void AssertNumberOfEntities(u32 expectedNumberOfEntities)
-	{
-		auto ecsData = ECS::s_ecsStorage->GetNumberOfElements();
-		ASSERT_EQ(ecsData, expectedNumberOfEntities);
-	}
+    static void AssertNumberOfEntities(u32 expectedNumberOfEntities)
+    {
+        auto ecsData = ECS::s_ecsStorage->GetNumberOfElements();
+        ASSERT_EQ(ecsData, expectedNumberOfEntities);
+    }
 
-	static ECS::ECSData::SystemData *GetSystemData(ECSId ecsId, SystemId systemId)
-	{
-		RPP_ASSERT(ECS::s_ecsStorage != nullptr);
-		RPP_ASSERT(ecsId != INVALID_ID);
+    static ECS::ECSData::SystemData *GetSystemData(ECSId ecsId, SystemId systemId)
+    {
+        RPP_ASSERT(ECS::s_ecsStorage != nullptr);
+        RPP_ASSERT(ecsId != INVALID_ID);
 
-		ECS::ECSData *pCurrentECS = ECS::s_ecsStorage->Get(ecsId);
-		RPP_ASSERT(pCurrentECS != nullptr);
+        ECS::ECSData *pCurrentECS = ECS::s_ecsStorage->Get(ecsId);
+        RPP_ASSERT(pCurrentECS != nullptr);
 
-		return pCurrentECS->systemStorage->Get(systemId);
-	}
+        return pCurrentECS->systemStorage->Get(systemId);
+    }
 
-	static b8 IsEntityMatchSystem(Entity *pEntity, ECS::ECSData::SystemData *pSystemData)
-	{
-		return ECS::IsEntityMatchSystem(pEntity, pSystemData);
-	}
+    static b8 IsEntityMatchSystem(Entity *pEntity, ECS::ECSData::SystemData *pSystemData)
+    {
+        return ECS::IsEntityMatchSystem(pEntity, pSystemData);
+    }
 
-	static b8 IsEntityInSystemMatchEntities(ECSId ecsId, SystemId systemId, EntityId entityId)
-	{
-		RPP_ASSERT(ECS::s_ecsStorage != nullptr);
-		RPP_ASSERT(ecsId != INVALID_ID);
+    static b8 IsEntityInSystemMatchEntities(ECSId ecsId, SystemId systemId, EntityId entityId)
+    {
+        RPP_ASSERT(ECS::s_ecsStorage != nullptr);
+        RPP_ASSERT(ecsId != INVALID_ID);
 
-		ECS::ECSData *currentECS = ECS::s_ecsStorage->Get(ecsId);
-		RPP_ASSERT(currentECS != nullptr);
+        ECS::ECSData *currentECS = ECS::s_ecsStorage->Get(ecsId);
+        RPP_ASSERT(currentECS != nullptr);
 
-		ECS::ECSData::SystemData *pSystemData = currentECS->systemStorage->Get(systemId);
+        ECS::ECSData::SystemData *pSystemData = currentECS->systemStorage->Get(systemId);
 
-		u32 matchEntitiesCount = pSystemData->matchedEntities.Size();
-		for (u32 matchEntityIdIndex = 0; matchEntityIdIndex < matchEntitiesCount; ++matchEntityIdIndex)
-		{
-			if (pSystemData->matchedEntities[matchEntityIdIndex] == entityId)
-			{
-				return TRUE;
-			}
-		}
+        u32 matchEntitiesCount = pSystemData->matchedEntities.Size();
+        for (u32 matchEntityIdIndex = 0; matchEntityIdIndex < matchEntitiesCount; ++matchEntityIdIndex)
+        {
+            if (pSystemData->matchedEntities[matchEntityIdIndex] == entityId)
+            {
+                return TRUE;
+            }
+        }
 
-		return FALSE;
-	}
+        return FALSE;
+    }
 };
 
 class ECSTest : public ::testing::Test
@@ -120,11 +123,11 @@ protected:
     {
         SingletonManager::Initialize();
         rpp::ECS::Initialize();
-        TestSystem::initialCallCount = 0;
-        TestSystem::suspendCallCount = 0;
-        TestSystem::updateCallCount = 0;
-        TestSystem::resumeCallCount = 0;
-        TestSystem::shutdownCallCount = 0;
+        ECSTestSystem::initialCallCount = 0;
+        ECSTestSystem::suspendCallCount = 0;
+        ECSTestSystem::updateCallCount = 0;
+        ECSTestSystem::resumeCallCount = 0;
+        ECSTestSystem::shutdownCallCount = 0;
     }
 
     void TearDown() override
@@ -175,7 +178,7 @@ TEST_F(ECSTest, CheckAnEntityMatchASystem)
 {
     SINGLE_ECS_SETUP();
 
-    SYSTEM_SETUP(TestSystem, COMPONENT_A_ID);
+    SYSTEM_SETUP(ECSTestSystem, COMPONENT_A_ID);
     CREATE_ENTITY_WITH_AB_COMPONENTS(32, 23);
 
     auto pSystemData = ECSAssert::GetSystemData(id, 0);
@@ -186,7 +189,7 @@ TEST_F(ECSTest, CheckNotMatch)
 {
     SINGLE_ECS_SETUP();
 
-    SYSTEM_SETUP(TestSystem, COMPONENT_A_ID, COMPONENT_B_ID);
+    SYSTEM_SETUP(ECSTestSystem, COMPONENT_A_ID, COMPONENT_B_ID);
     CREATE_ENTITY_WITH_A_COMPONENT();
 
     auto pSystemData = ECSAssert::GetSystemData(id, 0);
@@ -196,7 +199,7 @@ TEST_F(ECSTest, CheckNotMatch)
 TEST_F(ECSTest, CheckNotMatchIfInactive)
 {
     SINGLE_ECS_SETUP();
-    SYSTEM_SETUP(TestSystem, COMPONENT_A_ID);
+    SYSTEM_SETUP(ECSTestSystem, COMPONENT_A_ID);
 
     ComponentA aData = {42};
     Component aComponent = {1, FALSE, &aData, sizeof(aData)};
@@ -211,7 +214,7 @@ TEST_F(ECSTest, CheckNotMatchIfInactive)
 TEST_F(ECSTest, ModifyTheStatusOfTheComponent)
 {
     SINGLE_ECS_SETUP();
-    SYSTEM_SETUP(TestSystem, COMPONENT_A_ID);
+    SYSTEM_SETUP(ECSTestSystem, COMPONENT_A_ID);
 
     auto pSystemData = ECSAssert::GetSystemData(id, 0);
 
@@ -234,7 +237,7 @@ TEST_F(ECSTest, ModifyTheStatusOfTheComponent)
 TEST_F(ECSTest, DeleteTheEntity)
 {
     SINGLE_ECS_SETUP();
-    SYSTEM_SETUP(TestSystem, COMPONENT_A_ID);
+    SYSTEM_SETUP(ECSTestSystem, COMPONENT_A_ID);
     CREATE_ENTITY_WITH_A_COMPONENT();
 
     ECS::DestroyEntity(entityId);
@@ -248,7 +251,7 @@ TEST_F(ECSTest, DeleteTheEntity)
 TEST_F(ECSTest, ModifyStatusOfComponentWhichItsEntityIsDeleted)
 {
     SINGLE_ECS_SETUP();
-    SYSTEM_SETUP(TestSystem, COMPONENT_A_ID);
+    SYSTEM_SETUP(ECSTestSystem, COMPONENT_A_ID);
     CREATE_ENTITY_WITH_A_COMPONENT();
 
     ECS::DestroyEntity(entityId);
@@ -263,7 +266,7 @@ TEST_F(ECSTest, ModifyStatusOfComponentWhichItsEntityIsDeleted)
 TEST_F(ECSTest, ModifyTheStatusOfTheEntity)
 {
     SINGLE_ECS_SETUP();
-    SYSTEM_SETUP(TestSystem, COMPONENT_A_ID);
+    SYSTEM_SETUP(ECSTestSystem, COMPONENT_A_ID);
     CREATE_ENTITY_WITH_A_COMPONENT();
 
     auto pSystemData = ECSAssert::GetSystemData(id, 0);
@@ -288,7 +291,7 @@ TEST_F(ECSTest, ModifyTheStatusOfTheEntity)
 TEST_F(ECSTest, ModifyStatusOfTheSystem)
 {
     SINGLE_ECS_SETUP();
-    SYSTEM_SETUP(TestSystem, COMPONENT_A_ID);
+    SYSTEM_SETUP(ECSTestSystem, COMPONENT_A_ID);
 
     auto pSystemData = ECSAssert::GetSystemData(id, systemId);
     ASSERT_TRUE(pSystemData->isActive);
@@ -318,7 +321,7 @@ TEST_F(ECSTest, RetrieveTheComponentFromEntity)
 TEST_F(ECSTest, EntityIdIsInSystemListIfMatch)
 {
     SINGLE_ECS_SETUP();
-    SYSTEM_SETUP(TestSystem, COMPONENT_A_ID);
+    SYSTEM_SETUP(ECSTestSystem, COMPONENT_A_ID);
     CREATE_ENTITY_WITH_AB_COMPONENTS(12, 12);
 
     auto pSystemData = ECSAssert::GetSystemData(id, systemId);
@@ -332,52 +335,52 @@ TEST_F(ECSTest, EntityIdIsInSystemListIfMatch)
 TEST_F(ECSTest, CreateEntityMatchSystem)
 {
     SINGLE_ECS_SETUP();
-    SYSTEM_SETUP(TestSystem, COMPONENT_A_ID);
+    SYSTEM_SETUP(ECSTestSystem, COMPONENT_A_ID);
 
-    ASSERT_EQ(TestSystem::numberOfObjects, 1);
-    ASSERT_EQ(TestSystem::initialCallCount, 0);
-    ASSERT_EQ(TestSystem::suspendCallCount, 0);
-    ASSERT_EQ(TestSystem::updateCallCount, 0);
-    ASSERT_EQ(TestSystem::resumeCallCount, 0);
-    ASSERT_EQ(TestSystem::shutdownCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::numberOfObjects, 1);
+    ASSERT_EQ(ECSTestSystem::initialCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::suspendCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::updateCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::resumeCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::shutdownCallCount, 0);
 
     CREATE_ENTITY_WITH_AB_COMPONENTS(32, 23);
-    ASSERT_EQ(TestSystem::initialCallCount, 0);
-    ASSERT_EQ(TestSystem::suspendCallCount, 0);
-    ASSERT_EQ(TestSystem::updateCallCount, 0);
-    ASSERT_EQ(TestSystem::resumeCallCount, 0);
-    ASSERT_EQ(TestSystem::shutdownCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::initialCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::suspendCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::updateCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::resumeCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::shutdownCallCount, 0);
 
     ECSAssert::AssertNumberOfEntities(1);
 
     ECS::Update(ECS_TEST_DELTA_TIME);
-    ASSERT_EQ(TestSystem::initialCallCount, 1);
-    ASSERT_EQ(TestSystem::suspendCallCount, 0);
-    ASSERT_EQ(TestSystem::updateCallCount, 0);
-    ASSERT_EQ(TestSystem::resumeCallCount, 0);
-    ASSERT_EQ(TestSystem::shutdownCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::initialCallCount, 1);
+    ASSERT_EQ(ECSTestSystem::suspendCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::updateCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::resumeCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::shutdownCallCount, 0);
 
     ECS::Update(ECS_TEST_DELTA_TIME);
-    ASSERT_EQ(TestSystem::initialCallCount, 1);
-    ASSERT_EQ(TestSystem::suspendCallCount, 0);
-    ASSERT_EQ(TestSystem::updateCallCount, 1);
-    ASSERT_EQ(TestSystem::resumeCallCount, 0);
-    ASSERT_EQ(TestSystem::shutdownCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::initialCallCount, 1);
+    ASSERT_EQ(ECSTestSystem::suspendCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::updateCallCount, 1);
+    ASSERT_EQ(ECSTestSystem::resumeCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::shutdownCallCount, 0);
 
     ECS::Update(ECS_TEST_DELTA_TIME);
-    ASSERT_EQ(TestSystem::initialCallCount, 1);
-    ASSERT_EQ(TestSystem::suspendCallCount, 0);
-    ASSERT_EQ(TestSystem::updateCallCount, 2);
-    ASSERT_EQ(TestSystem::resumeCallCount, 0);
-    ASSERT_EQ(TestSystem::shutdownCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::initialCallCount, 1);
+    ASSERT_EQ(ECSTestSystem::suspendCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::updateCallCount, 2);
+    ASSERT_EQ(ECSTestSystem::resumeCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::shutdownCallCount, 0);
 
     ECS::DestroyEntity(entityId);
     ECS::Update(ECS_TEST_DELTA_TIME);
-    ASSERT_EQ(TestSystem::initialCallCount, 1);
-    ASSERT_EQ(TestSystem::suspendCallCount, 0);
-    ASSERT_EQ(TestSystem::updateCallCount, 3);
-    ASSERT_EQ(TestSystem::resumeCallCount, 0);
-    ASSERT_EQ(TestSystem::shutdownCallCount, 1);
+    ASSERT_EQ(ECSTestSystem::initialCallCount, 1);
+    ASSERT_EQ(ECSTestSystem::suspendCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::updateCallCount, 3);
+    ASSERT_EQ(ECSTestSystem::resumeCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::shutdownCallCount, 1);
 }
 
 TEST_F(ECSTest, UpdateComponentAWithTheSystem)
@@ -402,117 +405,117 @@ TEST_F(ECSTest, UpdateComponentAWithTheSystem)
 TEST_F(ECSTest, EntityIsDeactivate)
 {
     SINGLE_ECS_SETUP();
-    SYSTEM_SETUP(TestSystem, COMPONENT_A_ID);
+    SYSTEM_SETUP(ECSTestSystem, COMPONENT_A_ID);
     CREATE_ENTITY_WITH_A_COMPONENT(5);
 
     ECS::Update(ECS_TEST_DELTA_TIME);
-    ASSERT_EQ(TestSystem::initialCallCount, 1);
-    ASSERT_EQ(TestSystem::suspendCallCount, 0);
-    ASSERT_EQ(TestSystem::updateCallCount, 0);
-    ASSERT_EQ(TestSystem::resumeCallCount, 0);
-    ASSERT_EQ(TestSystem::shutdownCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::initialCallCount, 1);
+    ASSERT_EQ(ECSTestSystem::suspendCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::updateCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::resumeCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::shutdownCallCount, 0);
 
     ECS::Update(ECS_TEST_DELTA_TIME);
-    ASSERT_EQ(TestSystem::initialCallCount, 1);
-    ASSERT_EQ(TestSystem::suspendCallCount, 0);
-    ASSERT_EQ(TestSystem::updateCallCount, 1);
-    ASSERT_EQ(TestSystem::resumeCallCount, 0);
-    ASSERT_EQ(TestSystem::shutdownCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::initialCallCount, 1);
+    ASSERT_EQ(ECSTestSystem::suspendCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::updateCallCount, 1);
+    ASSERT_EQ(ECSTestSystem::resumeCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::shutdownCallCount, 0);
 
     ECS::ModifyEntityStatus(entityId, TRUE); // no effect
     ECS::Update(ECS_TEST_DELTA_TIME);
-    ASSERT_EQ(TestSystem::initialCallCount, 1);
-    ASSERT_EQ(TestSystem::suspendCallCount, 0);
-    ASSERT_EQ(TestSystem::updateCallCount, 2);
-    ASSERT_EQ(TestSystem::resumeCallCount, 0);
-    ASSERT_EQ(TestSystem::shutdownCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::initialCallCount, 1);
+    ASSERT_EQ(ECSTestSystem::suspendCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::updateCallCount, 2);
+    ASSERT_EQ(ECSTestSystem::resumeCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::shutdownCallCount, 0);
 
     ECS::ModifyEntityStatus(entityId, FALSE);
     ECS::Update(ECS_TEST_DELTA_TIME);
-    ASSERT_EQ(TestSystem::initialCallCount, 1);
-    ASSERT_EQ(TestSystem::suspendCallCount, 1);
-    ASSERT_EQ(TestSystem::updateCallCount, 3);
-    ASSERT_EQ(TestSystem::resumeCallCount, 0);
-    ASSERT_EQ(TestSystem::shutdownCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::initialCallCount, 1);
+    ASSERT_EQ(ECSTestSystem::suspendCallCount, 1);
+    ASSERT_EQ(ECSTestSystem::updateCallCount, 3);
+    ASSERT_EQ(ECSTestSystem::resumeCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::shutdownCallCount, 0);
 
     ECS::Update(ECS_TEST_DELTA_TIME);
-    ASSERT_EQ(TestSystem::initialCallCount, 1);
-    ASSERT_EQ(TestSystem::suspendCallCount, 1);
-    ASSERT_EQ(TestSystem::updateCallCount, 3);
-    ASSERT_EQ(TestSystem::resumeCallCount, 0);
-    ASSERT_EQ(TestSystem::shutdownCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::initialCallCount, 1);
+    ASSERT_EQ(ECSTestSystem::suspendCallCount, 1);
+    ASSERT_EQ(ECSTestSystem::updateCallCount, 3);
+    ASSERT_EQ(ECSTestSystem::resumeCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::shutdownCallCount, 0);
 
     ECS::ModifyEntityStatus(entityId, TRUE);
     ECS::Update(ECS_TEST_DELTA_TIME);
-    ASSERT_EQ(TestSystem::initialCallCount, 1);
-    ASSERT_EQ(TestSystem::suspendCallCount, 1);
-    ASSERT_EQ(TestSystem::updateCallCount, 3);
-    ASSERT_EQ(TestSystem::resumeCallCount, 1);
-    ASSERT_EQ(TestSystem::shutdownCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::initialCallCount, 1);
+    ASSERT_EQ(ECSTestSystem::suspendCallCount, 1);
+    ASSERT_EQ(ECSTestSystem::updateCallCount, 3);
+    ASSERT_EQ(ECSTestSystem::resumeCallCount, 1);
+    ASSERT_EQ(ECSTestSystem::shutdownCallCount, 0);
 
     ECS::Update(ECS_TEST_DELTA_TIME);
-    ASSERT_EQ(TestSystem::initialCallCount, 1);
-    ASSERT_EQ(TestSystem::suspendCallCount, 1);
-    ASSERT_EQ(TestSystem::updateCallCount, 4);
-    ASSERT_EQ(TestSystem::resumeCallCount, 1);
-    ASSERT_EQ(TestSystem::shutdownCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::initialCallCount, 1);
+    ASSERT_EQ(ECSTestSystem::suspendCallCount, 1);
+    ASSERT_EQ(ECSTestSystem::updateCallCount, 4);
+    ASSERT_EQ(ECSTestSystem::resumeCallCount, 1);
+    ASSERT_EQ(ECSTestSystem::shutdownCallCount, 0);
 }
 
 TEST_F(ECSTest, ComponentIsDeactivate)
 {
     SINGLE_ECS_SETUP();
-    SYSTEM_SETUP(TestSystem, COMPONENT_A_ID);
+    SYSTEM_SETUP(ECSTestSystem, COMPONENT_A_ID);
     CREATE_ENTITY_WITH_A_COMPONENT(5);
 
     ECS::Update(ECS_TEST_DELTA_TIME);
-    ASSERT_EQ(TestSystem::initialCallCount, 1);
-    ASSERT_EQ(TestSystem::suspendCallCount, 0);
-    ASSERT_EQ(TestSystem::updateCallCount, 0);
-    ASSERT_EQ(TestSystem::resumeCallCount, 0);
-    ASSERT_EQ(TestSystem::shutdownCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::initialCallCount, 1);
+    ASSERT_EQ(ECSTestSystem::suspendCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::updateCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::resumeCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::shutdownCallCount, 0);
 
     ECS::Update(ECS_TEST_DELTA_TIME);
-    ASSERT_EQ(TestSystem::initialCallCount, 1);
-    ASSERT_EQ(TestSystem::suspendCallCount, 0);
-    ASSERT_EQ(TestSystem::updateCallCount, 1);
-    ASSERT_EQ(TestSystem::resumeCallCount, 0);
-    ASSERT_EQ(TestSystem::shutdownCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::initialCallCount, 1);
+    ASSERT_EQ(ECSTestSystem::suspendCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::updateCallCount, 1);
+    ASSERT_EQ(ECSTestSystem::resumeCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::shutdownCallCount, 0);
 
     ECS::ModifyComponentStatus(entityId, COMPONENT_A_ID, TRUE); // no effect
     ECS::Update(ECS_TEST_DELTA_TIME);
-    ASSERT_EQ(TestSystem::initialCallCount, 1);
-    ASSERT_EQ(TestSystem::suspendCallCount, 0);
-    ASSERT_EQ(TestSystem::updateCallCount, 2);
-    ASSERT_EQ(TestSystem::resumeCallCount, 0);
-    ASSERT_EQ(TestSystem::shutdownCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::initialCallCount, 1);
+    ASSERT_EQ(ECSTestSystem::suspendCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::updateCallCount, 2);
+    ASSERT_EQ(ECSTestSystem::resumeCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::shutdownCallCount, 0);
 
     ECS::ModifyComponentStatus(entityId, COMPONENT_A_ID, FALSE);
     ECS::Update(ECS_TEST_DELTA_TIME);
-    ASSERT_EQ(TestSystem::initialCallCount, 1);
-    ASSERT_EQ(TestSystem::suspendCallCount, 1);
-    ASSERT_EQ(TestSystem::updateCallCount, 3);
-    ASSERT_EQ(TestSystem::resumeCallCount, 0);
-    ASSERT_EQ(TestSystem::shutdownCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::initialCallCount, 1);
+    ASSERT_EQ(ECSTestSystem::suspendCallCount, 1);
+    ASSERT_EQ(ECSTestSystem::updateCallCount, 3);
+    ASSERT_EQ(ECSTestSystem::resumeCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::shutdownCallCount, 0);
 
     ECS::Update(ECS_TEST_DELTA_TIME);
-    ASSERT_EQ(TestSystem::initialCallCount, 1);
-    ASSERT_EQ(TestSystem::suspendCallCount, 1);
-    ASSERT_EQ(TestSystem::updateCallCount, 3);
-    ASSERT_EQ(TestSystem::resumeCallCount, 0);
-    ASSERT_EQ(TestSystem::shutdownCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::initialCallCount, 1);
+    ASSERT_EQ(ECSTestSystem::suspendCallCount, 1);
+    ASSERT_EQ(ECSTestSystem::updateCallCount, 3);
+    ASSERT_EQ(ECSTestSystem::resumeCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::shutdownCallCount, 0);
 
     ECS::ModifyComponentStatus(entityId, COMPONENT_A_ID, TRUE);
     ECS::Update(ECS_TEST_DELTA_TIME);
-    ASSERT_EQ(TestSystem::initialCallCount, 1);
-    ASSERT_EQ(TestSystem::suspendCallCount, 1);
-    ASSERT_EQ(TestSystem::updateCallCount, 3);
-    ASSERT_EQ(TestSystem::resumeCallCount, 1);
-    ASSERT_EQ(TestSystem::shutdownCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::initialCallCount, 1);
+    ASSERT_EQ(ECSTestSystem::suspendCallCount, 1);
+    ASSERT_EQ(ECSTestSystem::updateCallCount, 3);
+    ASSERT_EQ(ECSTestSystem::resumeCallCount, 1);
+    ASSERT_EQ(ECSTestSystem::shutdownCallCount, 0);
 
     ECS::Update(ECS_TEST_DELTA_TIME);
-    ASSERT_EQ(TestSystem::initialCallCount, 1);
-    ASSERT_EQ(TestSystem::suspendCallCount, 1);
-    ASSERT_EQ(TestSystem::updateCallCount, 4);
-    ASSERT_EQ(TestSystem::resumeCallCount, 1);
-    ASSERT_EQ(TestSystem::shutdownCallCount, 0);
+    ASSERT_EQ(ECSTestSystem::initialCallCount, 1);
+    ASSERT_EQ(ECSTestSystem::suspendCallCount, 1);
+    ASSERT_EQ(ECSTestSystem::updateCallCount, 4);
+    ASSERT_EQ(ECSTestSystem::resumeCallCount, 1);
+    ASSERT_EQ(ECSTestSystem::shutdownCallCount, 0);
 }

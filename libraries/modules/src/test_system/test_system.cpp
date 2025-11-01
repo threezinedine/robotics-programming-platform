@@ -1,5 +1,4 @@
-#include "applications/test_system/test_system_impl.h"
-#include "applications/graphic_session/graphic_session.h"
+#include "modules/test_system/test_system_impl.h"
 #include "core/core.h"
 #include <fstream>
 #include <codecvt>
@@ -58,7 +57,8 @@ namespace rpp
           m_testThreadSignal(INVALID_ID),
           m_mainThreadSignal(INVALID_ID),
           m_testThreadId(INVALID_ID),
-          m_shouldApplicationClose(FALSE)
+          m_shouldApplicationClose(FALSE),
+          m_isMainThreadWorking(FALSE)
     {
     }
 
@@ -73,6 +73,7 @@ namespace rpp
     {
         m_resultFilePath = resultFilePath;
         m_shouldApplicationClose = FALSE;
+        m_isMainThreadWorking = FALSE;
 
         // TODO: Loading scripts later
         if (setupFilePath.Length() > 0)
@@ -155,7 +156,6 @@ namespace rpp
     void TestSystem::TestThreadFunction(void *arg)
     {
 #include "tmp/e2e_test_append.cpp"
-
         Py_Initialize();
         RPP_UNUSED(arg);
         Signal::Wait(m_testThreadSignal);
@@ -198,6 +198,7 @@ namespace rpp
         try
         {
             PyRun_SimpleString(m_updateScriptContent.CStr());
+            Yield();
         }
         catch (const std::exception &e)
         {
@@ -216,6 +217,11 @@ namespace rpp
     void TestSystem::Update(f32 deltaTime)
     {
         RPP_UNUSED(deltaTime);
+        if (m_isMainThreadWorking)
+        {
+            return;
+        }
+
         Signal::Notify(m_testThreadSignal);
         Signal::Wait(m_mainThreadSignal);
     }

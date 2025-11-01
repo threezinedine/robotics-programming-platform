@@ -28,7 +28,7 @@ protected:
         Renderer::DrawRectangle({0, 0, 100, 100});
         Renderer::DrawCircle({50, 50}, 50);
 
-        Renderer::DrawMouseCursor({200.0f, 150.0f});
+        // Renderer::DrawMouseCursor({200.0f, 150.0f});
 
         ImGui::ShowDemoWindow();
 

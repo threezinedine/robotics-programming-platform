@@ -31,8 +31,6 @@ foreach (APPLICATIONS_TEST_SRC_FILE ${APPLICATIONS_TEST_SRC})
     list(REMOVE_ITEM APPLICATIONS_SRC ${APPLICATIONS_TEST_SRC_FILE})
 endforeach()
 
-RPPFindPackage(rpp-pybind "Dependencies")
-
 set(CMAKE_FOLDER "Libraries")
 add_library(
     ${PROJECT_NAME} 
@@ -47,14 +45,12 @@ target_link_libraries(
     PUBLIC 
     RPPCore 
     RPPModules
-    rpp-pybind
 )
 
 target_include_directories(
     ${PROJECT_NAME} 
     PUBLIC 
     ${CMAKE_CURRENT_SOURCE_DIR}/include
-    ${RPP_BASE_DIR}/libraries
 )
 
 target_compile_definitions(
@@ -89,7 +85,6 @@ target_include_directories(
     ${PROJECT_NAME_TEST_LIB} 
     PUBLIC 
     ${CMAKE_CURRENT_SOURCE_DIR}/include
-    ${RPP_BASE_DIR}/libraries
 )
 
 target_compile_definitions(

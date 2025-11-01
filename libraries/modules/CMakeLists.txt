@@ -33,6 +33,7 @@ RPPFindPackage(rpp-json "Dependencies")
 RPPFindPackage(rpp-imgui "Dependencies")
 RPPFindPackage(rpp-glm "Dependencies")
 RPPFindPackage(rpp-luna "Dependencies")
+RPPFindPackage(rpp-pybind "Dependencies")
 
 # -------------- Library target --------------
 set(CMAKE_FOLDER "Libraries")
@@ -45,12 +46,14 @@ target_link_libraries(
     rpp-imgui
     rpp-glm
     rpp-luna
+    rpp-pybind
 )
 
 target_include_directories(
     ${PROJECT_NAME} 
     PUBLIC 
     ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${RPP_BASE_DIR}/libraries
 )
 
 target_compile_definitions(
@@ -73,12 +76,14 @@ target_link_libraries(
     rpp-imgui
     rpp-glm
     rpp-luna
+    rpp-pybind
 )
 
 target_include_directories(
     ${PROJECT_NAME_TEST_LIB} 
     PUBLIC 
     ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${RPP_BASE_DIR}/libraries
 )
 
 target_compile_definitions(

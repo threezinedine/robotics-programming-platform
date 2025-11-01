@@ -56,6 +56,23 @@ namespace rpp
         static void DrawRenderingScene(u32 imguiId);
 
         /**
+         * Used for marking an item with a certain name, in testing, so that it can be found and be moved to or
+         *      clicked, ...
+         *
+         * @param label The label to assign to the item.
+         *
+         * @example
+         * ```cpp
+         * if (ImGui::Button("MyButton"))
+         * {
+         *     // Button logic here
+         * }
+         * ImGuiImpl::LabelItem("MyButton"); // now if the testing framework querys for "MyButton", it will find this button
+         * ```
+         */
+        static void LabelItem(const String &label);
+
+        /**
          * @brief Destroy the ImGui instance and free associated resources.
          *
          * @param imguiId The ID of the ImGui instance to destroy.
@@ -66,3 +83,9 @@ namespace rpp
         static Scope<Storage<ImGuiData>> s_imguis; ///< Storage for all created ImGui instances.
     };
 } // namespace rpp
+
+#if defined(RPP_USE_TEST)
+#define RPP_MARK_ITEM(label) ::rpp::ImGuiImpl::LabelItem(label)
+#else
+#define RPP_MARK_ITEM(label)
+#endif
