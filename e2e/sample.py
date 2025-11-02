@@ -6,5 +6,13 @@ ImGuiTestUtils.MoveToItem("Click Me")
 TestSystem.Wait(1000)
 
 ImGuiTestUtils.MoveToItem("Test Button")
-TestSystem.Wait(3000)
+TestSystem.Wait(1000)
+
+while True:
+    if InputSystem.ClickMouse(0):
+        break
+
+    TestSystem.Wait(1)
+
+TestSystem.Wait(2000)
 print("End")

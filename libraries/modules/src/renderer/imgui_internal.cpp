@@ -164,6 +164,13 @@ namespace rpp
             ImGuiIO &io = ImGui::GetIO();
             io.MousePos = ImVec2(io.MousePos.x, io.MousePos.y);
             io.AddMousePosEvent(f32(InputSystem::GetMouseX()), f32(InputSystem::GetMouseY()));
+
+            for (i32 button = 0; button < MouseButton::COUNT; ++button)
+            {
+                b8 isPressed = InputSystem::IsMouseButtonDown(static_cast<MouseButton>(button));
+                io.MouseClicked[button] = isPressed;
+                io.AddMouseButtonEvent(button, isPressed);
+            }
         }
 #endif
     }

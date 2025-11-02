@@ -667,6 +667,29 @@ namespace rpp
         glfwGetCursorPos((GLFWwindow *)m_window, &mouseX, &mouseY);
         return mouseY;
     }
+
+    i32 Window::GetMouseButtonState(MouseButton button) const
+    {
+        i32 glfwMouseButton;
+
+        switch (button)
+        {
+        case MouseButton::LEFT:
+            glfwMouseButton = GLFW_MOUSE_BUTTON_LEFT;
+            break;
+        case MouseButton::RIGHT:
+            glfwMouseButton = GLFW_MOUSE_BUTTON_RIGHT;
+            break;
+        case MouseButton::MIDDLE:
+            glfwMouseButton = GLFW_MOUSE_BUTTON_MIDDLE;
+            break;
+        default:
+            RPP_UNREACHABLE();
+        }
+
+        i32 state = glfwGetMouseButton((GLFWwindow *)m_window, glfwMouseButton);
+        return state;
+    }
 } // namespace rpp
 
 #endif

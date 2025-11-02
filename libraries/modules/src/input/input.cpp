@@ -11,9 +11,12 @@
 namespace rpp
 {
     InputSystem::RendererInputData InputSystem::s_inputSystemsData[MAX_INPUT_SYSTEMS];
+    b8 InputSystem::s_startEvent = FALSE;
+    HighResTimer InputSystem::s_timer;
 
     void InputSystem::Initialize()
     {
+        memset(s_inputSystemsData, 0, sizeof(RendererInputData) * MAX_INPUT_SYSTEMS);
     }
 
     void InputSystem::Shutdown()
@@ -34,6 +37,13 @@ namespace rpp
 
         data.m_mouseX = Renderer::GetWindow()->GetMouseX();
         data.m_mouseY = Renderer::GetWindow()->GetMouseY();
+
+        memcpy(data.mousePreviousButtonStates, data.mouseButtonStates, sizeof(i32) * MouseButton::COUNT);
+
+        for (i32 i = 0; i < MouseButton::COUNT; i++)
+        {
+            data.mouseButtonStates[i] = Renderer::GetWindow()->GetMouseButtonState(static_cast<MouseButton>(i));
+        }
 #endif
     }
 
@@ -79,6 +89,36 @@ namespace rpp
 #else
         RPP_UNUSED(x);
         RPP_UNUSED(y);
+        return TRUE;
+#endif
+    }
+
+    b8 InputSystem::ClickMouse(i32 button)
+    {
+#if defined(RPP_USE_TEST)
+        u32 rendererId = Renderer::GetCurrentRendererId();
+        RPP_ASSERT(rendererId < MAX_INPUT_SYSTEMS);
+        RendererInputData &data = s_inputSystemsData[rendererId];
+
+        if (!s_startEvent)
+        {
+            s_startEvent = TRUE;
+            s_timer.Start();
+            // Simulate mouse button down
+            data.mouseButtonStates[static_cast<i32>(button)] = 1;
+            return FALSE;
+        }
+
+        if (s_timer.GetElapsedTimeInMilliseconds() < 100)
+        {
+            return FALSE; // Wait for 100 milliseconds before releasing the button
+        }
+
+        // Simulate mouse button up
+        data.mouseButtonStates[static_cast<i32>(button)] = 0;
+        return TRUE;
+#else
+        RPP_UNUSED(button);
         return TRUE;
 #endif
     }
@@ -141,5 +181,13 @@ namespace rpp
         RPP_ASSERT(rendererId < MAX_INPUT_SYSTEMS);
         RendererInputData &data = s_inputSystemsData[rendererId];
         return data.m_mouseY - data.m_previousMouseY;
+    }
+
+    b8 InputSystem::IsMouseButtonDown(MouseButton button)
+    {
+        u32 rendererId = Renderer::GetCurrentRendererId();
+        RPP_ASSERT(rendererId < MAX_INPUT_SYSTEMS);
+        RendererInputData &data = s_inputSystemsData[rendererId];
+        return data.mouseButtonStates[static_cast<i32>(button)] == 1;
     }
 } // namespace rpp

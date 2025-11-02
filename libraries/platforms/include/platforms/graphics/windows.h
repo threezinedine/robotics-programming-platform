@@ -4,6 +4,15 @@
 
 namespace rpp
 {
+    enum MouseButton : i16
+    {
+        LEFT,
+        RIGHT,
+        MIDDLE,
+
+        COUNT,
+    };
+
     /**
      * @brief The window instance of the graphics backend. Each graphics backend should have its own window instance.
      */
@@ -75,6 +84,13 @@ namespace rpp
          * @return Get window mouse position Y
          */
         f64 GetMouseY() const;
+
+        /**
+         * @brief Get the state of the given mouse button.
+         * @param button The mouse button to get the state of.
+         * @return The state of the given mouse button.
+         */
+        i32 GetMouseButtonState(MouseButton button) const;
 
         /**
          * @brief A callback function type for window resize events.

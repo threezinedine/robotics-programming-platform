@@ -21,6 +21,9 @@ namespace rpp
 
             f64 m_previousMouseX;
             f64 m_previousMouseY;
+
+            i32 mouseButtonStates[MouseButton::COUNT]; ///< Left, Right, Middle
+            i32 mousePreviousButtonStates[MouseButton::COUNT];
         };
 
     public:
@@ -66,6 +69,13 @@ namespace rpp
         static f64 GetDeltaY();
 
         /**
+         * Check if the given mouse button is currently pressed down.
+         * @param button The mouse button to check.
+         * @return true if the button is pressed down, false otherwise.
+         */
+        static b8 IsMouseButtonDown(MouseButton button);
+
+        /**
          * @note used in testing only, if not in test mode, this method does nothing.
          * Updating the current mouse position to the given coordinates, this process will take time.
          *
@@ -76,13 +86,25 @@ namespace rpp
          * @example
          * ```cpp
          * // Move mouse to position (400, 300)
-         *
-         * inputSystem.Update(deltaTime);
-         *
-         * while (!inputSystem.MoveMouseTo(400.0, 300.0)); // Keep calling Update until the mouse reaches the target position
+         * while (!InputSystem::MoveMouseTo(400.0, 300.0)); // Keep calling Update until the mouse reaches the target position
          * ```
          */
         static b8 MoveMouseTo(f64 x, f64 y) RPP_E2E_BINDING;
+
+        /**
+         * @note used in testing only, if not in test mode, this method does nothing.
+         * Simulate a mouse click on the given button.
+         *
+         * @param button The mouse button to click.
+         * @return true if the click was completed successfully, false otherwise.
+         *
+         * @example
+         * ```cpp
+         * // Simulate a left mouse button click
+         * while (!InputSystem::MoveMouseTo(400.0, 300.0)); // Move mouse to position (400, 300)
+         * while (!InputSystem::ClickMouse(MouseButton::LEFT)); // Click the left mouse button
+         */
+        static b8 ClickMouse(i32 button) RPP_E2E_BINDING;
 
         /**
          * The callback which is assigned into the windows to update the current state of the input system.
@@ -93,14 +115,9 @@ namespace rpp
         static void OnMouseMoveCallback(f64 xPos, f64 yPos, void *pUserData);
 
     private:
-#if 0
-        static f64 m_mouseX;
-        static f64 m_mouseY;
-
-        static f64 m_previousMouseX;
-        static f64 m_previousMouseY;
-#else
         static RendererInputData s_inputSystemsData[MAX_INPUT_SYSTEMS]; ///< TODO: Use storage later
-#endif
+
+        static b8 s_startEvent;      ///< Checking whether the event is started, primarily be used for click simulation.
+        static HighResTimer s_timer; ///< Timer used for input system operations.
     };
 } // namespace rpp

@@ -1,5 +1,4 @@
 #include "applications/applications.h"
-#include "glm/gtc/matrix_transform.hpp"
 
 RPP_ENABLE_MEMORY_TRACKING;
 
@@ -24,6 +23,11 @@ protected:
         ImGui::Text("This is the first window.");
         ImGui::Text(Format("Mouse Position: ({}, {})", InputSystem::GetMouseX(), InputSystem::GetMouseY()).CStr());
         ImGui::Text(Format("Mouse Delta: ({}, {})", InputSystem::GetDeltaX(), InputSystem::GetDeltaY()).CStr());
+        ImGui::Text(Format("Button state: ({}, {}, {})",
+                           InputSystem::IsMouseButtonDown(MouseButton::LEFT),
+                           InputSystem::IsMouseButtonDown(MouseButton::RIGHT),
+                           InputSystem::IsMouseButtonDown(MouseButton::MIDDLE))
+                        .CStr());
 
         if (ImGui::Button("Click Me"))
         {
