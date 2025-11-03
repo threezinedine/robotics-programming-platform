@@ -268,12 +268,20 @@ def RunCppProjectTest(
         buildCommand = f"cmake --build {buildDir} --config {cmakeBuildType}"
         RunCommand(buildCommand, cwd=buildDir)
 
-        runCommand = f"{executable}"
-        if scenario:
-            runCommand = f"{executable} {scenario}"
+        if os.name == "nt":
+            raise NotImplementedError(
+                "Running C++ project tests is not implemented on Windows yet."
+            )
+        else:
+            TEST_UI_DIR = os.path.join(Constants.ABSOLUTE_BASE_DIR, "testui")
+            TEST_UI_PYTHON_EXE = os.path.join(TEST_UI_DIR, "venv", "bin", "python3")
 
-        logger.info(f"Running tests for project '{projectDir}'...")
-        RunCommand(runCommand, cwd=buildDir)
+        runCommand = f"{TEST_UI_PYTHON_EXE} main.py --project {projectDir}"
+        if scenario:
+            runCommand += f" --scenario {scenario}"
+
+        print("Command to run tests:", runCommand)
+        RunCommand(runCommand, cwd=TEST_UI_DIR)
     except Exception as e:
         logger.error(f"Failed to run tests for project '{projectDir}': {e}")
         raise RuntimeError(f"Failed to run tests for project '{projectDir}'.") from e

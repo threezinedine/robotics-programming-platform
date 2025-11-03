@@ -42,11 +42,17 @@ class Args:
             help="Project to run",
         )
 
+        parser.add_argument("--scenario", "-s", type=str)
+
         self.args = parser.parse_args()
 
     @property
     def Project(self) -> Literal["editor", "gruntime"]:
         return self.args.project
+
+    @property
+    def Scenario(self) -> str | None:
+        return self.args.scenario
 
 
 def ExtractTestsFromFile(filePath: str) -> Test:
@@ -87,10 +93,11 @@ def main():
     if args.Project == "editor":
         for test in editorTests:
             for testCase in test.testCases:
-                RunCommand(
-                    f"{EDITOR_TEST_EXE} {test.fileName} {testCase}",
-                    cwd=EDITOR_TEST_DIR,
-                )
+                if args.Scenario is None or args.Scenario == testCase:
+                    RunCommand(
+                        f"{EDITOR_TEST_EXE} {test.fileName} {testCase}",
+                        cwd=EDITOR_TEST_DIR,
+                    )
 
 
 if __name__ == "__main__":
