@@ -1,75 +1,9 @@
 #include "applications/applications.h"
+#include "windows/editor.h"
 
 RPP_ENABLE_MEMORY_TRACKING;
 
 using namespace rpp;
-
-class FirstWindow : public GraphicSession
-{
-public:
-    FirstWindow(u32 width, u32 height, const String &title)
-        : GraphicSession(width, height, title)
-    {
-    }
-
-    ~FirstWindow()
-    {
-    }
-
-protected:
-    void RenderImpl() override
-    {
-        ImGui::Begin("First Window");
-        ImGui::Text("This is the first window.");
-        ImGui::Text(Format("Mouse Position: ({}, {})", InputSystem::GetMouseX(), InputSystem::GetMouseY()).CStr());
-        ImGui::Text(Format("Mouse Delta: ({}, {})", InputSystem::GetDeltaX(), InputSystem::GetDeltaY()).CStr());
-        ImGui::Text(Format("Button state: ({}, {}, {})",
-                           InputSystem::IsMouseButtonDown(MouseButton::LEFT),
-                           InputSystem::IsMouseButtonDown(MouseButton::RIGHT),
-                           InputSystem::IsMouseButtonDown(MouseButton::MIDDLE))
-                        .CStr());
-
-        if (ImGui::Button("Click Me"))
-        {
-            RPP_LOG_INFO("Button clicked!");
-        }
-        RPP_MARK_ITEM("Click Me");
-        ImGui::End();
-    }
-};
-
-class TestSession : public GraphicSession
-{
-public:
-    TestSession(u32 width, u32 height, const String &title)
-        : GraphicSession(width, height, title)
-    {
-    }
-
-    ~TestSession()
-    {
-    }
-
-protected:
-    void RenderImpl() override
-    {
-        ImGui::Begin("Test Session");
-        ImGui::Text(Format("Mouse Position: ({}, {})", InputSystem::GetMouseX(), InputSystem::GetMouseY()).CStr());
-        ImGui::Text(Format("Mouse Delta: ({}, {})", InputSystem::GetDeltaX(), InputSystem::GetDeltaY()).CStr());
-        if (ImGui::Button("Test Button"))
-        {
-            RPP_LOG_INFO("Test Button clicked!");
-        }
-        RPP_MARK_ITEM("Test Button");
-
-        ImGui::Text(Format("Button state: ({}, {}, {})",
-                           InputSystem::IsMouseButtonDown(MouseButton::LEFT),
-                           InputSystem::IsMouseButtonDown(MouseButton::RIGHT),
-                           InputSystem::IsMouseButtonDown(MouseButton::MIDDLE))
-                        .CStr());
-        ImGui::End();
-    }
-};
 
 int main(int argc, char **argv)
 {
@@ -104,8 +38,7 @@ int main(int argc, char **argv)
 #endif
 
     {
-        CREATE_SESSION(FirstWindow, 800, 600, "Editor");
-        CREATE_SESSION(TestSession, 800, 600, "TestSession");
+        CREATE_SESSION(EditorWindow, 500, 800, "Editor");
 
         while (TRUE)
         {

@@ -20,12 +20,20 @@ file(
     GLOB
     EDITOR_SOURCES
     "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/windows/*.cpp"
+)
+
+file(
+    GLOB
+    EDITOR_HEADERS
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/windows/*.h"
 )
 
 RPPFindPackage(rpp-libraries "Libraries")
 RPPFindPackage(rpp-pybind "Dependencies")
 
-add_executable(${PROJECT_NAME} ${EDITOR_SOURCES})
+add_executable(${PROJECT_NAME} ${EDITOR_SOURCES} ${EDITOR_HEADERS})
 target_link_libraries(
     ${PROJECT_NAME} 
     PRIVATE 
@@ -49,6 +57,7 @@ set(EDITOR_TEST "${PROJECT_NAME}_test")
 add_executable(
     ${EDITOR_TEST}
     ${EDITOR_SOURCES} 
+    ${EDITOR_HEADERS}
 )
 
 target_link_libraries(
