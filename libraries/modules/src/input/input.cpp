@@ -1,5 +1,6 @@
 #include "modules/input/input_internal.h"
 #include "modules/renderer/renderer.h"
+#include "modules/test_system/test_system.h"
 
 /**
  * If the current mouse position and the previous position -> reset the previous mouse position
@@ -106,12 +107,12 @@ namespace rpp
             s_timer.Start();
             // Simulate mouse button down
             data.mouseButtonStates[static_cast<i32>(button)] = 1;
-            return FALSE;
+            TestSystem::GetInstance()->Yield();
         }
 
-        if (s_timer.GetElapsedTimeInMilliseconds() < 100)
+        while (s_timer.GetElapsedTimeInMilliseconds() < 100)
         {
-            return FALSE; // Wait for 100 milliseconds before releasing the button
+            TestSystem::GetInstance()->Yield();
         }
 
         // Simulate mouse button up

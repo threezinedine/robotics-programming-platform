@@ -8,11 +8,7 @@ TestSystem.Wait(1000)
 ImGuiTestUtils.MoveToItem("Test Button")
 TestSystem.Wait(1000)
 
-while True:
-    if InputSystem.ClickMouse(0):
-        break
-
-    TestSystem.Wait(1)
+InputSystem.ClickMouse(0)
 
 TestSystem.Wait(2000)
 print("End")
