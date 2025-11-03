@@ -25,7 +25,8 @@ namespace rpp
         void Initialize(const String &resultFilePath,
                         const String &setupFilePath = "",
                         const String &updateFilePath = "",
-                        const String &shutdownFilePath = "");
+                        const String &shutdownFilePath = "",
+                        const String &runTestCaseName = "");
 
         /**
          * Shuts down the test system, releasing all resources.
@@ -85,6 +86,8 @@ namespace rpp
         String m_setupScriptContent;    ///< The content of the setup script.
         String m_updateScriptContent;   ///< The content of the update script.
         String m_shutdownScriptContent; ///< The content of the shutdown script.
+
+        String m_runTestCaseName; ///< The name of the test case to run.
 
         SignalId m_testThreadSignal; ///< Signal to control the test thread.
         SignalId m_mainThreadSignal; ///< Signal to control the main thread.

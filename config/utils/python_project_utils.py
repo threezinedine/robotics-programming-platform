@@ -11,6 +11,7 @@ from ..constants import Constants
 from .cache_file_utils import IsFileModified, UpdateFileCache
 from .validation_utils import ValidateCommandExists
 from .run_command import RunCommand
+from .cpp_project_utils import BuildProject
 
 
 def InstallPackages(
@@ -383,6 +384,12 @@ def RunPythonProject(
             raise RuntimeError(f"Failed to run Python project: {e}") from e
     elif projectDir == "testui":
         try:
+            BuildProject(
+                "editor",
+                projectType="dev",
+                recreate=False,
+            )
+
             logger.info(f"Running Python project in '{projectDir}'...")
             runCommand = f"{pythonExe} {mainScript}"
             RunCommand(runCommand, cwd=cwd)

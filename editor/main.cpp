@@ -10,7 +10,8 @@ int main(int argc, char **argv)
     ArgParser parser;
 
 #if defined(RPP_USE_TEST)
-    parser.AddArgument({"runtime"});
+    parser.AddArgument({"test"});
+    parser.AddArgument({"testcase"});
 #endif
 
     Json args = parser.Parse(argc, argv);
@@ -29,12 +30,16 @@ int main(int argc, char **argv)
     Signal::Initialize();
 
 #if defined(RPP_USE_TEST)
-    String runtimeFilePath = Format("{}/e2e/{}.py", String(STRINGIFY(RPP_PROJECT_DIR)), args.Get<String>("runtime", "basic"));
+    String runtimeFilePath = Format("{}/e2e/{}.py", String(STRINGIFY(RPP_PROJECT_DIR)), args.Get<String>("test", "basic"));
+    RPP_LOG_DEBUG("E2E test runtime file path: {}", runtimeFilePath);
+    String runTestCaseName = args.Get<String>("testcase", "run_all_tests");
 
     TestSystem::GetInstance()->Initialize(
         String(STRINGIFY(RPP_PROJECT_DIR) "/e2e/results.json"),
         String(""),
-        runtimeFilePath);
+        runtimeFilePath,
+        String(""),
+        runTestCaseName);
 #endif
 
     {

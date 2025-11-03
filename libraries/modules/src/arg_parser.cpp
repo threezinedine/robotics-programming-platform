@@ -27,13 +27,25 @@ namespace rpp
             return result;
         }
 
-        ArgumentData &firstArgDef = m_argumentDefinitions[0];
-        if (argc != 2)
+        if (m_argumentDefinitions.Size() == 1)
         {
-            throw std::runtime_error("Invalid number of arguments. Expected exactly one argument.");
+            ArgumentData &firstArgDef = m_argumentDefinitions[0];
+            if (argc != 2)
+            {
+                throw std::runtime_error("Invalid number of arguments. Expected exactly one argument.");
+            }
+
+            result.Set(firstArgDef.name, String(argv[1]));
         }
 
-        result.Set(firstArgDef.name, String(argv[1]));
+        RPP_ASSERT(m_argumentDefinitions.Size() == 2);
+
+        if (argc != 3)
+        {
+            throw std::runtime_error("Invalid number of arguments. Expected exactly two arguments.");
+        }
+        result.Set(m_argumentDefinitions[0].name, String(argv[1]));
+        result.Set(m_argumentDefinitions[1].name, String(argv[2]));
 
         return result;
     }

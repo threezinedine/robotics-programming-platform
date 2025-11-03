@@ -54,6 +54,7 @@ namespace rpp
           m_setupScriptContent(""),
           m_updateScriptContent(""),
           m_shutdownScriptContent(""),
+          m_runTestCaseName(""),
           m_testThreadSignal(INVALID_ID),
           m_mainThreadSignal(INVALID_ID),
           m_testThreadId(INVALID_ID),
@@ -69,9 +70,12 @@ namespace rpp
     void TestSystem::Initialize(const String &resultFilePath,
                                 const String &setupFilePath,
                                 const String &updateFilePath,
-                                const String &shutdownFilePath)
+                                const String &shutdownFilePath,
+                                const String &runTestCaseName)
     {
         m_resultFilePath = resultFilePath;
+        m_runTestCaseName = runTestCaseName;
+
         m_shouldApplicationClose = FALSE;
         m_isMainThreadWorking = FALSE;
 
@@ -88,6 +92,7 @@ namespace rpp
         if (updateFilePath.Length() > 0)
         {
             m_updateScriptContent = ReadPythonFile(updateFilePath);
+            RPP_LOG_INFO("Running test script {}", updateFilePath);
         }
         else
         {
@@ -198,6 +203,8 @@ namespace rpp
         try
         {
             PyRun_SimpleString(m_updateScriptContent.CStr());
+            RPP_LOG_INFO("Running test case '{}'", m_runTestCaseName);
+            PyRun_SimpleString(Format("{}()", m_runTestCaseName).CStr());
             Yield();
         }
         catch (const std::exception &e)
