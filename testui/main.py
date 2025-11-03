@@ -85,10 +85,12 @@ def main():
     RetrieveAllTests()
 
     if args.Project == "editor":
-        RunCommand(
-            f"{EDITOR_TEST_EXE} {editorTests[0].fileName} {editorTests[0].testCases[0]}",
-            cwd=EDITOR_TEST_DIR,
-        )
+        for test in editorTests:
+            for testCase in test.testCases:
+                RunCommand(
+                    f"{EDITOR_TEST_EXE} {test.fileName} {testCase}",
+                    cwd=EDITOR_TEST_DIR,
+                )
 
 
 if __name__ == "__main__":

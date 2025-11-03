@@ -19,3 +19,9 @@ def test_open_close_new_project_modal():
     assert not ImGuiTestUtils.IsItemFound(
         "Editor/NewProjectModal"
     ), "New Project modal not closed!"
+
+
+def test_click_new_file():
+    ImGuiTestUtils.LeftClick("Editor/MenuBar/File")
+    ImGuiTestUtils.MoveToItem("Editor/MenuBar/File/New")
+    ImGuiTestUtils.LeftClick("Editor/MenuBar/File/New/File")

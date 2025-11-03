@@ -43,8 +43,8 @@ void EditorWindow::MenuRender()
 
                 if (ImGui::MenuItem("File"))
                 {
-                    RPP_LOG_INFO("New File created!");
                 }
+                RPP_MARK_ITEM("Editor/MenuBar/File/New/File");
 
                 ImGui::EndMenu();
             }
