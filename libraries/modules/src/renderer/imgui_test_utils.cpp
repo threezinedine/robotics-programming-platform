@@ -155,12 +155,8 @@ namespace rpp
             TestSystem::GetInstance()->Yield();
         }
 
-        if (s_itemFound)
-        {
-            ResetCurrentItem();
-            return TRUE;
-        }
-
-        return FALSE;
+        b8 result = s_itemFound;
+        ResetCurrentItem();
+        return result;
     }
 } // namespace rpp

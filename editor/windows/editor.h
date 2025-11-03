@@ -16,4 +16,12 @@ private:
      * Drawing the tools bar.
      */
     void MenuRender();
+
+    /**
+     * Drawing the New Project modal.
+     */
+    void NewProjectModalRender();
+
+private:
+    b8 m_openNewProjectModal = false;
 };
