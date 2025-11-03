@@ -61,6 +61,12 @@ protected:
             RPP_LOG_INFO("Test Button clicked!");
         }
         RPP_MARK_ITEM("Test Button");
+
+        ImGui::Text(Format("Button state: ({}, {}, {})",
+                           InputSystem::IsMouseButtonDown(MouseButton::LEFT),
+                           InputSystem::IsMouseButtonDown(MouseButton::RIGHT),
+                           InputSystem::IsMouseButtonDown(MouseButton::MIDDLE))
+                        .CStr());
         ImGui::End();
     }
 };

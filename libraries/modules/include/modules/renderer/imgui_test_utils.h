@@ -81,6 +81,12 @@ namespace rpp
          */
         static b8 IsItemFound(const String &label) RPP_E2E_BINDING;
 
+        /**
+         * Used for performing a left click on the current item being interacted with.
+         * @return TRUE if the click action was performed, FALSE otherwise.
+         */
+        static void LeftClick(const String &label) RPP_E2E_BINDING;
+
     private:
         /**
          * Used each frame to update the ImGui testing utilities, performing actions on items if needed.

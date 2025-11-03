@@ -26,7 +26,7 @@ namespace rpp
     {
         RPP_UNUSED(deltaTime);
 
-        if (s_pData->label == "" || s_pData->action == ImGuiItemAction::IMGUI_ACTION_COUNT)
+        if (s_pData->action == ImGuiItemAction::IMGUI_ACTION_COUNT)
         {
             return;
         }
@@ -67,6 +67,34 @@ namespace rpp
         }
         case ImGuiItemAction::IMGUI_ACTION_FIND_ITEM:
             break;
+        case ImGuiItemAction::IMGUI_ACTION_CLICK:
+        {
+            if (s_itemFound)
+            {
+                RPP_ASSERT(s_pCurrentItemData != nullptr);
+
+                if (s_pCurrentItemData->rendererId != Renderer::GetCurrentRendererId())
+                {
+                    break;
+                }
+
+                b8 arrived = InputSystem::MoveMouseTo(s_pCurrentItemData->position.x, s_pCurrentItemData->position.y);
+
+                if (!arrived)
+                {
+                    break;
+                }
+
+                b8 done = InputSystem::ClickMouse(0);
+
+                if (done)
+                {
+                    TestSystem::GetInstance()->SetMainThreadWorking(FALSE);
+                    ResetCurrentItem();
+                }
+            }
+            break;
+        }
         default:
             RPP_UNREACHABLE();
         }
@@ -90,6 +118,17 @@ namespace rpp
         RPP_ASSERT(s_pData != nullptr);
         s_pData->label = label;
         s_pData->action = ImGuiItemAction::IMGUI_ACTION_MOVE;
+        s_findingFrameCount = 0;
+
+        TestSystem::GetInstance()->SetMainThreadWorking(TRUE);
+        TestSystem::GetInstance()->Yield();
+    }
+
+    void ImGuiTestUtils::LeftClick(const String &label)
+    {
+        RPP_ASSERT(s_pData != nullptr);
+        s_pData->label = label;
+        s_pData->action = ImGuiItemAction::IMGUI_ACTION_CLICK;
         s_findingFrameCount = 0;
 
         TestSystem::GetInstance()->SetMainThreadWorking(TRUE);

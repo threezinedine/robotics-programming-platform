@@ -107,16 +107,17 @@ namespace rpp
             s_timer.Start();
             // Simulate mouse button down
             data.mouseButtonStates[static_cast<i32>(button)] = 1;
-            TestSystem::GetInstance()->Yield();
+            return FALSE;
         }
 
         while (s_timer.GetElapsedTimeInMilliseconds() < 100)
         {
-            TestSystem::GetInstance()->Yield();
+            return FALSE;
         }
 
         // Simulate mouse button up
         data.mouseButtonStates[static_cast<i32>(button)] = 0;
+        s_startEvent = FALSE;
         return TRUE;
 #else
         RPP_UNUSED(button);

@@ -2,13 +2,10 @@ from packages import *  # this import will be deleted in the core, this line mus
 
 print("Start")
 TestSystem.Wait(1000)
-ImGuiTestUtils.MoveToItem("Click Me")
+ImGuiTestUtils.LeftClick("Click Me")
 TestSystem.Wait(1000)
 
-ImGuiTestUtils.MoveToItem("Test Button")
-TestSystem.Wait(1000)
-
-InputSystem.ClickMouse(0)
+ImGuiTestUtils.LeftClick("Test Button")
 
 TestSystem.Wait(2000)
 
