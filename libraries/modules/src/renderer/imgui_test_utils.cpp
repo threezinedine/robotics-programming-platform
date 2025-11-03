@@ -65,6 +65,8 @@ namespace rpp
             }
             break;
         }
+        case ImGuiItemAction::IMGUI_ACTION_FIND_ITEM:
+            break;
         default:
             RPP_UNREACHABLE();
         }
@@ -92,5 +94,28 @@ namespace rpp
 
         TestSystem::GetInstance()->SetMainThreadWorking(TRUE);
         TestSystem::GetInstance()->Yield();
+    }
+
+    b8 ImGuiTestUtils::IsItemFound(const String &label)
+    {
+        RPP_ASSERT(s_pData != nullptr);
+        s_pData->label = label;
+        s_pData->action = ImGuiItemAction::IMGUI_ACTION_FIND_ITEM;
+        s_findingFrameCount = 0;
+
+        TestSystem::GetInstance()->Yield();
+
+        while (s_findingFrameCount == 0)
+        {
+            TestSystem::GetInstance()->Yield();
+        }
+
+        if (s_itemFound)
+        {
+            ResetCurrentItem();
+            return TRUE;
+        }
+
+        return FALSE;
     }
 } // namespace rpp

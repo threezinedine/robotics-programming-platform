@@ -11,4 +11,8 @@ TestSystem.Wait(1000)
 InputSystem.ClickMouse(0)
 
 TestSystem.Wait(2000)
+
+print(ImGuiTestUtils.IsItemFound("Test Button"))
+print(ImGuiTestUtils.IsItemFound("Nonexistent Item"))
+
 print("End")

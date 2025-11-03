@@ -35,8 +35,9 @@ namespace rpp
          */
         enum class ImGuiItemAction : u8
         {
-            IMGUI_ACTION_MOVE,  ///< Move action on the item.
-            IMGUI_ACTION_CLICK, ///< Click action on the item.
+            IMGUI_ACTION_MOVE,      ///< Move action on the item.
+            IMGUI_ACTION_CLICK,     ///< Click action on the item.
+            IMGUI_ACTION_FIND_ITEM, ///< Just find the item without any action.
             IMGUI_ACTION_COUNT,
         };
 
@@ -71,6 +72,14 @@ namespace rpp
          *      If multiple items with the same label exist, the first one found is used.
          */
         static void MoveToItem(const String &label) RPP_E2E_BINDING;
+
+        /**
+         * Used mainly for checking if an item with a certain name exists.
+         *
+         * @param label The label of the item to search for.
+         * @return TRUE if the item is found, FALSE otherwise.
+         */
+        static b8 IsItemFound(const String &label) RPP_E2E_BINDING;
 
     private:
         /**
