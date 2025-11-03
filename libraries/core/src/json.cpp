@@ -155,4 +155,15 @@ namespace rpp
         JSON *json = static_cast<JSON *>(m_data);
         (*json)[key.CStr()] = JSON::parse(value.ToString().CStr());
     }
+
+    template <>
+    void Json::Append<Json>(const Json &value)
+    {
+        JSON *json = static_cast<JSON *>(m_data);
+        if (!(*json).is_array())
+        {
+            return;
+        }
+        (*json).push_back(JSON::parse(value.ToString().CStr()));
+    }
 } // namespace rpp

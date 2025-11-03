@@ -25,7 +25,7 @@ namespace rpp
          *
          * @param filePath The absolute path to the python file. This the path must be physical path, not virtual path.
          */
-        String ReadPythonFile(const String &filePath)
+        String ReadPhysicalFile(const String &filePath)
         {
             std::ifstream fileStream(filePath.CStr(), std::ios::in | std::ios::binary);
             if (fileStream)
@@ -44,6 +44,29 @@ namespace rpp
 
             RPP_UNREACHABLE();
             return String();
+        }
+
+        void WritePhysicalFile(const String &filePath, const String &content)
+        {
+            std::ofstream fileStream(filePath.CStr(), std::ios::out | std::ios::binary);
+            if (fileStream)
+            {
+                try
+                {
+                    fileStream.write(content.CStr(), content.Length());
+                    fileStream.close();
+                }
+                catch (const std::exception &e)
+                {
+                    RPP_LOG_FATAL("Failed to write python file to path: {}, exception: {}", filePath, String(e.what()));
+                    exit(-1);
+                }
+            }
+            else
+            {
+                RPP_LOG_FATAL("Failed to open file stream for writing python file to path: {}", filePath);
+                exit(-1);
+            }
         }
     } // namespace anonymous
 
@@ -82,7 +105,7 @@ namespace rpp
         // TODO: Loading scripts later
         if (setupFilePath.Length() > 0)
         {
-            m_setupScriptContent = ReadPythonFile(setupFilePath);
+            m_setupScriptContent = ReadPhysicalFile(setupFilePath);
         }
         else
         {
@@ -91,7 +114,7 @@ namespace rpp
 
         if (updateFilePath.Length() > 0)
         {
-            m_updateScriptContent = ReadPythonFile(updateFilePath);
+            m_updateScriptContent = ReadPhysicalFile(updateFilePath);
             RPP_LOG_INFO("Running test script {}", updateFilePath);
         }
         else
@@ -101,7 +124,7 @@ namespace rpp
 
         if (shutdownFilePath.Length() > 0)
         {
-            m_shutdownScriptContent = ReadPythonFile(shutdownFilePath);
+            m_shutdownScriptContent = ReadPhysicalFile(shutdownFilePath);
         }
         else
         {
@@ -167,38 +190,14 @@ namespace rpp
 
 #include "tmp/e2e_python_module_import.cpp"
 
-#if 0
-        Array<String> lineOfCodes;
-        m_updateScriptContent.Split(lineOfCodes, "\n");
-
-        u32 numberOfLines = lineOfCodes.Size();
-
-        for (u32 lineIndex = 0; lineIndex < numberOfLines; lineIndex++)
-        {
-            const String &line = lineOfCodes[lineIndex];
-
-            if (lineIndex == 0)
-            {
-                continue; // skip the first line, which is used for typing hint only. (from packages import *)
-            }
-
-            try
-            {
-                PyRun_SimpleString(line.CStr());
-            }
-            catch (const std::exception &e)
-            {
-                RPP_LOG_ERROR("Exception occurred while executing python line {}: {}\n\t", lineIndex + 1, String(e.what()), line);
-                break;
-            }
-
-            m_shouldApplicationClose = FALSE;
-            Signal::Notify(m_mainThreadSignal); // exit the test thread
-        }
-#else
         m_updateScriptContent = m_updateScriptContent.Replace("from packages import *", ""); // remove the first line, which is used for typing hint only. (from packages import *)
 
 #include "tmp/e2e_python_module_create_enum.cpp"
+
+        String resultContent = ReadPhysicalFile(m_resultFilePath);
+        Json resultsJson(resultContent);
+        Json resultJson;
+        resultJson.Set("name", m_runTestCaseName);
 
         try
         {
@@ -206,14 +205,33 @@ namespace rpp
             RPP_LOG_INFO("Running test case '{}'", m_runTestCaseName);
             PyRun_SimpleString(Format("{}()", m_runTestCaseName).CStr());
             Yield();
+
+            // Save success results
+            {
+                resultJson.Set("status", true);
+                resultJson.Set("error", String(""));
+            }
         }
         catch (const std::exception &e)
         {
             RPP_LOG_ERROR("Exception occurred while executing python script: {}", String(e.what()));
             PyErr_Print();
+
+            // Save failure results
+            {
+                resultJson.Set("status", false);
+                resultJson.Set("error", String(e.what()));
+            }
         }
 
-#endif
+        if (m_error != "")
+        {
+            resultJson.Set("status", false);
+            resultJson.Set("error", m_error);
+        }
+
+        resultsJson.Append(resultJson);
+        WritePhysicalFile(m_resultFilePath, resultsJson.ToString());
 
         m_shouldApplicationClose = TRUE;
         Signal::Notify(m_mainThreadSignal); // exit the test thread

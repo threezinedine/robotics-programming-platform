@@ -59,7 +59,7 @@ namespace rpp
             }
             else
             {
-                RPP_LOG_ERROR("Cannot find ImGui item with label '{}'", s_pData->label);
+                REGISTER_ERROR("Cannot find ImGui item with label '{}'", s_pData->label);
                 TestSystem::GetInstance()->SetMainThreadWorking(FALSE);
                 ResetCurrentItem();
             }
@@ -95,7 +95,7 @@ namespace rpp
             }
             else
             {
-                RPP_LOG_ERROR("Cannot find ImGui item with label '{}'", s_pData->label);
+                REGISTER_ERROR("Cannot find ImGui item with label '{}'", s_pData->label);
                 TestSystem::GetInstance()->SetMainThreadWorking(FALSE);
                 ResetCurrentItem();
             }

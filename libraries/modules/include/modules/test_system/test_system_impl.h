@@ -1,6 +1,14 @@
 #pragma once
 #include "modules/modules.h"
 
+#define REGISTER_ERROR(...)                            \
+    do                                                 \
+    {                                                  \
+        RPP_LOG_ERROR(__VA_ARGS__);                    \
+        String errorMsg = Format(__VA_ARGS__);         \
+        TestSystem::GetInstance()->SetError(errorMsg); \
+    } while (FALSE)
+
 namespace rpp
 {
     /**
@@ -72,6 +80,11 @@ namespace rpp
          */
         inline void SetMainThreadWorking(b8 isWorking) { m_isMainThreadWorking = isWorking; }
 
+        /**
+         * Called each time the error in testing occurs.
+         */
+        inline void SetError(const String &error) { m_error = error; }
+
     private:
         /**
          * The function executed by the test thread.
@@ -98,5 +111,7 @@ namespace rpp
         b8 m_isMainThreadWorking; ///< Indicates if the main thread is currently working, should not be moved to test routine
 
         HighResTimer m_timer; ///< Used for testing time-related functionalities.
+
+        String m_error; ///< Only have value when an error occurs during testing.
     };
 } // namespace rpp

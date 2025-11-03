@@ -1,9 +1,17 @@
 import os
+import json
 import argparse
 import subprocess
 from typing import Literal
+from rich.table import Table
+from rich.console import Console
 
 PROJECT_BASE_DIR = os.path.dirname(os.getcwd())
+RESULTS_FILE_PATH = os.path.join(
+    PROJECT_BASE_DIR,
+    "e2e",
+    "results.json",
+)
 
 if os.name == "nt":
     raise Exception("This script is not supported on Windows.")
@@ -90,6 +98,12 @@ def main():
 
     RetrieveAllTests()
 
+    if os.path.exists(RESULTS_FILE_PATH):
+        os.remove(RESULTS_FILE_PATH)
+
+        with open(RESULTS_FILE_PATH, "w") as resultsFile:
+            resultsFile.write("[]")
+
     if args.Project == "editor":
         for test in editorTests:
             for testCase in test.testCases:
@@ -98,6 +112,31 @@ def main():
                         f"{EDITOR_TEST_EXE} {test.fileName} {testCase}",
                         cwd=EDITOR_TEST_DIR,
                     )
+
+    table = Table(
+        title="🚀 [bold magenta]TEST RESULTS[/]",
+        show_header=True,
+        header_style="bold blue",
+    )
+
+    table.add_column("Scenario", style="dim", width=40)
+    table.add_column("Status", justify="center", width=10)
+    table.add_column("Error Message", width=40)
+
+    with open(RESULTS_FILE_PATH, "r") as resultsFile:
+        resultsContent = json.loads(resultsFile.read())
+        for result in resultsContent:
+            assert "name" in result, "Each result must have a 'scenario' field."
+            assert "status" in result, "Each result must have a 'status' field."
+            assert "error" in result, "Each result must have an 'error' field."
+
+            table.add_row(
+                result["name"],
+                "[green]PASSED[/]" if result["status"] else "[red]FAILED[/]",
+                result["error"],
+            )
+
+        Console().print(table)
 
 
 if __name__ == "__main__":

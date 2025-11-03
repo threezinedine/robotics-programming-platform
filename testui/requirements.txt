@@ -1,2 +1,6 @@
 colorama==0.4.6
 dacite==1.9.2
+markdown-it-py==4.0.0
+mdurl==0.1.2
+Pygments==2.19.2
+rich==14.2.0
