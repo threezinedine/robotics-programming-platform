@@ -2,6 +2,7 @@
 #include "core/core.h"
 #include <fstream>
 #include <codecvt>
+#include <exception>
 
 #if defined(_DEBUG)
 #undef _DEBUG
@@ -156,6 +157,11 @@ namespace rpp
     {
         Signal::Notify(m_mainThreadSignal);
         Signal::Wait(m_testThreadSignal);
+
+        if (m_error != "")
+        {
+            throw std::runtime_error(m_error.CStr());
+        }
     }
 
     void TestSystem::Wait(f32 milliseconds)
