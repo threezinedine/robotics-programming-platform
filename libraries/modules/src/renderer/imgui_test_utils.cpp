@@ -93,6 +93,12 @@ namespace rpp
                     ResetCurrentItem();
                 }
             }
+            else
+            {
+                RPP_LOG_ERROR("Cannot find ImGui item with label '{}'", s_pData->label);
+                TestSystem::GetInstance()->SetMainThreadWorking(FALSE);
+                ResetCurrentItem();
+            }
             break;
         }
         default:

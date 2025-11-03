@@ -10,4 +10,10 @@ public:
 
 protected:
     void RenderImpl() override;
+
+private:
+    /**
+     * Drawing the tools bar.
+     */
+    void MenuRender();
 };

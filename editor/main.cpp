@@ -38,7 +38,7 @@ int main(int argc, char **argv)
 #endif
 
     {
-        CREATE_SESSION(EditorWindow, 500, 800, "Editor");
+        CREATE_SESSION(EditorWindow, 400, 600, "Editor");
 
         while (TRUE)
         {
