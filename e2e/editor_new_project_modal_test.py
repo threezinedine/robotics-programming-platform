@@ -41,6 +41,7 @@ def test_create_new_project():
     TestUtils.AssertInputTextValue(EDITOR_NEW_PROJECT_INPUT_PROJECT_FOLDER, "")
 
     # Click create without filling fields -> should not close the modal
+    TestUtils.MoveToItem(EDITOR_NEW_PROJECT_CREATE_BUTTON)
     TestUtils.LeftClick(EDITOR_NEW_PROJECT_CREATE_BUTTON)
     TestSystem.Wait(10)
     TestUtils.Assert(
@@ -48,7 +49,21 @@ def test_create_new_project():
         "New Project modal closed despite missing fields",
     )
 
+    TestUtils.Assert(
+        TestUtils.IsItemFound(EDITOR_NEW_PROJECT_ERROR_MESSAGE),
+        "Error message not shown for missing fields",
+    )
+
     # Fill field project folder with non-existing path -> should not close the modal
+    TestUtils.LeftClick(EDITOR_NEW_PROJECT_CANCEL_BUTTON)
+    TestSystem.Wait(10)
+    open_new_project_modal()
+
+    TestUtils.Assert(
+        not TestUtils.IsItemFound(EDITOR_NEW_PROJECT_ERROR_MESSAGE),
+        "Error message still shown after modal closed",
+    )
+
     testFolder = "/home/test-folder"
 
     TestUtils.Assert(
@@ -66,6 +81,11 @@ def test_create_new_project():
     TestSystem.Wait(10)
 
     TestUtils.Assert(
+        TestUtils.IsItemFound(EDITOR_NEW_PROJECT_ERROR_MESSAGE),
+        "Error message not shown for missing fields",
+    )
+
+    TestUtils.Assert(
         TestUtils.IsItemFound(EDITOR_NEW_PROJECT_MODAL),
         "New Project modal closed despite non-existing project folder",
     )
@@ -77,9 +97,14 @@ def test_create_new_project():
     FileSystem.CreateDirectory(os.path.join(testFolder, testMatchProjectName))
 
     TestUtils.LeftClick(EDITOR_NEW_PROJECT_CANCEL_BUTTON)
-    TestSystem.Wait(10)
+    TestSystem.Wait(100)
 
     open_new_project_modal()
+
+    TestUtils.Assert(
+        not TestUtils.IsItemFound(EDITOR_NEW_PROJECT_ERROR_MESSAGE),
+        "Error message still shown after modal closed",
+    )
 
     TestUtils.LeftClick(EDITOR_NEW_PROJECT_INPUT_PROJECT_NAME)
     TestUtils.Type(testMatchProjectName)

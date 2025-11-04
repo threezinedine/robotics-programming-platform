@@ -7,3 +7,4 @@ EDITOR_NEW_PROJECT_INPUT_PROJECT_NAME = "Editor/NewProjectModal/ProjectNameInput
 EDITOR_NEW_PROJECT_INPUT_PROJECT_FOLDER = "Editor/NewProjectModal/ProjectFolderInput"
 EDITOR_NEW_PROJECT_CANCEL_BUTTON = "Editor/NewProjectModal/Cancel"
 EDITOR_NEW_PROJECT_CREATE_BUTTON = "Editor/NewProjectModal/Create"
+EDITOR_NEW_PROJECT_ERROR_MESSAGE = "Editor/NewProjectModal/ErrorMessage"

@@ -76,6 +76,8 @@ void EditorWindow::NewProjectModalRender()
     {
         static char projectName[256] = "";
         static char projectFolder[512] = "";
+        static char errorMessage[512] = "";
+
         ImGui::InputText("Project Name"
                          "##NewProjectModal",
                          projectName, sizeof(projectName));
@@ -96,10 +98,19 @@ void EditorWindow::NewProjectModalRender()
         {
         }
 
+        if (strcmp(errorMessage, "") != 0)
+        {
+            ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "%s", errorMessage);
+            RPP_MARK_ITEM("Editor/NewProjectModal/ErrorMessage");
+        }
+
+        ImGui::Separator();
+
         if (ImGui::Button("Cancel"))
         {
             memset(projectName, 0, sizeof(projectName));
             memset(projectFolder, 0, sizeof(projectFolder));
+            memset(errorMessage, 0, sizeof(errorMessage));
 
             ImGui::CloseCurrentPopup();
         }
@@ -122,7 +133,15 @@ void EditorWindow::NewProjectModalRender()
             }
             else
             {
-                ImGui::InsertNotification({ImGuiToastType_Error, 3000, "Please fill in all fields before creating a new project."});
+                // ImGui::InsertNotification({ImGuiToastType_Error, 3000, "Please fill in all fields before creating a new project."});
+                if (!isProjectNameValid)
+                {
+                    snprintf(errorMessage, sizeof(errorMessage), "Invalid project name or project already exists.");
+                }
+                else if (!isProjectFolderValid)
+                {
+                    snprintf(errorMessage, sizeof(errorMessage), "Invalid project folder or folder does not exist.");
+                }
             }
         }
         RPP_MARK_ITEM("Editor/NewProjectModal/Create");
