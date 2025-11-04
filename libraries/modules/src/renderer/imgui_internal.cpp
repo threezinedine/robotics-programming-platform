@@ -12,7 +12,7 @@
 #endif
 
 #include "modules/input/input.h"
-#include "modules/renderer/imgui_test_utils.h"
+#include "modules/renderer/test_utils.h"
 
 namespace rpp
 {
@@ -378,22 +378,22 @@ namespace rpp
 
     void ImGuiImpl::LabelItem(const String &label, void *pData, ImGuiID imguiId)
     {
-        ImGuiTestUtils::GlobalData *pTestData = ImGuiTestUtils::s_pData;
+        TestUtils::GlobalData *pTestData = TestUtils::s_pData;
         RPP_ASSERT(pTestData != nullptr);
 
-        if (ImGuiTestUtils::s_itemFound || pTestData->label != label)
+        if (TestUtils::s_itemFound || pTestData->label != label)
         {
             return;
         }
 
-        ImGuiTestUtils::s_pCurrentItemData = RPP_NEW(ImGuiTestUtils::ItemData());
-        ImGuiTestUtils::ItemData *pCurrentData = ImGuiTestUtils::s_pCurrentItemData;
+        TestUtils::s_pCurrentItemData = RPP_NEW(TestUtils::ItemData());
+        TestUtils::ItemData *pCurrentData = TestUtils::s_pCurrentItemData;
         pCurrentData->label = label;
         pCurrentData->position = ImGui::GetItemRectMin();
         pCurrentData->rendererId = Renderer::GetCurrentRendererId();
 
         RPP_ASSERT(pCurrentData->rendererId != INVALID_ID);
-        ImGuiTestUtils::s_itemFound = TRUE;
+        TestUtils::s_itemFound = TRUE;
 
         if (pTestData->labelCheckingCallback)
         {

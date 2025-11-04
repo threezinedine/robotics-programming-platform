@@ -18,7 +18,7 @@ namespace rpp
     /**
      * Needed interfaces for ImGui end-to-end testing. This class will be used for e2e tests only (be binded to python).
      */
-    class RPP_E2E_BINDING ImGuiTestUtils
+    class RPP_E2E_BINDING TestUtils
     {
     public:
         friend class Renderer;

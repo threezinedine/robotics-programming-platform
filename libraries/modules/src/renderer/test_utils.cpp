@@ -1,29 +1,29 @@
-#include "modules/renderer/imgui_test_utils.h"
+#include "modules/renderer/test_utils.h"
 #include "modules/input/input.h"
 #include "modules/test_system/test_system.h"
 
 namespace rpp
 {
-    ImGuiTestUtils::GlobalData *ImGuiTestUtils::s_pData = nullptr;
-    ImGuiTestUtils::ItemData *ImGuiTestUtils::s_pCurrentItemData = nullptr;
-    b8 ImGuiTestUtils::s_itemFound = FALSE;
-    u8 ImGuiTestUtils::s_findingFrameCount = 0;
-    u32 ImGuiTestUtils::s_focusedRendererId = INVALID_ID;
+    TestUtils::GlobalData *TestUtils::s_pData = nullptr;
+    TestUtils::ItemData *TestUtils::s_pCurrentItemData = nullptr;
+    b8 TestUtils::s_itemFound = FALSE;
+    u8 TestUtils::s_findingFrameCount = 0;
+    u32 TestUtils::s_focusedRendererId = INVALID_ID;
 
-    void ImGuiTestUtils::Initialize()
+    void TestUtils::Initialize()
     {
         RPP_ASSERT(s_pData == nullptr);
         RPP_ASSERT(s_pCurrentItemData == nullptr);
-        s_pData = RPP_NEW(ImGuiTestUtils::GlobalData);
+        s_pData = RPP_NEW(TestUtils::GlobalData);
     }
 
-    void ImGuiTestUtils::Shutdown()
+    void TestUtils::Shutdown()
     {
         RPP_ASSERT(s_pData != nullptr);
         RPP_DELETE(s_pData);
     }
 
-    void ImGuiTestUtils::Update(f32 deltaTime)
+    void TestUtils::Update(f32 deltaTime)
     {
         RPP_UNUSED(deltaTime);
 
@@ -151,7 +151,7 @@ namespace rpp
         }
     }
 
-    void ImGuiTestUtils::ResetCurrentItem()
+    void TestUtils::ResetCurrentItem()
     {
         s_pData->label = "";
         s_pData->action = ImGuiItemAction::IMGUI_ACTION_COUNT;
@@ -168,7 +168,7 @@ namespace rpp
         }
     }
 
-    void ImGuiTestUtils::MoveToItem(const String &label)
+    void TestUtils::MoveToItem(const String &label)
     {
         RPP_ASSERT(s_pData != nullptr);
         s_pData->label = label;
@@ -181,7 +181,7 @@ namespace rpp
         TestSystem::GetInstance()->Yield();
     }
 
-    void ImGuiTestUtils::LeftClick(const String &label)
+    void TestUtils::LeftClick(const String &label)
     {
         RPP_ASSERT(s_pData != nullptr);
         s_pData->label = label;
@@ -194,7 +194,7 @@ namespace rpp
         TestSystem::GetInstance()->Yield();
     }
 
-    void ImGuiTestUtils::Type(const String &text)
+    void TestUtils::Type(const String &text)
     {
         RPP_ASSERT(s_pData != nullptr);
         s_pData->label = "";
@@ -207,7 +207,7 @@ namespace rpp
         TestSystem::GetInstance()->Yield();
     }
 
-    b8 ImGuiTestUtils::IsItemFound(const String &label)
+    b8 TestUtils::IsItemFound(const String &label)
     {
         RPP_ASSERT(s_pData != nullptr);
         s_pData->label = label;
@@ -226,7 +226,7 @@ namespace rpp
         return result;
     }
 
-    void ImGuiTestUtils::Assert(b8 condition, const String &message)
+    void TestUtils::Assert(b8 condition, const String &message)
     {
         if (!condition)
         {
@@ -235,7 +235,7 @@ namespace rpp
         }
     }
 
-    void ImGuiTestUtils::AssertInputTextValue(const String &label, const String &expectedValue)
+    void TestUtils::AssertInputTextValue(const String &label, const String &expectedValue)
     {
         RPP_ASSERT(s_pData != nullptr);
         s_pData->label = label;

@@ -77,7 +77,7 @@ namespace rpp
         }
 
         ;
-        ImGuiTestUtils::SystemUpdate();
+        TestUtils::SystemUpdate();
 
         return shouldApplicationClose;
     }
