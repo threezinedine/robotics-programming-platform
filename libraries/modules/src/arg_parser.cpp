@@ -16,7 +16,7 @@ namespace rpp
         m_argumentDefinitions.Push(argData);
     }
 
-    Json ArgParser::Parse(int argc, char **argv)
+    Json ArgParser::Parse(int argc, const char **argv)
     {
         RPP_ASSERT_MSG(argc > 0 && argv != nullptr, "Invalid command line arguments.");
 

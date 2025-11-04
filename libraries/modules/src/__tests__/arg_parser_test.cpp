@@ -1,7 +1,7 @@
 #include "test_common.h"
 
-#define DEFINE_ARGS(...)          \
-    char *args[] = {__VA_ARGS__}; \
+#define DEFINE_ARGS(...)                \
+    const char *args[] = {__VA_ARGS__}; \
     int argc = sizeof(args) / sizeof(char *)
 
 #define EXPECT_JSON_EQ(json1, json2) EXPECT_STREQ(json1.ToString().CStr(), json2.ToString().CStr())

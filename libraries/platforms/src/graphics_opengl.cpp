@@ -461,7 +461,7 @@ namespace rpp
             {
                 GL_ASSERT(glVertexAttribPointer(i, vbData->pLayout[i].elementCount,
                                                 convertAtomicTypeToGLenum(vbData->pLayout[i].atomic),
-                                                GL_FALSE, vertexSize, (void *)offset));
+                                                GL_FALSE, vertexSize, reinterpret_cast<void *>(offset)));
                 GL_ASSERT(glEnableVertexAttribArray(i));
                 offset += atomicTypeSize(vbData->pLayout[i].atomic) * vbData->pLayout[i].elementCount;
             }

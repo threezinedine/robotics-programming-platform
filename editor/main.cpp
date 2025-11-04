@@ -5,7 +5,7 @@ RPP_ENABLE_MEMORY_TRACKING;
 
 using namespace rpp;
 
-int main(int argc, char **argv)
+int main(int argc, const char **argv)
 {
     ArgParser parser;
 

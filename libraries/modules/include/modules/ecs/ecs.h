@@ -6,7 +6,7 @@
 #include "type.h"
 
 #if defined(RPP_USE_TEST)
-#define private public // For testing purpose only.
+#define private public
 #define protected public
 #endif
 
@@ -247,6 +247,6 @@ namespace rpp
 } // namespace rpp
 
 #if defined(RPP_USE_TEST)
-#undef private public // For testing purpose only.
-#undef protected public
+#undef private
+#undef protected
 #endif

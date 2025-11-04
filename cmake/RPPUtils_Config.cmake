@@ -47,7 +47,7 @@ macro(RPPProjectSetup)
 
             if (CMAKE_GENERATOR STREQUAL "Unix Makefiles" OR CMAKE_GENERATOR STREQUAL "GNU" OR CMAKE_GENERATOR STREQUAL "Clang")
                 message("--------------- Using GCC ----------------")
-                add_compile_options(-Wno-attributes -Wno-dev -g -O0)
+                add_compile_options(-Wno-attributes -Wno-dev -g -O0 -Wno-format-security)
             elseif(MSVC)
                 message("--------------- Using MSVC ----------------")
                 # add_compile_options(/W3 /bigobj /wd4251 /wd4275 /wd4273 /wd4267 /wd4146 /wd4244 /wd4305)

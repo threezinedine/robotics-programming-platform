@@ -1,10 +1,9 @@
-EDITOR_MENUBAR_FILE_LABEL = "Editor/MenuBar/File"
-EDITOR_MENUBAR_NEW_LABEL = "Editor/MenuBar/File/New"
-EDITOR_MENUBAR_NEW_PROJECT_LABEL = "Editor/MenuBar/File/New/Project"
+EDITOR_MENUBAR_FILE = "Editor/MenuBar/File"
+EDITOR_MENUBAR_NEW = "Editor/MenuBar/File/New"
+EDITOR_MENUBAR_NEW_PROJECT = "Editor/MenuBar/File/New/Project"
 
-EDITOR_NEW_PROJECT_MODAL_LABEL = "Editor/NewProjectModal"
-EDITOR_NEW_PROJECT_INPUT_PROJECT_NAME_LABEL = "Editor/NewProjectModal/ProjectNameInput"
-EDITOR_NEW_PROJECT_INPUT_PROJECT_FOLDER_LABEL = (
-    "Editor/NewProjectModal/ProjectFolderInput"
-)
-EDITOR_NEW_PROJECT_CANCEL_BUTTON_LABEL = "Editor/NewProjectModal/Cancel"
+EDITOR_NEW_PROJECT_MODAL = "Editor/NewProjectModal"
+EDITOR_NEW_PROJECT_INPUT_PROJECT_NAME = "Editor/NewProjectModal/ProjectNameInput"
+EDITOR_NEW_PROJECT_INPUT_PROJECT_FOLDER = "Editor/NewProjectModal/ProjectFolderInput"
+EDITOR_NEW_PROJECT_CANCEL_BUTTON = "Editor/NewProjectModal/Cancel"
+EDITOR_NEW_PROJECT_CREATE_BUTTON = "Editor/NewProjectModal/Create"

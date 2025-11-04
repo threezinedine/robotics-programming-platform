@@ -43,7 +43,7 @@ namespace rpp
          * @note all the configuration options like argument names, types, default values, etc must be
          * configured before calling this method.
          */
-        Json Parse(int argc, char **argv);
+        Json Parse(int argc, const char **argv);
 
     private:
         Array<ArgumentData> m_argumentDefinitions; ///< Stores the definitions of the arguments to be parsed.
