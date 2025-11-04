@@ -38,6 +38,7 @@ namespace rpp
             IMGUI_ACTION_MOVE,      ///< Move action on the item.
             IMGUI_ACTION_CLICK,     ///< Click action on the item.
             IMGUI_ACTION_FIND_ITEM, ///< Just find the item without any action.
+            IMGUI_ACTION_TYPE,      ///< Type text into the focused item.
             IMGUI_ACTION_COUNT,
         };
 
@@ -49,6 +50,12 @@ namespace rpp
 
             /// @brief The action to perform on the item when found. If no action, set to IMGUI_ACTION_COUNT.
             ImGuiItemAction action = ImGuiItemAction::IMGUI_ACTION_COUNT;
+
+            /// @brief The text to type into the focused item when the action is IMGUI_ACTION_TYPE.
+            String text;
+
+            /// @brief The current character index being typed into the focused item.
+            u32 characterIndex;
         };
 
     public:
@@ -86,6 +93,13 @@ namespace rpp
          * @return TRUE if the click action was performed, FALSE otherwise.
          */
         static void LeftClick(const String &label) RPP_E2E_BINDING;
+
+        /**
+         * Used for typing anything, disregarding the focused item.
+         *
+         * @param text The text to type into the focused item.
+         */
+        static void Type(const String &text) RPP_E2E_BINDING;
 
     private:
         /**
@@ -126,5 +140,10 @@ namespace rpp
          * it's 0, then the update should not handle the action.
          */
         static u8 s_findingFrameCount;
+
+        /**
+         * Used for tracking which renderer is currently focused for the item interaction. INVALID_ID means no renderer is focused.
+         */
+        static u32 s_focusedRendererId;
     };
 } // namespace rpp

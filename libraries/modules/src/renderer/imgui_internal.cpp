@@ -250,18 +250,6 @@ namespace rpp
 
         // Start the Dear ImGui frame
         ImGui::SetCurrentContext(pData->context);
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
-        ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport());
-
-        // Bind framebuffer
-        BindFrameBufferCommandData bindData;
-        bindData.frameBufferId = pData->frameBufferId;
-
-        GraphicsCommandData commandData = {GraphicsCommandType::BIND_FRAMEBUFFER, &bindData};
-        Renderer::GetWindow()->ExecuteCommand(commandData);
-
 #if defined(RPP_USE_TEST)
         // sync mouse position
         {
@@ -276,6 +264,7 @@ namespace rpp
                 io.AddMouseButtonEvent(button, isPressed);
             }
 
+#if 1
             for (i32 key = 0; key < KeyboardButton::KEYBOARD_BUTTON_COUNT; ++key)
             {
                 b8 isPressed = InputSystem::IsKeyboardButtonDown(static_cast<KeyboardButton>(key));
@@ -286,11 +275,23 @@ namespace rpp
                     continue;
                 }
 
-                io.KeysData[keyEnum].Down = isPressed;
+                // io.KeysData[keyEnum].Down = false;
                 io.AddKeyEvent(keyEnum, isPressed);
             }
+#endif
         }
 #endif
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+        ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport());
+
+        // Bind framebuffer
+        BindFrameBufferCommandData bindData;
+        bindData.frameBufferId = pData->frameBufferId;
+
+        GraphicsCommandData commandData = {GraphicsCommandType::BIND_FRAMEBUFFER, &bindData};
+        Renderer::GetWindow()->ExecuteCommand(commandData);
     }
 
     void ImGuiImpl::Render(u32 imguiId)

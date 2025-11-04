@@ -8,6 +8,7 @@ namespace rpp
     ImGuiTestUtils::ItemData *ImGuiTestUtils::s_pCurrentItemData = nullptr;
     b8 ImGuiTestUtils::s_itemFound = FALSE;
     u8 ImGuiTestUtils::s_findingFrameCount = 0;
+    u32 ImGuiTestUtils::s_focusedRendererId = INVALID_ID;
 
     void ImGuiTestUtils::Initialize()
     {
@@ -87,6 +88,8 @@ namespace rpp
 
                 b8 done = InputSystem::ClickMouse(0);
 
+                s_focusedRendererId = Renderer::GetCurrentRendererId();
+
                 if (done)
                 {
                     TestSystem::GetInstance()->SetMainThreadWorking(FALSE);
@@ -99,6 +102,37 @@ namespace rpp
                 TestSystem::GetInstance()->SetMainThreadWorking(FALSE);
                 ResetCurrentItem();
             }
+            break;
+        }
+        case ImGuiItemAction::IMGUI_ACTION_TYPE:
+        {
+            if (s_focusedRendererId != Renderer::GetCurrentRendererId())
+            {
+                break;
+            }
+
+#if 0
+            b8 characterDone = InputSystem::PressChar(s_pData->text.CStr()[s_pData->characterIndex]);
+            if (characterDone)
+            {
+                s_pData->characterIndex++;
+                if (s_pData->characterIndex >= s_pData->text.Length())
+                {
+                    TestSystem::GetInstance()->SetMainThreadWorking(FALSE);
+                    ResetCurrentItem();
+                }
+            }
+#else
+            for (i32 i = 0; i < s_pData->text.Length(); i++)
+            {
+                ImGuiIO &io = ImGui::GetIO();
+                io.AddInputCharacter(static_cast<u32>(s_pData->text[i]));
+            }
+
+            TestSystem::GetInstance()->SetMainThreadWorking(FALSE);
+            ResetCurrentItem();
+#endif
+
             break;
         }
         default:
@@ -124,6 +158,8 @@ namespace rpp
         RPP_ASSERT(s_pData != nullptr);
         s_pData->label = label;
         s_pData->action = ImGuiItemAction::IMGUI_ACTION_MOVE;
+        s_pData->text = "";
+        s_pData->characterIndex = 0;
         s_findingFrameCount = 0;
 
         TestSystem::GetInstance()->SetMainThreadWorking(TRUE);
@@ -135,6 +171,21 @@ namespace rpp
         RPP_ASSERT(s_pData != nullptr);
         s_pData->label = label;
         s_pData->action = ImGuiItemAction::IMGUI_ACTION_CLICK;
+        s_pData->text = "";
+        s_pData->characterIndex = 0;
+        s_findingFrameCount = 0;
+
+        TestSystem::GetInstance()->SetMainThreadWorking(TRUE);
+        TestSystem::GetInstance()->Yield();
+    }
+
+    void ImGuiTestUtils::Type(const String &text)
+    {
+        RPP_ASSERT(s_pData != nullptr);
+        s_pData->label = "";
+        s_pData->action = ImGuiItemAction::IMGUI_ACTION_TYPE;
+        s_pData->text = text;
+        s_pData->characterIndex = 0;
         s_findingFrameCount = 0;
 
         TestSystem::GetInstance()->SetMainThreadWorking(TRUE);

@@ -25,3 +25,8 @@ def test_click_new_file():
     ImGuiTestUtils.LeftClick("Editor/MenuBar/File")
     ImGuiTestUtils.MoveToItem("Editor/MenuBar/File/New")
     ImGuiTestUtils.LeftClick("Editor/MenuBar/File/New/File")
+
+
+def test_type_in_text():
+    ImGuiTestUtils.LeftClick("Editor/TestInput")
+    ImGuiTestUtils.Type("new project")

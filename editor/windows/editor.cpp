@@ -13,8 +13,7 @@ EditorWindow::~EditorWindow()
 
 void EditorWindow::RenderImpl()
 {
-    ImGui::ShowDemoWindow();
-
+    ;
     ImGui::Begin("Editor", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoTitleBar);
     {
         MenuRender();
@@ -81,6 +80,7 @@ void EditorWindow::RenderEditorMain()
 {
     static char projectName[256] = "";
     ImGui::InputText("Project Name", projectName, sizeof(projectName));
+    RPP_MARK_ITEM("Editor/TestInput");
 
     ImGui::Text(Format("A state: {}", InputSystem::IsKeyboardButtonDown(KeyboardButton::KEY_A)).CStr());
 }

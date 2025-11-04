@@ -116,6 +116,21 @@ namespace rpp
         static b8 ClickMouse(i32 button) RPP_E2E_BINDING;
 
         /**
+         * @note used in testing only, if not in test mode, this method does nothing.
+         * Simulate a keyboard button press.
+         *
+         * @param button The keyboard button to press.
+         * @return true if the button press was completed successfully, false otherwise.
+         *
+         * @example
+         * ```cpp
+         * // Simulate pressing the 'A' key
+         * while (!InputSystem::PressButton(KeyboardButton::KEY_A));
+         * ```
+         */
+        static b8 PressChar(char button);
+
+        /**
          * The callback which is assigned into the windows to update the current state of the input system.
          * @param xPos New mouse X position in screen coordinates.
          * @param yPos New mouse Y position in screen coordinates.

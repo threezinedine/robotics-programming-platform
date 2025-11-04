@@ -132,6 +132,125 @@ namespace rpp
 #endif
     }
 
+    static i32 charToButton(char c);
+
+    b8 InputSystem::PressChar(char button)
+    {
+#if defined(RPP_USE_TEST)
+        u32 rendererId = Renderer::GetCurrentRendererId();
+        RPP_ASSERT(rendererId < MAX_INPUT_SYSTEMS);
+        RendererInputData &data = s_inputSystemsData[rendererId];
+        i32 keyButton = charToButton(button);
+
+        if (!s_startEvent)
+        {
+            s_startEvent = TRUE;
+            s_timer.Start();
+            // Simulate key down
+            data.keyboardButton[keyButton] = ButtonState::PRESSED;
+            return FALSE;
+        }
+
+        while (s_timer.GetElapsedTimeInMilliseconds() < 100)
+        {
+            return FALSE;
+        }
+
+        // Simulate key up
+        data.keyboardButton[keyButton] = ButtonState::RELEASED;
+        s_startEvent = FALSE;
+        return TRUE;
+#else
+        RPP_UNUSED(button);
+        return TRUE;
+#endif
+    }
+
+    static i32 charToButton(char c)
+    {
+        switch (c)
+        {
+        case 'a':
+            return static_cast<i32>(KeyboardButton::KEY_A);
+        case 'b':
+            return static_cast<i32>(KeyboardButton::KEY_B);
+        case 'c':
+            return static_cast<i32>(KeyboardButton::KEY_C);
+        case 'd':
+            return static_cast<i32>(KeyboardButton::KEY_D);
+        case 'e':
+            return static_cast<i32>(KeyboardButton::KEY_E);
+        case 'f':
+            return static_cast<i32>(KeyboardButton::KEY_F);
+        case 'g':
+            return static_cast<i32>(KeyboardButton::KEY_G);
+        case 'h':
+            return static_cast<i32>(KeyboardButton::KEY_H);
+        case 'i':
+            return static_cast<i32>(KeyboardButton::KEY_I);
+        case 'j':
+            return static_cast<i32>(KeyboardButton::KEY_J);
+        case 'k':
+            return static_cast<i32>(KeyboardButton::KEY_K);
+        case 'l':
+            return static_cast<i32>(KeyboardButton::KEY_L);
+        case 'm':
+            return static_cast<i32>(KeyboardButton::KEY_M);
+        case 'n':
+            return static_cast<i32>(KeyboardButton::KEY_N);
+        case 'o':
+            return static_cast<i32>(KeyboardButton::KEY_O);
+        case 'p':
+            return static_cast<i32>(KeyboardButton::KEY_P);
+        case 'q':
+            return static_cast<i32>(KeyboardButton::KEY_Q);
+        case 'r':
+            return static_cast<i32>(KeyboardButton::KEY_R);
+        case 's':
+            return static_cast<i32>(KeyboardButton::KEY_S);
+        case 't':
+            return static_cast<i32>(KeyboardButton::KEY_T);
+        case 'u':
+            return static_cast<i32>(KeyboardButton::KEY_U);
+        case 'v':
+            return static_cast<i32>(KeyboardButton::KEY_V);
+        case 'w':
+            return static_cast<i32>(KeyboardButton::KEY_W);
+        case 'x':
+            return static_cast<i32>(KeyboardButton::KEY_X);
+        case 'y':
+            return static_cast<i32>(KeyboardButton::KEY_Y);
+        case 'z':
+            return static_cast<i32>(KeyboardButton::KEY_Z);
+        case '0':
+            return static_cast<i32>(KeyboardButton::KEY_0);
+        case '1':
+            return static_cast<i32>(KeyboardButton::KEY_1);
+        case '2':
+            return static_cast<i32>(KeyboardButton::KEY_2);
+        case '3':
+            return static_cast<i32>(KeyboardButton::KEY_3);
+        case '4':
+            return static_cast<i32>(KeyboardButton::KEY_4);
+        case '5':
+            return static_cast<i32>(KeyboardButton::KEY_5);
+        case '6':
+            return static_cast<i32>(KeyboardButton::KEY_6);
+        case '7':
+            return static_cast<i32>(KeyboardButton::KEY_7);
+        case '8':
+            return static_cast<i32>(KeyboardButton::KEY_8);
+        case '9':
+            return static_cast<i32>(KeyboardButton::KEY_9);
+        case ' ':
+            return static_cast<i32>(KeyboardButton::KEY_SPACE);
+        default:
+            RPP_UNREACHABLE();
+        }
+
+        return -1;
+    }
+
     void InputSystem::OnMouseMoveCallback(f64 xPos, f64 yPos, void *pUserData)
     {
 #if defined(RPP_USE_TEST)

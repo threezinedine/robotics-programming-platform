@@ -29,12 +29,16 @@ namespace rpp
         RPP_ASSERT(m_rendererId != INVALID_ID);
         Renderer::Activate(m_rendererId);
 
+        ;
         Renderer::PreDraw();
 
+        ;
         RenderImpl();
 
+        ;
         Renderer::PostDraw();
 
+        ;
         Renderer::Present();
     }
 

@@ -37,9 +37,11 @@ namespace rpp
         u32 numberOfSessions = m_sessions->Size();
 
         Queue<u32> closedSessionIndices;
+        ;
 
         for (u32 sessionIndex = 0; sessionIndex < numberOfSessions; ++sessionIndex)
         {
+            ;
             Scope<GraphicSession> &session = (*m_sessions)[sessionIndex];
             RPP_ASSERT(session != nullptr);
 
@@ -53,9 +55,13 @@ namespace rpp
             }
             else
             {
+                ;
                 shouldApplicationClose = FALSE;
+                ;
                 session->Update(deltaTime);
+                ;
                 session->Render();
+                ;
             }
         }
 
@@ -70,6 +76,7 @@ namespace rpp
             m_sessions->Erase(indexToRemove);
         }
 
+        ;
         ImGuiTestUtils::SystemUpdate();
 
         return shouldApplicationClose;
