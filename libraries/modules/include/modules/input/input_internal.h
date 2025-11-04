@@ -78,6 +78,13 @@ namespace rpp
         static b8 IsMouseButtonDown(MouseButton button);
 
         /**
+         * Check if the given keyboard button is currently pressed down.
+         * @param button The keyboard button to check.
+         * @return true if the button is pressed down, false otherwise.
+         */
+        static b8 IsKeyboardButtonDown(KeyboardButton button);
+
+        /**
          * @note used in testing only, if not in test mode, this method does nothing.
          * Updating the current mouse position to the given coordinates, this process will take time.
          *

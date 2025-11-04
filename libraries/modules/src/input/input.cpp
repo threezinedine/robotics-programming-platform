@@ -47,6 +47,11 @@ namespace rpp
         }
 
         memcpy(data.keyboardPreviousButton, data.keyboardButton, sizeof(i32) * KeyboardButton::KEYBOARD_BUTTON_COUNT);
+
+        for (i32 i = 0; i < KeyboardButton::KEYBOARD_BUTTON_COUNT; i++)
+        {
+            data.keyboardButton[i] = Renderer::GetWindow()->GetKeyboardButtonState(static_cast<KeyboardButton>(i));
+        }
 #endif
     }
 
@@ -193,5 +198,13 @@ namespace rpp
         RPP_ASSERT(rendererId < MAX_INPUT_SYSTEMS);
         RendererInputData &data = s_inputSystemsData[rendererId];
         return data.mouseButtonStates[static_cast<i32>(button)] == ButtonState::PRESSED;
+    }
+
+    b8 InputSystem::IsKeyboardButtonDown(KeyboardButton button)
+    {
+        u32 rendererId = Renderer::GetCurrentRendererId();
+        RPP_ASSERT(rendererId < MAX_INPUT_SYSTEMS);
+        RendererInputData &data = s_inputSystemsData[rendererId];
+        return data.keyboardButton[static_cast<i32>(button)] == ButtonState::PRESSED;
     }
 } // namespace rpp

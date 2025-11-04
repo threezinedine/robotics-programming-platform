@@ -16,6 +16,110 @@
 
 namespace rpp
 {
+#define INVALID_IMGUI_KEY ImGuiKey_None
+
+    static ImGuiKey s_imguiKeyMap[KeyboardButton::KEYBOARD_BUTTON_COUNT] = {
+        ImGuiKey_A,
+        ImGuiKey_B,
+        ImGuiKey_C,
+        ImGuiKey_D,
+        ImGuiKey_E,
+        ImGuiKey_F,
+        ImGuiKey_G,
+        ImGuiKey_H,
+        ImGuiKey_I,
+        ImGuiKey_J,
+        ImGuiKey_K,
+        ImGuiKey_L,
+        ImGuiKey_M,
+        ImGuiKey_N,
+        ImGuiKey_O,
+        ImGuiKey_P,
+        ImGuiKey_Q,
+        ImGuiKey_R,
+        ImGuiKey_S,
+        ImGuiKey_T,
+        ImGuiKey_U,
+        ImGuiKey_V,
+        ImGuiKey_W,
+        ImGuiKey_X,
+        ImGuiKey_Y,
+        ImGuiKey_Z,
+
+        ImGuiKey_0,
+        ImGuiKey_1,
+        ImGuiKey_2,
+        ImGuiKey_3,
+        ImGuiKey_4,
+        ImGuiKey_5,
+        ImGuiKey_6,
+        ImGuiKey_7,
+        ImGuiKey_8,
+        ImGuiKey_9,
+        ImGuiKey_Escape,
+        INVALID_IMGUI_KEY, // ImGuiKey_LCtrl,
+        INVALID_IMGUI_KEY, // ImGuiKey_LShift,
+        INVALID_IMGUI_KEY, // ImGuiKey_LAlt,
+        INVALID_IMGUI_KEY, // ImGuiKey_LSystem,
+        INVALID_IMGUI_KEY, // ImGuiKey_RCtrl,
+        INVALID_IMGUI_KEY, // ImGuiKey_RShift,
+        INVALID_IMGUI_KEY, // ImGuiKey_RAlt,
+        INVALID_IMGUI_KEY, // ImGuiKey_RSystem,
+        ImGuiKey_Menu,
+
+        ImGuiKey_LeftBracket,
+        ImGuiKey_RightBracket,
+        ImGuiKey_Semicolon,
+        ImGuiKey_Comma,
+        ImGuiKey_Period,
+        INVALID_IMGUI_KEY, // ImGuiKey_Quote,
+        ImGuiKey_Slash,
+        ImGuiKey_Backslash,
+        INVALID_IMGUI_KEY, // ImGuiKey_Tilde,
+        ImGuiKey_Equal,
+        INVALID_IMGUI_KEY, // ImGuiKey_Dash,
+        ImGuiKey_Space,
+        INVALID_IMGUI_KEY, // ImGuiKey_Return,
+        ImGuiKey_Backspace,
+        ImGuiKey_Tab,
+        ImGuiKey_PageUp,
+        ImGuiKey_PageDown,
+        ImGuiKey_End,
+        ImGuiKey_Home,
+        ImGuiKey_Insert,
+        ImGuiKey_Delete,
+        INVALID_IMGUI_KEY, // ImGuiKey_Add,
+        INVALID_IMGUI_KEY, // ImGuiKey_Subtract,
+        INVALID_IMGUI_KEY, // ImGuiKey_Multiply,
+        INVALID_IMGUI_KEY, // ImGuiKey_Divide,
+        INVALID_IMGUI_KEY, // ImGuiKey_Left,
+        INVALID_IMGUI_KEY, // ImGuiKey_Right,
+        INVALID_IMGUI_KEY, // ImGuiKey_Up,
+        INVALID_IMGUI_KEY, // ImGuiKey_Down,
+        INVALID_IMGUI_KEY, // ImGuiKey_Numpad0,
+        INVALID_IMGUI_KEY, // ImGuiKey_Numpad1,
+        INVALID_IMGUI_KEY, // ImGuiKey_Numpad2,
+        INVALID_IMGUI_KEY, // ImGuiKey_Numpad3,
+        INVALID_IMGUI_KEY, // ImGuiKey_Numpad4,
+        INVALID_IMGUI_KEY, // ImGuiKey_Numpad5,
+        INVALID_IMGUI_KEY, // ImGuiKey_Numpad6,
+        INVALID_IMGUI_KEY, // ImGuiKey_Numpad7,
+        INVALID_IMGUI_KEY, // ImGuiKey_Numpad8,
+        INVALID_IMGUI_KEY, // ImGuiKey_Numpad9,
+        ImGuiKey_F1,
+        ImGuiKey_F2,
+        ImGuiKey_F3,
+        ImGuiKey_F4,
+        ImGuiKey_F5,
+        ImGuiKey_F6,
+        ImGuiKey_F7,
+        ImGuiKey_F8,
+        ImGuiKey_F9,
+        ImGuiKey_F10,
+        ImGuiKey_F11,
+        ImGuiKey_F12,
+    };
+
     Scope<Storage<ImGuiImpl::ImGuiData>>
         ImGuiImpl::s_imguis = nullptr;
 
@@ -170,6 +274,20 @@ namespace rpp
                 b8 isPressed = InputSystem::IsMouseButtonDown(static_cast<MouseButton>(button));
                 io.MouseClicked[button] = isPressed;
                 io.AddMouseButtonEvent(button, isPressed);
+            }
+
+            for (i32 key = 0; key < KeyboardButton::KEYBOARD_BUTTON_COUNT; ++key)
+            {
+                b8 isPressed = InputSystem::IsKeyboardButtonDown(static_cast<KeyboardButton>(key));
+
+                ImGuiKey keyEnum = s_imguiKeyMap[key];
+                if (keyEnum == INVALID_IMGUI_KEY)
+                {
+                    continue;
+                }
+
+                io.KeysData[keyEnum].Down = isPressed;
+                io.AddKeyEvent(keyEnum, isPressed);
             }
         }
 #endif

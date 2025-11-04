@@ -19,8 +19,7 @@ void EditorWindow::RenderImpl()
     {
         MenuRender();
 
-        ImGui::Text("Hello, Editor!");
-        ImGui::Text(Format("FPS: {}", ImGui::GetIO().Framerate).CStr());
+        RenderEditorMain();
 
         NewProjectModalRender();
     }
@@ -76,4 +75,12 @@ void EditorWindow::NewProjectModalRender()
         ImGui::EndPopup();
         RPP_MARK_ITEM("Editor/NewProjectModal");
     }
+}
+
+void EditorWindow::RenderEditorMain()
+{
+    static char projectName[256] = "";
+    ImGui::InputText("Project Name", projectName, sizeof(projectName));
+
+    ImGui::Text(Format("A state: {}", InputSystem::IsKeyboardButtonDown(KeyboardButton::KEY_A)).CStr());
 }

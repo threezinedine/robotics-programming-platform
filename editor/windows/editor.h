@@ -22,6 +22,8 @@ private:
      */
     void NewProjectModalRender();
 
+    void RenderEditorMain();
+
 private:
     b8 m_openNewProjectModal = false;
 };

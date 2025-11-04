@@ -788,18 +788,7 @@ namespace rpp
             RPP_UNREACHABLE();
         }
 
-        i32 state = glfwGetMouseButton((GLFWwindow *)m_window, glfwMouseButton);
-
-        if (state == GLFW_PRESS)
-        {
-            return ButtonState::PRESSED;
-        }
-        else if (state == GLFW_RELEASE)
-        {
-            return ButtonState::RELEASED;
-        }
-
-        return ButtonState::REPEAT;
+        return static_cast<ButtonState>(glfwGetMouseButton((GLFWwindow *)m_window, glfwMouseButton));
     }
 
     ButtonState Window::GetKeyboardButtonState(KeyboardButton button) const
@@ -811,18 +800,7 @@ namespace rpp
             return ButtonState::RELEASED;
         }
 
-        i32 state = glfwGetKey((GLFWwindow *)m_window, glfwKey);
-
-        if (state == GLFW_PRESS)
-        {
-            return ButtonState::PRESSED;
-        }
-        else if (state == GLFW_RELEASE)
-        {
-            return ButtonState::RELEASED;
-        }
-
-        return ButtonState::REPEAT;
+        return static_cast<ButtonState>(glfwGetKey((GLFWwindow *)m_window, glfwKey));
     }
 } // namespace rpp
 
