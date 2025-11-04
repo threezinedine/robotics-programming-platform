@@ -119,3 +119,22 @@ def test_create_new_project():
         TestUtils.IsItemFound(EDITOR_NEW_PROJECT_MODAL),
         "New Project modal closed despite existing project with the same name",
     )
+
+    TestUtils.LeftClick(EDITOR_NEW_PROJECT_CANCEL_BUTTON)
+    TestSystem.Wait(10)
+    open_new_project_modal()
+
+    newProjectName = "new-test-project"
+    # Fill fields with valid project folder and non-existed project name -> should create the project and close the modal
+    TestUtils.LeftClick(EDITOR_NEW_PROJECT_INPUT_PROJECT_NAME)
+    TestUtils.Type(newProjectName)
+    TestUtils.LeftClick(EDITOR_NEW_PROJECT_INPUT_PROJECT_FOLDER)
+    TestUtils.Type(testFolder)
+
+    TestUtils.LeftClick(EDITOR_NEW_PROJECT_CREATE_BUTTON)
+    TestSystem.Wait(10)
+
+    TestUtils.Assert(
+        not TestUtils.IsItemFound(EDITOR_NEW_PROJECT_MODAL),
+        "New Project modal not closed after creating a valid project",
+    )
