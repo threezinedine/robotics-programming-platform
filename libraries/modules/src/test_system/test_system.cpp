@@ -207,6 +207,12 @@ namespace rpp
 
         try
         {
+            PyRun_SimpleString(
+                Format(R"(import sys
+sys.path.append("{}/e2e")
+                )",
+                       String(STRINGIFY(RPP_PROJECT_DIR)))
+                    .CStr());
             PyRun_SimpleString(m_updateScriptContent.CStr());
             RPP_LOG_INFO("Running test case '{}'", m_runTestCaseName);
             PyRun_SimpleString(Format("{}()", m_runTestCaseName).CStr());
