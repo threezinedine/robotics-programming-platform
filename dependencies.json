@@ -39,5 +39,9 @@
     {
         "name": "imgui-notify",
         "url": "https://github.com/threezinedine/imgui-notify.git"
+    },
+    {
+        "name": "imgui-file-browser",
+        "url": "https://github.com/aiekick/ImGuiFileDialog.git"
     }
 ]

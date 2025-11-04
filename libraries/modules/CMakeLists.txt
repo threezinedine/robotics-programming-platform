@@ -35,6 +35,7 @@ RPPFindPackage(rpp-glm "Dependencies")
 RPPFindPackage(rpp-luna "Dependencies")
 RPPFindPackage(rpp-pybind "Dependencies")
 RPPFindPackage(rpp-imgui-notify "Dependencies")
+RPPFindPackage(rpp-imgui-file-browser "Dependencies")
 
 set(LINK_LIBRARIES
     RPPCore
@@ -44,6 +45,7 @@ set(LINK_LIBRARIES
     rpp-luna
     rpp-pybind
     rpp-imgui-notify
+    rpp-imgui-file-browser
 )
 
 # -------------- Library target --------------

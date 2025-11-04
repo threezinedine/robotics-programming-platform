@@ -3,6 +3,7 @@
 #include "imgui.h"
 #include "imgui_notify.h"
 #include "tahoma.h"
+#include "ImGuiFileDialog.h"
 
 namespace rpp
 {

@@ -83,19 +83,31 @@ void EditorWindow::NewProjectModalRender()
                          projectName, sizeof(projectName));
         RPP_MARK_ITEM("Editor/NewProjectModal/ProjectNameInput", projectName);
 
-#if !defined(RPP_USE_TEST)
-        ImGui::BeginDisabled();
-#endif
+#if defined(RPP_USE_TEST)
         ImGui::InputText("Folder"
                          "##NewProjectModal",
                          projectFolder, sizeof(projectFolder));
         RPP_MARK_ITEM("Editor/NewProjectModal/ProjectFolderInput");
-#if !defined(RPP_USE_TEST)
-        ImGui::EndDisabled();
-#endif
+#else
+        ImGui::Text(projectFolder == "" ? "Folder: " : "Folder: %s", projectFolder);
         ImGui::SameLine();
         if (ImGui::Button("Browse"))
         {
+            IGFD::FileDialogConfig config;
+            config.path = ".";
+            ImGuiFileDialog::Instance()->OpenDialog("ChooseProjectFolderDlgKey", "Choose Project Folder", nullptr, config);
+        }
+#endif
+
+        if (ImGuiFileDialog::Instance()->Display("ChooseProjectFolderDlgKey"))
+        {
+            if (ImGuiFileDialog::Instance()->IsOk())
+            {
+                std::string filePathName = ImGuiFileDialog::Instance()->GetCurrentPath();
+                snprintf(projectFolder, sizeof(projectFolder), "%s", filePathName.c_str());
+            }
+
+            ImGuiFileDialog::Instance()->Close();
         }
 
         if (strcmp(errorMessage, "") != 0)
