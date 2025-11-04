@@ -68,6 +68,17 @@ namespace rpp
         }
         case ImGuiItemAction::IMGUI_ACTION_FIND_ITEM:
             break;
+        case ImGuiItemAction::IMGUI_ACTION_ASSERT_TEXT_INPUT:
+        {
+            TestSystem::GetInstance()->SetMainThreadWorking(FALSE);
+            if (!s_itemFound)
+            {
+                REGISTER_ERROR("Cannot find ImGui item with label '{}'", s_pData->label);
+                ResetCurrentItem();
+            }
+
+            break;
+        }
         case ImGuiItemAction::IMGUI_ACTION_CLICK:
         {
             if (s_itemFound)
@@ -144,6 +155,10 @@ namespace rpp
     {
         s_pData->label = "";
         s_pData->action = ImGuiItemAction::IMGUI_ACTION_COUNT;
+        s_pData->text = "";
+        s_pData->characterIndex = 0;
+        s_pData->labelCheckingCallback = nullptr;
+        s_findingFrameCount = 0;
         s_itemFound = FALSE;
 
         if (s_pCurrentItemData != nullptr)
@@ -209,5 +224,29 @@ namespace rpp
         b8 result = s_itemFound;
         ResetCurrentItem();
         return result;
+    }
+
+    void ImGuiTestUtils::AssertInputTextValue(const String &label, const String &expectedValue)
+    {
+        RPP_ASSERT(s_pData != nullptr);
+        s_pData->label = label;
+        s_pData->action = ImGuiItemAction::IMGUI_ACTION_ASSERT_TEXT_INPUT;
+        s_findingFrameCount = 0;
+
+        s_pData->labelCheckingCallback = [expectedValue](const String &itemLabel, void *pData, ImGuiID id)
+        {
+            RPP_ASSERT(pData != nullptr);
+
+            const char *inputTextLabel = static_cast<const char *>(pData);
+
+            if (String(inputTextLabel) != expectedValue)
+            {
+                REGISTER_ERROR("InputText item with label '{}' has value '{}', expected '{}'",
+                               itemLabel, String(inputTextLabel), expectedValue);
+            }
+        };
+
+        TestSystem::GetInstance()->SetMainThreadWorking(TRUE);
+        TestSystem::GetInstance()->Yield();
     }
 } // namespace rpp

@@ -61,6 +61,17 @@ namespace rpp
          *      clicked, ...
          *
          * @param label The label to assign to the item.
+         * @param imguiId The ID of the ImGui instance where the item is located.
+         */
+        static void LabelItem(const String &label, ImGuiID imguiId);
+
+        /**
+         * Used for marking an item with a certain name, in testing, so that it can be found and be moved to or
+         *      clicked, ...
+         *
+         * @param label The label to assign to the item.
+         * @param pData A pointer to the item data.
+         * @param imguiId The ID of the ImGui instance where the item is located.
          *
          * @example
          * ```cpp
@@ -71,7 +82,7 @@ namespace rpp
          * ImGuiImpl::LabelItem("MyButton"); // now if the testing framework querys for "MyButton", it will find this button
          * ```
          */
-        static void LabelItem(const String &label);
+        static void LabelItem(const String &label, void *pData, ImGuiID imguiId);
 
         /**
          * @brief Destroy the ImGui instance and free associated resources.
@@ -86,7 +97,12 @@ namespace rpp
 } // namespace rpp
 
 #if defined(RPP_USE_TEST)
-#define RPP_MARK_ITEM(label) ::rpp::ImGuiImpl::LabelItem(label)
+#define RPP_MARK_ITEM(...)                         \
+    do                                             \
+    {                                              \
+        ImGuiID itemId = ImGui::GetItemID();       \
+        ImGuiImpl::LabelItem(__VA_ARGS__, itemId); \
+    } while (0)
 #else
-#define RPP_MARK_ITEM(label)
+#define RPP_MARK_ITEM(...)
 #endif

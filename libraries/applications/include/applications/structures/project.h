@@ -26,8 +26,8 @@ namespace rpp
     public:
         /// @brief Create a project from the given description.
         /// @param desc The description of the project.
-        /// @return The created project.
-        static Project CreateProject(const ProjectDescription &desc);
+        /// @return The created project pointer.
+        static Project *CreateProject(const ProjectDescription &desc);
 
     public:
         /**

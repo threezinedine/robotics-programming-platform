@@ -8,6 +8,14 @@ namespace rpp
     class ImGuiImpl;
 
     /**
+     * Used mainly for testing purposes, the assertions of the items with certain labels.
+     *
+     * @param label The label to assign to the item.
+     */
+    // typedef void (*LabelCheckingCallback)(const String &label);
+    using LabelCheckingCallback = std::function<void(const String &, void *, ImGuiID)>; // TODO: replace with self-defined function type
+
+    /**
      * Needed interfaces for ImGui end-to-end testing. This class will be used for e2e tests only (be binded to python).
      */
     class RPP_E2E_BINDING ImGuiTestUtils
@@ -35,10 +43,11 @@ namespace rpp
          */
         enum class ImGuiItemAction : u8
         {
-            IMGUI_ACTION_MOVE,      ///< Move action on the item.
-            IMGUI_ACTION_CLICK,     ///< Click action on the item.
-            IMGUI_ACTION_FIND_ITEM, ///< Just find the item without any action.
-            IMGUI_ACTION_TYPE,      ///< Type text into the focused item.
+            IMGUI_ACTION_MOVE,              ///< Move action on the item.
+            IMGUI_ACTION_CLICK,             ///< Click action on the item.
+            IMGUI_ACTION_FIND_ITEM,         ///< Just find the item without any action.
+            IMGUI_ACTION_ASSERT_TEXT_INPUT, ///< Just find the item without any action.
+            IMGUI_ACTION_TYPE,              ///< Type text into the focused item.
             IMGUI_ACTION_COUNT,
         };
 
@@ -56,6 +65,9 @@ namespace rpp
 
             /// @brief The current character index being typed into the focused item.
             u32 characterIndex;
+
+            /// @brief An optional callback function for additional label checking.
+            LabelCheckingCallback labelCheckingCallback = nullptr;
         };
 
     public:
@@ -100,6 +112,14 @@ namespace rpp
          * @param text The text to type into the focused item.
          */
         static void Type(const String &text) RPP_E2E_BINDING;
+
+        /**
+         * Used for asserting the value of an InputText item with a certain label.
+         *
+         * @param label The label of the InputText item to check.
+         * @param expectedValue The expected value of the InputText item.
+         */
+        static void AssertInputTextValue(const String &label, const String &expectedValue) RPP_E2E_BINDING;
 
     private:
         /**

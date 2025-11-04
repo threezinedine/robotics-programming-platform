@@ -281,6 +281,9 @@ namespace rpp
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+        // set vsync
+        glfwSwapInterval(1);
+
         // set window resize callback
         glfwSetWindowUserPointer((GLFWwindow *)m_window, this);
         glfwSetFramebufferSizeCallback((GLFWwindow *)m_window, [](GLFWwindow *window, i32 width, i32 height)

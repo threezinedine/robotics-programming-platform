@@ -353,7 +353,12 @@ namespace rpp
         ImGui::EndChild();
     }
 
-    void ImGuiImpl::LabelItem(const String &label)
+    void ImGuiImpl::LabelItem(const String &label, ImGuiID imguiId)
+    {
+        ImGuiImpl::LabelItem(label, nullptr, imguiId);
+    }
+
+    void ImGuiImpl::LabelItem(const String &label, void *pData, ImGuiID imguiId)
     {
         ImGuiTestUtils::GlobalData *pTestData = ImGuiTestUtils::s_pData;
         RPP_ASSERT(pTestData != nullptr);
@@ -371,6 +376,11 @@ namespace rpp
 
         RPP_ASSERT(pCurrentData->rendererId != INVALID_ID);
         ImGuiTestUtils::s_itemFound = TRUE;
+
+        if (pTestData->labelCheckingCallback)
+        {
+            pTestData->labelCheckingCallback(label, pData, imguiId);
+        }
     }
 
     void ImGuiImpl::Destroy(u32 imguiId)

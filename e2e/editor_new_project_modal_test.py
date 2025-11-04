@@ -28,5 +28,20 @@ def test_click_new_file():
 
 
 def test_type_in_text():
-    ImGuiTestUtils.LeftClick("Editor/TestInput")
-    ImGuiTestUtils.Type("new project")
+    ImGuiTestUtils.LeftClick("Editor/MenuBar/File")
+    ImGuiTestUtils.MoveToItem("Editor/MenuBar/File/New")
+    ImGuiTestUtils.LeftClick("Editor/MenuBar/File/New/Project")
+
+    ImGuiTestUtils.LeftClick("Editor/NewProjectModal/ProjectNameInput")
+    ImGuiTestUtils.Type("test-project")
+
+    ImGuiTestUtils.LeftClick("Editor/NewProjectModal/ProjectFolderInput")
+    ImGuiTestUtils.Type("/home/test")
+
+    ImGuiTestUtils.LeftClick("Editor/NewProjectModal/Cancel")
+
+    ImGuiTestUtils.LeftClick("Editor/MenuBar/File")
+    ImGuiTestUtils.MoveToItem("Editor/MenuBar/File/New")
+    ImGuiTestUtils.LeftClick("Editor/MenuBar/File/New/Project")
+
+    ImGuiTestUtils.AssertInputTextValue("Editor/NewProjectModal/ProjectNameInput", "")

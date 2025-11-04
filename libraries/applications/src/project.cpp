@@ -22,8 +22,8 @@ namespace rpp
     {
     }
 
-    Project Project::CreateProject(const ProjectDescription &desc)
+    Project *Project::CreateProject(const ProjectDescription &desc)
     {
-        return Project(desc);
+        return RPP_NEW(Project(desc));
     }
 }
