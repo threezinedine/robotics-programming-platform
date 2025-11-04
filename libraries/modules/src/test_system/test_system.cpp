@@ -208,9 +208,7 @@ namespace rpp
         try
         {
             PyRun_SimpleString(
-                Format(R"(import sys
-sys.path.append("{}/e2e")
-                )",
+                Format("import sys\nsys.path.append(\"{}/e2e\")",
                        String(STRINGIFY(RPP_PROJECT_DIR)))
                     .CStr());
             PyRun_SimpleString(m_updateScriptContent.CStr());

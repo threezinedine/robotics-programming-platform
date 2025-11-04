@@ -226,6 +226,15 @@ namespace rpp
         return result;
     }
 
+    void ImGuiTestUtils::Assert(b8 condition, const String &message)
+    {
+        if (!condition)
+        {
+            REGISTER_ERROR("Assertion failed: {}", message);
+            TestSystem::GetInstance()->Yield();
+        }
+    }
+
     void ImGuiTestUtils::AssertInputTextValue(const String &label, const String &expectedValue)
     {
         RPP_ASSERT(s_pData != nullptr);

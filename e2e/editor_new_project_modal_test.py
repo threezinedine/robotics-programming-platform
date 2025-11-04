@@ -11,9 +11,10 @@ def open_new_project_modal():
 def test_create_new_project():
     open_new_project_modal()
 
-    assert ImGuiTestUtils.IsItemFound(
-        EDITOR_NEW_PROJECT_MODAL_LABEL
-    ), "New Project modal not found"
+    ImGuiTestUtils.Assert(
+        ImGuiTestUtils.IsItemFound(EDITOR_NEW_PROJECT_MODAL_LABEL),
+        "New Project modal not found",
+    )
 
     ImGuiTestUtils.LeftClick(EDITOR_NEW_PROJECT_INPUT_PROJECT_NAME_LABEL)
     ImGuiTestUtils.Type("test-project")
@@ -23,9 +24,12 @@ def test_create_new_project():
 
     ImGuiTestUtils.LeftClick(EDITOR_NEW_PROJECT_CANCEL_BUTTON_LABEL)
 
-    assert not ImGuiTestUtils.IsItemFound(
-        EDITOR_NEW_PROJECT_MODAL_LABEL
-    ), "New Project modal not closed after cancel"
+    TestSystem.Wait(10)
+
+    ImGuiTestUtils.Assert(
+        not ImGuiTestUtils.IsItemFound(EDITOR_NEW_PROJECT_MODAL_LABEL),
+        "New Project modal not closed after cancel",
+    )
 
     open_new_project_modal()
 

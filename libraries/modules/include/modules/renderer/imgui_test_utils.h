@@ -101,6 +101,14 @@ namespace rpp
         static b8 IsItemFound(const String &label) RPP_E2E_BINDING;
 
         /**
+         * Used for asserting a condition in the test framework.
+         *
+         * @param condition The condition to assert.
+         * @param message The message to display if the assertion fails.
+         */
+        static void Assert(b8 condition, const String &message) RPP_E2E_BINDING;
+
+        /**
          * Used for performing a left click on the current item being interacted with.
          * @return TRUE if the click action was performed, FALSE otherwise.
          */
