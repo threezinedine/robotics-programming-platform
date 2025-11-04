@@ -60,6 +60,13 @@ namespace rpp
         static b8 IsPhysicalPathExists(const String &path);
 
         /**
+         * @brief Checks if a physical path is a directory on the filesystem.
+         * @param path The physical path to check. The path is the ABSOLUTE path (physical not the logical path).
+         * @return TRUE if the path is a directory, FALSE otherwise.
+         */
+        static b8 IsPhysicalPathDirectory(const String &path);
+
+        /**
          * @brief Creates a physical directory on the filesystem.
          * @param path The physical path where the directory should be created (the ABSOLUTE path)
          * @note The function will create any necessary parent directories as well.
@@ -136,7 +143,7 @@ namespace rpp
          * @param path The path to the directory to check.
          * @return TRUE if the directory exists, FALSE otherwise.
          */
-        static b8 IsDirectory(const String &path);
+        static b8 IsDirectory(const String &path) RPP_E2E_BINDING;
 
         /**
          * @brief Creates a directory at the specified path, including any necessary parent directories.

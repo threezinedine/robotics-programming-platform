@@ -138,3 +138,43 @@ def test_create_new_project():
         not TestUtils.IsItemFound(EDITOR_NEW_PROJECT_MODAL),
         "New Project modal not closed after creating a valid project",
     )
+
+
+def test_new_project_effect():
+    open_new_project_modal()
+    projectFolder = "/home/test"
+    projectName = "test"
+
+    FileSystem.CreateDirectory(projectFolder)
+
+    TestUtils.LeftClick(EDITOR_NEW_PROJECT_INPUT_PROJECT_NAME)
+    TestUtils.Type(projectName)
+    TestUtils.LeftClick(EDITOR_NEW_PROJECT_INPUT_PROJECT_FOLDER)
+    TestUtils.Type(projectFolder)
+
+    TestUtils.Assert(
+        not FileSystem.PathExists(os.path.join(projectFolder, projectName)),
+        "Project folder already exists on filesystem before creating the project",
+    )
+
+    TestUtils.LeftClick(EDITOR_NEW_PROJECT_CREATE_BUTTON)
+    TestSystem.Wait(10)
+
+    TestUtils.Assert(
+        FileSystem.PathExists(os.path.join(projectFolder, projectName)),
+        "Project folder not created on filesystem",
+    )
+
+    TestUtils.Assert(
+        FileSystem.PathExists(
+            os.path.join(projectFolder, projectName, "project.rppproj")
+        ),
+        "The project file not created on filesystem",
+    )
+
+    TestUtils.Assert(
+        not FileSystem.IsDirectory(
+            os.path.join(projectFolder, projectName, "project.rppproj")
+        ),
+        "The project file is created as a directory instead of a file",
+    )

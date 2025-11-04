@@ -44,8 +44,20 @@ namespace rpp
 
             // create the temporary directory if it does not exist
 #if defined(RPP_PLATFORM_WINDOWS)
+            if (std::filesystem::exists(s_temporaryPathRoot.CStr()))
+            {
+                // delete existing folder
+                _rmdir(s_temporaryPathRoot.CStr());
+            }
+
             _mkdir(s_temporaryPathRoot.CStr());
 #else
+            if (std::filesystem::exists(s_temporaryPathRoot.CStr()))
+            {
+                // delete existing folder
+                std::filesystem::remove_all(s_temporaryPathRoot.CStr());
+            }
+
             std::filesystem::create_directory(s_temporaryPathRoot.CStr());
 #endif
         }
@@ -126,7 +138,12 @@ namespace rpp
 
     b8 FileSystem::IsPhysicalPathExists(const String &path)
     {
-        return std::filesystem::exists(path.CStr()) && std::filesystem::is_directory(path.CStr());
+        return std::filesystem::exists(path.CStr());
+    }
+
+    b8 FileSystem::IsPhysicalPathDirectory(const String &path)
+    {
+        return std::filesystem::is_directory(path.CStr());
     }
 
     void FileSystem::CreatePhysicalDirectory(const String &path)
@@ -305,7 +322,7 @@ namespace rpp
     b8 FileSystem::IsDirectory(const String &path)
     {
         String physicalPath = getPhysicalPath(path);
-        return IsPhysicalPathExists(physicalPath);
+        return IsPhysicalPathDirectory(physicalPath);
     }
 
     void FileSystem::CreateDirectory(const String &path)

@@ -97,7 +97,6 @@ void EditorWindow::NewProjectModalRender()
             config.path = ".";
             ImGuiFileDialog::Instance()->OpenDialog("ChooseProjectFolderDlgKey", "Choose Project Folder", nullptr, config);
         }
-#endif
 
         if (ImGuiFileDialog::Instance()->Display("ChooseProjectFolderDlgKey"))
         {
@@ -109,6 +108,7 @@ void EditorWindow::NewProjectModalRender()
 
             ImGuiFileDialog::Instance()->Close();
         }
+#endif
 
         if (strcmp(errorMessage, "") != 0)
         {
@@ -132,14 +132,16 @@ void EditorWindow::NewProjectModalRender()
 
         if (ImGui::Button("Create"))
         {
-            b8 isProjectNameValid = strcmp(projectName, "") != 0 && !FileSystem::PathExists(Format("{}/{}", String(projectFolder), String(projectName)));
+            String finalProjectPath = Format("{}/{}", String(projectFolder), String(projectName));
+
+            b8 isProjectNameValid = strcmp(projectName, "") != 0 && !FileSystem::PathExists(finalProjectPath);
             b8 isProjectFolderValid = strcmp(projectFolder, "") != 0 && FileSystem::PathExists(String(projectFolder));
 
             if (isProjectNameValid && isProjectFolderValid)
             {
                 ProjectDescription desc;
                 desc.name = String(projectName);
-                m_pCurrentProject = Project::CreateProject(desc);
+                CreateProject(projectFolder, desc);
 
                 ImGui::CloseCurrentPopup();
             }
@@ -161,6 +163,22 @@ void EditorWindow::NewProjectModalRender()
         ImGui::EndPopup();
         RPP_MARK_ITEM("Editor/NewProjectModal");
     }
+}
+
+void EditorWindow::CreateProject(const String &projectFolder, const ProjectDescription &desc)
+{
+    m_pCurrentProject = Project::CreateProject(desc);
+
+    String finalProjectPath = Format("{}/{}", projectFolder, desc.name);
+    String projectFilePath = Format("{}/project.rppproj", finalProjectPath);
+
+    FileSystem::CreateDirectory(finalProjectPath);
+    RPP_LOG_DEBUG("Project Path: {} - Project file: {}", finalProjectPath, projectFilePath);
+    FileHandle file = FileSystem::OpenFile(projectFilePath, FILE_MODE_WRITE);
+    FileSystem::Write(file, ToString(desc));
+    FileSystem::CloseFile(file);
+
+    RPP_ASSERT(FileSystem::PathExists(projectFilePath));
 }
 
 void EditorWindow::RenderEditorMain()

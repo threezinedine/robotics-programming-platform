@@ -27,6 +27,9 @@ private:
     void RenderEditorMain();
 
 private:
+    void CreateProject(const String &projectFolder, const ProjectDescription &desc);
+
+private:
     b8 m_openNewProjectModal = false; ///< Whether to open the New Project modal.
 
     /**
