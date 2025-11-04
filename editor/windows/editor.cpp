@@ -115,6 +115,10 @@ void EditorWindow::NewProjectModalRender()
                 desc.name = String(projectName);
                 m_pCurrentProject = Project::CreateProject(desc);
             }
+            else
+            {
+                ImGui::InsertNotification({ImGuiToastType_Error, 3000, "Please fill in all fields before creating a new project."});
+            }
         }
         RPP_MARK_ITEM("Editor/NewProjectModal/Create");
 

@@ -34,6 +34,17 @@ RPPFindPackage(rpp-imgui "Dependencies")
 RPPFindPackage(rpp-glm "Dependencies")
 RPPFindPackage(rpp-luna "Dependencies")
 RPPFindPackage(rpp-pybind "Dependencies")
+RPPFindPackage(rpp-imgui-notify "Dependencies")
+
+set(LINK_LIBRARIES
+    RPPCore
+    rpp-json
+    rpp-imgui
+    rpp-glm
+    rpp-luna
+    rpp-pybind
+    rpp-imgui-notify
+)
 
 # -------------- Library target --------------
 set(CMAKE_FOLDER "Libraries")
@@ -42,11 +53,7 @@ add_library(${PROJECT_NAME} STATIC ${MODULES_SRC} ${MODULES_HDR})
 target_link_libraries(
     ${PROJECT_NAME}
     PUBLIC
-    RPPCore
-    rpp-imgui
-    rpp-glm
-    rpp-luna
-    rpp-pybind
+    ${LINK_LIBRARIES}
 )
 
 target_include_directories(
@@ -72,11 +79,7 @@ add_library(${PROJECT_NAME_TEST_LIB} STATIC ${MODULES_SRC} ${MODULES_HDR})
 target_link_libraries(
     ${PROJECT_NAME_TEST_LIB}
     PUBLIC
-    RPPCore
-    rpp-imgui
-    rpp-glm
-    rpp-luna
-    rpp-pybind
+    ${LINK_LIBRARIES}
 )
 
 target_include_directories(

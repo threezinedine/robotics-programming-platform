@@ -1,6 +1,8 @@
 #pragma once
 #include "core/core.h"
 #include "imgui.h"
+#include "imgui_notify.h"
+#include "tahoma.h"
 
 namespace rpp
 {

@@ -202,6 +202,14 @@ namespace rpp
 #endif
         ImGui_ImplOpenGL3_Init("#version 130");
 
+        // Setup Fonts
+        {
+            ImFontConfig fontConfig;
+            fontConfig.FontDataOwnedByAtlas = false;
+            io.Fonts->AddFontFromMemoryTTF((void *)tahoma, sizeof(tahoma), 17.0f, &fontConfig);
+            ImGui::MergeIconsWithLatestFont(16.0f, false);
+        }
+
         CreateFrameBufferCommandData fbData;
         fbData.width = 800;
         fbData.height = 600;
@@ -320,6 +328,16 @@ namespace rpp
 
         // Renderer::DrawMouseCursor({f32(InputSystem::GetMouseX()), f32(InputSystem::GetMouseY())});
 #endif
+
+        // Toast notifications
+        {
+            // Set position
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 5.f);
+            ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.7, 0.7, 0.7, 0.9));
+            ImGui::RenderNotifications();
+            ImGui::PopStyleVar(1);
+            ImGui::PopStyleColor(1);
+        }
 
         ImGui::Render();
         int display_w, display_h;

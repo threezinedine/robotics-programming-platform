@@ -35,5 +35,9 @@
     {
         "name": "stb",
         "url": "https://github.com/nothings/stb.git"
+    },
+    {
+        "name": "imgui-notify",
+        "url": "https://github.com/threezinedine/imgui-notify.git"
     }
 ]
