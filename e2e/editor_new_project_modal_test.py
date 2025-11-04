@@ -1,4 +1,5 @@
 from packages import *  # this import will be deleted in the core, this line must be at the top of the file
+import os
 from constants import *
 
 
@@ -45,4 +46,51 @@ def test_create_new_project():
     TestUtils.Assert(
         TestUtils.IsItemFound(EDITOR_NEW_PROJECT_MODAL),
         "New Project modal closed despite missing fields",
+    )
+
+    # Fill field project folder with non-existing path -> should not close the modal
+    testFolder = "/home/test-folder"
+
+    TestUtils.Assert(
+        not FileSystem.PathExists(testFolder),
+        "Test folder already exists, cannot proceed with the test",
+    )
+
+    TestUtils.LeftClick(EDITOR_NEW_PROJECT_INPUT_PROJECT_NAME)
+    TestUtils.Type("test-project")
+
+    TestUtils.LeftClick(EDITOR_NEW_PROJECT_INPUT_PROJECT_FOLDER)
+    TestUtils.Type(testFolder)
+
+    TestUtils.LeftClick(EDITOR_NEW_PROJECT_CREATE_BUTTON)
+    TestSystem.Wait(10)
+
+    TestUtils.Assert(
+        TestUtils.IsItemFound(EDITOR_NEW_PROJECT_MODAL),
+        "New Project modal closed despite non-existing project folder",
+    )
+
+    # Fill fields with valid project folder and existed project name (the folder inside the project folder) ->
+    # should not able to create the project
+    testMatchProjectName = "test-project"
+    FileSystem.CreateDirectory(testFolder)
+    FileSystem.CreateDirectory(os.path.join(testFolder, testMatchProjectName))
+
+    TestUtils.LeftClick(EDITOR_NEW_PROJECT_CANCEL_BUTTON)
+    TestSystem.Wait(10)
+
+    open_new_project_modal()
+
+    TestUtils.LeftClick(EDITOR_NEW_PROJECT_INPUT_PROJECT_NAME)
+    TestUtils.Type(testMatchProjectName)
+
+    TestUtils.LeftClick(EDITOR_NEW_PROJECT_INPUT_PROJECT_FOLDER)
+    TestUtils.Type(testFolder)
+
+    TestUtils.LeftClick(EDITOR_NEW_PROJECT_CREATE_BUTTON)
+    TestSystem.Wait(10)
+
+    TestUtils.Assert(
+        TestUtils.IsItemFound(EDITOR_NEW_PROJECT_MODAL),
+        "New Project modal closed despite existing project with the same name",
     )

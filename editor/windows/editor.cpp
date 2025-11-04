@@ -14,8 +14,11 @@ EditorWindow::~EditorWindow()
 
 void EditorWindow::RenderImpl()
 {
-    ;
-    ImGui::Begin("Editor", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoTitleBar);
+    ImGuiIO &io = ImGui::GetIO();
+    ImGui::SetNextWindowPos(ImVec2(0, 0));
+    ImGui::SetNextWindowSize(ImVec2(io.DisplaySize.x, io.DisplaySize.y));
+
+    ImGui::Begin("Editor", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove);
     {
         MenuRender();
 
@@ -106,14 +109,16 @@ void EditorWindow::NewProjectModalRender()
 
         if (ImGui::Button("Create"))
         {
-            b8 isProjectNameValid = strcmp(projectName, "") != 0;
-            b8 isProjectFolderValid = strcmp(projectFolder, "") != 0;
+            b8 isProjectNameValid = strcmp(projectName, "") != 0 && !FileSystem::PathExists(Format("{}/{}", String(projectFolder), String(projectName)));
+            b8 isProjectFolderValid = strcmp(projectFolder, "") != 0 && FileSystem::PathExists(String(projectFolder));
 
-            if (isProjectFolderValid && isProjectFolderValid)
+            if (isProjectNameValid && isProjectFolderValid)
             {
                 ProjectDescription desc;
                 desc.name = String(projectName);
                 m_pCurrentProject = Project::CreateProject(desc);
+
+                ImGui::CloseCurrentPopup();
             }
             else
             {

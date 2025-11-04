@@ -129,7 +129,7 @@ namespace rpp
          * @param path The path to the file to check.
          * @return TRUE if the file exists, FALSE otherwise.
          */
-        static b8 PathExists(const String &path);
+        static b8 PathExists(const String &path) RPP_E2E_BINDING;
 
         /**
          * @brief Check if a directory exists at the specified path.
@@ -142,7 +142,7 @@ namespace rpp
          * @brief Creates a directory at the specified path, including any necessary parent directories.
          * @param path The path where the directory should be created (the ABSOLUTE path).
          */
-        static void CreateDirectory(const String &path);
+        static void CreateDirectory(const String &path) RPP_E2E_BINDING;
 
         /// Path utils
     public:
