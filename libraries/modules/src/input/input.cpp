@@ -39,12 +39,14 @@ namespace rpp
         data.m_mouseX = Renderer::GetWindow()->GetMouseX();
         data.m_mouseY = Renderer::GetWindow()->GetMouseY();
 
-        memcpy(data.mousePreviousButtonStates, data.mouseButtonStates, sizeof(i32) * MouseButton::COUNT);
+        memcpy(data.mousePreviousButtonStates, data.mouseButtonStates, sizeof(i32) * MouseButton::MOUSE_BUTTON_COUNT);
 
-        for (i32 i = 0; i < MouseButton::COUNT; i++)
+        for (i32 i = 0; i < MouseButton::MOUSE_BUTTON_COUNT; i++)
         {
             data.mouseButtonStates[i] = Renderer::GetWindow()->GetMouseButtonState(static_cast<MouseButton>(i));
         }
+
+        memcpy(data.keyboardPreviousButton, data.keyboardButton, sizeof(i32) * KeyboardButton::KEYBOARD_BUTTON_COUNT);
 #endif
     }
 
@@ -106,7 +108,7 @@ namespace rpp
             s_startEvent = TRUE;
             s_timer.Start();
             // Simulate mouse button down
-            data.mouseButtonStates[static_cast<i32>(button)] = 1;
+            data.mouseButtonStates[static_cast<i32>(button)] = ButtonState::PRESSED;
             return FALSE;
         }
 
@@ -116,7 +118,7 @@ namespace rpp
         }
 
         // Simulate mouse button up
-        data.mouseButtonStates[static_cast<i32>(button)] = 0;
+        data.mouseButtonStates[static_cast<i32>(button)] = ButtonState::RELEASED;
         s_startEvent = FALSE;
         return TRUE;
 #else
@@ -190,6 +192,6 @@ namespace rpp
         u32 rendererId = Renderer::GetCurrentRendererId();
         RPP_ASSERT(rendererId < MAX_INPUT_SYSTEMS);
         RendererInputData &data = s_inputSystemsData[rendererId];
-        return data.mouseButtonStates[static_cast<i32>(button)] == 1;
+        return data.mouseButtonStates[static_cast<i32>(button)] == ButtonState::PRESSED;
     }
 } // namespace rpp

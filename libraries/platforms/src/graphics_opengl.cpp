@@ -38,6 +38,107 @@
 
 namespace rpp
 {
+    static i32 s_glfwKeyMapping[KeyboardButton::KEYBOARD_BUTTON_COUNT] = {
+        GLFW_KEY_A,
+        GLFW_KEY_B,
+        GLFW_KEY_C,
+        GLFW_KEY_D,
+        GLFW_KEY_E,
+        GLFW_KEY_F,
+        GLFW_KEY_G,
+        GLFW_KEY_H,
+        GLFW_KEY_I,
+        GLFW_KEY_J,
+        GLFW_KEY_K,
+        GLFW_KEY_L,
+        GLFW_KEY_M,
+        GLFW_KEY_N,
+        GLFW_KEY_O,
+        GLFW_KEY_P,
+        GLFW_KEY_Q,
+        GLFW_KEY_R,
+        GLFW_KEY_S,
+        GLFW_KEY_T,
+        GLFW_KEY_U,
+        GLFW_KEY_V,
+        GLFW_KEY_W,
+        GLFW_KEY_X,
+        GLFW_KEY_Y,
+        GLFW_KEY_Z,
+
+        GLFW_KEY_0,
+        GLFW_KEY_1,
+        GLFW_KEY_2,
+        GLFW_KEY_3,
+        GLFW_KEY_4,
+        GLFW_KEY_5,
+        GLFW_KEY_6,
+        GLFW_KEY_7,
+        GLFW_KEY_8,
+        GLFW_KEY_9,
+        GLFW_KEY_ESCAPE,
+        0, // GLFW_KEY_LCTRL,
+        0, // GLFW_KEY_LSHIFT,
+        0, // GLFW_KEY_LALT,
+        0, // GLFW_KEY_LSYSTEM,
+        0, // GLFW_KEY_RCTRL,
+        0, // GLFW_KEY_RSHIFT,
+        0, // GLFW_KEY_RALT,
+        0, // GLFW_KEY_RSYSTEM,
+        GLFW_KEY_MENU,
+        0, // GLFW_KEY_LBRACKET,
+        0, // GLFW_KEY_RBRACKET,
+        GLFW_KEY_SEMICOLON,
+        GLFW_KEY_COMMA,
+        GLFW_KEY_PERIOD,
+        0, // GLFW_KEY_QUOTE,
+        GLFW_KEY_SLASH,
+        GLFW_KEY_BACKSLASH,
+        0, // GLFW_KEY_TILDE,
+        GLFW_KEY_EQUAL,
+        0, // GLFW_KEY_DASH,
+        GLFW_KEY_SPACE,
+        0, // GLFW_KEY_RETURN,
+        GLFW_KEY_BACKSPACE,
+        GLFW_KEY_TAB,
+        0, // GLFW_KEY_PAGEUP,
+        0, // GLFW_KEY_PAGEDOWN,
+        GLFW_KEY_END,
+        GLFW_KEY_HOME,
+        GLFW_KEY_INSERT,
+        GLFW_KEY_DELETE,
+        0, // GLFW_KEY_ADD,
+        0, // GLFW_KEY_SUBTRACT,
+        0, // GLFW_KEY_MULTIPLY,
+        0, // GLFW_KEY_DIVIDE,
+        GLFW_KEY_LEFT,
+        GLFW_KEY_RIGHT,
+        GLFW_KEY_UP,
+        GLFW_KEY_DOWN,
+        0, // GLFW_KEY_NUMPAD0,
+        0, // GLFW_KEY_NUMPAD1,
+        0, // GLFW_KEY_NUMPAD2,
+        0, // GLFW_KEY_NUMPAD3,
+        0, // GLFW_KEY_NUMPAD4,
+        0, // GLFW_KEY_NUMPAD5,
+        0, // GLFW_KEY_NUMPAD6,
+        0, // GLFW_KEY_NUMPAD7,
+        0, // GLFW_KEY_NUMPAD8,
+        0, // GLFW_KEY_NUMPAD9,
+        GLFW_KEY_F1,
+        GLFW_KEY_F2,
+        GLFW_KEY_F3,
+        GLFW_KEY_F4,
+        GLFW_KEY_F5,
+        GLFW_KEY_F6,
+        GLFW_KEY_F7,
+        GLFW_KEY_F8,
+        GLFW_KEY_F9,
+        GLFW_KEY_F10,
+        GLFW_KEY_F11,
+        GLFW_KEY_F12,
+    };
+
     static void getError(GLenum error, char *message, u32 *size)
     {
         switch (error)
@@ -668,7 +769,7 @@ namespace rpp
         return mouseY;
     }
 
-    i32 Window::GetMouseButtonState(MouseButton button) const
+    ButtonState Window::GetMouseButtonState(MouseButton button) const
     {
         i32 glfwMouseButton;
 
@@ -688,7 +789,40 @@ namespace rpp
         }
 
         i32 state = glfwGetMouseButton((GLFWwindow *)m_window, glfwMouseButton);
-        return state;
+
+        if (state == GLFW_PRESS)
+        {
+            return ButtonState::PRESSED;
+        }
+        else if (state == GLFW_RELEASE)
+        {
+            return ButtonState::RELEASED;
+        }
+
+        return ButtonState::REPEAT;
+    }
+
+    ButtonState Window::GetKeyboardButtonState(KeyboardButton button) const
+    {
+        i32 glfwKey = s_glfwKeyMapping[static_cast<u32>(button)];
+
+        if (glfwKey == 0)
+        {
+            return ButtonState::RELEASED;
+        }
+
+        i32 state = glfwGetKey((GLFWwindow *)m_window, glfwKey);
+
+        if (state == GLFW_PRESS)
+        {
+            return ButtonState::PRESSED;
+        }
+        else if (state == GLFW_RELEASE)
+        {
+            return ButtonState::RELEASED;
+        }
+
+        return ButtonState::REPEAT;
     }
 } // namespace rpp
 

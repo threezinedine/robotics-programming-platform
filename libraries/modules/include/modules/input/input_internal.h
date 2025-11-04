@@ -22,8 +22,11 @@ namespace rpp
             f64 m_previousMouseX;
             f64 m_previousMouseY;
 
-            i32 mouseButtonStates[MouseButton::COUNT]; ///< Left, Right, Middle
-            i32 mousePreviousButtonStates[MouseButton::COUNT];
+            ButtonState mouseButtonStates[MouseButton::MOUSE_BUTTON_COUNT]; ///< Left, Right, Middle
+            ButtonState mousePreviousButtonStates[MouseButton::MOUSE_BUTTON_COUNT];
+
+            ButtonState keyboardButton[KeyboardButton::KEYBOARD_BUTTON_COUNT];
+            ButtonState keyboardPreviousButton[KeyboardButton::KEYBOARD_BUTTON_COUNT];
         };
 
     public:
@@ -32,8 +35,7 @@ namespace rpp
          *
          * @note Must be called before initializing `Renderer`.
          */
-        static void
-        Initialize();
+        static void Initialize();
 
         /**
          * Release the input system. Be called once at the end of the program.
