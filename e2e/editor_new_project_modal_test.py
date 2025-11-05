@@ -163,6 +163,11 @@ def test_new_project_effect():
         f"The current window is not 'Editor'",
     )
 
+    TestUtils.Assert(
+        TestUtils.IsItemFound(EDITOR_NO_PROJECT_OPEN),
+        f"No project content is visible",
+    )
+
     TestUtils.LeftClick(EDITOR_NEW_PROJECT_CREATE_BUTTON)
     TestSystem.Wait(10)
 
@@ -193,4 +198,14 @@ def test_new_project_effect():
     TestUtils.Assert(
         TestUtils.FindRendererIdByName("Editor - test") != INVALID_ID,
         "The current window is not 'Editor - test'",
+    )
+
+    TestUtils.Assert(
+        not TestUtils.IsItemFound(EDITOR_NO_PROJECT_OPEN),
+        "The project data is not loaded",
+    )
+
+    TestUtils.Assert(
+        TestUtils.IsItemFound(EDITOR_FILES),
+        "The files collapsing header does not exist.",
     )

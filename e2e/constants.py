@@ -8,3 +8,9 @@ EDITOR_NEW_PROJECT_INPUT_PROJECT_FOLDER = "Editor/NewProjectModal/ProjectFolderI
 EDITOR_NEW_PROJECT_CANCEL_BUTTON = "Editor/NewProjectModal/Cancel"
 EDITOR_NEW_PROJECT_CREATE_BUTTON = "Editor/NewProjectModal/Create"
 EDITOR_NEW_PROJECT_ERROR_MESSAGE = "Editor/NewProjectModal/ErrorMessage"
+
+EDITOR_NO_PROJECT_OPEN = "Editor/NoProjectOpen"
+EDITOR_FILES = "Editor/Files"
+
+EDITOR_MAIN_TOOLBAR_NEW = "Editor/Main/Toolbar/New"
+EDITOR_MAIN_TOOLBAR_RELOAD = "Editor/Main/Toolbar/Reload"

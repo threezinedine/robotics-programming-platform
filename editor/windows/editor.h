@@ -24,7 +24,9 @@ private:
      */
     void NewProjectModalRender();
 
-    void RenderEditorMain();
+    void EditorMainRender();
+
+    void EditorMainToolbarRender();
 
 private:
     void CreateProject(const String &projectFolder, const ProjectDescription &desc);

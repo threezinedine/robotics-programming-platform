@@ -22,7 +22,7 @@ void EditorWindow::RenderImpl()
     {
         MenuRender();
 
-        RenderEditorMain();
+        EditorMainRender();
 
         NewProjectModalRender();
     }
@@ -182,13 +182,38 @@ void EditorWindow::CreateProject(const String &projectFolder, const ProjectDescr
     Renderer::SetWindowTitle(Format("Editor - {}", desc.name));
 }
 
-void EditorWindow::RenderEditorMain()
+void EditorWindow::EditorMainRender()
 {
-    static char projectName[256] = "";
-    ImGui::InputText("Project Name", projectName, sizeof(projectName));
-    RPP_MARK_ITEM("Editor/TestInput");
+    if (m_pCurrentProject == nullptr)
+    {
+        ImGui::Text("No project is opened.");
+        RPP_MARK_ITEM("Editor/NoProjectOpen");
+        return;
+    }
 
-    ImGui::Text(Format("A state: {}", InputSystem::IsKeyboardButtonDown(KeyboardButton::KEY_A)).CStr());
+    EditorMainToolbarRender();
+
+    if (ImGui::CollapsingHeader("Files"))
+    {
+    }
+    RPP_MARK_ITEM("Editor/Files");
+}
+
+void EditorWindow::EditorMainToolbarRender()
+{
+    if (ImGui::Button("New"))
+    {
+    }
+    RPP_MARK_ITEM("Editor/Main/Toolbar/New");
+
+    ImGui::SameLine();
+
+    if (ImGui::Button("Reload"))
+    {
+    }
+    RPP_MARK_ITEM("Editor/Main/Toolbar/Reload");
+
+    ImGui::Separator();
 }
 
 void EditorWindow::ShutdownImpl()
