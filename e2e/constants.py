@@ -1,6 +1,8 @@
 EDITOR_MENUBAR_FILE = "Editor/MenuBar/File"
 EDITOR_MENUBAR_NEW = "Editor/MenuBar/File/New"
 EDITOR_MENUBAR_NEW_PROJECT = "Editor/MenuBar/File/New/Project"
+EDITOR_MENUBAR_OPEN = "Editor/MenuBar/File/Open"
+EDITOR_MENUBAR_OPEN_PROJECT = "Editor/MenuBar/File/Open/Project"
 
 EDITOR_NEW_PROJECT_MODAL = "Editor/NewProjectModal"
 EDITOR_NEW_PROJECT_INPUT_PROJECT_NAME = "Editor/NewProjectModal/ProjectNameInput"

@@ -5,6 +5,7 @@ import subprocess
 from typing import Literal
 from rich.table import Table
 from rich.console import Console
+from dataclasses import dataclass, field
 
 PROJECT_BASE_DIR = os.path.dirname(os.getcwd())
 RESULTS_FILE_PATH = os.path.join(
@@ -25,9 +26,10 @@ else:
     EDITOR_TEST_EXE = os.path.join(EDITOR_TEST_DIR, "RppEditor_test")
 
 
+@dataclass
 class Test:
-    fileName: str = ""
-    testCases: list[str] = []
+    fileName: str = field(default="")
+    testCases: list[str] = field(default_factory=list)
 
     def __repr__(self) -> str:
         return f"<Test name={self.fileName} testCases={self.testCases} />"
