@@ -1,4 +1,5 @@
 #include "modules/test_system/test_system_impl.h"
+#include "modules/structures/structures.h"
 #include "core/core.h"
 #include <fstream>
 #include <codecvt>
@@ -17,6 +18,7 @@ namespace rpp
     namespace
     {
 #include "tmp/e2e_test_binding.cpp"
+#include "tmp/e2e_json_writer_binding.cpp"
     } // namespace
 
     namespace
@@ -194,6 +196,18 @@ namespace rpp
         RPP_UNUSED(arg);
         Signal::Wait(m_testThreadSignal);
 
+        PyObject *globals = PyModule_GetDict(PyImport_AddModule("__main__"));
+
+        if (globals == nullptr)
+        {
+            RPP_LOG_FATAL("Failed to get Python globals dictionary.");
+            Py_Finalize();
+            exit(-1);
+        }
+
+        PyRun_SimpleString("from dataclasses import *");
+#include "tmp/e2e_json_writer_append.cpp"
+
 #include "tmp/e2e_python_module_import.cpp"
 
         m_updateScriptContent = m_updateScriptContent.Replace("from packages import *", ""); // remove the first line, which is used for typing hint only. (from packages import *)
@@ -212,13 +226,52 @@ namespace rpp
                        String(STRINGIFY(RPP_PROJECT_DIR)))
                     .CStr());
             PyRun_SimpleString("INVALID_ID = -1");
+            PyRun_SimpleString("FILE_READ = 0\nFILE_WRITE = 1\nFILE_APPEND = 2");
             PyRun_SimpleString(m_updateScriptContent.CStr());
             RPP_LOG_INFO("Running test case '{}'", m_runTestCaseName);
-            PyRun_SimpleString(Format("{}()", m_runTestCaseName).CStr());
+            int result = PyRun_SimpleString(Format("{}()", m_runTestCaseName).CStr());
             Yield();
 
-            // Save success results
+            if (result != 0)
             {
+                PyObject *type = nullptr, *value = nullptr, *traceback = nullptr;
+                PyErr_Fetch(&type, &value, &traceback);
+                PyErr_Print();
+
+                if (type && value)
+                {
+                    RPP_LOG_DEBUG("Normalizing exception");
+                    PyErr_NormalizeException(&type, &value, &traceback);
+                }
+
+                String errorMessage = "Unknown error";
+
+                if (value != nullptr)
+                {
+                    PyObject *str_obj = PyObject_Str(value); // "boom! This is the error"
+                    if (str_obj != nullptr)
+                    {
+                        const char *c_msg = PyUnicode_AsUTF8(str_obj);
+                        if (c_msg != nullptr)
+                        {
+                            errorMessage = String(c_msg);
+                        }
+                        Py_DECREF(str_obj);
+                    }
+                }
+                RPP_LOG_ERROR("Python error occurred during test execution: {}", errorMessage);
+
+                // Save failure results
+                resultJson.Set("status", false);
+                resultJson.Set("error", String(errorMessage));
+
+                Py_XDECREF(type);
+                Py_XDECREF(value);
+                Py_XDECREF(traceback);
+            }
+            else
+            {
+                RPP_LOG_DEBUG("Here");
                 resultJson.Set("status", true);
                 resultJson.Set("error", String(""));
             }

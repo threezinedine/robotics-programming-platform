@@ -1,5 +1,18 @@
 {% for struct in structs %}
 {% if struct.name in allJsonMappedClasses-%}
+@dataclass
+class {{ struct.name }}:
+{% if struct.fields|length != 0 %}
+{% for field in struct.fields %}
+    {{ field.name }}: {{ field.type }}
+{% endfor %}
+{% else-%}
+    pass
+{% endif-%}
+
+def Create_{{ struct.name }}() -> {{ struct.name }}:
+    ...
+
 def ToString_{{ struct.name }}(obj: {{ struct.name }}) -> str:
     ...
 

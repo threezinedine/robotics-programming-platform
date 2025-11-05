@@ -97,11 +97,15 @@ void EditorWindow::MenuRender()
 
     if (ImGui::BeginPopupModal("OpenProjectTestModal", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove))
     {
+        static char projectPath[512] = "";
+        ImGui::InputText("Path##OpenProjectTestModal", projectPath, sizeof(projectPath));
+        RPP_MARK_ITEM("Editor/OpenProjectTestModal/PathInput", projectPath);
+
         if (ImGui::Button("Ok"))
         {
             ImGui::CloseCurrentPopup();
         }
-        RPP_MARK_ITEM("Editor/OpenProjectTestModal/Ok");
+        RPP_MARK_ITEM("Editor/OpenProjectTestModal/OK");
 
         ImGui::EndPopup();
         RPP_MARK_ITEM("Editor/OpenProjectTestModal");

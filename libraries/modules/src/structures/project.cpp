@@ -1,4 +1,4 @@
-#include "applications/structures/project.h"
+#include "modules/structures/project.h"
 #include "core/json.h"
 
 namespace rpp

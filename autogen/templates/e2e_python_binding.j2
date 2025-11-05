@@ -1,5 +1,6 @@
 from typing import * # type: ignore
 from enum import * # type: ignore
+from dataclasses import * # type: ignore
 
 FileHandle: TypeAlias = int
 b8: TypeAlias = bool
@@ -17,10 +18,18 @@ i64: TypeAlias = int
 f32: TypeAlias = float
 f64: TypeAlias = float
 
+String: TypeAlias = str
+
 double: TypeAlias = float
 
-INVALID_ID: u32 = 0xFFFFFFFF
+FILE_READ: int = 0
+FILE_WRITE: int = 1
+FILE_APPEND: int = 2
+
+INVALID_ID: int = -1
 
 {% include "e2e_python_enum_binding.j2" %}
 
 {% include "e2e_python_function_binding.j2" %}
+
+{% include "pyi_to_string_method.j2" %}

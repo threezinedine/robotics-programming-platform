@@ -166,3 +166,81 @@ Item FromString<Item>(const String& str)
 """
 
     AssertGenerateResult(result, expected)
+
+
+def test_e2e_json_writer_binding(generateFunc: GenerateFuncType) -> None:
+    result = generateFunc(
+        """
+struct RPP_JSON Address
+{
+    int street RPP_JSON_KEY("street");
+    float city RPP_JSON_KEY("city");
+};
+""",
+        "e2e_json_writer_binding.j2",
+        ["string"],
+    )
+
+    expected = """
+struct AddressObject
+{
+    PyObject_HEAD
+    Address data;
+};
+
+static PyTypeObject AddressType = {
+    PyVarObject_HEAD_INIT(NULL, 0)
+    .tp_name = "Address",
+    .tp_basicsize = sizeof(AddressObject),
+    .tp_itemsize = 0,
+    .tp_flags = Py_TPFLAGS_DEFAULT,
+    .tp_new = PyType_GenericNew,
+};
+
+static PyObject* ToString_Address(PyObject* self, PyObject* args)
+{
+    PyObject* obj;
+    if (!PyArg_ParseTuple(args, "O!", &AddressType, &obj))
+    {
+        return nullptr;
+    }
+
+    if (!PyObject_TypeCheck(obj, &AddressType))
+    {
+        PyErr_SetString(PyExc_TypeError, "Invalid object type passed to ToString_Address");
+        return nullptr;
+    }
+
+    AddressObject* structObj = (AddressObject*)obj;
+    const char* jsonStr = ToString<Address>(structObj->data).CStr();
+    return Py_BuildValue("s", jsonStr);
+}
+
+static PyObject* FromString_Address(PyObject* self, PyObject* args)
+{
+    try
+    {
+        const char* str;
+        if (!PyArg_ParseTuple(args, "s", &str))
+        {
+            return nullptr;
+        }
+
+        AddressObject* obj = PyObject_New(AddressObject, &AddressType);
+        if (!obj)
+        {
+            return nullptr;
+        }
+
+        obj->data = FromString<Address>(str);
+        return (PyObject*)obj;
+    }
+    catch (const std::exception& e)
+    {
+        PyErr_SetString(PyExc_Exception, e.what());
+        return nullptr;
+    }
+}
+"""
+
+    AssertGenerateResult(result, expected)

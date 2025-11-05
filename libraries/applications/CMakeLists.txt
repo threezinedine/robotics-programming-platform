@@ -24,9 +24,6 @@ file(
     "src/__tests__/**/*.cpp"
 )
 
-set(WRITER_OUTPUT ${RPP_BASE_DIR}/libraries/tmp/writer_output.cpp)
-set_source_files_properties(${WRITER_OUTPUT} PROPERTIES GENERATED TRUE)
-
 foreach (APPLICATIONS_TEST_SRC_FILE ${APPLICATIONS_TEST_SRC})
     list(REMOVE_ITEM APPLICATIONS_SRC ${APPLICATIONS_TEST_SRC_FILE})
 endforeach()
@@ -37,7 +34,6 @@ add_library(
     STATIC 
     ${APPLICATIONS_SRC} 
     ${APPLICATIONS_HDR}
-    ${WRITER_OUTPUT}
 )
 
 target_link_libraries(
@@ -70,7 +66,6 @@ add_library(
     STATIC 
     ${APPLICATIONS_SRC} 
     ${APPLICATIONS_HDR}
-    ${WRITER_OUTPUT}
 )
 
 target_link_libraries(

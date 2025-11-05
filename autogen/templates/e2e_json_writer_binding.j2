@@ -1,0 +1,84 @@
+{% for struct in structs %}
+    {% if struct.name in allJsonMappedClasses %}
+#if 0
+struct {{ struct.name }}Object
+{
+    PyObject_HEAD
+    {{ struct.name }} data;
+};
+
+static PyTypeObject {{ struct.name }}Type = {
+    PyVarObject_HEAD_INIT(NULL, 0)
+    .tp_name = "{{ struct.name }}",
+    .tp_basicsize = sizeof({{ struct.name }}Object),
+    .tp_itemsize = 0,
+    .tp_flags = Py_TPFLAGS_DEFAULT,
+    .tp_new = PyType_GenericNew,
+    .tp_dealloc = (destructor)PyObject_Del,
+};
+
+static PyObject* Create_{{ struct.name }}(PyObject* self, PyObject* args)
+{
+    RPP_ASSERT(PyType_Ready(&{{ struct.name }}Type) >= 0);
+
+    RPP_LOG_DEBUG("Here");
+    {{ struct.name }}Object* obj = PyObject_New({{ struct.name }}Object, &{{ struct.name }}Type);
+
+    RPP_LOG_DEBUG("Here");
+    if (!obj)
+    {
+        return nullptr;
+    }
+
+    // Initialize fields to default values
+    obj->data = {{ struct.name }}();
+
+    return (PyObject*)obj;
+}
+
+static PyObject* ToString_{{ struct.name }}(PyObject* self, PyObject* args)
+{
+    PyObject* obj;
+    if (!PyArg_ParseTuple(args, "O!", &{{ struct.name }}Type, &obj))
+    {
+        return nullptr;
+    }
+
+    if (!PyObject_TypeCheck(obj, &{{ struct.name }}Type))
+    {
+        PyErr_SetString(PyExc_TypeError, "Invalid object type passed to ToString_{{ struct.name }}");
+        return nullptr;
+    }
+
+    {{ struct.name }}Object* structObj = ({{ struct.name }}Object*)obj;
+    const char* jsonStr = ToString<{{ struct.name }}>(structObj->data).CStr();
+    return Py_BuildValue("s", jsonStr);
+}
+
+static PyObject* FromString_{{ struct.name }}(PyObject* self, PyObject* args)
+{
+    try {
+        const char* str;
+        if (!PyArg_ParseTuple(args, "s", &str))
+        {
+            return nullptr;
+        }
+
+        {{ struct.name }}Object* obj = PyObject_New({{ struct.name }}Object, &{{ struct.name }}Type);
+
+        if (!obj)
+        {
+            return nullptr;
+        }
+
+        obj->data = FromString<{{ struct.name }}>(String(str));
+        return (PyObject*)obj;
+    }
+    catch (const std::exception& e) {
+        PyErr_SetString(PyExc_Exception, e.what());
+        return nullptr;
+    }
+}
+#endif
+    {% endif %}
+{% endfor %}

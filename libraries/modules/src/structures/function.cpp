@@ -1,4 +1,4 @@
-#include "applications/structures/function.h"
+#include "modules/structures/function.h"
 
 namespace rpp
 {

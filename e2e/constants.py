@@ -13,6 +13,7 @@ EDITOR_NEW_PROJECT_CREATE_BUTTON = "Editor/NewProjectModal/Create"
 EDITOR_NEW_PROJECT_ERROR_MESSAGE = "Editor/NewProjectModal/ErrorMessage"
 
 EDITOR_OPEN_PROJECT_MODAL = "Editor/OpenProjectTestModal"
+EDITOR_OPEN_PROJECT_MODAL_PATH_INPUT = "Editor/OpenProjectTestModal/PathInput"
 EDITOR_OPEN_PROJECT_OK_BUTTON = "Editor/OpenProjectTestModal/OK"
 
 EDITOR_NO_PROJECT_OPEN = "Editor/NoProjectOpen"

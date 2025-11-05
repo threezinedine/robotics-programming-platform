@@ -1,0 +1,17 @@
+{% for struct in structs %}
+    {% if struct.name in allJsonMappedClasses %}
+{
+    PyRun_SimpleString(R"(
+@dataclass
+class {{ struct.name }}:
+{%-if struct.fields|length != 0-%}
+{% for field in struct.fields %}
+    {{ field.name }}: {{ convertCppTypeToPyType(field.type) }}
+{%-endfor-%}
+{% else %}
+    pass
+{% endif %}
+    )");
+}
+    {% endif %}
+{% endfor %}

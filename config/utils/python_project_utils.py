@@ -206,9 +206,19 @@ def RunPythonProject(
             "e2e_test_binding.cpp",
         )
 
+        e2eJsonWriterBindingOutput = os.path.join(
+            librariesTempDir,
+            "e2e_json_writer_binding.cpp",
+        )
+
         e2eAppendOutput = os.path.join(
             librariesTempDir,
             "e2e_test_append.cpp",
+        )
+
+        e2eJsonWriterAppendOutput = os.path.join(
+            librariesTempDir,
+            "e2e_json_writer_append.cpp",
         )
 
         e2ePythonModuleImportOutput = os.path.join(
@@ -240,8 +250,14 @@ def RunPythonProject(
         )
 
         isE2EOutputFileExists = os.path.isfile(e2eOutput)
+        isE2EJsonWriterBindingOutputFileExists = os.path.isfile(
+            e2eJsonWriterBindingOutput
+        )
         isPyiE2EGRuntimeFileExists = os.path.isfile(pyiE2EGRuntimeOutput)
         isE2EAppendOutputFileExists = os.path.isfile(e2eAppendOutput)
+        isE2EJsonWriterAppendOutputFileExists = os.path.isfile(
+            e2eJsonWriterAppendOutput
+        )
         isE2EPythonModuleImportOutputFileExists = os.path.isfile(
             e2ePythonModuleImportOutput
         )
@@ -253,8 +269,10 @@ def RunPythonProject(
             # and isPyiFileExists
             # and isCppBindingFileExists
             and isE2EOutputFileExists
+            and isE2EJsonWriterBindingOutputFileExists
             and isPyiE2EGRuntimeFileExists
             and isE2EAppendOutputFileExists
+            and isE2EJsonWriterAppendOutputFileExists
             and isE2EPythonModuleImportOutputFileExists
             and not reset
             and not force
@@ -316,11 +334,25 @@ def RunPythonProject(
             e2eOutput,
         ]
 
+        e2eJsonWriterBindingOutputArgs = argCommon + [
+            "--template",
+            os.path.join(cwd, "templates", "e2e_json_writer_binding.j2"),
+            "--output",
+            e2eJsonWriterBindingOutput,
+        ]
+
         e2eAppendOutputArgs = argCommon + [
             "--template",
             os.path.join(cwd, "templates", "e2e_module_register.j2"),
             "--output",
             e2eAppendOutput,
+        ]
+
+        e2eJsonWriterAppendOutputArgs = argCommon + [
+            "--template",
+            os.path.join(cwd, "templates", "e2e_json_writer_register.j2"),
+            "--output",
+            e2eJsonWriterAppendOutput,
         ]
 
         e2ePythonModuleImportOutputArgs = argCommon + [
@@ -353,6 +385,11 @@ def RunPythonProject(
             e2eCommand = " ".join([pythonExe, mainScript] + e2eOutputArgs)
             RunCommand(e2eCommand, cwd=cwd)
 
+            e2eJsonWriterCommand = " ".join(
+                [pythonExe, mainScript] + e2eJsonWriterBindingOutputArgs
+            )
+            RunCommand(e2eJsonWriterCommand, cwd=cwd)
+
             writerOutputCommand = " ".join([pythonExe, mainScript] + writerOutputArgs)
             RunCommand(writerOutputCommand, cwd=cwd)
 
@@ -363,6 +400,11 @@ def RunPythonProject(
 
             e2eAppendCommand = " ".join([pythonExe, mainScript] + e2eAppendOutputArgs)
             RunCommand(e2eAppendCommand, cwd=cwd)
+
+            e2eJsonWriterAppendCommand = " ".join(
+                [pythonExe, mainScript] + e2eJsonWriterAppendOutputArgs
+            )
+            RunCommand(e2eJsonWriterAppendCommand, cwd=cwd)
 
             e2ePythonModuleImportCommand = " ".join(
                 [pythonExe, mainScript] + e2ePythonModuleImportOutputArgs

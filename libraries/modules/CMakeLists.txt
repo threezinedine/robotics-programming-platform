@@ -24,6 +24,9 @@ file(
     "include/modules/**/*.h"
 )
 
+set(WRITER_OUTPUT ${RPP_BASE_DIR}/libraries/tmp/writer_output.cpp)
+set_source_files_properties(${WRITER_OUTPUT} PROPERTIES GENERATED TRUE)
+
 # Remove test files from the main source list
 foreach(MODULES_SRC_TEST_FILE ${MODULES_SRC_TEST})
     list(REMOVE_ITEM MODULES_SRC ${MODULES_SRC_TEST_FILE})
@@ -50,7 +53,13 @@ set(LINK_LIBRARIES
 
 # -------------- Library target --------------
 set(CMAKE_FOLDER "Libraries")
-add_library(${PROJECT_NAME} STATIC ${MODULES_SRC} ${MODULES_HDR})
+add_library(
+    ${PROJECT_NAME} 
+    STATIC 
+    ${MODULES_SRC} 
+    ${MODULES_HDR}
+    ${WRITER_OUTPUT}
+)
 
 target_link_libraries(
     ${PROJECT_NAME}
@@ -76,7 +85,13 @@ RPPTargetDefines(${PROJECT_NAME})
 # -------------- Testing Libraries --------------
 set(CMAKE_FOLDER "TestLib")
 set(PROJECT_NAME_TEST_LIB ${PROJECT_NAME}_test_lib)
-add_library(${PROJECT_NAME_TEST_LIB} STATIC ${MODULES_SRC} ${MODULES_HDR})
+add_library(
+    ${PROJECT_NAME_TEST_LIB} 
+    STATIC 
+    ${MODULES_SRC} 
+    ${MODULES_HDR}
+    ${WRITER_OUTPUT}
+)
 
 target_link_libraries(
     ${PROJECT_NAME_TEST_LIB}

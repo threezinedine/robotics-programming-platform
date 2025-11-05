@@ -378,6 +378,7 @@ struct RPP_JSON Vector3
 
 struct RPP_JSON Work
 {
+    int id RPP_JSON_KEY("work_id");
 };
 """,
         "pyi_to_string_method.j2",
@@ -385,11 +386,17 @@ struct RPP_JSON Work
     )
 
     expected = """
+class Vector3:
+    pass
+
 def ToString_Vector3(obj: Vector3) -> str:
     ...
 
 def FromString_Vector3(s: str) -> Vector3:
     ...
+
+class Work:
+    id: int
 
 def ToString_Work(obj: Work) -> str:
     ...
