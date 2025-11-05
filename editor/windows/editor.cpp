@@ -37,13 +37,13 @@ void EditorWindow::MenuRender()
         {
             if (ImGui::BeginMenu("New"))
             {
-                if (ImGui::MenuItem("Project"))
+                if (ImGui::MenuItem("Project##New"))
                 {
                     m_openNewProjectModal = true;
                 }
                 RPP_MARK_ITEM("Editor/MenuBar/File/New/Project");
 
-                if (ImGui::MenuItem("File"))
+                if (ImGui::MenuItem("File##New"))
                 {
                 }
                 RPP_MARK_ITEM("Editor/MenuBar/File/New/File");
@@ -52,11 +52,62 @@ void EditorWindow::MenuRender()
             }
             RPP_MARK_ITEM("Editor/MenuBar/File/New");
 
+            if (ImGui::BeginMenu("Open"))
+            {
+                if (ImGui::MenuItem("Project##Open"))
+                {
+#if defined(RPP_USE_TEST)
+                    m_openOpenProjectTestModal = true;
+#else
+#endif
+                }
+                RPP_MARK_ITEM("Editor/MenuBar/File/Open/Project");
+
+                if (ImGui::MenuItem("File##Open"))
+                {
+                }
+                RPP_MARK_ITEM("Editor/MenuBar/File/Open/File");
+
+                ImGui::EndMenu();
+            }
+            RPP_MARK_ITEM("Editor/MenuBar/File/Open");
+
+            ImGui::Separator();
+
+            ImGui::BeginDisabled();
+            if (ImGui::BeginMenu("Recents"))
+            {
+            }
+            ImGui::EndDisabled();
+            RPP_MARK_ITEM("Editor/MenuBar/File/Recents");
+
             ImGui::EndMenu();
         }
         RPP_MARK_ITEM("Editor/MenuBar/File");
     }
     ImGui::EndMenuBar();
+
+#if defined(RPP_USE_TEST)
+    if (m_openOpenProjectTestModal)
+    {
+        ImGui::OpenPopup("OpenProjectTestModal");
+        RPP_LOG_DEBUG("Opened OpenProjectTestModal popup.");
+        m_openOpenProjectTestModal = false;
+    }
+
+    if (ImGui::BeginPopupModal("OpenProjectTestModal", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove))
+    {
+        if (ImGui::Button("Ok"))
+        {
+            ImGui::CloseCurrentPopup();
+        }
+        RPP_MARK_ITEM("Editor/OpenProjectTestModal/Ok");
+
+        ImGui::EndPopup();
+        RPP_MARK_ITEM("Editor/OpenProjectTestModal");
+    }
+#else
+#endif
 }
 
 void EditorWindow::NewProjectModalRender()

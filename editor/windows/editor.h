@@ -34,6 +34,10 @@ private:
 private:
     b8 m_openNewProjectModal = false; ///< Whether to open the New Project modal.
 
+#if defined(RPP_USE_TEST)
+    b8 m_openOpenProjectTestModal = false; ///< Whether to open the Open Project test modal. Only used in test builds.
+#endif
+
     /**
      * The holded project, if `nullptr` means no project is opened.
      */
