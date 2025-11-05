@@ -147,6 +147,7 @@ def test_new_project_effect():
 
     FileSystem.CreateDirectory(projectFolder)
 
+    TestUtils.MoveToItem(EDITOR_NEW_PROJECT_INPUT_PROJECT_NAME)
     TestUtils.LeftClick(EDITOR_NEW_PROJECT_INPUT_PROJECT_NAME)
     TestUtils.Type(projectName)
     TestUtils.LeftClick(EDITOR_NEW_PROJECT_INPUT_PROJECT_FOLDER)
@@ -155,6 +156,11 @@ def test_new_project_effect():
     TestUtils.Assert(
         not FileSystem.PathExists(os.path.join(projectFolder, projectName)),
         "Project folder already exists on filesystem before creating the project",
+    )
+
+    TestUtils.Assert(
+        TestUtils.FindRendererIdByName("Editor") != INVALID_ID,
+        f"The current window is not 'Editor'",
     )
 
     TestUtils.LeftClick(EDITOR_NEW_PROJECT_CREATE_BUTTON)
@@ -177,4 +183,14 @@ def test_new_project_effect():
             os.path.join(projectFolder, projectName, "project.rppproj")
         ),
         "The project file is created as a directory instead of a file",
+    )
+
+    TestUtils.Assert(
+        TestUtils.FindRendererIdByName("Editor") == INVALID_ID,
+        "The current window is still 'Editor'",
+    )
+
+    TestUtils.Assert(
+        TestUtils.FindRendererIdByName("Editor - test") != INVALID_ID,
+        "The current window is not 'Editor - test'",
     )

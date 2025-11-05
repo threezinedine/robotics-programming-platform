@@ -278,6 +278,17 @@ namespace rpp
         current->window->ExecuteCommand(commandData);
     }
 
+    void Renderer::SetWindowTitle(const String &title)
+    {
+        RPP_ASSERT(s_currentRenderers != nullptr);
+        RPP_ASSERT(s_currentRendererIndex != INVALID_RENDERER_INDEX);
+
+        RendererData *current = s_currentRenderers->Get(s_currentRendererIndex);
+        RPP_ASSERT(current != nullptr);
+
+        current->window->SetWindowTitle(title.CStr());
+    }
+
     void Renderer::Destroy(u32 renderId)
     {
         RPP_ASSERT(s_currentRenderers != nullptr);

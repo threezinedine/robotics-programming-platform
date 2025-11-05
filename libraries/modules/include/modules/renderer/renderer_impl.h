@@ -4,6 +4,11 @@
 
 #define INVALID_RENDERER_INDEX u32(-1)
 
+#if defined(RPP_USE_TEST)
+#define private public
+#define protected public
+#endif
+
 namespace rpp
 {
     class ImGuiImpl;
@@ -138,6 +143,11 @@ namespace rpp
         static void CloseWindow();
 
         /**
+         * Interface for modifying the window title of the current active renderer
+         */
+        static void SetWindowTitle(const String &title);
+
+        /**
          * @brief Destroy the renderer with the given id. If the renderer is currently active, it will be deactivated first.
          *
          * @param renderId The id of the renderer to destroy.
@@ -162,3 +172,8 @@ namespace rpp
         static void Present();
     };
 } // namespace rpp
+
+#if defined(RPP_USE_TEST)
+#undef private
+#undef protected
+#endif

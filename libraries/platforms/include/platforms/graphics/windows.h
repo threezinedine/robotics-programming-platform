@@ -220,6 +220,20 @@ namespace rpp
         ButtonState GetKeyboardButtonState(KeyboardButton button) const;
 
         /**
+         * @brief Get the title of the window.
+         *
+         * @return current window title
+         */
+        const char *GetWindowTitle() const;
+
+        /**
+         * Modify the current window title.
+         *
+         * @param windowTitle
+         */
+        void SetWindowTitle(const char *windowTitle);
+
+        /**
          * @brief A callback function type for window resize events.
          * @param width The new width of the window.
          * @param height The new height of the window.

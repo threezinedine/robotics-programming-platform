@@ -179,6 +179,7 @@ void EditorWindow::CreateProject(const String &projectFolder, const ProjectDescr
     FileSystem::CloseFile(file);
 
     RPP_ASSERT(FileSystem::PathExists(projectFilePath));
+    Renderer::SetWindowTitle(Format("Editor - {}", desc.name));
 }
 
 void EditorWindow::RenderEditorMain()

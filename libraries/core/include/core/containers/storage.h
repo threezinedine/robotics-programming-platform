@@ -27,7 +27,7 @@ namespace rpp
     {
     public:
         Storage(StorageDeallocator<T> deallocator = nullptr)
-            : m_deallocator(deallocator), m_elements(), m_freeIds(), m_count(0)
+            : m_deallocator(deallocator), m_elements(), m_freeIds(), m_count(0), m_capacity(0)
         {
         }
 
@@ -66,6 +66,7 @@ namespace rpp
             m_count++;
             if (m_freeIds.Size() == 0)
             {
+                m_capacity++;
                 T *object = RPP_NEW(T(std::forward<Args>(args)...));
                 m_elements.Push(object);
                 return m_elements.Size() - 1;
@@ -98,6 +99,11 @@ namespace rpp
             T *object = m_elements[id];
             if (object != nullptr)
             {
+                if (id == m_capacity - 1)
+                {
+                    m_capacity--;
+                }
+
                 if (m_deallocator)
                 {
                     m_deallocator(object);
@@ -116,10 +122,18 @@ namespace rpp
          */
         inline u32 GetNumberOfElements() const { return m_count; }
 
+        /**
+         * Retrieve the capacity of the storage (the highest id which is currently allocated in the storage).
+         *
+         * TODO: Use another mechanism for looping through the storage, not the capacity like this.
+         */
+        inline u32 GetCapacity() const { return m_capacity; }
+
     private:
         Array<T *> m_elements;                      ///< The storage for the objects of type T. Each object will be deleted manually (not by Array) when the storage is destroyed.
         Set<u32, defaultComparator<u32>> m_freeIds; ///< The free ids for the objects in the storage. The id of the deleted object can be reused for the new object.
         StorageDeallocator<T> m_deallocator;        ///< The deallocator function to free the memory of the stored object.
-        u32 m_count;
+        u32 m_count;                                ///< The number of currently allocated objects in the storage.
+        u32 m_capacity;                             ///< The highest id which is currently allocated in the storage.
     };
 } // namespace rpp

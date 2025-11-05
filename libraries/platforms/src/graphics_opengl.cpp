@@ -805,6 +805,16 @@ namespace rpp
 
         return static_cast<ButtonState>(glfwGetKey((GLFWwindow *)m_window, glfwKey));
     }
+
+    const char *Window::GetWindowTitle() const
+    {
+        return glfwGetWindowTitle((GLFWwindow *)m_window);
+    }
+
+    void Window::SetWindowTitle(const char *windowTitle)
+    {
+        glfwSetWindowTitle((GLFWwindow *)m_window, windowTitle);
+    }
 } // namespace rpp
 
 #endif

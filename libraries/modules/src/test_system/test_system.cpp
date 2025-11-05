@@ -211,6 +211,7 @@ namespace rpp
                 Format("import sys\nsys.path.append(\"{}/e2e\")",
                        String(STRINGIFY(RPP_PROJECT_DIR)))
                     .CStr());
+            PyRun_SimpleString("INVALID_ID = -1");
             PyRun_SimpleString(m_updateScriptContent.CStr());
             RPP_LOG_INFO("Running test case '{}'", m_runTestCaseName);
             PyRun_SimpleString(Format("{}()", m_runTestCaseName).CStr());

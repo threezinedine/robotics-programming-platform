@@ -258,4 +258,30 @@ namespace rpp
         TestSystem::GetInstance()->SetMainThreadWorking(TRUE);
         TestSystem::GetInstance()->Yield();
     }
+
+    u32 TestUtils::FindRendererIdByName(const String &rendererName)
+    {
+#if defined(RPP_USE_TEST)
+        Scope<Storage<Renderer::RendererData>> &renderers = Renderer::s_currentRenderers;
+        u32 currentCapacity = renderers->GetCapacity();
+
+        for (u32 rendererId = 0u; rendererId < currentCapacity; ++rendererId)
+        {
+            Renderer::RendererData *pData = renderers->Get(rendererId);
+
+            if (pData == nullptr)
+            {
+                continue;
+            }
+
+            if (String(pData->window->GetWindowTitle()) == rendererName)
+            {
+                return rendererId;
+            }
+        }
+#else
+        RPP_UNUSED(rendererName);
+#endif
+        return INVALID_ID;
+    }
 } // namespace rpp

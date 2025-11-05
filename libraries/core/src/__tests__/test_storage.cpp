@@ -82,3 +82,29 @@ TEST_F(StorageTest, FreeObject)
     // Reuse the id
     EXPECT_EQ(storage.Create(100), 0); // Create another object with value 100, should return 1 as the second id.
 }
+
+TEST_F(StorageTest, CountAndCapacityDifference)
+{
+    rpp::Storage<TestObject> storage;
+    EXPECT_EQ(storage.GetNumberOfElements(), 0);
+    EXPECT_EQ(storage.GetCapacity(), 0);
+
+    u32 id1 = storage.Create();
+    EXPECT_EQ(id1, 0);
+    EXPECT_EQ(storage.GetNumberOfElements(), 1);
+    EXPECT_EQ(storage.GetCapacity(), 1);
+
+    u32 id2 = storage.Create();
+    EXPECT_EQ(id2, 1);
+    EXPECT_EQ(storage.GetNumberOfElements(), 2);
+    EXPECT_EQ(storage.GetCapacity(), 2);
+
+    storage.Free(id1);
+    EXPECT_EQ(storage.GetNumberOfElements(), 1);
+    EXPECT_EQ(storage.GetCapacity(), 2);
+
+    u32 id3 = storage.Create();
+    EXPECT_EQ(id3, 0); // Reused id
+    EXPECT_EQ(storage.GetNumberOfElements(), 2);
+    EXPECT_EQ(storage.GetCapacity(), 2);
+}

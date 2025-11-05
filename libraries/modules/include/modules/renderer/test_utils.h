@@ -129,6 +129,15 @@ namespace rpp
          */
         static void AssertInputTextValue(const String &label, const String &expectedValue) RPP_E2E_BINDING;
 
+        /**
+         * Used for finding the renderer ID by its name.
+         *
+         * @param rendererName The name of the renderer to find.
+         *
+         * @return The ID of the renderer if found, otherwise returns an `INVALID_ID`.
+         */
+        static u32 FindRendererIdByName(const String &rendererName) RPP_E2E_BINDING;
+
     private:
         /**
          * Used each frame to update the ImGui testing utilities, performing actions on items if needed.
