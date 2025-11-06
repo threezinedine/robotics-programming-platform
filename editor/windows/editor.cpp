@@ -1,12 +1,22 @@
 #include "editor.h"
 
 #define NEW_PROJECT_MODAL_ID "New Project Modal"
+#define EDITOR_DATA_FILE "editor.json"
 
 EditorWindow::EditorWindow(u32 width, u32 height, const String &title)
     : GraphicSession(width, height, title),
       m_pCurrentProject(nullptr)
 {
-    m_pEditorData = EditorData::Create();
+    if (FileSystem::PathExists(EDITOR_DATA_FILE))
+    {
+        m_pEditorData = EditorData::Create(EDITOR_DATA_FILE);
+        RPP_LOG_INFO("Loaded editor data from editor.json.");
+    }
+    else
+    {
+        m_pEditorData = EditorData::Create();
+        m_pEditorData->Save(EDITOR_DATA_FILE);
+    }
 }
 
 EditorWindow::~EditorWindow()

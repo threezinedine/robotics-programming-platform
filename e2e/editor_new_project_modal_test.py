@@ -1,3 +1,4 @@
+import json
 from packages import *  # this import will be deleted in the core, this line must be at the top of the file
 import os
 from constants import *
@@ -138,6 +139,22 @@ def test_create_new_project():
         not TestUtils.IsItemFound(EDITOR_NEW_PROJECT_MODAL),
         "New Project modal not closed after creating a valid project",
     )
+
+
+def test_create_editor_data_file():
+    TestUtils.Assert(
+        FileSystem.PathExists("editor.json"),
+        "Editor data file is not created when opening the editor",
+    )
+
+
+def test_open_editor_data_if_exists():
+    pass
+    # editorData = EditorDataDescription(recentProjects=["/home/test1/project.rppproj"])
+    # editorDataFilePath = "editor.json"
+    # file: FileHandle = FileSystem.OpenFile(editorDataFilePath, FILE_WRITE)
+    # FileSystem.Write(file, json.dumps(asdict(editorData), indent=4))
+    # FileSystem.CloseFile(file)
 
 
 def test_new_project_effect():
