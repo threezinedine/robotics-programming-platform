@@ -103,6 +103,7 @@ void EditorWindow::MenuRender()
 
         if (ImGui::Button("Ok"))
         {
+            OpenProject(String(projectPath));
             ImGui::CloseCurrentPopup();
         }
         RPP_MARK_ITEM("Editor/OpenProjectTestModal/OK");
@@ -234,6 +235,21 @@ void EditorWindow::CreateProject(const String &projectFolder, const ProjectDescr
     FileSystem::CloseFile(file);
 
     RPP_ASSERT(FileSystem::PathExists(projectFilePath));
+    Renderer::SetWindowTitle(Format("Editor - {}", desc.name));
+}
+
+void EditorWindow::OpenProject(const String &projectFilePath)
+{
+    RPP_ASSERT(FileSystem::PathExists(projectFilePath));
+
+    FileHandle file = FileSystem::OpenFile(projectFilePath, FILE_MODE_READ);
+    String fileContent = FileSystem::Read(file);
+    FileSystem::CloseFile(file);
+
+    ProjectDescription desc = FromString<ProjectDescription>(fileContent);
+
+    m_pCurrentProject = new Project(desc);
+
     Renderer::SetWindowTitle(Format("Editor - {}", desc.name));
 }
 

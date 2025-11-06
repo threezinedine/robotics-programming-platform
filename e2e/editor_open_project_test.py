@@ -34,3 +34,8 @@ def test_open_project():
     TestUtils.Type(finalProjectPath)
     TestUtils.LeftClick(EDITOR_OPEN_PROJECT_OK_BUTTON)
     TestSystem.Wait(20)
+
+    TestUtils.Assert(
+        TestUtils.FindRendererIdByName(f"Editor - {testProjectName}") != INVALID_ID,
+        "Project was not opened successfully",
+    )

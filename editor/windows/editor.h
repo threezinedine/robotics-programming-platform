@@ -31,6 +31,8 @@ private:
 private:
     void CreateProject(const String &projectFolder, const ProjectDescription &desc);
 
+    void OpenProject(const String &projectFilePath);
+
 private:
     b8 m_openNewProjectModal = false; ///< Whether to open the New Project modal.
 
