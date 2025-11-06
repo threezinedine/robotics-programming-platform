@@ -59,6 +59,9 @@ void EditorWindow::MenuRender()
 #if defined(RPP_USE_TEST)
                     m_openOpenProjectTestModal = true;
 #else
+                    IGFD::FileDialogConfig config;
+                    config.path = ".";
+                    ImGuiFileDialog::Instance()->OpenDialog("OpenProjectDlgKey", "Open Project", ".rppproj", config);
 #endif
                 }
                 RPP_MARK_ITEM("Editor/MenuBar/File/Open/Project");
@@ -112,6 +115,16 @@ void EditorWindow::MenuRender()
         RPP_MARK_ITEM("Editor/OpenProjectTestModal");
     }
 #else
+    if (ImGuiFileDialog::Instance()->Display("OpenProjectDlgKey"))
+    {
+        if (ImGuiFileDialog::Instance()->IsOk())
+        {
+            std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
+            OpenProject(String(filePathName.c_str()));
+        }
+
+        ImGuiFileDialog::Instance()->Close();
+    }
 #endif
 }
 

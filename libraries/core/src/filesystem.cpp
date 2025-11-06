@@ -125,6 +125,8 @@ namespace rpp
 #else
 #endif
 
+        RPP_LOG_DEBUG("physicalpath before conversion: {} - cwd: {}", physicalPath, s_convertedCWD);
+
         if (physicalPath.SubString(0, s_convertedCWD.Length()) != s_convertedCWD)
         {
             physicalPath = s_temporaryPathRoot + "/" + s_convertedCWD + "/" + physicalPath;
@@ -148,6 +150,7 @@ namespace rpp
 
     void FileSystem::CreatePhysicalDirectory(const String &path)
     {
+        RPP_LOG_DEBUG("Creating physical directory at path: {}", path);
         Array<String> parts;
         SplitPath(parts, path);
         u32 partsCount = parts.Size();
@@ -157,6 +160,11 @@ namespace rpp
         for (u32 partIndex = 0; partIndex < partsCount; ++partIndex)
         {
             currentFolder = partIndex == 0 ? parts[partIndex] : currentFolder + "/" + parts[partIndex];
+
+            if (currentFolder == "")
+            {
+                continue;
+            }
 
             if (IsPhysicalPathExists(currentFolder))
             {
@@ -349,7 +357,7 @@ namespace rpp
 
         while (index < outParts.Size())
         {
-            if (outParts[index].Length() == 0)
+            if (outParts[index].Length() == 0 && index > 0)
             {
                 outParts.Erase(index);
             }
