@@ -40,6 +40,8 @@ int main(int argc, const char **argv)
         runtimeFilePath,
         String(""),
         runTestCaseName);
+
+    TestSystem::GetInstance()->Setup();
 #endif
 
     {

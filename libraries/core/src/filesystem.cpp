@@ -125,8 +125,6 @@ namespace rpp
 #else
 #endif
 
-        RPP_LOG_DEBUG("physicalpath before conversion: {} - cwd: {}", physicalPath, s_convertedCWD);
-
         if (physicalPath.SubString(0, s_convertedCWD.Length()) != s_convertedCWD)
         {
             physicalPath = s_temporaryPathRoot + "/" + s_convertedCWD + "/" + physicalPath;
@@ -150,7 +148,6 @@ namespace rpp
 
     void FileSystem::CreatePhysicalDirectory(const String &path)
     {
-        RPP_LOG_DEBUG("Creating physical directory at path: {}", path);
         Array<String> parts;
         SplitPath(parts, path);
         u32 partsCount = parts.Size();
@@ -201,8 +198,11 @@ namespace rpp
             Array<String> pathParts;
             SplitPath(pathParts, physicalPath);
 
-            String directoryPath = String::Join(pathParts, "/").SubString(0, physicalPath.Length() - pathParts[pathParts.Size() - 1].Length() - 1);
-            CreatePhysicalDirectory(directoryPath);
+            if (pathParts.Size() > 1)
+            {
+                String directoryPath = String::Join(pathParts, "/").SubString(0, physicalPath.Length() - pathParts[pathParts.Size() - 1].Length() - 1);
+                CreatePhysicalDirectory(directoryPath);
+            }
         }
 
         std::ios_base::openmode openMode;

@@ -77,7 +77,11 @@ def ExtractTestsFromFile(filePath: str) -> Test:
         for line in lines:
             line = line.strip()
             if line.startswith("def test_"):
-                test.testCases.append(line[4:-3])  # Remove "def " and "():"
+                firstParenIndex = line.find("(")
+                if firstParenIndex != -1:
+                    test.testCases.append(
+                        line[4:firstParenIndex]
+                    )  # Remove "def " and "():"
 
     return test
 

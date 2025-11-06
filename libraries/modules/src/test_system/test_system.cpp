@@ -194,8 +194,6 @@ namespace rpp
 #include "tmp/e2e_test_append.cpp"
         Py_Initialize();
         RPP_UNUSED(arg);
-        Signal::Wait(m_testThreadSignal);
-
         PyObject *globals = PyModule_GetDict(PyImport_AddModule("__main__"));
 
         if (globals == nullptr)
@@ -214,6 +212,22 @@ namespace rpp
 
 #include "tmp/e2e_python_module_create_enum.cpp"
 
+        // Run setup
+        {
+            PyRun_SimpleString(
+                Format("import sys\nsys.path.append(\"{}/e2e\")",
+                       String(STRINGIFY(RPP_PROJECT_DIR)))
+                    .CStr());
+            PyRun_SimpleString("INVALID_ID = -1");
+            PyRun_SimpleString("from context import setup_context, run_context, teardown_context");
+            PyRun_SimpleString("FILE_READ = 0\nFILE_WRITE = 1\nFILE_APPEND = 2");
+            PyRun_SimpleString(m_updateScriptContent.CStr());
+            PyRun_SimpleString(Format("setup_context({})", m_runTestCaseName).CStr());
+        }
+
+        Signal::Notify(m_mainThreadSignal);
+        Signal::Wait(m_testThreadSignal);
+
         String resultContent = ReadPhysicalFile(m_resultFilePath);
         Json resultsJson(resultContent);
         Json resultJson;
@@ -221,15 +235,12 @@ namespace rpp
 
         try
         {
-            PyRun_SimpleString(
-                Format("import sys\nsys.path.append(\"{}/e2e\")",
-                       String(STRINGIFY(RPP_PROJECT_DIR)))
-                    .CStr());
-            PyRun_SimpleString("INVALID_ID = -1");
-            PyRun_SimpleString("FILE_READ = 0\nFILE_WRITE = 1\nFILE_APPEND = 2");
-            PyRun_SimpleString(m_updateScriptContent.CStr());
             RPP_LOG_INFO("Running test case '{}'", m_runTestCaseName);
+#if 0
             int result = PyRun_SimpleString(Format("{}()", m_runTestCaseName).CStr());
+#else
+            int result = PyRun_SimpleString(Format("run_context({})", m_runTestCaseName).CStr());
+#endif
             Yield();
 
             if (result != 0)
@@ -271,7 +282,6 @@ namespace rpp
             }
             else
             {
-                RPP_LOG_DEBUG("Here");
                 resultJson.Set("status", true);
                 resultJson.Set("error", String(""));
             }
@@ -301,6 +311,11 @@ namespace rpp
         Signal::Notify(m_mainThreadSignal); // exit the test thread
 
         Py_Finalize();
+    }
+
+    void TestSystem::Setup()
+    {
+        Signal::Wait(m_mainThreadSignal);
     }
 
     void TestSystem::Update(f32 deltaTime)

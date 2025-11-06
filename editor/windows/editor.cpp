@@ -96,7 +96,7 @@ void EditorWindow::MenuRender()
             {
                 for (u32 recentIndex = 0u; recentIndex < recentProjectsCount; recentIndex++)
                 {
-                    const String &recentProjectPath = m_pEditorData->GetRecentProjects()[recentIndex];
+                    String recentProjectPath = m_pEditorData->GetRecentProjects()[recentIndex];
                     if (ImGui::MenuItem(recentProjectPath.CStr()))
                     {
                         OpenProject(recentProjectPath);

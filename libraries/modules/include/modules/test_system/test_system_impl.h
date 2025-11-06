@@ -43,6 +43,11 @@ namespace rpp
 
     public:
         /**
+         * Applying the bindings and run the setup script.
+         */
+        void Setup();
+
+        /**
          * Updates the test system by executing the update script if provided.
          *
          * @param deltaTime The time elapsed since the last update call.
@@ -50,6 +55,11 @@ namespace rpp
          * @note this function will be called from the main thread, with locking mechanism for coroutine behavior
          */
         void Update(f32 deltaTime);
+
+        /**
+         * Tears down the test system by executing the shutdown script if provided.
+         */
+        void Teardown();
 
         /**
          * @brief Checks if the test system should close, typically when all tests are done.

@@ -2,6 +2,7 @@ import json
 from packages import *  # this import will be deleted in the core, this line must be at the top of the file
 import os
 from constants import *
+from context import context
 
 
 def open_new_project_modal():
@@ -148,13 +149,25 @@ def test_create_editor_data_file():
     )
 
 
-def test_open_editor_data_if_exists():
-    pass
-    # editorData = EditorDataDescription(recentProjects=["/home/test1/project.rppproj"])
-    # editorDataFilePath = "editor.json"
-    # file: FileHandle = FileSystem.OpenFile(editorDataFilePath, FILE_WRITE)
-    # FileSystem.Write(file, json.dumps(asdict(editorData), indent=4))
-    # FileSystem.CloseFile(file)
+@context
+def create_editor_data_file():
+    editorData = EditorDataDescription(recentProjects=["/home/test/project.rpproj"])
+    editorDataFilePath = "editor.json"
+    file: FileHandle = FileSystem.OpenFile(editorDataFilePath, FILE_WRITE)
+    FileSystem.Write(file, json.dumps(asdict(editorData), indent=4))
+    FileSystem.CloseFile(file)
+
+
+def test_open_editor_data_if_exists(create_editor_data_file):
+    TestUtils.LeftClick(EDITOR_MENUBAR_FILE)
+    TestUtils.MoveToItem(EDITOR_MENUBAR_RECENTS)
+
+    TestSystem.Wait(10)
+
+    TestUtils.Assert(
+        TestUtils.IsItemFound(EDITOR_MENUBAR_RECENT_PROJECT_FORMAT.format(0)),
+        f"Created project {EDITOR_MENUBAR_RECENT_PROJECT_FORMAT.format(0)} is not listed in recent projects",
+    )
 
 
 def test_new_project_effect():
