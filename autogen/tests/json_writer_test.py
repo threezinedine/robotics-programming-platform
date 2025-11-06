@@ -182,6 +182,7 @@ struct RPP_JSON Address
     )
 
     expected = """
+#if 0
 struct AddressObject
 {
     PyObject_HEAD
@@ -195,7 +196,27 @@ static PyTypeObject AddressType = {
     .tp_itemsize = 0,
     .tp_flags = Py_TPFLAGS_DEFAULT,
     .tp_new = PyType_GenericNew,
+    .tp_dealloc = (destructor)PyObject_Del,
 };
+
+static PyObject* Create_Address(PyObject* self, PyObject* args)
+{
+    RPP_ASSERT(PyType_Ready(&AddressType) >= 0);
+
+    RPP_LOG_DEBUG("Here");
+    AddressObject* obj = PyObject_New(AddressObject, &AddressType);
+
+    RPP_LOG_DEBUG("Here");
+    if (!obj)
+    {
+        return nullptr;
+    }
+
+    // Initialize fields to default values
+    obj->data = Address();
+
+    return (PyObject*)obj;
+}
 
 static PyObject* ToString_Address(PyObject* self, PyObject* args)
 {
@@ -232,7 +253,7 @@ static PyObject* FromString_Address(PyObject* self, PyObject* args)
             return nullptr;
         }
 
-        obj->data = FromString<Address>(str);
+        obj->data = FromString<Address>(String(str));
         return (PyObject*)obj;
     }
     catch (const std::exception& e)
@@ -241,6 +262,7 @@ static PyObject* FromString_Address(PyObject* self, PyObject* args)
         return nullptr;
     }
 }
+#endif
 """
 
     AssertGenerateResult(result, expected)

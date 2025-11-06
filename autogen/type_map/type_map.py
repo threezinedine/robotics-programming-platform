@@ -1,3 +1,4 @@
+import re
 from .type_map_const import maps
 
 
@@ -53,11 +54,32 @@ class TypeMap:
         """
         cppType = cppType.replace("const ", "").replace("&", "").strip()
 
+        elementType = self._MatchArrayType(cppType)
+
+        if self._MatchArrayType(cppType) is not None:
+            if elementType:
+                return f"list[{self.Convert(elementType)}]"
+            else:
+                return "list"
+
         for typeMapping in self._typeMappings:
             for cppRegex in typeMapping[0]:
-                import re
-
                 if re.fullmatch(cppRegex, cppType):
                     return typeMapping[1]
 
         return cppType
+
+    def _MatchArrayType(self, cppType: str) -> str | None:
+        arrayMatch = re.match(r"^Array<(.+)>$", cppType)
+        if arrayMatch:
+            return arrayMatch.group(1)
+
+        arrayMatch = re.match(r"^List<(.+)>$", cppType)
+        if arrayMatch:
+            return arrayMatch.group(1)
+
+        vectorMatch = re.match(r"^std::vector<(.+)>$", cppType)
+        if vectorMatch:
+            return vectorMatch.group(1)
+
+        return None

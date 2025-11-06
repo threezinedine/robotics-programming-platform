@@ -357,7 +357,11 @@ namespace rpp
 
         while (index < outParts.Size())
         {
+#if RPP_PLATFORM_WINDOWS
+            if (outParts[index].Length() == 0)
+#else
             if (outParts[index].Length() == 0 && index > 0)
+#endif
             {
                 outParts.Erase(index);
             }

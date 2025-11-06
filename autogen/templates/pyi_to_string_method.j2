@@ -4,14 +4,11 @@
 class {{ struct.name }}:
 {% if struct.fields|length != 0 %}
 {% for field in struct.fields %}
-    {{ field.name }}: {{ field.type }}
+    {{ field.name }}: {{ convertCppTypeToPyType(field.type) }}
 {% endfor %}
 {% else-%}
     pass
 {% endif-%}
-
-def Create_{{ struct.name }}() -> {{ struct.name }}:
-    ...
 
 def ToString_{{ struct.name }}(obj: {{ struct.name }}) -> str:
     ...

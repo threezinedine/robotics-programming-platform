@@ -131,6 +131,7 @@ class Args:
 
         testParser.add_argument(
             "--scenario",
+            "-s",
             type=str,
             help="Specify the scenario to use when running the tests (default: empty_scenario)",
         )

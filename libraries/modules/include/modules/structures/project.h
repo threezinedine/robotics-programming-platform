@@ -1,5 +1,6 @@
 #pragma once
 #include "core/core.h"
+#include "utils.h"
 
 namespace rpp
 {
@@ -17,17 +18,7 @@ namespace rpp
      */
     class Project
     {
-    public:
-        Project();
-        Project(const ProjectDescription &desc);
-        Project(const Project &other);
-        ~Project();
-
-    public:
-        /// @brief Create a project from the given description.
-        /// @param desc The description of the project.
-        /// @return The created project pointer.
-        static Project *CreateProject(const ProjectDescription &desc);
+        STRUCTURE_SAVE_LOAD_DEFINE(Project);
 
     public:
         /**

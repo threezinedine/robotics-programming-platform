@@ -44,4 +44,9 @@ private:
      * The holded project, if `nullptr` means no project is opened.
      */
     Project *m_pCurrentProject;
+
+    /**
+     * The global data for the editor application, be loadded each time the editor is started.
+     */
+    EditorData *m_pEditorData;
 };

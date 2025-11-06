@@ -29,7 +29,7 @@ def ParserContentWrapper(text: str, includeLibs: list[str] = []) -> str:
 
 #define RPP_HIDE __attribute__((annotate("hide")))
 
-{" ".join([f'#include <{lib}>' for lib in includeLibs]) if includeLibs else ''}
+{"\n".join([f'#include <{lib}>' for lib in includeLibs]) if includeLibs else ''}
 
 {"using String = std::string;" if "string" in includeLibs else ""}
 

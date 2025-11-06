@@ -6,10 +6,12 @@ EditorWindow::EditorWindow(u32 width, u32 height, const String &title)
     : GraphicSession(width, height, title),
       m_pCurrentProject(nullptr)
 {
+    m_pEditorData = EditorData::Create();
 }
 
 EditorWindow::~EditorWindow()
 {
+    RPP_DELETE(m_pEditorData);
 }
 
 void EditorWindow::RenderImpl()
@@ -77,12 +79,25 @@ void EditorWindow::MenuRender()
 
             ImGui::Separator();
 
-            ImGui::BeginDisabled();
+            u32 recentProjectsCount = m_pEditorData->GetRecentProjects().Size();
+
+            ImGui::BeginDisabled(recentProjectsCount == 0);
             if (ImGui::BeginMenu("Recents"))
             {
+                for (u32 recentIndex = 0u; recentIndex < recentProjectsCount; recentIndex++)
+                {
+                    const String &recentProjectPath = m_pEditorData->GetRecentProjects()[recentIndex];
+                    if (ImGui::MenuItem(recentProjectPath.CStr()))
+                    {
+                        OpenProject(recentProjectPath);
+                    }
+                    RPP_MARK_ITEM(Format("Editor/MenuBar/File/Recents/RecentProject{}", recentIndex));
+                }
+
+                ImGui::EndMenu();
             }
-            ImGui::EndDisabled();
             RPP_MARK_ITEM("Editor/MenuBar/File/Recents");
+            ImGui::EndDisabled();
 
             ImGui::EndMenu();
         }
@@ -236,16 +251,14 @@ void EditorWindow::NewProjectModalRender()
 
 void EditorWindow::CreateProject(const String &projectFolder, const ProjectDescription &desc)
 {
-    m_pCurrentProject = Project::CreateProject(desc);
+    m_pCurrentProject = Project::Create(desc);
 
     String finalProjectPath = Format("{}/{}", projectFolder, desc.name);
     String projectFilePath = Format("{}/project.rppproj", finalProjectPath);
 
     FileSystem::CreateDirectory(finalProjectPath);
-    RPP_LOG_DEBUG("Project Path: {} - Project file: {}", finalProjectPath, projectFilePath);
-    FileHandle file = FileSystem::OpenFile(projectFilePath, FILE_MODE_WRITE);
-    FileSystem::Write(file, ToString(desc));
-    FileSystem::CloseFile(file);
+    m_pCurrentProject->Save(projectFilePath);
+    m_pEditorData->AddRecentProject(projectFilePath);
 
     RPP_ASSERT(FileSystem::PathExists(projectFilePath));
     Renderer::SetWindowTitle(Format("Editor - {}", desc.name));

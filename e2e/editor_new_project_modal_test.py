@@ -141,6 +141,17 @@ def test_create_new_project():
 
 
 def test_new_project_effect():
+    TestUtils.LeftClick(EDITOR_MENUBAR_FILE)
+    TestUtils.MoveToItem(EDITOR_MENUBAR_RECENTS)
+
+    TestSystem.Wait(10)
+
+    TestUtils.Assert(
+        not TestUtils.IsItemFound(EDITOR_MENUBAR_RECENT_PROJECT_FORMAT.format(0)),
+        "Recent projects list is not visible",
+    )
+    TestUtils.LeftClick(EDITOR_MENUBAR_FILE)
+
     open_new_project_modal()
     projectFolder = "/home/test"
     projectName = "test"
@@ -208,4 +219,14 @@ def test_new_project_effect():
     TestUtils.Assert(
         TestUtils.IsItemFound(EDITOR_FILES),
         "The files collapsing header does not exist.",
+    )
+
+    TestUtils.LeftClick(EDITOR_MENUBAR_FILE)
+    TestUtils.MoveToItem(EDITOR_MENUBAR_RECENTS)
+
+    TestSystem.Wait(10)
+
+    TestUtils.Assert(
+        TestUtils.IsItemFound(EDITOR_MENUBAR_RECENT_PROJECT_FORMAT.format(0)),
+        f"Created project {EDITOR_MENUBAR_RECENT_PROJECT_FORMAT.format(0)} is not listed in recent projects",
     )

@@ -380,12 +380,18 @@ struct RPP_JSON Work
 {
     int id RPP_JSON_KEY("work_id");
 };
+
+struct RPP_JSON Test
+{
+    Array<std::string> names RPP_JSON_KEY("names");
+};
 """,
         "pyi_to_string_method.j2",
-        [],
+        ["string"],
     )
 
     expected = """
+@dataclass
 class Vector3:
     pass
 
@@ -395,6 +401,7 @@ def ToString_Vector3(obj: Vector3) -> str:
 def FromString_Vector3(s: str) -> Vector3:
     ...
 
+@dataclass
 class Work:
     id: int
 
@@ -402,6 +409,16 @@ def ToString_Work(obj: Work) -> str:
     ...
 
 def FromString_Work(s: str) -> Work:
+    ...
+
+@dataclass
+class Test:
+    names: list[str]
+
+def ToString_Test(obj: Test) -> str:
+    ...
+
+def FromString_Test(s: str) -> Test:
     ...
 """
 

@@ -3,6 +3,8 @@
 
 namespace rpp
 {
+    STRUCTURE_SAVE_LOAD_IMPLEMENT(Project);
+
     Project::Project()
         : m_name("UnnamedProject")
     {
@@ -22,8 +24,10 @@ namespace rpp
     {
     }
 
-    Project *Project::CreateProject(const ProjectDescription &desc)
+    ProjectDescription Project::ToDescription() const
     {
-        return RPP_NEW(Project(desc));
+        ProjectDescription desc;
+        desc.name = m_name;
+        return desc;
     }
 }
