@@ -11,23 +11,13 @@ namespace rpp
     /**
      * @brief Callback which will be called automatically when the singleton manager is shutdown.
      */
-    typedef void (*SingletonDestroyFunc)(const SingletonEntry &);
+    typedef void (*SingletonDestroyFunc)(SingletonEntry &);
 
     struct SingletonEntry
     {
         String name;                      ///< Name of the singleton object.
         void *instance;                   ///< Pointer to the singleton object instance.
         SingletonDestroyFunc destroyFunc; ///< Function to destroy the singleton object.
-
-        SingletonEntry(const String &name, void *instance, SingletonDestroyFunc destroyFunc)
-            : name(name), instance(instance), destroyFunc(destroyFunc)
-        {
-        }
-
-        SingletonEntry(const SingletonEntry &other)
-            : name(other.name), instance(other.instance), destroyFunc(other.destroyFunc)
-        {
-        }
     };
 
     /**
@@ -81,17 +71,19 @@ public:                                 \
 private:                                \
     static classType *s_instsance;
 
-#define RPP_SINGLETON_IMPLEMENT(classType)                                                             \
-    classType *classType::s_instsance = nullptr;                                                       \
-    classType *classType::GetInstance()                                                                \
-    {                                                                                                  \
-        if (s_instsance == nullptr)                                                                    \
-        {                                                                                              \
-            s_instsance = RPP_NEW(classType());                                                        \
-            SingletonManager::RegisterSingleton(                                                       \
-                #classType,                                                                            \
-                s_instsance,                                                                           \
-                [](const SingletonEntry &entry) { delete static_cast<classType *>(entry.instance); }); \
-        }                                                                                              \
-        return s_instsance;                                                                            \
+#define RPP_SINGLETON_IMPLEMENT(classType)       \
+    classType *classType::s_instsance = nullptr; \
+    classType *classType::GetInstance()          \
+    {                                            \
+        if (s_instsance == nullptr)              \
+        {                                        \
+            s_instsance = RPP_NEW(classType);    \
+            SingletonManager::RegisterSingleton( \
+                #classType,                      \
+                s_instsance,                     \
+                [](SingletonEntry &entry) {         \
+                    static_cast<classType *>(entry.instance)->~classType(); \
+                    RPP_DELETE(entry.instance); });  \
+        }                                        \
+        return s_instsance;                      \
     }

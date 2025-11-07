@@ -21,6 +21,7 @@ namespace rpp
         {
             m_capacity = RPP_ARRAY_DEFAULT_CAPACITY;
             m_data = (T *)RPP_MALLOC(m_capacity * sizeof(T));
+            // RPP_NEW_ARRAY(m_data, T, m_capacity);
             m_size = 0;
         }
 
@@ -33,6 +34,7 @@ namespace rpp
         {
             m_capacity = capacity;
             m_data = (T *)RPP_MALLOC(m_capacity * sizeof(T));
+            // RPP_NEW_ARRAY(m_data, T, m_capacity);
             m_size = 0;
         }
 
@@ -85,6 +87,25 @@ namespace rpp
             }
 
             return m_data[index];
+        }
+
+        void operator=(const Array &other)
+        {
+            if (this == &other)
+            {
+                return;
+            }
+
+            Clear();
+            RPP_FREE(m_data);
+
+            m_capacity = other.m_capacity;
+            m_size = other.m_size;
+            m_data = (T *)RPP_MALLOC(m_capacity * sizeof(T));
+            for (u32 i = 0; i < m_size; i++)
+            {
+                RPP_NEW_REPLACE(&m_data[i], T(other.m_data[i]));
+            }
         }
 
         /**

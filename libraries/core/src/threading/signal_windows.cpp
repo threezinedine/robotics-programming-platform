@@ -49,7 +49,7 @@ namespace rpp
         SignalData *data = s_signals->Get(id);
         RPP_ASSERT(data != nullptr);
 
-        SignalDataImpl *pImplData = RPP_NEW(SignalDataImpl());
+        SignalDataImpl *pImplData = RPP_NEW(SignalDataImpl);
 
         data->pData = pImplData;
 

@@ -33,6 +33,6 @@ namespace rpp
 
     void SingletonManager::RegisterSingleton(const String &name, void *instance, SingletonDestroyFunc destroyFunc)
     {
-        s_singletonEntries->Push(SingletonEntry(name, instance, destroyFunc));
+        s_singletonEntries->Push(SingletonEntry{name, instance, destroyFunc});
     }
 } // namespace rpp

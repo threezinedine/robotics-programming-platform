@@ -15,6 +15,7 @@ int main(int argc, const char **argv)
 #endif
 
     Json args = parser.Parse(argc, argv);
+    parser.~ArgParser();
 
     SingletonManager::Initialize();
 #if defined(RPP_USE_TEST)

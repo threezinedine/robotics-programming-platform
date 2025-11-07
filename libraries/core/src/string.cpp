@@ -6,7 +6,12 @@ namespace rpp
 {
     String::String()
     {
+#if 0
         m_data = RPP_NEW(char[1]{'\0'});
+#else
+        RPP_NEW_ARRAY(m_data, char, 1);
+        memset(m_data, 0, 1);
+#endif
     }
 
     String::String(const char *str)
@@ -14,27 +19,43 @@ namespace rpp
         if (str)
         {
             size_t len = std::strlen(str);
+#if 0
             m_data = RPP_NEW(char[len + 1]);
-            std::strcpy(m_data, str);
+#else
+            RPP_NEW_ARRAY(m_data, char, len + 1);
+            memset(m_data, 0, len + 1);
+#endif
+            memcpy(m_data, str, len + 1);
         }
         else
         {
+#if 0
             m_data = RPP_NEW(char[1]{'\0'});
+#else
+            RPP_NEW_ARRAY(m_data, char, 1);
+            memset(m_data, 0, 1);
+#endif
         }
     }
 
     String::String(const String &other)
     {
         size_t len = std::strlen(other.m_data);
+#if 0
         m_data = RPP_NEW(char[len + 1]);
-        std::strcpy(m_data, other.m_data);
+#else
+        RPP_NEW_ARRAY(m_data, char, len + 1);
+        memset(m_data, 0, len + 1);
+#endif
+        memcpy(m_data, other.m_data, len + 1);
     }
 
     String::~String()
     {
         if (m_data != nullptr)
         {
-            delete[] m_data;
+            // RPP_DELETE_ARRAY(m_data, char, Length() + 1);
+            RPP_FREE(m_data);
             m_data = nullptr;
         }
     }
@@ -62,10 +83,17 @@ namespace rpp
     {
         if (this != &other)
         {
-            delete[] m_data;
+            // delete[] m_data;
+            RPP_FREE(m_data);
             size_t len = std::strlen(other.m_data);
+#if 0
             m_data = RPP_NEW(char[len + 1]);
-            std::strcpy(m_data, other.m_data);
+#else
+            RPP_NEW_ARRAY(m_data, char, len + 1);
+            memset(m_data, 0, len + 1);
+#endif
+            // std::strcpy(m_data, other.m_data);
+            memcpy(m_data, other.m_data, len + 1);
         }
     }
 
@@ -118,12 +146,19 @@ namespace rpp
             finalLength = static_cast<u32>(length);
         }
 
+#if 0
         char *subStr = RPP_NEW(char[finalLength + 1]);
-        std::strncpy(subStr, m_data + startIndex, finalLength);
+#else
+        char *subStr = nullptr;
+        RPP_NEW_ARRAY(subStr, char, finalLength + 1);
+        memset(subStr, 0, finalLength + 1);
+#endif
+        // std::strncpy(subStr, m_data + startIndex, finalLength);
+        memcpy(subStr, m_data + startIndex, finalLength);
         subStr[finalLength] = '\0';
 
         String result(subStr);
-        delete[] subStr;
+        RPP_FREE(subStr);
         return result;
     }
 
@@ -162,12 +197,20 @@ namespace rpp
     {
         size_t len1 = std::strlen(m_data);
         size_t len2 = std::strlen(other.m_data);
+#if 0
         char *newData = RPP_NEW(char[len1 + len2 + 1]);
-        std::strcpy(newData, m_data);
-        std::strcat(newData, other.m_data);
+#else
+        char *newData = nullptr;
+        RPP_NEW_ARRAY(newData, char, len1 + len2 + 1);
+
+        memset(newData, 0, len1 + len2 + 1);
+#endif
+        memcpy(newData, m_data, len1);
+        memcpy(newData + len1, other.m_data, len2);
+
         newData[len1 + len2] = '\0';
         String result(newData);
-        delete[] newData;
+        RPP_FREE(newData);
         return result;
     }
 
@@ -212,14 +255,20 @@ namespace rpp
     String String::ToLowerCase() const
     {
         size_t len = std::strlen(m_data);
+#if 0
         char *lowerData = RPP_NEW(char[len + 1]);
+#else
+        char *lowerData = nullptr;
+        RPP_NEW_ARRAY(lowerData, char, len + 1);
+        memset(lowerData, 0, len + 1);
+#endif
         for (size_t i = 0; i < len; i++)
         {
             lowerData[i] = static_cast<char>(std::tolower(m_data[i]));
         }
         lowerData[len] = '\0';
         String result(lowerData);
-        delete[] lowerData;
+        RPP_FREE(lowerData);
         return result;
     }
 

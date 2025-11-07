@@ -70,7 +70,7 @@ namespace rpp
 
             if (pFileEntry->pFileHandle != nullptr)
             {
-                RPP_DELETE(static_cast<std::ifstream *>(pFileEntry->pFileHandle));
+                RPP_DELETE(pFileEntry->pFileHandle);
             }
 
             RPP_DELETE(pFileEntry);
@@ -352,27 +352,31 @@ namespace rpp
         finalPath = finalPath.Replace("\\", "/", TRUE); // replace all backslashes with forward slashes
 
         finalPath.Split(outParts, "/");
-        u32 partsCount = outParts.Size();
-        u32 index = 0;
 
-        while (index < outParts.Size())
+        if (s_temporaryPathRoot != "")
         {
+            u32 partsCount = outParts.Size();
+            u32 index = 0;
+
+            while (index < outParts.Size())
+            {
 #if RPP_PLATFORM_WINDOWS
-            if (outParts[index].Length() == 0)
+                if (outParts[index].Length() == 0)
 #else
-            if (outParts[index].Length() == 0 && index > 0)
+                if (outParts[index].Length() == 0 && index > 0)
 #endif
-            {
-                outParts.Erase(index);
-            }
-            else
-            {
-                if (outParts[index].EndsWith(":"))
                 {
-                    outParts[index] = outParts[index].ToLowerCase();
-                    outParts[index] = outParts[index].SubString(0, outParts[index].Length() - 1);
+                    outParts.Erase(index);
                 }
-                index++;
+                else
+                {
+                    if (outParts[index].EndsWith(":"))
+                    {
+                        outParts[index] = outParts[index].ToLowerCase();
+                        outParts[index] = outParts[index].SubString(0, outParts[index].Length() - 1);
+                    }
+                    index++;
+                }
             }
         }
     }

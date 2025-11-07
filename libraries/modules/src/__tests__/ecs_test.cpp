@@ -143,7 +143,7 @@ protected:
 
 #define SYSTEM_SETUP(system, ...)                     \
     ComponentId requiredComponents[] = {__VA_ARGS__}; \
-    u32 systemId = ECS::RegisterSystem(RPP_NEW(system()), requiredComponents, sizeof(requiredComponents) / sizeof(ComponentId));
+    u32 systemId = ECS::RegisterSystem(RPP_NEW(system), requiredComponents, sizeof(requiredComponents) / sizeof(ComponentId));
 
 #define CREATE_ENTITY_WITH_AB_COMPONENTS(valueA, valueB)                  \
     ComponentA aData = {u32(valueA)};                                     \

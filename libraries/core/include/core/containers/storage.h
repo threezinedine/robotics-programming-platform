@@ -67,7 +67,7 @@ namespace rpp
             if (m_freeIds.Size() == 0)
             {
                 m_capacity++;
-                T *object = RPP_NEW(T(std::forward<Args>(args)...));
+                T *object = RPP_NEW(T, std::forward<Args>(args)...);
                 m_elements.Push(object);
                 return m_elements.Size() - 1;
             }
@@ -75,7 +75,7 @@ namespace rpp
             {
                 u32 id = m_freeIds[0];
                 m_freeIds.Remove(0);
-                T *object = RPP_NEW(T(std::forward<Args>(args)...));
+                T *object = RPP_NEW(T, std::forward<Args>(args)...);
                 m_elements[id] = object;
                 return id;
             }

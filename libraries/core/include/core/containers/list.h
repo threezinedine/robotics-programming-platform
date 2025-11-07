@@ -46,7 +46,7 @@ namespace rpp
          */
         void Push(const T &value, i32 index = -1)
         {
-            Node *newNode = RPP_NEW(Node());
+            Node *newNode = RPP_NEW(Node);
             m_size++;
             newNode->data = T(value);
 
@@ -99,7 +99,7 @@ namespace rpp
 
         void Push(T &&value, i32 index = -1)
         {
-            Node *newNode = RPP_NEW(Node());
+            Node *newNode = RPP_NEW(Node);
             m_size++;
             newNode->data = std::move(value);
 

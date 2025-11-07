@@ -74,7 +74,7 @@ namespace rpp
         {
             if (m_pHead == nullptr)
             {
-                Node *pNewNode = RPP_NEW(Node(T(element), nullptr));
+                Node *pNewNode = RPP_NEW(Node, T(element), nullptr);
                 pNewNode->data = element;
                 pNewNode->pNext = nullptr;
 
@@ -102,7 +102,7 @@ namespace rpp
                     return;
                 }
 
-                Node *pNewNode = RPP_NEW(Node(T(element), nullptr));
+                Node *pNewNode = RPP_NEW(Node, T(element), nullptr);
                 pNewNode->data = element;
 
                 if (pPrevious == nullptr)
@@ -120,7 +120,7 @@ namespace rpp
                 return;
             }
 
-            Node *pNewNode = RPP_NEW(Node(T(element), nullptr));
+            Node *pNewNode = RPP_NEW(Node, T(element), nullptr);
             pNewNode->data = element;
 
             if (pPrevious)

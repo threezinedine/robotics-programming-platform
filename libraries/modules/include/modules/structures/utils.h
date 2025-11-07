@@ -25,12 +25,12 @@ private:                                                          \
 #define STRUCTURE_SAVE_LOAD_IMPLEMENT(className)                                    \
     className *className::Create()                                                  \
     {                                                                               \
-        return RPP_NEW(className());                                                \
+        return RPP_NEW(className);                                                  \
     }                                                                               \
                                                                                     \
     className *className::Create(const className##Description &desc)                \
     {                                                                               \
-        return RPP_NEW(className(desc));                                            \
+        return RPP_NEW(className, desc);                                            \
     }                                                                               \
                                                                                     \
     className *className::Create(const String &filePath)                            \
@@ -41,7 +41,7 @@ private:                                                          \
         String fileContent = FileSystem::Read(file);                                \
         FileSystem::CloseFile(file);                                                \
                                                                                     \
-        return RPP_NEW(className(FromString<className##Description>(fileContent))); \
+        return RPP_NEW(className, FromString<className##Description>(fileContent)); \
     }                                                                               \
                                                                                     \
     void className::Save(const String &filePath) const                              \

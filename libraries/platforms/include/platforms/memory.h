@@ -4,14 +4,17 @@
 // ================== Operator overloads for new/delete ==================
 
 #if defined(RPP_PLATFORM_WINDOWS) && defined(RPP_DEBUG)
+#if 0
 void *operator new(size_t size);
 void *operator new[](size_t size);
 
 void *operator new(size_t size, const char *file, i32 line);
 void *operator new[](size_t size, const char *file, i32 line);
 
-void operator delete(void *ptr) noexcept;
 void operator delete[](void *ptr) noexcept;
+#endif
+
+void operator delete(void *ptr) noexcept;
 
 /**
  * @brief Allocates memory and tracks the allocation if memory tracking is enabled.
@@ -40,7 +43,7 @@ void Deallocate(void *ptr);
  *    MyClass *obj = RPP_NEW(MyClass()); // Allocates memory for MyClass and tracks it with file and line info.
  * ```
  */
-#define RPP_NEW(obj) new (__FILE__, __LINE__) obj
+#define RPP_NEW(obj, ...) new (Allocate(sizeof(obj), __FILE__, __LINE__)) obj(__VA_ARGS__)
 
 /**
  * @brief Macro to replace an existing object in place using placement new.
@@ -51,10 +54,8 @@ void Deallocate(void *ptr);
  * @brief Macro to deallocate memory and set the pointer to nullptr (which is a good practice to avoid dangling pointers).
  */
 #define RPP_DELETE(ptr) \
-    do                  \
-    {                   \
-        delete ptr;     \
-    } while (0)
+    delete ptr;         \
+    ptr = nullptr
 
 /**
  * @brief Macro to allocate memory without file and line information. Used for containers' allocations.
@@ -69,6 +70,8 @@ void Deallocate(void *ptr);
  */
 #define RPP_MALLOC(size) Allocate(size, __FILE__, __LINE__)
 
+// #define RPP_NEW_ARRAY(type, count) new (Allocate(sizeof(type) * (count), __FILE__, __LINE__)) type[count]
+
 /**
  * @brief Macro to deallocate memory.
  *
@@ -80,6 +83,30 @@ void Deallocate(void *ptr);
  * ```
  */
 #define RPP_FREE(ptr) Deallocate(ptr)
+
+#define RPP_NEW_ARRAY(ptr, type, count)                   \
+    do                                                    \
+    {                                                     \
+        ptr = (type *)RPP_MALLOC(sizeof(type) * (count)); \
+        for (u32 index = 0u; index < (count); ++index)    \
+        {                                                 \
+            new (&((type *)ptr)[index]) type();           \
+        }                                                 \
+    } while (0)
+
+#define RPP_DELETE_ARRAY(ptr, type, count)             \
+    do                                                 \
+    {                                                  \
+        if (ptr != nullptr)                            \
+        {                                              \
+            continue;                                  \
+        }                                              \
+        for (u32 index = 0u; index < (count); ++index) \
+        {                                              \
+            ((type *)ptr)[index].~type();              \
+        }                                              \
+        RPP_FREE(ptr);                                 \
+    } while (0)
 
 struct MemoryObject
 {
@@ -104,8 +131,10 @@ u64 GetMemoryAllocated();
  * @brief Get the memory allocation report.
  * @param buffer Buffer to store the report.
  * @param bufferSize Size of the buffer.
+ *
+ * @return TRUE if has the memory leaks, FALSE otherwise.
  */
-void GetMemoryAllocated(char *buffer, size_t bufferSize);
+b8 GetMemoryAllocated(char *buffer, size_t bufferSize);
 #elif defined(RPP_PLATFORM_LINUX)
 #define RPP_NEW(obj) new obj
 
@@ -114,6 +143,9 @@ void GetMemoryAllocated(char *buffer, size_t bufferSize);
 
 #define RPP_MALLOC(size) malloc(size)
 #define RPP_FREE(ptr) free(ptr)
+
+#define RPP_NEW_ARRAY(ptr, type, count) new type[count]
+#define RPP_DELETE_ARRAY(ptr, type, count) delete[] ptr
 
 #define RPP_ENABLE_MEMORY_TRACKING
 #else

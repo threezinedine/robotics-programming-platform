@@ -386,7 +386,7 @@ namespace rpp
             return;
         }
 
-        TestUtils::s_pCurrentItemData = RPP_NEW(TestUtils::ItemData());
+        TestUtils::s_pCurrentItemData = RPP_NEW(TestUtils::ItemData);
         TestUtils::ItemData *pCurrentData = TestUtils::s_pCurrentItemData;
         pCurrentData->label = label;
         pCurrentData->position = ImGui::GetItemRectMin();

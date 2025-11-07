@@ -7,19 +7,19 @@ namespace rpp
     typedef nlohmann::json JSON;
 
     Json::Json()
-        : m_data(RPP_NEW(JSON(JSON::parse("{}"))))
+        : m_data(RPP_NEW(JSON, JSON::parse("{}")))
     {
     }
 
     Json::Json(const String &jsonString)
     {
-        m_data = RPP_NEW(JSON(JSON::parse(jsonString.CStr())));
+        m_data = RPP_NEW(JSON, JSON::parse(jsonString.CStr()));
     }
 
     Json::Json(const Json &other)
     {
         JSON *otherJson = static_cast<JSON *>(other.m_data);
-        m_data = RPP_NEW(JSON(JSON::parse(otherJson->dump())));
+        m_data = RPP_NEW(JSON, JSON::parse(otherJson->dump()));
     }
 
     Json::Json(Json &&other) noexcept
@@ -33,7 +33,8 @@ namespace rpp
     {
         if (m_data != nullptr)
         {
-            delete static_cast<JSON *>(m_data);
+            // delete static_cast<JSON *>(m_data);
+            RPP_DELETE(m_data);
             m_data = nullptr;
         }
     }

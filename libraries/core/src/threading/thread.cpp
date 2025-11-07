@@ -89,7 +89,7 @@ namespace rpp
         RPP_ASSERT(!pData->isRunning);
 
         pData->isRunning = TRUE;
-        std::thread *pThread = RPP_NEW(std::thread(pData->entry, pData->pData));
+        std::thread *pThread = RPP_NEW(std::thread, pData->entry, pData->pData);
         pData->pHandle = pThread;
     }
 

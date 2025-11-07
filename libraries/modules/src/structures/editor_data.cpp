@@ -10,30 +10,12 @@ namespace rpp
 
     EditorData::EditorData(const EditorDataDescription &desc)
     {
-        u32 recentCount = desc.recentProjects.Size();
-        if (recentCount > m_recentProjects.Capacity())
-        {
-            m_recentProjects.Reallocate(recentCount);
-        }
-
-        for (u32 i = 0; i < recentCount; i++)
-        {
-            m_recentProjects.Push(desc.recentProjects[i]);
-        }
+        m_recentProjects = desc.recentProjects;
     }
 
     EditorData::EditorData(const EditorData &other)
     {
-        u32 recentCount = other.m_recentProjects.Size();
-        if (recentCount > m_recentProjects.Capacity())
-        {
-            m_recentProjects.Reallocate(recentCount);
-        }
-
-        for (u32 i = 0; i < recentCount; i++)
-        {
-            m_recentProjects.Push(other.m_recentProjects[i]);
-        }
+        m_recentProjects = other.m_recentProjects;
     }
 
     EditorData::~EditorData()
