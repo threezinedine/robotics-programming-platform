@@ -43,11 +43,12 @@ namespace rpp
             s_convertedCWD = s_convertedCWD.Replace("I:/", "i/");
 
             // create the temporary directory if it does not exist
-#if defined(RPP_PLATFORM_WINDOWS)
+#if defined(RPP_PLATFORM_WINDOWS) && 0
             if (std::filesystem::exists(s_temporaryPathRoot.CStr()))
             {
                 // delete existing folder
                 _rmdir(s_temporaryPathRoot.CStr());
+				RPP_LOG_DEBUG("Removed existing temporary folder at path: {}", s_temporaryPathRoot);
             }
 
             _mkdir(s_temporaryPathRoot.CStr());
@@ -90,7 +91,7 @@ namespace rpp
         {
             // Note: This is a simple implementation and may not handle all cases (e.g., nested directories).
             // For a robust solution, consider using a library like Boost.Filesystem or std::filesystem (C++17).
-            std::filesystem::remove_all(s_temporaryPathRoot.CStr());
+            // std::filesystem::remove_all(s_temporaryPathRoot.CStr());
             //_rmdir(s_temporaryPathRoot.CStr());
             s_temporaryPathRoot = "";
         }

@@ -15,7 +15,14 @@ RESULTS_FILE_PATH = os.path.join(
 )
 
 if os.name == "nt":
-    raise Exception("This script is not supported on Windows.")
+    EDITOR_TEST_DIR = os.path.join(
+        PROJECT_BASE_DIR,
+        "editor",
+        "build",
+        "dev",
+        "Debug",
+    )
+    EDITOR_TEST_EXE = os.path.join(EDITOR_TEST_DIR, "RppEditor_test.exe")
 else:
     EDITOR_TEST_DIR = os.path.join(
         PROJECT_BASE_DIR,
@@ -29,7 +36,7 @@ else:
 @dataclass
 class Test:
     fileName: str = field(default="")
-    testCases: list[str] = field(default_factory=list)
+    testCases: list[str] = field(default_factory=list)  # type: ignore
 
     def __repr__(self) -> str:
         return f"<Test name={self.fileName} testCases={self.testCases} />"
@@ -96,6 +103,7 @@ def RetrieveAllTests() -> None:
 
 
 def RunCommand(command: str, cwd: str | None = None) -> None:
+    print(f"[DEBUG] Running command: {command}")
     subprocess.run(command, shell=True, cwd=cwd)
 
 
@@ -107,17 +115,25 @@ def main():
     if os.path.exists(RESULTS_FILE_PATH):
         os.remove(RESULTS_FILE_PATH)
 
-        with open(RESULTS_FILE_PATH, "w") as resultsFile:
-            resultsFile.write("[]")
+    with open(RESULTS_FILE_PATH, "w") as resultsFile:
+        resultsFile.write("[]")
+
+    isTestFound = False
+    runTests: list[str] = []  # all tests to run
 
     if args.Project == "editor":
         for test in editorTests:
             for testCase in test.testCases:
                 if args.Scenario is None or args.Scenario == testCase:
+                    isTestFound = True
+                    runTests.append(testCase)
                     RunCommand(
                         f"{EDITOR_TEST_EXE} {test.fileName} {testCase}",
                         cwd=EDITOR_TEST_DIR,
                     )
+
+    if args.Scenario is not None and not isTestFound:
+        print(f"Not found the test {args.Scenario}")
 
     table = Table(
         title="🚀 [bold magenta]TEST RESULTS[/]",
@@ -136,13 +152,22 @@ def main():
             assert "status" in result, "Each result must have a 'status' field."
             assert "error" in result, "Each result must have an 'error' field."
 
+            if result["name"] not in runTests:
+                continue
+
             table.add_row(
                 result["name"],
                 "[green]PASSED[/]" if result["status"] else "[red]FAILED[/]",
                 result["error"],
             )
+            runTests.remove(result["name"])
 
-        Console().print(table)
+    for remainingTest in runTests:
+        table.add_row(
+            remainingTest, "[red]ERROR[/]", "The test maybe crashed unexpectedly."
+        )
+
+    Console().print(table)
 
 
 if __name__ == "__main__":

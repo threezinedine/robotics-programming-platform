@@ -9,7 +9,7 @@ setupCalls: dict[str, Any] = (
 setupCallsOrder: list[str] = []  # store the order of the setup calls
 
 
-def context(func: Callable) -> Callable:
+def context(func: Callable[..., Any]) -> Callable[..., Any]:
     """
     The decorator which mark the function for context tracking.
     """
@@ -30,7 +30,7 @@ def context(func: Callable) -> Callable:
     return func
 
 
-def setup_context(testFunc: Callable) -> None:
+def setup_context(testFunc: Callable[..., Any]) -> None:
     """
     Used for running the function with context tracking, all the args will be automatically passed if it's possible,
         else the error will be raised.
@@ -55,12 +55,12 @@ def setup_context(testFunc: Callable) -> None:
     _run_setup_internal(testFunc.__name__, called=False)
 
 
-def run_context(testFunc: Callable) -> Any:
+def run_context(testFunc: Callable[..., Any]) -> Any:
     """
     Used for running the function with context tracking, all the args will be automatically passed if it's possible,
         else the error will be raised.
     """
-    args = []
+    args: list[Any] = []
     funcSignature = functionSignatures[testFunc.__name__]
     for argName, _ in funcSignature.parameters.items():
         if argName not in functionNames:
@@ -104,7 +104,7 @@ def _run_setup_internal(functionName: str, called: bool = True) -> None:
             setupCallsOrder.append(functionName)
         return
 
-    args = []
+    args: list[Any] = []
 
     for argName, _ in funcSignature.parameters.items():
         if argName not in functionNames:

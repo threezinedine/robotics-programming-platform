@@ -48,7 +48,7 @@ namespace rpp
             m_data = (T *)RPP_MALLOC(m_capacity * sizeof(T));
             for (u32 i = 0; i < m_size; i++)
             {
-                RPP_NEW_REPLACE(&other.m_data[i], T(other.m_data[i]));
+                RPP_NEW_REPLACE(&m_data[i], T(other.m_data[i]));
             }
         }
 

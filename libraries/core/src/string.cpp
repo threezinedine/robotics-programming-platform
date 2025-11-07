@@ -50,6 +50,12 @@ namespace rpp
         memcpy(m_data, other.m_data, len + 1);
     }
 
+    String::String(String &&other) noexcept
+    {
+        m_data = other.m_data;
+        other.m_data = nullptr;
+    }
+
     String::~String()
     {
         if (m_data != nullptr)

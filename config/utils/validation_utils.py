@@ -3,7 +3,6 @@ All utils for validating something (such as whether a command exists on the comm
 """
 
 import os
-import subprocess
 import shutil
 
 from ..logger import logger

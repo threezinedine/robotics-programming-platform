@@ -3,7 +3,7 @@ import subprocess
 import shutil
 
 from .path_utils import GetAbsoluteBuildDir, CreateRecursiveDirIfNotExists
-from config.utils.validation_utils import ValidateCommandExists
+from .validation_utils import ValidateCommandExists, ValidateEnvDirExists
 
 from .path_utils import GetAbsoluteBuildDir
 from ..logger import logger
@@ -263,17 +263,19 @@ def RunCppProjectTest(
 
     assert executable is not None, f"No test executable found in '{executableDir}'."
 
+    ValidateEnvDirExists(projectDir="testui", recreate=False)
+
     try:
         logger.info(f"Building project in '{projectDir}'...")
         buildCommand = f"cmake --build {buildDir} --config {cmakeBuildType}"
         RunCommand(buildCommand, cwd=buildDir)
 
+        TEST_UI_DIR = os.path.join(Constants.ABSOLUTE_BASE_DIR, "testui")
         if os.name == "nt":
-            raise NotImplementedError(
-                "Running C++ project tests is not implemented on Windows yet."
+            TEST_UI_PYTHON_EXE = os.path.join(
+                TEST_UI_DIR, "venv", "Scripts", "python.exe"
             )
         else:
-            TEST_UI_DIR = os.path.join(Constants.ABSOLUTE_BASE_DIR, "testui")
             TEST_UI_PYTHON_EXE = os.path.join(TEST_UI_DIR, "venv", "bin", "python3")
 
         runCommand = f"{TEST_UI_PYTHON_EXE} main.py --project {projectDir}"

@@ -158,7 +158,7 @@ def create_editor_data_file():
     FileSystem.CloseFile(file)
 
 
-def test_open_editor_data_if_exists(create_editor_data_file):
+def test_open_editor_data_if_exists(create_editor_data_file: None):
     TestUtils.LeftClick(EDITOR_MENUBAR_FILE)
     TestUtils.MoveToItem(EDITOR_MENUBAR_RECENTS)
 

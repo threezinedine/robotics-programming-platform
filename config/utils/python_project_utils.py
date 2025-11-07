@@ -125,7 +125,7 @@ def _GetListOfTemplateFiles() -> list[str]:
     return templateFiles
 
 
-def _GetUIFileList() -> list[str]:
+def _GetUIFileList() -> list[str]:  # type: ignore
     """
     Getting all the .ui file in the `assets/uis` directory (the output from Qt Designer).
 

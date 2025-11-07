@@ -27,6 +27,8 @@ namespace rpp
          */
         String(const String &other);
 
+        String(String &&other) noexcept;
+
         ~String();
 
     public:
