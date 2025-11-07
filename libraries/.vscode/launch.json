@@ -7,9 +7,20 @@
             "preLaunchTask": "Build Libraries",
             "program": "${workspaceFolder}/build/dev/core/RPPCore_tests",
             "args": [
-                "--gtest_filter=SignalTest.*"
+                "--gtest_filter=*.SplitPathWithLeadingAndTrailingSlash"
             ],
             "cwd": "${workspaceFolder}/build/dev/core",
+        },
+        {
+            "name": "Debug Modules Test",
+            "type": "cppdbg",
+            "request": "launch",
+            "preLaunchTask": "Build Libraries",
+            "program": "${workspaceFolder}/build/dev/modules/RPPModules_tests",
+            "args": [
+                // "--gtest_filter=*.SplitPathWithLeadingAndTrailingSlash"
+            ],
+            "cwd": "${workspaceFolder}/build/dev/modules",
         }
     ]
 }

@@ -34,7 +34,7 @@ namespace rpp
         if (m_data != nullptr)
         {
             // delete static_cast<JSON *>(m_data);
-            RPP_DELETE(m_data);
+            RPP_DELETE(static_cast<JSON*>(m_data));
             m_data = nullptr;
         }
     }

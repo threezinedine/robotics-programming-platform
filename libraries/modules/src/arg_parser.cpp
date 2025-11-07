@@ -36,6 +36,7 @@ namespace rpp
             }
 
             result.Set(firstArgDef.name, String(argv[1]));
+            return result;
         }
 
         RPP_ASSERT(m_argumentDefinitions.Size() == 2);

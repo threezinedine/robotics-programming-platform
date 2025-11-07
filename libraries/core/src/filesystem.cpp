@@ -71,7 +71,21 @@ namespace rpp
 
             if (pFileEntry->pFileHandle != nullptr)
             {
-                RPP_DELETE(pFileEntry->pFileHandle);
+                switch (pFileEntry->mode)
+                {
+                case FILE_MODE_READ:
+                    RPP_DELETE(static_cast<std::ifstream*>(pFileEntry->pFileHandle));
+                    break;
+                case FILE_MODE_WRITE:
+                    RPP_DELETE(static_cast<std::ofstream*>(pFileEntry->pFileHandle));
+                    break;
+                case FILE_MODE_READ_WRITE:
+                    RPP_DELETE(static_cast<std::fstream*>(pFileEntry->pFileHandle));
+                    break;
+                
+                default:
+                    RPP_UNREACHABLE();
+                }
             }
 
             RPP_DELETE(pFileEntry);

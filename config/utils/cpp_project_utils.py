@@ -341,6 +341,7 @@ def RunLibrariesTest(
                     executable = fileCompletePath
                     break
 
+
         if executable is None:
             raise FileNotFoundError(f"No executable found in '{executableDir}'.")
 
@@ -348,10 +349,7 @@ def RunLibrariesTest(
 
         logger.info(f"Running project '{projectDir}'...")
         logger.debug(f"Executing command: {command}")
-        subprocess.run(
-            command,
-            cwd=buildDir,
-        )
+        RunCommand(command, cwd=executableDir)
     except Exception as e:
         logger.error(f"Failed to run project '{projectDir}': {e}")
         raise RuntimeError(f"Failed to run project '{projectDir}'.") from e

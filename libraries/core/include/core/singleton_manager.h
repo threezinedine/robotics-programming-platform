@@ -82,8 +82,7 @@ private:                                \
                 #classType,                      \
                 s_instsance,                     \
                 [](SingletonEntry &entry) {         \
-                    static_cast<classType *>(entry.instance)->~classType(); \
-                    RPP_DELETE(entry.instance); });  \
+                    RPP_DELETE(static_cast<classType *>(entry.instance)); });  \
         }                                        \
         return s_instsance;                      \
     }

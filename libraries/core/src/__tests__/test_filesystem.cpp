@@ -91,10 +91,18 @@ TEST_F(FileSystemTest, SplitPathWithLeadingAndTrailingSlash)
     Array<String> parts;
     rpp::FileSystem::SplitPath(parts, "/folder/subfolder/file/");
 
+#if RPP_PLATFORM_WINDOWS
     ASSERT_EQ(parts.Size(), 3);
     ASSERT_STREQ(parts[0].CStr(), "folder");
     ASSERT_STREQ(parts[1].CStr(), "subfolder");
     ASSERT_STREQ(parts[2].CStr(), "file");
+#else 
+    ASSERT_EQ(parts.Size(), 4);
+    ASSERT_STREQ(parts[0].CStr(), "");
+    ASSERT_STREQ(parts[1].CStr(), "folder");
+    ASSERT_STREQ(parts[2].CStr(), "subfolder");
+    ASSERT_STREQ(parts[3].CStr(), "file");
+#endif
 }
 
 TEST_F(FileSystemTest, SpaceFolderName)

@@ -136,16 +136,16 @@ u64 GetMemoryAllocated();
  */
 b8 GetMemoryAllocated(char *buffer, size_t bufferSize);
 #elif defined(RPP_PLATFORM_LINUX)
-#define RPP_NEW(obj) new obj
+#define RPP_NEW(obj, ...) new obj(__VA_ARGS__)
 
 #define RPP_NEW_REPLACE(addr, obj) new (addr) obj
-#define RPP_DELETE(ptr) delete ptr
+#define RPP_DELETE(ptr) delete (ptr)
 
 #define RPP_MALLOC(size) malloc(size)
 #define RPP_FREE(ptr) free(ptr)
 
-#define RPP_NEW_ARRAY(ptr, type, count) new type[count]
-#define RPP_DELETE_ARRAY(ptr, type, count) delete[] ptr
+#define RPP_NEW_ARRAY(ptr, type, count) do { ptr = new type[count]; } while (0)
+#define RPP_DELETE_ARRAY(ptr, type, count) delete[] (ptr)
 
 #define RPP_ENABLE_MEMORY_TRACKING
 #else
