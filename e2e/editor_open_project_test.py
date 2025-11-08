@@ -71,6 +71,18 @@ def test_open_project_from_recents(setup_recent_projects: None):
         "The opened project is not loaded"
     )
 
+    # the current project should be at the top of recents now
+    file: FileHandle = FileSystem.OpenFile("editor.json", FILE_READ)
+    fileContent = FileSystem.Read(file)
+    editorData = EditorDataDescription(**json.loads(fileContent))
+    FileSystem.CloseFile(file)
+
+    TestUtils.Assert(
+        editorData.recentProjects[0] == "/home/test/project.rppproj",
+        "The opened project is not at the top of recents list"
+    )
+
+
 def test_auto_open_first_project_in_recents(setup_recent_projects: None):
     TestSystem.Wait(10)
 

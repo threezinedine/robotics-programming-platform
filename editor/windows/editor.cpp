@@ -302,6 +302,9 @@ void EditorWindow::OpenProject(const String &projectFilePath)
     }
 
     m_pCurrentProject = RPP_NEW(Project, desc);
+    RPP_LOG_DEBUG("Opened project: {}", projectFilePath);
+    m_pEditorData->AddRecentProject(projectFilePath);
+    m_pEditorData->Save(EDITOR_DATA_FILE);
 
     Renderer::SetWindowTitle(Format("Editor - {}", desc.name));
 }

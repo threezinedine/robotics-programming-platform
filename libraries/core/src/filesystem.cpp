@@ -340,7 +340,6 @@ namespace rpp
     b8 FileSystem::PathExists(const String &path)
     {
         RPP_UNUSED(path);
-        RPP_LOG_DEBUG("Checking if path exists: {}", path);
         return IsPhysicalPathExists(getPhysicalPath(path));
     }
 
