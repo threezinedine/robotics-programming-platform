@@ -2,7 +2,7 @@ from packages import *  # this import will be deleted in the core, this line mus
 import json
 from constants import *
 from dataclasses import asdict
-from context import context
+from setup import setup_recent_projects #type: ignore
 
 
 def test_open_project():
@@ -25,7 +25,7 @@ def test_open_project():
     FileSystem.CreateDirectory(testProjectPath)
     FileSystem.CreateDirectory(f"{testProjectPath}/{testProjectName}")
 
-    desc: ProjectDescription = ProjectDescription(name=testProjectName)
+    desc: ProjectDescription = ProjectDescription(name=testProjectName, functionNames=[])
 
     file: FileHandle = FileSystem.OpenFile(finalProjectPath, FILE_WRITE)
     FileSystem.Write(file, json.dumps(asdict(desc), indent=4))
@@ -40,24 +40,6 @@ def test_open_project():
         TestUtils.FindRendererIdByName(f"Editor - {testProjectName}") != INVALID_ID,
         "Project was not opened successfully",
     )
-
-@context
-def setup_recent_projects():
-    editorData = EditorDataDescription(recentProjects=["/home/ok/project.rppproj", "/home/test/project.rppproj"])
-    editorDataFilePath = "editor.json"
-    file: FileHandle = FileSystem.OpenFile(editorDataFilePath, FILE_WRITE)
-    FileSystem.Write(file, json.dumps(asdict(editorData), indent=4))
-    FileSystem.CloseFile(file)
-
-    projectData = ProjectDescription(name="test")
-    file: FileHandle = FileSystem.OpenFile("/home/test/project.rppproj", FILE_WRITE)
-    FileSystem.Write(file, json.dumps(asdict(projectData), indent=4))
-    FileSystem.CloseFile(file)
-
-    projectData = ProjectDescription(name="ok")
-    file: FileHandle = FileSystem.OpenFile("/home/ok/project.rppproj", FILE_WRITE)
-    FileSystem.Write(file, json.dumps(asdict(projectData), indent=4))
-    FileSystem.CloseFile(file)
 
 def test_open_project_from_recents(setup_recent_projects: None):
     TestUtils.LeftClick(EDITOR_MENUBAR_FILE)

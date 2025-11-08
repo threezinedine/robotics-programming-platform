@@ -157,7 +157,7 @@ def create_editor_data_file():
     FileSystem.Write(file, json.dumps(asdict(editorData), indent=4))
     FileSystem.CloseFile(file)
 
-    projectData = ProjectDescription(name="test")
+    projectData = ProjectDescription(name="test", functionNames=[])
     file: FileHandle = FileSystem.OpenFile("/home/test/project.rppproj", FILE_WRITE)
     FileSystem.Write(file, json.dumps(asdict(projectData), indent=4))
     FileSystem.CloseFile(file)

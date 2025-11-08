@@ -12,3 +12,28 @@ def test_create_new_function(setup_recent_projects: None):
     )
 
     TestUtils.LeftClick(EDITOR_MAIN_TOOLBAR_NEW_POPUP_FUNCTION)
+    TestSystem.Wait(20)
+
+    TestUtils.LeftClick(EDITOR_FILES)
+
+    TestSystem.Wait(10)
+
+    TestUtils.Assert(
+        TestUtils.IsItemFound(EDITOR_MAIN_FUNCTION_FORMAT.format("NewFunction")),
+        "New function editor not opened after creating new function",
+    )
+
+    TestUtils.LeftClick(EDITOR_MAIN_TOOLBAR_NEW)
+    TestSystem.Wait(10)
+    TestUtils.LeftClick(EDITOR_MAIN_TOOLBAR_NEW_POPUP_FUNCTION)
+    TestSystem.Wait(10)
+
+    TestUtils.Assert(
+        TestUtils.IsItemFound(EDITOR_MAIN_FUNCTION_FORMAT.format("NewFunction")),
+        "New function editor not opened after creating new function",
+    )
+
+    TestUtils.Assert(
+        TestUtils.IsItemFound(EDITOR_MAIN_FUNCTION_FORMAT.format("NewFunction (Copy)")),
+        "New function editor not opened after creating new function",
+    )

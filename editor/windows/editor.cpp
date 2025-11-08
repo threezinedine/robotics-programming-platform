@@ -322,6 +322,14 @@ void EditorWindow::EditorMainRender()
 
     if (ImGui::CollapsingHeader("Files"))
     {
+        u32 functionCount = m_pCurrentProject->GetFunctionNames().Size();
+
+        for (u32 functionIndex = 0; functionIndex < functionCount; functionIndex++)
+        {
+            const String &functionName = m_pCurrentProject->GetFunctionNames()[functionIndex];
+            ImGui::Text("%s", functionName.CStr());
+            RPP_MARK_ITEM(Format("Editor/Files/Function/{}", functionName));
+        }
     }
     RPP_MARK_ITEM("Editor/Files");
 }
@@ -339,6 +347,8 @@ void EditorWindow::EditorMainToolbarRender()
     {
         if (ImGui::MenuItem("Function"))
         {
+            RPP_ASSERT(m_pCurrentProject != nullptr);
+            m_pCurrentProject->AddNewFunction();
         }
         RPP_MARK_ITEM("Editor/Main/Toolbar/New/Popup/Function");
 

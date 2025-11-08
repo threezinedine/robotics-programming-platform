@@ -24,3 +24,5 @@ EDITOR_MAIN_TOOLBAR_NEW = "Editor/Main/Toolbar/New"
 EDITOR_MAIN_TOOLBAR_NEW_POPUP = "Editor/Main/Toolbar/New/Popup"
 EDITOR_MAIN_TOOLBAR_NEW_POPUP_FUNCTION = "Editor/Main/Toolbar/New/Popup/Function"
 EDITOR_MAIN_TOOLBAR_RELOAD = "Editor/Main/Toolbar/Reload"
+
+EDITOR_MAIN_FUNCTION_FORMAT = "Editor/Files/Function/{}"
