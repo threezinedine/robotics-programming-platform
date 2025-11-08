@@ -9,6 +9,8 @@ public:
     ~EditorWindow();
 
 protected:
+    void InitializeImpl() override;
+
     void RenderImpl() override;
 
     void ShutdownImpl() override;

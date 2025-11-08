@@ -24,6 +24,16 @@ EditorWindow::~EditorWindow()
     RPP_DELETE(m_pEditorData);
 }
 
+void EditorWindow::InitializeImpl()
+{
+    RPP_ASSERT(m_pEditorData != nullptr);
+
+    if (m_pEditorData->GetRecentProjects().Size() > 0)
+    {
+        OpenProject(m_pEditorData->GetRecentProjects()[0]);
+    }
+}
+
 void EditorWindow::RenderImpl()
 {
     ImGuiIO &io = ImGui::GetIO();
@@ -284,7 +294,13 @@ void EditorWindow::OpenProject(const String &projectFilePath)
 
     ProjectDescription desc = FromString<ProjectDescription>(fileContent);
 
-    m_pCurrentProject = new Project(desc);
+    if (m_pCurrentProject != nullptr)
+    {
+        RPP_DELETE(m_pCurrentProject);
+        m_pCurrentProject = nullptr;
+    }
+
+    m_pCurrentProject = RPP_NEW(Project, desc);
 
     Renderer::SetWindowTitle(Format("Editor - {}", desc.name));
 }

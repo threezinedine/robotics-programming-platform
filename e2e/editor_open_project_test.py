@@ -48,12 +48,12 @@ def setup_recent_projects():
     file: FileHandle = FileSystem.OpenFile(editorDataFilePath, FILE_WRITE)
     FileSystem.Write(file, json.dumps(asdict(editorData), indent=4))
     FileSystem.CloseFile(file)
-    FileSystem.CreateDirectory("/home")
 
     projectData = ProjectDescription(name="test")
     file: FileHandle = FileSystem.OpenFile("/home/test/project.rppproj", FILE_WRITE)
     FileSystem.Write(file, json.dumps(asdict(projectData), indent=4))
     FileSystem.CloseFile(file)
+
     projectData = ProjectDescription(name="ok")
     file: FileHandle = FileSystem.OpenFile("/home/ok/project.rppproj", FILE_WRITE)
     FileSystem.Write(file, json.dumps(asdict(projectData), indent=4))
@@ -69,4 +69,12 @@ def test_open_project_from_recents(setup_recent_projects: None):
     TestUtils.Assert(
         TestUtils.FindRendererIdByName("Editor - test") != INVALID_ID,
         "The opened project is not loaded"
+    )
+
+def test_auto_open_first_project_in_recents(setup_recent_projects: None):
+    TestSystem.Wait(10)
+
+    TestUtils.Assert(
+        TestUtils.FindRendererIdByName("Editor - ok") != INVALID_ID,
+        "The first project in recents was not auto-opened on editor start"
     )

@@ -151,12 +151,16 @@ def test_create_editor_data_file():
 
 @context
 def create_editor_data_file():
-    editorData = EditorDataDescription(recentProjects=["/home/test/project.rpproj"])
+    editorData = EditorDataDescription(recentProjects=["/home/test/project.rppproj"])
     editorDataFilePath = "editor.json"
     file: FileHandle = FileSystem.OpenFile(editorDataFilePath, FILE_WRITE)
     FileSystem.Write(file, json.dumps(asdict(editorData), indent=4))
     FileSystem.CloseFile(file)
 
+    projectData = ProjectDescription(name="test")
+    file: FileHandle = FileSystem.OpenFile("/home/test/project.rppproj", FILE_WRITE)
+    FileSystem.Write(file, json.dumps(asdict(projectData), indent=4))
+    FileSystem.CloseFile(file)
 
 def test_open_editor_data_if_exists(create_editor_data_file: None):
     TestUtils.LeftClick(EDITOR_MENUBAR_FILE)
