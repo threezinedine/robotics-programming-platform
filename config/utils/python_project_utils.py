@@ -244,6 +244,12 @@ def RunPythonProject(
             "__init__.pyi",
         )
 
+        e2ePythonInitOutput = os.path.join(
+            pyiE2EGRuntimeOutputDir,
+            "__init__.py",
+        )
+
+
         isAnyHeaderFileChanged = any(
             IsFileModified(headerFile)
             for headerFile in allHeaderFiles + allTemplateFiles + [typeMapFiles]
@@ -254,6 +260,7 @@ def RunPythonProject(
             e2eJsonWriterBindingOutput
         )
         isPyiE2EGRuntimeFileExists = os.path.isfile(pyiE2EGRuntimeOutput)
+        isE2EPythonInitFileExists = os.path.isfile(e2ePythonInitOutput)
         isE2EAppendOutputFileExists = os.path.isfile(e2eAppendOutput)
         isE2EJsonWriterAppendOutputFileExists = os.path.isfile(
             e2eJsonWriterAppendOutput
@@ -271,6 +278,7 @@ def RunPythonProject(
             and isE2EOutputFileExists
             and isE2EJsonWriterBindingOutputFileExists
             and isPyiE2EGRuntimeFileExists
+            and isE2EPythonInitFileExists
             and isE2EAppendOutputFileExists
             and isE2EJsonWriterAppendOutputFileExists
             and isE2EPythonModuleImportOutputFileExists
@@ -376,6 +384,13 @@ def RunPythonProject(
             pyiE2EGRuntimeOutput,
         ]
 
+        e2eInitOutputArgs = argCommon + [
+            "--template",
+            os.path.join(cwd, "templates", "e2e_python_init_binding.j2"),
+            "--output",
+            e2ePythonInitOutput,
+        ]
+
         logger.info("Header files have changed. Running autogen...")
 
         try:
@@ -397,6 +412,11 @@ def RunPythonProject(
                 pyiE2EGRuntimeOutputArgs
             )
             RunCommand(pyiE2EGRuntimeCommand, cwd=cwd)
+
+            e2eInitCommand = f"{pythonExe} {mainScript} " + " ".join(
+                e2eInitOutputArgs
+            )
+            RunCommand(e2eInitCommand, cwd=cwd)
 
             e2eAppendCommand = " ".join([pythonExe, mainScript] + e2eAppendOutputArgs)
             RunCommand(e2eAppendCommand, cwd=cwd)

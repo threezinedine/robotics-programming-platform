@@ -337,6 +337,11 @@ void EditorWindow::EditorMainToolbarRender()
     ImGui::SetNextWindowPos(ImGui::GetCursorScreenPos());
     if (ImGui::BeginPopup("Editor/Main/Toolbar/New/Popup"))
     {
+        if (ImGui::MenuItem("Function"))
+        {
+        }
+        RPP_MARK_ITEM("Editor/Main/Toolbar/New/Popup/Function");
+
         ImGui::EndPopup();
     }
     RPP_MARK_ITEM("Editor/Main/Toolbar/New/Popup");

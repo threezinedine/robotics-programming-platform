@@ -1,5 +1,5 @@
-import json
 from packages import *  # this import will be deleted in the core, this line must be at the top of the file
+import json
 from constants import *
 from dataclasses import asdict
 from context import context

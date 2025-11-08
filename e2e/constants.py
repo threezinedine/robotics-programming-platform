@@ -21,4 +21,6 @@ EDITOR_NO_PROJECT_OPEN = "Editor/NoProjectOpen"
 EDITOR_FILES = "Editor/Files"
 
 EDITOR_MAIN_TOOLBAR_NEW = "Editor/Main/Toolbar/New"
+EDITOR_MAIN_TOOLBAR_NEW_POPUP = "Editor/Main/Toolbar/New/Popup"
+EDITOR_MAIN_TOOLBAR_NEW_POPUP_FUNCTION = "Editor/Main/Toolbar/New/Popup/Function"
 EDITOR_MAIN_TOOLBAR_RELOAD = "Editor/Main/Toolbar/Reload"

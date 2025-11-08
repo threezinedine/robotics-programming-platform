@@ -205,11 +205,7 @@ namespace rpp
 
         PyRun_SimpleString("from dataclasses import *");
 #include "tmp/e2e_json_writer_append.cpp"
-
 #include "tmp/e2e_python_module_import.cpp"
-
-        m_updateScriptContent = m_updateScriptContent.Replace("from packages import *", ""); // remove the first line, which is used for typing hint only. (from packages import *)
-
 #include "tmp/e2e_python_module_create_enum.cpp"
 
         // Run setup
@@ -218,9 +214,7 @@ namespace rpp
                 Format("import sys\nsys.path.append(\"{}/e2e\")",
                        String(STRINGIFY(RPP_PROJECT_DIR)))
                     .CStr());
-            PyRun_SimpleString("INVALID_ID = -1");
             PyRun_SimpleString("from context import setup_context, run_context, teardown_context");
-            PyRun_SimpleString("FILE_READ = 0\nFILE_WRITE = 1\nFILE_APPEND = 2");
             PyRun_SimpleString(m_updateScriptContent.CStr());
             PyRun_SimpleString(Format("setup_context({})", m_runTestCaseName).CStr());
         }
