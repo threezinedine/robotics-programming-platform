@@ -2,6 +2,7 @@ import json
 from packages import *  # this import will be deleted in the core, this line must be at the top of the file
 from constants import *
 from dataclasses import asdict
+from context import context
 
 
 def test_open_project():
@@ -38,4 +39,34 @@ def test_open_project():
     TestUtils.Assert(
         TestUtils.FindRendererIdByName(f"Editor - {testProjectName}") != INVALID_ID,
         "Project was not opened successfully",
+    )
+
+@context
+def setup_recent_projects():
+    editorData = EditorDataDescription(recentProjects=["/home/ok/project.rppproj", "/home/test/project.rppproj"])
+    editorDataFilePath = "editor.json"
+    file: FileHandle = FileSystem.OpenFile(editorDataFilePath, FILE_WRITE)
+    FileSystem.Write(file, json.dumps(asdict(editorData), indent=4))
+    FileSystem.CloseFile(file)
+    FileSystem.CreateDirectory("/home")
+
+    projectData = ProjectDescription(name="test")
+    file: FileHandle = FileSystem.OpenFile("/home/test/project.rppproj", FILE_WRITE)
+    FileSystem.Write(file, json.dumps(asdict(projectData), indent=4))
+    FileSystem.CloseFile(file)
+    projectData = ProjectDescription(name="ok")
+    file: FileHandle = FileSystem.OpenFile("/home/ok/project.rppproj", FILE_WRITE)
+    FileSystem.Write(file, json.dumps(asdict(projectData), indent=4))
+    FileSystem.CloseFile(file)
+
+def test_open_project_from_recents(setup_recent_projects: None):
+    TestUtils.LeftClick(EDITOR_MENUBAR_FILE)
+    TestUtils.MoveToItem(EDITOR_MENUBAR_RECENTS)
+    TestUtils.LeftClick(EDITOR_MENUBAR_RECENT_PROJECT_FORMAT.format(1))
+
+    TestSystem.Wait(100)
+
+    TestUtils.Assert(
+        TestUtils.FindRendererIdByName("Editor - test") != INVALID_ID,
+        "The opened project is not loaded"
     )
