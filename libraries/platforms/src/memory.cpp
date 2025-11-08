@@ -1,4 +1,4 @@
-#if defined(RPP_PLATFORM_WINDOWS) && defined(RPP_DEBUG)
+#if defined(RPP_DEBUG)
 
 #include <cstdlib>
 #include "platforms/console.h"
@@ -74,10 +74,12 @@ namespace
 
                 rpp::print(buffer, rpp::ConsoleColor::RED);
 
+#if RPP_PLATFORM_WINDOWS
                 if (hasLeak)
                 {
                     debugbreak();
                 }
+#endif
             }
 
             MemHeader *node = head;
@@ -266,11 +268,15 @@ b8 GetMemoryAllocated(char *buffer, size_t bufferSize)
 
         snprintf(buffer, bufferSize, "%sLeaked %zu bytes at address %p at %s:%d\n", buffer, node->size / 8, node->ptr, node->file != nullptr ? node->file : "unknown", node->line);
 
+#if RPP_PLATFORM_WINDOWS
         debugbreak();
+#else 
+        print(buffer, rpp::ConsoleColor::YELLOW);
+#endif
         node = node->next;
     }
 
-    snprintf(buffer, bufferSize, "%sTotal memory allocated: %zu bytes\n", buffer, total / 8);
+    snprintf(buffer, bufferSize, "%sTotal memory allocated: %llu bytes\n", buffer, total);
 
     if (total == 0)
     {

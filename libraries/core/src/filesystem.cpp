@@ -87,6 +87,7 @@ namespace rpp
                     RPP_UNREACHABLE();
                 }
             }
+            pFileEntry->pFileHandle = nullptr;
 
             RPP_DELETE(pFileEntry);
         };

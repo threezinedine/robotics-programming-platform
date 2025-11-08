@@ -3,7 +3,7 @@
 
 // ================== Operator overloads for new/delete ==================
 
-#if defined(RPP_PLATFORM_WINDOWS) && defined(RPP_DEBUG)
+#if defined(RPP_DEBUG)
 #if 0
 void *operator new(size_t size);
 void *operator new[](size_t size);
@@ -53,9 +53,7 @@ void Deallocate(void *ptr);
 /**
  * @brief Macro to deallocate memory and set the pointer to nullptr (which is a good practice to avoid dangling pointers).
  */
-#define RPP_DELETE(ptr) \
-    delete ptr;         \
-    ptr = nullptr
+#define RPP_DELETE(ptr) delete ptr;         
 
 /**
  * @brief Macro to allocate memory without file and line information. Used for containers' allocations.
@@ -114,12 +112,8 @@ struct MemoryObject
     ~MemoryObject();
 };
 
-#if defined(RPP_PLATFORM_WINDOWS)
 // Used at main.cpp to enable memory tracking.
 #define RPP_ENABLE_MEMORY_TRACKING MemoryObject __rpp_memory_object
-#else
-#define RPP_ENABLE_MEMORY_TRACKING
-#endif
 
 /**
  * @brief Get the total memory allocated (in bytes).
@@ -135,7 +129,7 @@ u64 GetMemoryAllocated();
  * @return TRUE if has the memory leaks, FALSE otherwise.
  */
 b8 GetMemoryAllocated(char *buffer, size_t bufferSize);
-#elif defined(RPP_PLATFORM_LINUX)
+#else
 #define RPP_NEW(obj, ...) new obj(__VA_ARGS__)
 
 #define RPP_NEW_REPLACE(addr, obj) new (addr) obj
@@ -148,6 +142,4 @@ b8 GetMemoryAllocated(char *buffer, size_t bufferSize);
 #define RPP_DELETE_ARRAY(ptr, type, count) delete[] (ptr)
 
 #define RPP_ENABLE_MEMORY_TRACKING
-#else
-#error "Memory tracking is only supported on Windows and Linux platforms."
 #endif
