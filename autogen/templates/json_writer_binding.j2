@@ -14,12 +14,12 @@ const String ToString<{{ struct.name }}>(const {{ struct.name }} &value)
     {% else-%}
     {
         u32 fieldsCount = value.{{ field.name }}.Size();
-        result.Set(String("{{ jsonKey }}"), Json("[]"));
-        Json fieldJson = result.Get<Json>(String("{{ jsonKey }}"));
+        Json fieldJson = Json("[]");
         for (u32 i = 0; i < fieldsCount; i++)
         {
             fieldJson.Append<{{ field.type|replace("Array<", "")|replace(">", "") }}>(value.{{ field.name }}[i]);
         }
+        result.Set(String("{{ jsonKey }}"), fieldJson);
     }
     {% endif-%}
     {% else-%}

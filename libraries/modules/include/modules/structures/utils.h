@@ -48,5 +48,6 @@ private:                                                          \
     {                                                                               \
         FileHandle file = FileSystem::OpenFile(filePath, FILE_MODE_WRITE);          \
         FileSystem::Write(file, ToString(this->ToDescription()));                   \
+        RPP_LOG_DEBUG("Data: {}", ToString(this->ToDescription()));                 \
         FileSystem::CloseFile(file);                                                \
     }

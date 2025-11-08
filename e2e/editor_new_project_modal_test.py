@@ -258,9 +258,24 @@ def test_new_project_effect():
     TestUtils.LeftClick(EDITOR_MENUBAR_FILE)
     TestUtils.MoveToItem(EDITOR_MENUBAR_RECENTS)
 
-    TestSystem.Wait(10)
+    TestSystem.Wait(100)
 
     TestUtils.Assert(
         TestUtils.IsItemFound(EDITOR_MENUBAR_RECENT_PROJECT_FORMAT.format(0)),
         f"Created project {EDITOR_MENUBAR_RECENT_PROJECT_FORMAT.format(0)} is not listed in recent projects",
     )
+
+    # editor file should contain the created project in recent projects
+    editorDataFilePath = "editor.json"
+    file: FileHandle = FileSystem.OpenFile(editorDataFilePath, FILE_READ)
+    fileContent = FileSystem.Read(file)
+
+    editorData: EditorDataDescription = EditorDataDescription(**json.loads(fileContent))
+
+    print("checking data", editorData, editorData.recentProjects)
+    TestUtils.Assert(
+        os.path.join(projectFolder, projectName, "project.rppproj") in editorData.recentProjects,
+        "Created project is not listed in editor data recent projects",
+    )
+
+    FileSystem.CloseFile(file)

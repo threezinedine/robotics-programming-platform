@@ -36,5 +36,7 @@ namespace rpp
 
     private:
         Array<String> m_recentProjects; ///< List of recent projects opened in the editor.
+
+        String m_dataFilePath; ///< The file path where the editor data is saved.
     };
 } // namespace rpp

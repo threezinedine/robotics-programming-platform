@@ -279,6 +279,7 @@ void EditorWindow::CreateProject(const String &projectFolder, const ProjectDescr
     FileSystem::CreateDirectory(finalProjectPath);
     m_pCurrentProject->Save(projectFilePath);
     m_pEditorData->AddRecentProject(projectFilePath);
+    m_pEditorData->Save(EDITOR_DATA_FILE);
 
     RPP_ASSERT(FileSystem::PathExists(projectFilePath));
     Renderer::SetWindowTitle(Format("Editor - {}", desc.name));
@@ -326,8 +327,16 @@ void EditorWindow::EditorMainToolbarRender()
 {
     if (ImGui::Button("New"))
     {
+        ImGui::OpenPopup("Editor/Main/Toolbar/New/Popup");
     }
     RPP_MARK_ITEM("Editor/Main/Toolbar/New");
+
+    ImGui::SetNextWindowPos(ImGui::GetCursorScreenPos());
+    if (ImGui::BeginPopup("Editor/Main/Toolbar/New/Popup"))
+    {
+        ImGui::EndPopup();
+    }
+    RPP_MARK_ITEM("Editor/Main/Toolbar/New/Popup");
 
     ImGui::SameLine();
 

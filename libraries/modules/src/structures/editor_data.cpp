@@ -26,6 +26,7 @@ namespace rpp
     {
         EditorDataDescription desc;
         desc.recentProjects = m_recentProjects;
+        RPP_LOG_DEBUG("Deserialized EditorData with {} recent projects.", desc.recentProjects.Size());
         return desc;
     }
 
