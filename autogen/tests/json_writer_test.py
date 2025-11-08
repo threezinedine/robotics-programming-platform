@@ -132,12 +132,12 @@ const String ToString<Item>(const Item &value)
 
     {
         u32 fieldsCount = value.values.Size();
-        result.Set(String("values"), Json("[]"));
-        Json fieldJson = result.Get<Json>(String("values"));
+        Json fieldJson = Json("[]");
         for (u32 i = 0; i < fieldsCount; i++)
         {
             fieldJson.Append<int>(value.values[i]);
-        }
+        }   
+        result.Set(String("values"), fieldJson);
     }
 
     return result.ToString();
