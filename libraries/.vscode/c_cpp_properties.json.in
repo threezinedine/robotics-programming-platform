@@ -5,13 +5,13 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/../externals/**",
-                "@@PYTHON_INCLUDE_DIR@@"
+                "{{ PYTHON_INCLUDE_DIR }}"
             ],
             "defines": [
                 "_DEBUG",
                 "UNICODE",
                 "_UNICODE",
-                "@@RPP_PLATFORM_DEFINE@@",
+                "{{ RPP_PLATFORM_DEFINE }}",
                 "RPP_DEBUG",
                 "RPP_USE_TEST",
                 "RPP_PROJECT_DIR"

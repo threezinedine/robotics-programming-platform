@@ -98,6 +98,7 @@ def main():
         data['PYTHON_INCLUDE_DIR'] = pythonIncludeDir
 
     renderedContent = template.render(**data)
+    print(data, renderedContent)
 
     with open(outputFile, "w", encoding="utf-8") as file:
         print(f"Generating: {outputFile}")

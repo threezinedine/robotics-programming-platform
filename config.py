@@ -25,7 +25,6 @@ def main():
     # ================== System Validation ==================
     ValidateCommandExists(Constants.PYTHON_SCRIPT)
     ValidateCommandExists("pip3")
-    GenerateTemplate("libraries/.vscode/c_cpp_properties.json.in")
 
     GenerateTemplate("gruntime/.vscode/c_cpp_properties.json.in")
     GenerateTemplate("gruntime/.vscode/tasks.json.in")

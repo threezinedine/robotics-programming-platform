@@ -6,29 +6,14 @@
             "request": "launch",
             "preLaunchTask": "Build Libraries",
 {% if PLATFORM == "Windows" %}
-            "program": "${workspaceFolder}/build/dev/core/Debug/RPPCore_tests.exe",
+            "program": "${workspaceFolder}/build/dev/Debug/RPPLibs_tests.exe",
 {% else %}
-            "program": "${workspaceFolder}/build/dev/core/RPPCore_tests",
+            "program": "${workspaceFolder}/build/dev/RPPLibs_tests",
 {% endif %}
             "args": [
                 "--gtest_filter=*.SplitPathWithLeadingAndTrailingSlash"
             ],
-            "cwd": "${workspaceFolder}/build/dev/core",
-        },
-        {
-            "name": "Debug Modules Test",
-            "type": "{{ CPP_DEBUG_TYPE }}",
-            "request": "launch",
-            "preLaunchTask": "Build Libraries",
-{% if PLATFORM == "Windows" %}
-            "program": "${workspaceFolder}/build/dev/modules/Debug/RPPModules_tests.exe",
-{% else %}
-            "program": "${workspaceFolder}/build/dev/modules/RPPModules_tests",
-{% endif %}
-            "args": [
-                // "--gtest_filter=*.SplitPathWithLeadingAndTrailingSlash"
-            ],
-            "cwd": "${workspaceFolder}/build/dev/modules",
+            "cwd": "${workspaceFolder}/build/dev",
         }
     ]
 }
