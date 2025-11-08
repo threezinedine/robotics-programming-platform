@@ -31,7 +31,10 @@ def main():
     GenerateTemplate("gruntime/.vscode/tasks.json.in")
     GenerateTemplate("gruntime/.vscode/launch.json.in")
 
-    GenerateTemplate("editor/.vscode/c_cpp_properties.json.in")
+    # GenerateTemplate("editor/.vscode/c_cpp_properties.json.in")
+    # GenerateTemplate("editor/.vscode/launch.json.in")
+    # GenerateTemplate("editor/.vscode/tasks.json.in")
+    RunPythonProject("templategen")
 
     if args.Project in PythonProjectNames:
         ValidateEnvDirExists(

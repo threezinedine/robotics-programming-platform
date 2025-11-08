@@ -14,13 +14,15 @@ def test_create_new_function(setup_recent_projects: None):
     TestUtils.LeftClick(EDITOR_MAIN_TOOLBAR_NEW_POPUP_FUNCTION)
     TestSystem.Wait(20)
 
-    TestUtils.LeftClick(EDITOR_FILES)
+    TestUtils.Enter()
 
-    TestSystem.Wait(10)
+    TestSystem.Wait(20)
+
+    input()
 
     TestUtils.Assert(
         TestUtils.IsItemFound(EDITOR_MAIN_FUNCTION_FORMAT.format("NewFunction")),
-        "New function editor not opened after creating new function",
+        "New function",
     )
 
     TestUtils.LeftClick(EDITOR_MAIN_TOOLBAR_NEW)

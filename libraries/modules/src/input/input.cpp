@@ -134,20 +134,19 @@ namespace rpp
 
     static i32 charToButton(char c);
 
-    b8 InputSystem::PressChar(char button)
+    b8 InputSystem::Press(KeyboardButton button)
     {
 #if defined(RPP_USE_TEST)
         u32 rendererId = Renderer::GetCurrentRendererId();
         RPP_ASSERT(rendererId < MAX_INPUT_SYSTEMS);
         RendererInputData &data = s_inputSystemsData[rendererId];
-        i32 keyButton = charToButton(button);
 
         if (!s_startEvent)
         {
             s_startEvent = TRUE;
             s_timer.Start();
             // Simulate key down
-            data.keyboardButton[keyButton] = ButtonState::PRESSED;
+            data.keyboardButton[button] = ButtonState::PRESSED;
             return FALSE;
         }
 
@@ -157,7 +156,7 @@ namespace rpp
         }
 
         // Simulate key up
-        data.keyboardButton[keyButton] = ButtonState::RELEASED;
+        data.keyboardButton[button] = ButtonState::RELEASED;
         s_startEvent = FALSE;
         return TRUE;
 #else

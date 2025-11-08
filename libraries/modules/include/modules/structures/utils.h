@@ -14,7 +14,7 @@ public:                                                           \
     static className *Create(const String &filePath);             \
     void Save(const String &filePath) const;                      \
                                                                   \
-private:                                                          \
+public:                                                           \
     className##Description ToDescription() const;
 
 /**

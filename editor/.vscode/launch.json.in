@@ -2,12 +2,14 @@
     "configurations": [
         {
             "name": "Editor",
-            "type": "cppdbg",
+            "type": "{{ CPP_DEBUG_TYPE }}",
             "request": "launch",
             "preLaunchTask": "build editor",
-
+{% if PLATFORM == "Windows" %}
+            "program": "${workspaceFolder}/build/dev/Debug/RppEditor.exe",
+{% else %}
             "program": "${workspaceFolder}/build/dev/RppEditor",
-
+{% endif %}
             "args": [],
             "cwd": "${workspaceRoot}"
         }

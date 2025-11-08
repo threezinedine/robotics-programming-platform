@@ -30,8 +30,11 @@
 		},
 		{
 			"name": "testui",
-			"path": "testui",
-			"python.pythonPath": "${workspaceFolder}/.venv/Scripts/python.exe"
+			"path": "testui"
+		},
+		{
+			"name": "templategen",
+			"path": "templategen"
 		},
 		{
 			"name": "robotics-programming-platform",

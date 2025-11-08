@@ -4,7 +4,15 @@
         {
             "label": "build editor",
             "type": "shell",
-
+{% if PLATFORM == "Windows" %}
+            "command": "python",
+            "args": [
+                "${workspaceFolder}/../config.py",
+                "-p",
+                "editor",
+                "build"
+            ],
+{% else %}
             "command": "sudo",
             "args": [
                 "python3",
@@ -13,7 +21,7 @@
                 "editor",
                 "build"
             ],
-
+{% endif %}
             "options": {
                 "cwd": "${workspaceFolder}/.."
             }

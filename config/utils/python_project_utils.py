@@ -178,18 +178,16 @@ def RunPythonProject(
     if not os.path.isfile(mainScript):
         raise FileNotFoundError(f"No main.py file found in '{projectDir}'.")
 
-    # args: list[str] = []
-
-    allHeaderFiles = _GetListOfHeaderFiles()
-    allTemplateFiles = _GetListOfTemplateFiles()
-    typeMapFiles = os.path.join(
-        Constants.ABSOLUTE_BASE_DIR,
-        "autogen",
-        "type_map",
-        "type_map_const.py",
-    )
-
     if projectDir == "autogen":
+        allHeaderFiles = _GetListOfHeaderFiles()
+        allTemplateFiles = _GetListOfTemplateFiles()
+        typeMapFiles = os.path.join(
+            Constants.ABSOLUTE_BASE_DIR,
+            "autogen",
+            "type_map",
+            "type_map_const.py",
+        )
+
         librariesTempDir = os.path.join(
             Constants.ABSOLUTE_BASE_DIR,
             "libraries",
@@ -460,6 +458,43 @@ def RunPythonProject(
         except Exception as e:
             logger.error(f"Failed to run Python project: {e}")
             raise RuntimeError(f"Failed to run Python project: {e}") from e
+    elif projectDir == "templategen":
+        editorVSCodeDir = os.path.join(
+            "editor",
+            ".vscode",
+        )
+
+        allTemplateFiles = [
+            os.path.join(
+                editorVSCodeDir,
+                "c_cpp_properties.json.in",
+            ),
+            os.path.join(
+                editorVSCodeDir,
+                "launch.json.in",
+            ),
+            os.path.join(
+                editorVSCodeDir,
+                "tasks.json.in",
+            ),
+        ]
+
+        for templateFile in allTemplateFiles:
+            if not IsFileModified(templateFile) and not force:
+                logger.debug(
+                    f"Template file not modified, skipping: {templateFile}")
+                continue
+
+            try:
+                logger.info(f"Running Python project in '{projectDir}'...")
+                runCommand = f'{pythonExe} {mainScript} -i "{os.path.join(Constants.ABSOLUTE_BASE_DIR, templateFile)}"'
+                RunCommand(runCommand, cwd=cwd)
+                logger.info(f"Python project '{projectDir}' finished successfully.")
+                UpdateFileCache(templateFile)
+
+            except Exception as e:
+                logger.error(f"Failed to run Python project: {e}")
+                raise RuntimeError(f"Failed to run Python project: {e}") from e
 
 
 def RunPythonProjectTest(projectDir: str, filter: str | None = None) -> None:

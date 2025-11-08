@@ -48,6 +48,7 @@ namespace rpp
             IMGUI_ACTION_FIND_ITEM,         ///< Just find the item without any action.
             IMGUI_ACTION_ASSERT_TEXT_INPUT, ///< Just find the item without any action.
             IMGUI_ACTION_TYPE,              ///< Type text into the focused item.
+            IMGUI_ACTION_ENTER,             ///< Type enter action
             IMGUI_ACTION_COUNT,
         };
 
@@ -120,6 +121,11 @@ namespace rpp
          * @param text The text to type into the focused item.
          */
         static void Type(const String &text) RPP_E2E_BINDING;
+
+        /**
+         * Used for returning the input
+         */
+        static void Enter() RPP_E2E_BINDING;
 
         /**
          * Used for asserting the value of an InputText item with a certain label.

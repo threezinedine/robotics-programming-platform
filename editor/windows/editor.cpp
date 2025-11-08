@@ -17,6 +17,8 @@ EditorWindow::EditorWindow(u32 width, u32 height, const String &title)
         m_pEditorData = EditorData::Create();
         m_pEditorData->Save(EDITOR_DATA_FILE);
     }
+
+    memset(m_editedFunctionName, 0, sizeof(m_editedFunctionName));
 }
 
 EditorWindow::~EditorWindow()
@@ -320,15 +322,52 @@ void EditorWindow::EditorMainRender()
 
     EditorMainToolbarRender();
 
+    if (m_focusFunctionNameInput)
+    {
+        ImGui::SetNextItemOpen(TRUE);
+    }
+
     if (ImGui::CollapsingHeader("Files"))
     {
         u32 functionCount = m_pCurrentProject->GetFunctionNames().Size();
 
+        bool isFunctionAdded = FALSE;
+
         for (u32 functionIndex = 0; functionIndex < functionCount; functionIndex++)
         {
-            const String &functionName = m_pCurrentProject->GetFunctionNames()[functionIndex];
-            ImGui::Text("%s", functionName.CStr());
-            RPP_MARK_ITEM(Format("Editor/Files/Function/{}", functionName));
+            String &functionName = m_pCurrentProject->GetFunctionNames()[functionIndex];
+
+            if (m_currentEditingFunctionIndex == functionIndex)
+            {
+                if (m_focusFunctionNameInput)
+                {
+                    ImGui::SetKeyboardFocusHere();
+                    m_focusFunctionNameInput = FALSE;
+                }
+
+                if (ImGui::InputText("###EditingFunctionName", m_editedFunctionName, sizeof(m_editedFunctionName), ImGuiInputTextFlags_EnterReturnsTrue))
+                {
+                    if (String(m_editedFunctionName) != functionName)
+                    {
+                        isFunctionAdded = TRUE;
+                    }
+                }
+                RPP_MARK_ITEM(Format("Editor/Files/Function/{}", functionName));
+            }
+            else 
+            {
+                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.0f, 1.0f));
+                ImGui::Selectable(functionName.CStr(), nullptr);
+                RPP_MARK_ITEM(Format("Editor/Files/Function/{}", functionName));
+                ImGui::PopStyleColor();
+            }
+        }
+
+        if (isFunctionAdded)
+        {
+            m_pCurrentProject->GetFunctionNames()[m_currentEditingFunctionIndex] = m_editedFunctionName;
+            memset(m_editedFunctionName, 0, sizeof(m_editedFunctionName));
+            m_currentEditingFunctionIndex = INVALID_ID;
         }
     }
     RPP_MARK_ITEM("Editor/Files");
@@ -349,6 +388,10 @@ void EditorWindow::EditorMainToolbarRender()
         {
             RPP_ASSERT(m_pCurrentProject != nullptr);
             m_pCurrentProject->AddNewFunction();
+            m_currentEditingFunctionIndex = m_pCurrentProject->GetFunctionNames().Size() - 1;
+            const char* newFunctionName = m_pCurrentProject->GetFunctionNames()[m_currentEditingFunctionIndex].CStr();
+            memcpy(m_editedFunctionName, newFunctionName, strlen(newFunctionName) + 1);
+            m_focusFunctionNameInput = TRUE;
         }
         RPP_MARK_ITEM("Editor/Main/Toolbar/New/Popup/Function");
 

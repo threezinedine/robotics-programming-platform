@@ -128,7 +128,7 @@ namespace rpp
          * while (!InputSystem::PressButton(KeyboardButton::KEY_A));
          * ```
          */
-        static b8 PressChar(char button);
+        static b8 Press(KeyboardButton button);
 
         /**
          * The callback which is assigned into the windows to update the current state of the input system.

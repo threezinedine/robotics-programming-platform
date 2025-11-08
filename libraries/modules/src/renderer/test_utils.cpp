@@ -122,18 +122,6 @@ namespace rpp
                 break;
             }
 
-#if 0
-            b8 characterDone = InputSystem::PressChar(s_pData->text.CStr()[s_pData->characterIndex]);
-            if (characterDone)
-            {
-                s_pData->characterIndex++;
-                if (s_pData->characterIndex >= s_pData->text.Length())
-                {
-                    TestSystem::GetInstance()->SetMainThreadWorking(FALSE);
-                    ResetCurrentItem();
-                }
-            }
-#else
             for (i32 i = 0; i < s_pData->text.Length(); i++)
             {
                 ImGuiIO &io = ImGui::GetIO();
@@ -142,7 +130,20 @@ namespace rpp
 
             TestSystem::GetInstance()->SetMainThreadWorking(FALSE);
             ResetCurrentItem();
-#endif
+
+            break;
+        }
+        case ImGuiItemAction::IMGUI_ACTION_ENTER:
+        {
+            b8 complete = InputSystem::Press(KeyboardButton::KEY_RETURN);
+
+            if (!complete)
+            {
+                break;
+            }
+
+            TestSystem::GetInstance()->SetMainThreadWorking(FALSE);
+            ResetCurrentItem();
 
             break;
         }
@@ -200,6 +201,19 @@ namespace rpp
         s_pData->label = "";
         s_pData->action = ImGuiItemAction::IMGUI_ACTION_TYPE;
         s_pData->text = text;
+        s_pData->characterIndex = 0;
+        s_findingFrameCount = 0;
+
+        TestSystem::GetInstance()->SetMainThreadWorking(TRUE);
+        TestSystem::GetInstance()->Yield();
+    }
+
+    void TestUtils::Enter()
+    {
+        RPP_ASSERT(s_pData != nullptr);
+        s_pData->label = "";
+        s_pData->action = ImGuiItemAction::IMGUI_ACTION_TYPE;
+        s_pData->text = "";
         s_pData->characterIndex = 0;
         s_findingFrameCount = 0;
 

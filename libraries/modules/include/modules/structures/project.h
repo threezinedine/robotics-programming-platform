@@ -28,6 +28,7 @@ namespace rpp
         inline const String &GetName();
 
         inline const Array<String> &GetFunctionNames() const { return m_functionNames; }
+        inline Array<String> &GetFunctionNames() { return m_functionNames; }
 
     public:
         /**

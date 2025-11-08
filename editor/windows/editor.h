@@ -36,10 +36,10 @@ private:
     void OpenProject(const String &projectFilePath);
 
 private:
-    b8 m_openNewProjectModal = false; ///< Whether to open the New Project modal.
+    b8 m_openNewProjectModal = FALSE; ///< Whether to open the New Project modal.
 
 #if defined(RPP_USE_TEST)
-    b8 m_openOpenProjectTestModal = false; ///< Whether to open the Open Project test modal. Only used in test builds.
+    b8 m_openOpenProjectTestModal = FALSE; ///< Whether to open the Open Project test modal. Only used in test builds.
 #endif
 
     /**
@@ -51,4 +51,8 @@ private:
      * The global data for the editor application, be loadded each time the editor is started.
      */
     EditorData *m_pEditorData;
+
+    char m_editedFunctionName[256] = ""; ///< The name of the function currently being edited.
+    u32 m_currentEditingFunctionIndex = INVALID_ID; ///< The index of the currently editing function.
+    b8 m_focusFunctionNameInput = FALSE; ///< Whether to focus the function name input box.
 };
