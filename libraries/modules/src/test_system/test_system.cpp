@@ -203,11 +203,6 @@ namespace rpp
             exit(-1);
         }
 
-        PyRun_SimpleString("from dataclasses import *");
-#include "tmp/e2e_json_writer_append.cpp"
-#include "tmp/e2e_python_module_import.cpp"
-#include "tmp/e2e_python_module_create_enum.cpp"
-
         // Run setup
         {
             PyRun_SimpleString(
