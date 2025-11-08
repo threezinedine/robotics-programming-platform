@@ -12,6 +12,11 @@ macro(RPPDefineOption OPTION_NAME DEFAULT)
 endmacro()
 
 macro(RPPTargetDefines TARGET_NAME)
+    foreach(DEFINE_VARIABLE ${RPP_DEFINE_VALUES})
+        message(STATUS "Adding definition ${DEFINE_VARIABLE}=${${DEFINE_VARIABLE}} to target ${TARGET_NAME}")
+        target_compile_definitions(${TARGET_NAME} PUBLIC ${DEFINE_VARIABLE}=${${DEFINE_VARIABLE}})
+    endforeach()
+
     foreach(DEFINE_VARIABLE ${RPP_OPTION_DEFINES})
         if(NOT ${${DEFINE_VARIABLE}} STREQUAL "OFF")
             message(STATUS "Adding definition ${DEFINE_VARIABLE}=${${DEFINE_VARIABLE}} to target ${TARGET_NAME}")
@@ -20,7 +25,16 @@ macro(RPPTargetDefines TARGET_NAME)
             message(STATUS "Skipping definition ${DEFINE_VARIABLE} for target ${TARGET_NAME}")
         endif()
     endforeach()
-    
+
+    if (RPP_PLATFORM_NAME STREQUAL "Windows")
+        target_compile_definitions(${TARGET_NAME} PUBLIC -DRPP_PLATFORM_WINDOWS)
+    elseif (RPP_PLATFORM_NAME STREQUAL "MacOS")
+        target_compile_definitions(${TARGET_NAME} PUBLIC -DRPP_PLATFORM_MACOS)
+    elseif (RPP_PLATFORM_NAME STREQUAL "Linux")
+        target_compile_definitions(${TARGET_NAME} PUBLIC -DRPP_PLATFORM_LINUX)
+    elseif (RPP_PLATFORM_NAME STREQUAL "Android")
+        target_compile_definitions(${TARGET_NAME} PUBLIC -DRPP_PLATFORM_ANDROID)
+    endif()
 endmacro()
 
 
@@ -29,15 +43,18 @@ macro(RPPProjectSetup)
         message("-----------------------------------------")
         message(STATUS "Setting up project ${PROJECT_NAME}")
         RPPOption(CMAKE_BUILD_TYPE "Debug")
-        RPPDefineOption(RPP_EDITOR OFF)
-        RPPDefineOption(RPP_PROJECT_DIR "${CMAKE_CURRENT_LIST_DIR}/..")
+        # RPPDefineOption(RPP_EDITOR OFF)
+        # RPPDefineOption(RPP_PROJECT_DIR "${CMAKE_CURRENT_LIST_DIR}/..")
 
         set(CMAKE_CXX_STANDARD 17)
         set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+        set(RPP_DEFINE_VALUES)
+
         set(RPP_CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}")
         set(TEMPORARY_RPP_BASE_DIR "${CMAKE_CURRENT_LIST_DIR}/..")
         cmake_path(SET RPP_BASE_DIR NORMALIZE ${TEMPORARY_RPP_BASE_DIR})
+        list(APPEND RPP_DEFINE_VALUES RPP_PROJECT_DIR)
 
         set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -67,21 +84,23 @@ macro(RPPDetectPlatform)
 
         if (WIN32)
             set(RPP_PLATFORM_NAME "Windows")
-            list(APPEND RPP_PLATFORM_DEFINES -DRPP_PLATFORM_WINDOWS)
+            set(RPP_PLATFORM_DEFINES -DRPP_PLATFORM_WINDOWS)
         elseif(APPLE)
             set(RPP_PLATFORM_NAME "MacOS")
-            list(APPEND RPP_PLATFORM_DEFINES -DRPP_PLATFORM_MACOS)
+            set(RPP_PLATFORM_DEFINES -DRPP_PLATFORM_MACOS)
         elseif(UNIX)
             set(RPP_PLATFORM_NAME "Linux")
-            list(APPEND RPP_PLATFORM_DEFINES -DRPP_PLATFORM_LINUX)
+            set(RPP_PLATFORM_DEFINES -DRPP_PLATFORM_LINUX)
         elseif(CMAKE_SYSTEM_NAME STREQUAL "Android")
             set(RPP_PLATFORM_NAME "Android")
-            list(APPEND RPP_PLATFORM_DEFINES -DRPP_PLATFORM_ANDROID)
+            set(RPP_PLATFORM_DEFINES -DRPP_PLATFORM_ANDROID)
         else()
             message(FATAL_ERROR "Unsupported platform")
         endif()
 
         message(STATUS "Detected platform: ${RPP_PLATFORM_NAME}")
+
+        list(APPEND RPP_DEFINE_VALUES RPP_PLATFORM_NAME)
 
         set(RPPDetectPlatform_DONE TRUE)
     endif()

@@ -315,7 +315,6 @@ def RunLibrariesTest(
     else:
         executableDir = os.path.join(
             buildDir,
-            projectDir,
         )
 
     try:

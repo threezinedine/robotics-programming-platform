@@ -31,9 +31,6 @@ def main():
     GenerateTemplate("gruntime/.vscode/tasks.json.in")
     GenerateTemplate("gruntime/.vscode/launch.json.in")
 
-    # GenerateTemplate("editor/.vscode/c_cpp_properties.json.in")
-    # GenerateTemplate("editor/.vscode/launch.json.in")
-    # GenerateTemplate("editor/.vscode/tasks.json.in")
     RunPythonProject("templategen")
 
     if args.Project in PythonProjectNames:
@@ -64,27 +61,11 @@ def main():
     if args.IsTest:
         if args.Project in CppProjectNames:
             if args.Project == "libraries":
-                # Special case for libraries project as it contains multiple tests
-                if args.Module in ["all", "core"]:
-                    RunLibrariesTest(
-                        projectDir="core",
-                        projectType=args.Type,
-                        filter=args.TestFilter,
-                    )
-
-                if args.Module in ["all", "modules"]:
-                    RunLibrariesTest(
-                        projectDir="modules",
-                        projectType=args.Type,
-                        filter=args.TestFilter,
-                    )
-
-                if args.Module in ["all", "applications"]:
-                    RunLibrariesTest(
-                        projectDir="applications",
-                        projectType=args.Type,
-                        filter=args.TestFilter,
-                    )
+                RunLibrariesTest(
+                    projectDir="core",
+                    projectType=args.Type,
+                    filter=args.TestFilter,
+                )
             else:
                 RunCppProjectTest(
                     projectDir=args.Project,
