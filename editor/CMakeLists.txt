@@ -37,7 +37,7 @@ add_executable(${PROJECT_NAME} ${EDITOR_SOURCES} ${EDITOR_HEADERS})
 target_link_libraries(
     ${PROJECT_NAME} 
     PRIVATE 
-    RPPApplications
+    RPPLibs
 )
 
 target_compile_definitions(
@@ -63,7 +63,7 @@ add_executable(
 target_link_libraries(
     ${EDITOR_TEST}
     PRIVATE 
-    RPPApplications_test_lib
+    RPPLibs_test_lib
     rpp-pybind-embed
 )
 
