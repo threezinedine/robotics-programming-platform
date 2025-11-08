@@ -4,6 +4,15 @@
         {
             "label": "Build Libraries",
             "type": "shell",
+{% if PLATFORM == "Windows" %}
+            "command": "python",
+            "args": [
+                "${workspaceFolder}/../config.py",
+                "-p",
+                "libraries",
+                "build"
+            ],
+{% else %}
             "command": "sudo",
             "args": [
                 "python3",
@@ -12,6 +21,7 @@
                 "libraries",
                 "build"
             ],
+{% endif %}
             "options": {
                 "cwd": "${workspaceFolder}/.."
             }

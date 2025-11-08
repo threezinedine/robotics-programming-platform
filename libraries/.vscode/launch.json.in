@@ -2,10 +2,14 @@
     "configurations": [
         {
             "name": "Debug Core Test",
-            "type": "cppdbg",
+            "type": "{{ CPP_DEBUG_TYPE }}",
             "request": "launch",
             "preLaunchTask": "Build Libraries",
+{% if PLATFORM == "Windows" %}
+            "program": "${workspaceFolder}/build/dev/core/Debug/RPPCore_tests.exe",
+{% else %}
             "program": "${workspaceFolder}/build/dev/core/RPPCore_tests",
+{% endif %}
             "args": [
                 "--gtest_filter=*.SplitPathWithLeadingAndTrailingSlash"
             ],
@@ -13,10 +17,14 @@
         },
         {
             "name": "Debug Modules Test",
-            "type": "cppdbg",
+            "type": "{{ CPP_DEBUG_TYPE }}",
             "request": "launch",
             "preLaunchTask": "Build Libraries",
+{% if PLATFORM == "Windows" %}
+            "program": "${workspaceFolder}/build/dev/modules/Debug/RPPModules_tests.exe",
+{% else %}
             "program": "${workspaceFolder}/build/dev/modules/RPPModules_tests",
+{% endif %}
             "args": [
                 // "--gtest_filter=*.SplitPathWithLeadingAndTrailingSlash"
             ],

@@ -463,6 +463,10 @@ def RunPythonProject(
             "editor",
             ".vscode",
         )
+        librariesVSCodeDir = os.path.join(
+            "libraries",
+            ".vscode",
+        )
 
         allTemplateFiles = [
             os.path.join(
@@ -475,6 +479,18 @@ def RunPythonProject(
             ),
             os.path.join(
                 editorVSCodeDir,
+                "tasks.json.in",
+            ),
+            os.path.join(
+                librariesVSCodeDir,
+                "c_cpp_properties.json.in",
+            ),
+            os.path.join(
+                librariesVSCodeDir,
+                "launch.json.in",
+            ),
+            os.path.join(
+                librariesVSCodeDir,
                 "tasks.json.in",
             ),
         ]
