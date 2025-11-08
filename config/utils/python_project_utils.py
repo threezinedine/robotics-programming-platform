@@ -479,15 +479,23 @@ def RunPythonProject(
             ),
         ]
 
-        for templateFile in allTemplateFiles:
-            if not IsFileModified(templateFile) and not force:
+        allOutputFiles = [
+            file[:-3] for file in allTemplateFiles
+        ]
+
+        for templateFile, outputFile in zip(allTemplateFiles, allOutputFiles):
+            finalTemplateFile = os.path.join(Constants.ABSOLUTE_BASE_DIR, templateFile)
+            finalOutputFile = os.path.join(Constants.ABSOLUTE_BASE_DIR, outputFile)
+            isOutputFileExist = os.path.exists(finalOutputFile)
+
+            if not IsFileModified(templateFile) and not force and isOutputFileExist:
                 logger.debug(
                     f"Template file not modified, skipping: {templateFile}")
                 continue
 
             try:
                 logger.info(f"Running Python project in '{projectDir}'...")
-                runCommand = f'{pythonExe} {mainScript} -i "{os.path.join(Constants.ABSOLUTE_BASE_DIR, templateFile)}"'
+                runCommand = f'{pythonExe} {mainScript} -i "{finalTemplateFile}" -o "{finalOutputFile}"'
                 RunCommand(runCommand, cwd=cwd)
                 logger.info(f"Python project '{projectDir}' finished successfully.")
                 UpdateFileCache(templateFile)

@@ -99,9 +99,8 @@ def main():
 
     renderedContent = template.render(**data)
 
-    print("Here", renderedContent)
-
     with open(outputFile, "w", encoding="utf-8") as file:
+        print(f"Generating: {outputFile}")
         file.write(renderedContent)
 
 if __name__ == "__main__":
