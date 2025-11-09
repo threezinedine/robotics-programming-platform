@@ -7,3 +7,4 @@
 #include "input/input.h"
 #include "test_system/test_system.h"
 #include "structures/structures.h"
+#include "history/history.h"

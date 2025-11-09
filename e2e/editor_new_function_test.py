@@ -11,6 +11,11 @@ def test_create_new_function(setup_recent_projects: None):
         "New popup not found after clicking Main Toolbar New button",
     )
 
+    TestUtils.Assert(
+        TestUtils.FindRendererIdByName("Editor - ok") != INVALID_ID,
+        "Window name is not 'Editor - ok'",
+    )
+
     TestUtils.LeftClick(EDITOR_MAIN_TOOLBAR_NEW_POPUP_FUNCTION)
     TestSystem.Wait(20)
 
@@ -56,4 +61,9 @@ def test_create_new_function(setup_recent_projects: None):
     TestUtils.Assert(
         TestUtils.IsItemFound(EDITOR_MAIN_FUNCTION_FORMAT.format("NewFunction (Copy)")),
         "New function editor not opened after creating new function",
+    )
+
+    TestUtils.Assert(
+        TestUtils.FindRendererIdByName("Editor - ok*") != INVALID_ID,
+        "Window name is not 'Editor - ok*'",
     )
