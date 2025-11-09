@@ -225,10 +225,6 @@ public:
     expected = """
 static PyObject* GetName(PyObject* self, PyObject* args)
 {
-    if (!PyArg_ParseTuple(args, ""))
-    {
-        return nullptr;
-    }
     auto result = ::rpp::TestSystem::GetInstance()->GetName();
     return Py_BuildValue("s", result.c_str());
 }
