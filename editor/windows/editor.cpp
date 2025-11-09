@@ -5,7 +5,9 @@
 
 EditorWindow::EditorWindow(u32 width, u32 height, const String &title)
     : GraphicSession(width, height, title),
-      m_pCurrentProject(nullptr)
+      m_pCurrentProject(nullptr),
+      m_pEditorData(nullptr),
+      m_openProjectFile("")
 {
     RPP_PROFILE_SCOPE();
     if (FileSystem::PathExists(EDITOR_DATA_FILE))
@@ -139,6 +141,15 @@ void EditorWindow::MenuRender()
             }
             RPP_MARK_ITEM("Editor/MenuBar/File/Recents");
             ImGui::EndDisabled();
+
+            ImGui::Separator();
+
+            if (ImGui::MenuItem("Save"))
+            {
+                SaveProject();
+                HistoryManager::GetInstance()->Reset();
+            }
+            RPP_MARK_ITEM("Editor/MenuBar/File/Save");
 
             ImGui::EndMenu();
         }
@@ -329,8 +340,17 @@ void EditorWindow::OpenProject(const String &projectFilePath)
     RPP_LOG_DEBUG("Opened project: {}", projectFilePath);
     m_pEditorData->AddRecentProject(projectFilePath);
     m_pEditorData->Save(EDITOR_DATA_FILE);
+    m_openProjectFile = projectFilePath;
 
     Renderer::SetWindowTitle(Format("Editor - {}", desc.name));
+}
+
+void EditorWindow::SaveProject()
+{
+    RPP_PROFILE_SCOPE();
+    RPP_ASSERT(m_pCurrentProject != nullptr);
+
+    m_pCurrentProject->Save(m_openProjectFile);
 }
 
 void EditorWindow::EditorMainRender()

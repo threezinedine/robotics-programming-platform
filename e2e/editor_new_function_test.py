@@ -1,4 +1,5 @@
 from packages import *  # this import will be deleted in the core, this line must be at the top of the file
+import json
 from setup import setup_recent_projects  # type: ignore
 from constants import *
 
@@ -66,4 +67,35 @@ def test_create_new_function(setup_recent_projects: None):
     TestUtils.Assert(
         TestUtils.FindRendererIdByName("Editor - ok*") != INVALID_ID,
         "Window name is not 'Editor - ok*'",
+    )
+
+    file: FileHandle = FileSystem.OpenFile("/home/ok/project.rppproj", FILE_READ)
+    content = FileSystem.Read(file)
+    FileSystem.CloseFile(file)
+
+    projDes = ProjectDescription(**json.loads(content))
+
+    TestUtils.Assert(
+        len(projDes.functionNames) == 0,
+        "Project description function names is not empty",
+    )
+
+    TestUtils.LeftClick(EDITOR_MENUBAR_FILE)
+    TestUtils.LeftClick(EDITOR_MENUBAR_SAVE)
+    TestSystem.Wait(20)
+
+    file = FileSystem.OpenFile("/home/ok/project.rppproj", FILE_READ)
+    content = FileSystem.Read(file)
+    FileSystem.CloseFile(file)
+
+    projDes = ProjectDescription(**json.loads(content))
+
+    TestUtils.Assert(
+        projDes.functionNames.count("NewFunction") == 1,
+        "Project description does not contain 'NewFunction' exactly once",
+    )
+
+    TestUtils.Assert(
+        projDes.functionNames.count("NewFunction (Copy)") == 1,
+        "Project description does not contain 'NewFunction (Copy)' exactly once",
     )

@@ -5,6 +5,7 @@ EDITOR_MENUBAR_OPEN = "Editor/MenuBar/File/Open"
 EDITOR_MENUBAR_OPEN_PROJECT = "Editor/MenuBar/File/Open/Project"
 EDITOR_MENUBAR_RECENTS = "Editor/MenuBar/File/Recents"
 EDITOR_MENUBAR_RECENT_PROJECT_FORMAT = "Editor/MenuBar/File/Recents/RecentProject{}"
+EDITOR_MENUBAR_SAVE = "Editor/MenuBar/File/Save"
 
 EDITOR_NEW_PROJECT_MODAL = "Editor/NewProjectModal"
 EDITOR_NEW_PROJECT_INPUT_PROJECT_NAME = "Editor/NewProjectModal/ProjectNameInput"
