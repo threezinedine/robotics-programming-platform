@@ -40,11 +40,19 @@ Before you start, make sure you’ve got these tools ready to go:
    ```
 
 2. **Run**
+   - For the libraries:
+  
+     ```bash
+     python config.py -p libraries build # The libraries is separated to `editor` or `gruntime`
+     python config.py -p libraries run   # for running all library related services
+     ```
+
    - For the editor:
 
      ```bash
-     python config.py -p libraries build
+     python config.py -p editor build
      python config.py -p editor run
+     python config.py -p editor test # for running all tests
      ```
 
    - For the graphical application:
@@ -67,6 +75,15 @@ Before you start, make sure you’ve got these tools ready to go:
    python config.py -p libraries test # run all library tests
    ```
 
+**Note**: If you are in `Linux` install these dependencies:
+
+```bash
+sudo apt install xorg-dev
+sudo apt install libwayland-dev libxkbcommon-dev wayland-protocols extra-cmake-modules
+sudo apt install clang libclang-dev
+sudo apt-get install libglu1-mesa-dev
+```
+
 ## Project Structure 📂
 
 Here’s how the repo’s laid out, so you don’t get lost:
@@ -74,12 +91,14 @@ Here’s how the repo’s laid out, so you don’t get lost:
 ```bash
 robotics-programming-platform/
 ├── autogen/             # Create bindings code from the C++ core
+├── templategen/         # Similar to the `autogen` but for vscode configuration
 ├── cmake/               # CMake scripts and modules
 ├── config/              # Tools for `config.py` which is used for managing the project
 ├── editor/              # The main editor application
 ├── gruntime/            # Graphical application runtime
 ├── libraries/           # Core C++ libraries and modules
 ├── runtime/             # MCU runtime (not available yet)
+├── e2e/                 # Where all e2e code (in `Python`) is placed
 ├── config.py            # Main script to build/run/test the project
 ├── dependencies.json    # List of dependencies for the project
 └── README.md            # You’re reading it, fam!
