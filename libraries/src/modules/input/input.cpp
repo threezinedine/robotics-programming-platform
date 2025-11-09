@@ -156,11 +156,6 @@ namespace rpp
             return FALSE;
         }
 
-        while (s_timer.GetElapsedTimeInMilliseconds() < 100)
-        {
-            return FALSE;
-        }
-
         // Simulate key up
         data.keyboardButton[button] = ButtonState::RELEASED;
         s_startEvent = FALSE;

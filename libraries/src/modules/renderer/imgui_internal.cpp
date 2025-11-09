@@ -118,6 +118,8 @@ namespace rpp
         ImGuiKey_F10,
         ImGuiKey_F11,
         ImGuiKey_F12,
+
+        ImGuiKey_Enter, // Added mapping for Enter key
     };
 
     Scope<Storage<ImGuiImpl::ImGuiData>>
@@ -289,7 +291,6 @@ namespace rpp
                     continue;
                 }
 
-                // io.KeysData[keyEnum].Down = false;
                 io.AddKeyEvent(keyEnum, isPressed);
             }
 #endif

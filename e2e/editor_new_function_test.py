@@ -14,19 +14,39 @@ def test_create_new_function(setup_recent_projects: None):
     TestUtils.LeftClick(EDITOR_MAIN_TOOLBAR_NEW_POPUP_FUNCTION)
     TestSystem.Wait(20)
 
+    TestUtils.Assert(
+        TestUtils.IsItemFound(EDITOR_MAIN_FUNCTION_RENAME_FORMAT.format("NewFunction")),
+        "New function is not in editing mode after creation",
+    )
+
+    TestUtils.Assert(
+        not TestUtils.IsItemFound(EDITOR_MAIN_FUNCTION_FORMAT.format("NewFunction")),
+        "New function already exists before confirming name",
+    )
+
     TestUtils.Enter()
 
     TestSystem.Wait(20)
 
     TestUtils.Assert(
+        not TestUtils.IsItemFound(
+            EDITOR_MAIN_FUNCTION_RENAME_FORMAT.format("NewFunction")
+        ),
+        "New function is still in editing mode after confirming name",
+    )
+
+    TestUtils.Assert(
         TestUtils.IsItemFound(EDITOR_MAIN_FUNCTION_FORMAT.format("NewFunction")),
-        "New function",
+        "New function does not exist after confirming name",
     )
 
     TestUtils.LeftClick(EDITOR_MAIN_TOOLBAR_NEW)
     TestSystem.Wait(10)
     TestUtils.LeftClick(EDITOR_MAIN_TOOLBAR_NEW_POPUP_FUNCTION)
     TestSystem.Wait(10)
+
+    TestUtils.Enter()
+    TestSystem.Wait(20)
 
     TestUtils.Assert(
         TestUtils.IsItemFound(EDITOR_MAIN_FUNCTION_FORMAT.format("NewFunction")),

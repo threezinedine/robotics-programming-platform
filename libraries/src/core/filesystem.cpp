@@ -337,6 +337,13 @@ namespace rpp
             pFileStream->flush();
             break;
         }
+        case FILE_MODE_READ_WRITE:
+        {
+            std::fstream *pFileStream = static_cast<std::fstream *>(pFileEntry->pFileHandle);
+            (*pFileStream) << data.CStr();
+            pFileStream->flush();
+            break;
+        }
         default:
             RPP_UNREACHABLE();
         };

@@ -356,17 +356,18 @@ void EditorWindow::EditorMainRender()
 
                 if (ImGui::InputText("###EditingFunctionName", m_editedFunctionName, sizeof(m_editedFunctionName), ImGuiInputTextFlags_EnterReturnsTrue))
                 {
+                    m_currentEditingFunctionIndex = INVALID_ID;
                     if (String(m_editedFunctionName) != functionName)
                     {
                         isFunctionAdded = TRUE;
                     }
                 }
-                RPP_MARK_ITEM(Format("Editor/Files/Function/{}", functionName));
+                RPP_MARK_ITEM(Format("Editor/Files/Function/Rename/{}", functionName));
             }
             else
             {
                 ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.0f, 1.0f));
-                ImGui::Selectable(functionName.CStr(), nullptr);
+                ImGui::Selectable(functionName.CStr());
                 RPP_MARK_ITEM(Format("Editor/Files/Function/{}", functionName));
                 ImGui::PopStyleColor();
             }
@@ -376,7 +377,6 @@ void EditorWindow::EditorMainRender()
         {
             m_pCurrentProject->GetFunctionNames()[m_currentEditingFunctionIndex] = m_editedFunctionName;
             memset(m_editedFunctionName, 0, sizeof(m_editedFunctionName));
-            m_currentEditingFunctionIndex = INVALID_ID;
         }
     }
     RPP_MARK_ITEM("Editor/Files");

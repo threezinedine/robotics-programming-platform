@@ -154,8 +154,10 @@ namespace rpp
         Signal::Notify(m_mainThreadSignal);
         Signal::Wait(m_testThreadSignal);
 
-        FileHandle fileHandle = FileSystem::OpenPhysicalFile(m_resultFilePath, FILE_MODE_READ_WRITE);
+        FileHandle fileHandle = FileSystem::OpenPhysicalFile(m_resultFilePath, FILE_MODE_READ);
         String resultContent = FileSystem::Read(fileHandle);
+        FileSystem::CloseFile(fileHandle);
+
         Json resultsJson(resultContent);
         Json resultJson;
         resultJson.Set("name", m_runTestCaseName);
@@ -232,6 +234,7 @@ namespace rpp
         }
 
         resultsJson.Append(resultJson);
+        fileHandle = FileSystem::OpenPhysicalFile(m_resultFilePath, FILE_MODE_WRITE);
         FileSystem::Write(fileHandle, resultsJson.ToString());
         FileSystem::CloseFile(fileHandle);
 

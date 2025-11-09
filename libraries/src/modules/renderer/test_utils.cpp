@@ -139,10 +139,7 @@ namespace rpp
         }
         case ImGuiItemAction::IMGUI_ACTION_ENTER:
         {
-            RPP_LOG_DEBUG("Pressing ENTER key");
-            b8 complete = InputSystem::Press(KeyboardButton::KEY_RETURN);
-
-            RPP_LOG_DEBUG("Press ENTER returned: {}", complete);
+            b8 complete = InputSystem::Press(KeyboardButton::KEY_ENTER);
 
             if (!complete)
             {
@@ -221,11 +218,10 @@ namespace rpp
 
     void TestUtils::Enter()
     {
-        RPP_LOG_DEBUG("TestUtils::Enter called");
         RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_pData != nullptr);
         s_pData->label = "";
-        s_pData->action = ImGuiItemAction::IMGUI_ACTION_TYPE;
+        s_pData->action = ImGuiItemAction::IMGUI_ACTION_ENTER;
         s_pData->text = "";
         s_pData->characterIndex = 0;
         s_findingFrameCount = 0;

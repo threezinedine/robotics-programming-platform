@@ -120,6 +120,8 @@ namespace rpp
         KEY_F11,
         KEY_F12,
 
+        KEY_ENTER,
+
         KEYBOARD_BUTTON_COUNT,
     };
 
