@@ -16,11 +16,11 @@ namespace rpp
         debugbreak();                                   \
     }
 
-#define RPP_ASSERT_MSG(condition, message) \
-    if (!(condition))                      \
-    {                                      \
-        RPP_LOG_ERROR(message);            \
-        debugbreak();                      \
+#define RPP_ASSERT_MSG(condition, ...) \
+    if (!(condition))                  \
+    {                                  \
+        RPP_LOG_ERROR(__VA_ARGS__);    \
+        debugbreak();                  \
     }
 #else
 #define RPP_ASSERT(condition)

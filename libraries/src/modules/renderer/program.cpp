@@ -9,6 +9,7 @@ namespace rpp
 
     void Program::Initialize()
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_programs == nullptr);
 
         auto ProgramDeallocator = [](Program::ProgramData *data)
@@ -29,6 +30,7 @@ namespace rpp
 
     void Program::Shutdown()
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_programs != nullptr);
 
         s_programs.reset();
@@ -36,6 +38,7 @@ namespace rpp
 
     u32 Program::Create(const String &vertexShaderSource, const String &fragmentShaderSource)
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_programs != nullptr);
 
         u32 programId = s_programs->Create();
@@ -89,12 +92,14 @@ namespace rpp
 
     void Program::Destroy(u32 programId)
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_programs != nullptr);
         s_programs->Free(programId);
     }
 
     void Program::Use(u32 programId)
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_programs != nullptr);
 
         ProgramData *data = s_programs->Get(programId);
@@ -112,6 +117,7 @@ namespace rpp
     template <>                                                                         \
     void Program::SetUniform<valueType>(const String &name, valueType value)            \
     {                                                                                   \
+        RPP_PROFILE_SCOPE();                                                            \
         RPP_ASSERT(s_programs != nullptr);                                              \
         RPP_ASSERT(s_currentProgramId != INVALID_ID);                                   \
         ProgramData *data = s_programs->Get(s_currentProgramId);                        \

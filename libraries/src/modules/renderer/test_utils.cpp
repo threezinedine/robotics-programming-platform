@@ -13,6 +13,7 @@ namespace rpp
 
     void TestUtils::Initialize()
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_pData == nullptr);
         RPP_ASSERT(s_pCurrentItemData == nullptr);
         s_pData = RPP_NEW(TestUtils::GlobalData);
@@ -20,12 +21,14 @@ namespace rpp
 
     void TestUtils::Shutdown()
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_pData != nullptr);
         RPP_DELETE(s_pData);
     }
 
     void TestUtils::Update(f32 deltaTime)
     {
+        RPP_PROFILE_SCOPE();
         RPP_UNUSED(deltaTime);
 
         if (s_pData->action == ImGuiItemAction::IMGUI_ACTION_COUNT)
@@ -155,6 +158,7 @@ namespace rpp
 
     void TestUtils::ResetCurrentItem()
     {
+        RPP_PROFILE_SCOPE();
         s_pData->label = "";
         s_pData->action = ImGuiItemAction::IMGUI_ACTION_COUNT;
         s_pData->text = "";
@@ -172,6 +176,7 @@ namespace rpp
 
     void TestUtils::MoveToItem(const String &label)
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_pData != nullptr);
         s_pData->label = label;
         s_pData->action = ImGuiItemAction::IMGUI_ACTION_MOVE;
@@ -185,6 +190,7 @@ namespace rpp
 
     void TestUtils::LeftClick(const String &label)
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_pData != nullptr);
         s_pData->label = label;
         s_pData->action = ImGuiItemAction::IMGUI_ACTION_CLICK;
@@ -198,6 +204,7 @@ namespace rpp
 
     void TestUtils::Type(const String &text)
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_pData != nullptr);
         s_pData->label = "";
         s_pData->action = ImGuiItemAction::IMGUI_ACTION_TYPE;
@@ -211,6 +218,7 @@ namespace rpp
 
     void TestUtils::Enter()
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_pData != nullptr);
         s_pData->label = "";
         s_pData->action = ImGuiItemAction::IMGUI_ACTION_TYPE;
@@ -224,6 +232,7 @@ namespace rpp
 
     b8 TestUtils::IsItemFound(const String &label)
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_pData != nullptr);
         s_pData->label = label;
         s_pData->action = ImGuiItemAction::IMGUI_ACTION_FIND_ITEM;
@@ -243,6 +252,7 @@ namespace rpp
 
     void TestUtils::Assert(b8 condition, const String &message)
     {
+        RPP_PROFILE_SCOPE();
         if (!condition)
         {
             REGISTER_ERROR("Assertion failed: {}", message);
@@ -252,6 +262,7 @@ namespace rpp
 
     void TestUtils::AssertInputTextValue(const String &label, const String &expectedValue)
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_pData != nullptr);
         s_pData->label = label;
         s_pData->action = ImGuiItemAction::IMGUI_ACTION_ASSERT_TEXT_INPUT;
@@ -276,6 +287,7 @@ namespace rpp
 
     u32 TestUtils::FindRendererIdByName(const String &rendererName)
     {
+        RPP_PROFILE_SCOPE();
 #if defined(RPP_USE_TEST)
         Scope<Storage<Renderer::RendererData>> &renderers = Renderer::s_currentRenderers;
         u32 currentCapacity = renderers->GetCapacity();

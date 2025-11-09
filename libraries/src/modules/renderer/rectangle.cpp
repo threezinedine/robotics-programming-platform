@@ -49,6 +49,7 @@ namespace rpp
 
 	void Rectangle::Initialize()
 	{
+		RPP_PROFILE_SCOPE();
 		RPP_ASSERT(s_rectangles == nullptr);
 
 		auto RectangleDeallocator = [&](Rectangle::RectangleData *data)
@@ -74,6 +75,7 @@ namespace rpp
 
 	void Rectangle::Shutdown()
 	{
+		RPP_PROFILE_SCOPE();
 		RPP_ASSERT(s_rectangles != nullptr);
 
 		s_rectangles.reset();
@@ -81,6 +83,7 @@ namespace rpp
 
 	u32 Rectangle::Create()
 	{
+		RPP_PROFILE_SCOPE();
 		RPP_ASSERT(s_rectangles != nullptr);
 
 		u32 program = Program::Create(vertexShaderSource, fragmentShaderSource);
@@ -123,6 +126,7 @@ namespace rpp
 
 	void Rectangle::Destroy(u32 rectangleId)
 	{
+		RPP_PROFILE_SCOPE();
 		RPP_ASSERT(s_rectangles != nullptr);
 
 		s_rectangles->Free(rectangleId);
@@ -130,6 +134,7 @@ namespace rpp
 
 	void Rectangle::Draw(u32 rectangleId, const Rect &rect, u32 textureId, u32 maskTextureId)
 	{
+		RPP_PROFILE_SCOPE();
 		RPP_ASSERT(s_rectangles != nullptr);
 		RPP_ASSERT(rectangleId != INVALID_ID);
 		RPP_ASSERT(textureId != INVALID_ID);

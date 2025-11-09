@@ -48,7 +48,7 @@ namespace rpp
             {
                 // delete existing folder
                 _rmdir(s_temporaryPathRoot.CStr());
-				RPP_LOG_DEBUG("Removed existing temporary folder at path: {}", s_temporaryPathRoot);
+                RPP_LOG_DEBUG("Removed existing temporary folder at path: {}", s_temporaryPathRoot);
             }
 
             _mkdir(s_temporaryPathRoot.CStr());
@@ -74,15 +74,16 @@ namespace rpp
                 switch (pFileEntry->mode)
                 {
                 case FILE_MODE_READ:
-                    RPP_DELETE(static_cast<std::ifstream*>(pFileEntry->pFileHandle));
+                    RPP_DELETE(static_cast<std::ifstream *>(pFileEntry->pFileHandle));
                     break;
                 case FILE_MODE_WRITE:
-                    RPP_DELETE(static_cast<std::ofstream*>(pFileEntry->pFileHandle));
+                case FILE_MODE_APPEND:
+                    RPP_DELETE(static_cast<std::ofstream *>(pFileEntry->pFileHandle));
                     break;
                 case FILE_MODE_READ_WRITE:
-                    RPP_DELETE(static_cast<std::fstream*>(pFileEntry->pFileHandle));
+                    RPP_DELETE(static_cast<std::fstream *>(pFileEntry->pFileHandle));
                     break;
-                
+
                 default:
                     RPP_UNREACHABLE();
                 }
@@ -192,7 +193,22 @@ namespace rpp
         }
     }
 
+    void FileSystem::DeletePhysicalFile(const String &path)
+    {
+        std::filesystem::remove(path.CStr());
+    }
+
+    void FileSystem::DeleteFile(const String &path)
+    {
+        DeletePhysicalFile(getPhysicalPath(path));
+    }
+
     FileHandle FileSystem::OpenFile(const String &filePath, u32 mode)
+    {
+        return OpenPhysicalFile(getPhysicalPath(filePath), mode);
+    }
+
+    FileHandle FileSystem::OpenPhysicalFile(const String &filePath, u32 mode)
     {
         RPP_ASSERT(s_fileEntries != nullptr);
 
@@ -204,19 +220,17 @@ namespace rpp
         pFileEntry->name = filePath;
         pFileEntry->mode = mode;
 
-        String physicalPath = getPhysicalPath(filePath);
-
         if (mode == FILE_MODE_WRITE || mode == FILE_MODE_APPEND || mode == FILE_MODE_READ_WRITE)
         {
             // ensure the directory exists
 
             // TODO: Another interface for creating directory?
             Array<String> pathParts;
-            SplitPath(pathParts, physicalPath);
+            SplitPath(pathParts, filePath);
 
             if (pathParts.Size() > 1)
             {
-                String directoryPath = String::Join(pathParts, "/").SubString(0, physicalPath.Length() - pathParts[pathParts.Size() - 1].Length() - 1);
+                String directoryPath = String::Join(pathParts, "/").SubString(0, filePath.Length() - pathParts[pathParts.Size() - 1].Length() - 1);
                 CreatePhysicalDirectory(directoryPath);
             }
         }
@@ -227,7 +241,7 @@ namespace rpp
         {
         case FILE_MODE_READ:
         {
-            pFileEntry->pFileHandle = new std::ifstream(getPhysicalPath(filePath).CStr(), std::ios::in);
+            pFileEntry->pFileHandle = new std::ifstream(filePath.CStr(), std::ios::in);
             openMode = std::ios::in;
             if (!static_cast<std::ifstream *>(pFileEntry->pFileHandle)->is_open())
             {
@@ -239,7 +253,7 @@ namespace rpp
         case FILE_MODE_WRITE:
         {
             openMode = std::ios::out | std::ios::trunc;
-            pFileEntry->pFileHandle = new std::ofstream(getPhysicalPath(filePath).CStr(), openMode);
+            pFileEntry->pFileHandle = new std::ofstream(filePath.CStr(), openMode);
             if (!static_cast<std::ofstream *>(pFileEntry->pFileHandle)->is_open())
             {
                 pFileEntry->pFileHandle = nullptr;
@@ -249,7 +263,7 @@ namespace rpp
         case FILE_MODE_APPEND:
         {
             openMode = std::ios::out | std::ios::app;
-            pFileEntry->pFileHandle = new std::ofstream(getPhysicalPath(filePath).CStr(), openMode);
+            pFileEntry->pFileHandle = new std::ofstream(filePath.CStr(), openMode);
             if (!static_cast<std::ofstream *>(pFileEntry->pFileHandle)->is_open())
             {
                 pFileEntry->pFileHandle = nullptr;
@@ -259,7 +273,7 @@ namespace rpp
         case FILE_MODE_READ_WRITE:
         {
             openMode = std::ios::in | std::ios::out;
-            pFileEntry->pFileHandle = new std::fstream(getPhysicalPath(filePath).CStr(), openMode);
+            pFileEntry->pFileHandle = new std::fstream(filePath.CStr(), openMode);
             if (!static_cast<std::fstream *>(pFileEntry->pFileHandle)->is_open())
             {
                 pFileEntry->pFileHandle = nullptr;

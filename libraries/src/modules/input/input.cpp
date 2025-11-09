@@ -17,16 +17,19 @@ namespace rpp
 
     void InputSystem::Initialize()
     {
+        RPP_PROFILE_SCOPE();
         memset(s_inputSystemsData, 0, sizeof(RendererInputData) * MAX_INPUT_SYSTEMS);
     }
 
     void InputSystem::Shutdown()
     {
+        RPP_PROFILE_SCOPE();
         // Cleanup code for the input system can be added here.
     }
 
     void InputSystem::Update(f32 delta)
     {
+        RPP_PROFILE_SCOPE();
 #if defined(RPP_USE_TEST)
         RPP_UNUSED(delta);
 #else
@@ -57,6 +60,7 @@ namespace rpp
 
     b8 InputSystem::MoveMouseTo(f64 x, f64 y)
     {
+        RPP_PROFILE_SCOPE();
 #if defined(RPP_USE_TEST)
         u32 rendererId = Renderer::GetCurrentRendererId();
         RPP_ASSERT(rendererId < MAX_INPUT_SYSTEMS);
@@ -103,6 +107,7 @@ namespace rpp
 
     b8 InputSystem::ClickMouse(i32 button)
     {
+        RPP_PROFILE_SCOPE();
 #if defined(RPP_USE_TEST)
         u32 rendererId = Renderer::GetCurrentRendererId();
         RPP_ASSERT(rendererId < MAX_INPUT_SYSTEMS);
@@ -136,6 +141,7 @@ namespace rpp
 
     b8 InputSystem::Press(KeyboardButton button)
     {
+        RPP_PROFILE_SCOPE();
 #if defined(RPP_USE_TEST)
         u32 rendererId = Renderer::GetCurrentRendererId();
         RPP_ASSERT(rendererId < MAX_INPUT_SYSTEMS);
@@ -167,6 +173,7 @@ namespace rpp
 
     static i32 charToButton(char c)
     {
+        RPP_PROFILE_SCOPE();
         switch (c)
         {
         case 'a':
@@ -252,6 +259,7 @@ namespace rpp
 
     void InputSystem::OnMouseMoveCallback(f64 xPos, f64 yPos, void *pUserData)
     {
+        RPP_PROFILE_SCOPE();
 #if defined(RPP_USE_TEST)
         Renderer::GetWindow()->SetMousePosition(InputSystem::GetMouseX(), InputSystem::GetMouseY());
 #else
@@ -280,6 +288,7 @@ namespace rpp
 
     f64 InputSystem::GetMouseX()
     {
+        RPP_PROFILE_SCOPE();
         u32 rendererId = Renderer::GetCurrentRendererId();
         RPP_ASSERT(rendererId < MAX_INPUT_SYSTEMS);
         RendererInputData &data = s_inputSystemsData[rendererId];
@@ -288,6 +297,7 @@ namespace rpp
 
     f64 InputSystem::GetMouseY()
     {
+        RPP_PROFILE_SCOPE();
         u32 rendererId = Renderer::GetCurrentRendererId();
         RPP_ASSERT(rendererId < MAX_INPUT_SYSTEMS);
         RendererInputData &data = s_inputSystemsData[rendererId];
@@ -296,6 +306,7 @@ namespace rpp
 
     f64 InputSystem::GetDeltaX()
     {
+        RPP_PROFILE_SCOPE();
         u32 rendererId = Renderer::GetCurrentRendererId();
         RPP_ASSERT(rendererId < MAX_INPUT_SYSTEMS);
         RendererInputData &data = s_inputSystemsData[rendererId];
@@ -304,6 +315,7 @@ namespace rpp
 
     f64 InputSystem::GetDeltaY()
     {
+        RPP_PROFILE_SCOPE();
         u32 rendererId = Renderer::GetCurrentRendererId();
         RPP_ASSERT(rendererId < MAX_INPUT_SYSTEMS);
         RendererInputData &data = s_inputSystemsData[rendererId];
@@ -312,6 +324,7 @@ namespace rpp
 
     b8 InputSystem::IsMouseButtonDown(MouseButton button)
     {
+        RPP_PROFILE_SCOPE();
         u32 rendererId = Renderer::GetCurrentRendererId();
         RPP_ASSERT(rendererId < MAX_INPUT_SYSTEMS);
         RendererInputData &data = s_inputSystemsData[rendererId];
@@ -320,6 +333,7 @@ namespace rpp
 
     b8 InputSystem::IsKeyboardButtonDown(KeyboardButton button)
     {
+        RPP_PROFILE_SCOPE();
         u32 rendererId = Renderer::GetCurrentRendererId();
         RPP_ASSERT(rendererId < MAX_INPUT_SYSTEMS);
         RendererInputData &data = s_inputSystemsData[rendererId];

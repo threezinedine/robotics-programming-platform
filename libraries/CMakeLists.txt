@@ -169,3 +169,9 @@ target_link_libraries(
     ${PROJECT_NAME_TEST_LIB} 
     rpp-googletest
 )
+
+target_compile_definitions(
+    ${PROJECT_TEST_NAME}
+    PUBLIC
+    RPP_LIBRARIES_TEST
+)

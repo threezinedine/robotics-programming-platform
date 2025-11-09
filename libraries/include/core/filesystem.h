@@ -52,6 +52,7 @@ namespace rpp
          */
         static String getPhysicalPath(const String &path);
 
+    public:
         /**
          * @brief Checks if a physical file/folder exists on the filesystem.
          * @param path The physical path to check. The path is the ABSOLUTE path (physical not the logical path).
@@ -74,6 +75,12 @@ namespace rpp
          */
         static void CreatePhysicalDirectory(const String &path);
 
+        /**
+         * @brief Deletes a physical file from the filesystem.
+         * @param path The physical path to the file to delete. The path is the ABSOLUTE path (physical not the logical path).
+         */
+        static void DeletePhysicalFile(const String &path);
+
     public:
         /**
          * Initializes the file system module.
@@ -91,6 +98,17 @@ namespace rpp
          * This function releases resources and performs cleanup operations.
          */
         static void Shutdown();
+
+    public:
+        /**
+         * @brief Checks if a file exists at the specified path.
+         * @param filePath The path to the file to check.
+         * @param mode The mode in which to open the file. Default is READ. With READ mode,
+         * the function checks if the file can be opened for reading. With WRITE or APPEND mode,
+         * the function checks if the file can be opened for writing.
+         * @return The id of the file if it exists, or INVALID_ID if it does not.
+         */
+        static FileHandle OpenPhysicalFile(const String &filePath, u32 mode = FILE_MODE_READ);
 
     public:
         /**
@@ -150,6 +168,12 @@ namespace rpp
          * @param path The path where the directory should be created (the ABSOLUTE path).
          */
         static void CreateDirectory(const String &path) RPP_E2E_BINDING;
+
+        /**
+         * @brief Deletes a file at the specified path.
+         * @param path The path to the file to delete.
+         */
+        static void DeleteFile(const String &path) RPP_E2E_BINDING;
 
         /// Path utils
     public:

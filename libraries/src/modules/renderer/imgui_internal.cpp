@@ -125,6 +125,7 @@ namespace rpp
 
     void ImGuiImpl::Initialize()
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_imguis == nullptr);
 
         auto ImGuiDeallocator = [](ImGuiData *pData)
@@ -149,6 +150,7 @@ namespace rpp
 
     void ImGuiImpl::Shutdown()
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_imguis != nullptr);
 
         s_imguis.reset();
@@ -156,6 +158,7 @@ namespace rpp
 
     u32 ImGuiImpl::Create()
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_imguis != nullptr);
 
         u32 id = s_imguis->Create();
@@ -252,6 +255,7 @@ namespace rpp
 
     void ImGuiImpl::PrepareFrame(u32 imguiId)
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_imguis != nullptr);
         ImGuiData *pData = s_imguis->Get(imguiId);
         RPP_ASSERT(pData != nullptr);
@@ -306,6 +310,7 @@ namespace rpp
 
     void ImGuiImpl::Render(u32 imguiId)
     {
+        RPP_PROFILE_SCOPE();
         // Unbind framebuffer
         UnbindFrameBufferCommandData unbindData;
         GraphicsCommandData unbindCommandData = {GraphicsCommandType::UNBIND_FRAMEBUFFER, &unbindData};
@@ -363,6 +368,7 @@ namespace rpp
 
     void ImGuiImpl::DrawRenderingScene(u32 imguiId)
     {
+        RPP_PROFILE_SCOPE();
         ImGui::BeginChild("RenderingScene");
         float displayWidth = ImGui::GetContentRegionAvail().x;
         float displayHeight = ImGui::GetContentRegionAvail().y;
@@ -377,11 +383,13 @@ namespace rpp
 
     void ImGuiImpl::LabelItem(const String &label, ImGuiID imguiId)
     {
+        RPP_PROFILE_SCOPE();
         ImGuiImpl::LabelItem(label, nullptr, imguiId);
     }
 
     void ImGuiImpl::LabelItem(const String &label, void *pData, ImGuiID imguiId)
     {
+        RPP_PROFILE_SCOPE();
 #if defined(RPP_USE_TEST)
         TestUtils::GlobalData *pTestData = TestUtils::s_pData;
         RPP_ASSERT(pTestData != nullptr);
@@ -404,7 +412,7 @@ namespace rpp
         {
             pTestData->labelCheckingCallback(label, pData, imguiId);
         }
-#else 
+#else
         RPP_UNUSED(label);
         RPP_UNUSED(pData);
         RPP_UNUSED(imguiId);
@@ -413,6 +421,7 @@ namespace rpp
 
     void ImGuiImpl::Destroy(u32 imguiId)
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_imguis != nullptr);
         s_imguis->Free(imguiId);
     }

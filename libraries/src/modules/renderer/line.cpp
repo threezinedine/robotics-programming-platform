@@ -38,6 +38,7 @@ namespace rpp
 
     void Line::Initialize()
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_lines == nullptr);
 
         auto LineDeallocator = [](LineData *data)
@@ -60,6 +61,7 @@ namespace rpp
 
     void Line::Shutdown()
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_lines != nullptr);
 
         s_lines = nullptr;
@@ -67,6 +69,7 @@ namespace rpp
 
     u32 Line::Create()
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_lines != nullptr);
 
         u32 id = s_lines->Create();
@@ -101,12 +104,14 @@ namespace rpp
 
     void Line::Destroy(u32 id)
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_lines != nullptr);
         s_lines->Free(id);
     }
 
     void Line::Draw(u32 id, const Point &start, const Point &end)
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_lines != nullptr);
         LineData *lineData = s_lines->Get(id);
         RPP_ASSERT(lineData != nullptr);

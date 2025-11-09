@@ -6,24 +6,29 @@ namespace rpp
 
     EditorData::EditorData()
     {
+        RPP_PROFILE_SCOPE();
     }
 
     EditorData::EditorData(const EditorDataDescription &desc)
     {
+        RPP_PROFILE_SCOPE();
         m_recentProjects = desc.recentProjects;
     }
 
     EditorData::EditorData(const EditorData &other)
     {
+        RPP_PROFILE_SCOPE();
         m_recentProjects = other.m_recentProjects;
     }
 
     EditorData::~EditorData()
     {
+        RPP_PROFILE_SCOPE();
     }
 
     EditorDataDescription EditorData::ToDescription() const
     {
+        RPP_PROFILE_SCOPE();
         EditorDataDescription desc;
         desc.recentProjects = m_recentProjects;
         return desc;
@@ -31,6 +36,7 @@ namespace rpp
 
     void EditorData::AddRecentProject(const String &projectPath)
     {
+        RPP_PROFILE_SCOPE();
         u32 existingIndex = static_cast<u32>(-1);
         for (u32 i = 0; i < m_recentProjects.Size(); i++)
         {

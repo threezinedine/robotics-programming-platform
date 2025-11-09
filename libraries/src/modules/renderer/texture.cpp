@@ -11,6 +11,7 @@ namespace rpp
 
     void Texture::Initialize()
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_textureStorage == nullptr);
 
         auto TextureDeallocator = [](Texture::TextureData *data)
@@ -33,6 +34,7 @@ namespace rpp
 
     void Texture::Shutdown()
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_textureStorage != nullptr);
 
         s_textureStorage.reset();
@@ -40,6 +42,7 @@ namespace rpp
 
     u32 Texture::Create(const String &filePath)
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_textureStorage != nullptr);
         u32 id = s_textureStorage->Create();
         TextureData *textureData = s_textureStorage->Get(id);
@@ -71,6 +74,7 @@ namespace rpp
 
     u32 Texture::Create(u32 width, u32 height, u32 channels, u8 *pData)
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_textureStorage != nullptr);
         u32 id = s_textureStorage->Create();
         TextureData *textureData = s_textureStorage->Get(id);
@@ -95,12 +99,14 @@ namespace rpp
 
     void Texture::Destroy(u32 textureId)
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_textureStorage != nullptr);
         s_textureStorage->Free(textureId);
     }
 
     void Texture::Activate(u32 textureId, const String &name, u32 slot)
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_textureStorage != nullptr);
         TextureData *textureData = s_textureStorage->Get(textureId);
         RPP_ASSERT(textureData != nullptr);

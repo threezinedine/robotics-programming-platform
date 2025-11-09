@@ -5,19 +5,23 @@ namespace rpp
     ArgParser::ArgParser()
         : m_argumentDefinitions()
     {
+        RPP_PROFILE_SCOPE();
     }
 
     ArgParser::~ArgParser()
     {
+        RPP_PROFILE_SCOPE();
     }
 
     void ArgParser::AddArgument(const ArgumentData &argData)
     {
+        RPP_PROFILE_SCOPE();
         m_argumentDefinitions.Push(argData);
     }
 
     Json ArgParser::Parse(int argc, const char **argv)
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT_MSG(argc > 0 && argv != nullptr, "Invalid command line arguments.");
 
         Json result;

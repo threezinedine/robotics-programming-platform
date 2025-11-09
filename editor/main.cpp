@@ -25,6 +25,7 @@ int main(int argc, const char **argv)
 #endif
     Logging::GetInstance()->Setup(u8(HandlerType::CONSOLE), LogLevel::DEBUG);
 
+    Profiling::StartLogging("logs/log_start");
     InputSystem::Initialize();
     Renderer::Initialize();
     Thread::Initialize();
@@ -45,6 +46,9 @@ int main(int argc, const char **argv)
     TestSystem::GetInstance()->Setup();
 #endif
 
+    Profiling::StopLogging();
+
+    Profiling::StartLogging("logs/log_update");
     {
         CREATE_SESSION(EditorWindow, 400, 600, "Editor");
 
@@ -82,7 +86,9 @@ int main(int argc, const char **argv)
 #endif
         }
     }
+    Profiling::StopLogging();
 
+    Profiling::StartLogging("logs/log_end");
 #if defined(RPP_USE_TEST)
     TestSystem::GetInstance()->Shutdown();
 #endif
@@ -92,6 +98,7 @@ int main(int argc, const char **argv)
     GraphicSessionManager::GetInstance()->ClearSessions();
     Renderer::Shutdown();
     InputSystem::Shutdown();
+    Profiling::StopLogging();
     FileSystem::Shutdown();
     SingletonManager::Shutdown();
     return 0;

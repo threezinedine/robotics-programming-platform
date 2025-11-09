@@ -11,6 +11,7 @@
         "wholroyd.jinja",
         "yzhang.markdown-all-in-one",
         "DavidAnson.vscode-markdownlint",
-        "Gruntfuggly.todo-tree"
+        "Gruntfuggly.todo-tree",
+        "esbenp.prettier-vscode"
     ]
 }

@@ -100,6 +100,8 @@ namespace rpp
                                 const String &shutdownFilePath,
                                 const String &runTestCaseName)
     {
+        RPP_PROFILE_SCOPE();
+
         m_resultFilePath = resultFilePath;
         m_runTestCaseName = runTestCaseName;
 

@@ -8,6 +8,7 @@ namespace rpp
 
     b8 ECS::IsEntityMatchSystem(Entity *pEntity, ECSData::SystemData *pSystemData)
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(pEntity != nullptr);
 
         if (!pEntity->isActive)
@@ -40,6 +41,7 @@ namespace rpp
 
     void ECS::Initialize()
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_ecsStorage == nullptr);
         RPP_ASSERT(s_currentEcsIndex == INVALID_ID);
 
@@ -58,6 +60,7 @@ namespace rpp
 
     void ECS::Shutdown()
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_ecsStorage != nullptr);
 
         s_ecsStorage.reset();
@@ -66,6 +69,7 @@ namespace rpp
 
     ECSId ECS::Create()
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_ecsStorage != nullptr);
 
         u32 ecsId = s_ecsStorage->Create();
@@ -114,6 +118,7 @@ namespace rpp
 
     void ECS::Destroy(ECSId ecsId)
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_ecsStorage != nullptr);
         RPP_ASSERT(ecsId != INVALID_ID);
         RPP_ASSERT(s_ecsStorage->Get(ecsId) != nullptr);
@@ -127,6 +132,7 @@ namespace rpp
 
     void ECS::Activate(ECSId ecsId)
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_ecsStorage != nullptr);
         RPP_ASSERT(ecsId != INVALID_ID);
         RPP_ASSERT(s_ecsStorage->Get(ecsId) != nullptr);
@@ -136,6 +142,7 @@ namespace rpp
 
     EntityId ECS::CreateEntity(Component **ppComponents, u32 numberOfComponents)
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_ecsStorage != nullptr);
         RPP_ASSERT(s_currentEcsIndex != INVALID_ID);
 
@@ -184,6 +191,7 @@ namespace rpp
 
     void ECS::DestroyEntity(EntityId entityId)
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_ecsStorage != nullptr);
         RPP_ASSERT(s_currentEcsIndex != INVALID_ID);
 
@@ -199,6 +207,7 @@ namespace rpp
 
     Entity *ECS::GetEntity(EntityId entityId)
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_ecsStorage != nullptr);
         RPP_ASSERT(s_currentEcsIndex != INVALID_ID);
 
@@ -210,6 +219,7 @@ namespace rpp
 
     Component *ECS::GetComponent(EntityId entityId, ComponentId componentId)
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_ecsStorage != nullptr);
         RPP_ASSERT(s_currentEcsIndex != INVALID_ID);
         RPP_ASSERT(componentId < MAX_NUMBER_OF_COMPONENTS);
@@ -232,6 +242,7 @@ namespace rpp
 
     void ECS::ModifyEntityStatus(EntityId entityId, b8 isActive)
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_ecsStorage != nullptr);
         RPP_ASSERT(s_currentEcsIndex != INVALID_ID);
 
@@ -247,6 +258,7 @@ namespace rpp
 
     void ECS::ModifyComponentStatus(EntityId entityId, ComponentId componentId, b8 isActive)
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_ecsStorage != nullptr);
         RPP_ASSERT(s_currentEcsIndex != INVALID_ID);
 
@@ -264,6 +276,7 @@ namespace rpp
 
     void ECS::ModifySystemStatus(u32 systemId, b8 isActive)
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_ecsStorage != nullptr);
         RPP_ASSERT(s_currentEcsIndex != INVALID_ID);
         ECSData *pCurrentEcs = s_ecsStorage->Get(s_currentEcsIndex);
@@ -282,6 +295,7 @@ namespace rpp
 
     u32 ECS::RegisterSystem(System *system, ComponentId *pRequiredComponents, u32 numberOfRequiredComponents)
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_ecsStorage != nullptr);
         RPP_ASSERT(s_currentEcsIndex != INVALID_ID);
 
@@ -310,6 +324,7 @@ namespace rpp
 
     void ECS::Update(f32 deltaTime)
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_ecsStorage != nullptr);
         RPP_ASSERT(s_currentEcsIndex != INVALID_ID);
         ECSData *pCurrentEcs = s_ecsStorage->Get(s_currentEcsIndex);

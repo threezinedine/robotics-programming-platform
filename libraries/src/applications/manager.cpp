@@ -8,6 +8,7 @@ namespace rpp
 
     GraphicSessionManager::GraphicSessionManager()
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(m_sessions == nullptr);
 
         m_sessions = CreateScope<Array<Scope<GraphicSession>>>();
@@ -15,6 +16,7 @@ namespace rpp
 
     GraphicSessionManager::~GraphicSessionManager()
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(m_sessions != nullptr);
 
         m_sessions.reset();
@@ -22,6 +24,7 @@ namespace rpp
 
     void GraphicSessionManager::AddSession(Scope<GraphicSession> session)
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(m_sessions != nullptr);
         RPP_ASSERT(session != nullptr);
 
@@ -31,6 +34,7 @@ namespace rpp
 
     b8 GraphicSessionManager::Update(f32 deltaTime)
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(m_sessions != nullptr);
 
         b8 shouldApplicationClose = TRUE;
@@ -85,6 +89,7 @@ namespace rpp
 
     void GraphicSessionManager::ClearSessions()
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(m_sessions != nullptr);
 
         u32 numberOfSessions = m_sessions->Size();
@@ -105,12 +110,14 @@ namespace rpp
 
     u32 GraphicSessionManager::GetSessionCount() const
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(m_sessions != nullptr);
         return m_sessions->Size();
     }
 
     Scope<GraphicSession> &GraphicSessionManager::GetSession(u32 index) const
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(m_sessions != nullptr);
         RPP_ASSERT(index < m_sessions->Size());
         return (*m_sessions)[index];

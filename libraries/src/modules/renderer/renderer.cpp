@@ -19,6 +19,8 @@ namespace rpp
 
     void Renderer::Initialize()
     {
+        RPP_PROFILE_SCOPE();
+
         RPP_ASSERT(s_currentRenderers == nullptr);
         if (!Graphics::Init())
         {
@@ -40,6 +42,8 @@ namespace rpp
 
     void Renderer::Shutdown()
     {
+        RPP_PROFILE_SCOPE();
+
         RPP_ASSERT(s_currentRenderers != nullptr);
 
 #if defined(RPP_USE_TEST)
@@ -56,6 +60,7 @@ namespace rpp
 
     void Renderer::PreDraw()
     {
+        RPP_PROFILE_SCOPE();
         RendererData *current = GetCurrentRenderer();
 
         RPP_ASSERT(current != nullptr);
@@ -73,11 +78,13 @@ namespace rpp
 
     void Renderer::PostDraw()
     {
+        RPP_PROFILE_SCOPE();
         // Currently nothing to do here.
     }
 
     void Renderer::Present()
     {
+        RPP_PROFILE_SCOPE();
         RendererData *current = GetCurrentRenderer();
 
         RPP_ASSERT(current != nullptr);
@@ -94,6 +101,7 @@ namespace rpp
 
     Renderer::RendererData *Renderer::GetCurrentRenderer()
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_currentRenderers != nullptr);
         RPP_ASSERT(s_currentRendererIndex != INVALID_RENDERER_INDEX);
         return s_currentRenderers->Get(s_currentRendererIndex);
@@ -101,6 +109,7 @@ namespace rpp
 
     u32 Renderer::Create(u32 width, u32 height, const String &title)
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_currentRenderers != nullptr);
         u32 rendererId = s_currentRenderers->Create();
         RendererData *currentRenderer = s_currentRenderers->Get(rendererId);
@@ -190,6 +199,7 @@ namespace rpp
 
     void Renderer::DrawRectangle(const Rect &rect, u32 textureId, u32 maskTextureId)
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_currentRenderers != nullptr);
         RPP_ASSERT(s_currentRendererIndex != INVALID_RENDERER_INDEX);
         RendererData *current = s_currentRenderers->Get(s_currentRendererIndex);
@@ -211,6 +221,7 @@ namespace rpp
 
     void Renderer::DrawCircle(const Point &center, f32 radius, u32 textureId)
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_currentRenderers != nullptr);
         RPP_ASSERT(s_currentRendererIndex != INVALID_RENDERER_INDEX);
 
@@ -231,11 +242,13 @@ namespace rpp
 
     void Renderer::DrawLine(const Point &start, const Point &end)
     {
+        RPP_PROFILE_SCOPE();
         Line::Draw(GetCurrentRenderer()->lineId, start, end);
     }
 
     void Renderer::Activate(u32 renderId)
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_currentRenderers != nullptr);
         RPP_ASSERT(s_currentRenderers->Get(renderId) != nullptr)
 
@@ -249,6 +262,7 @@ namespace rpp
 
     void Renderer::DrawMouseCursor(const Point &position)
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_currentRenderers != nullptr);
         RPP_ASSERT(s_currentRendererIndex != INVALID_RENDERER_INDEX);
 
@@ -261,12 +275,14 @@ namespace rpp
 
     void Renderer::DrawingSceneInImGui()
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(GetCurrentRenderer()->imguiId != INVALID_ID);
         ImGuiImpl::DrawRenderingScene(GetCurrentRenderer()->imguiId);
     }
 
     void Renderer::CloseWindow()
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_currentRenderers != nullptr);
         RPP_ASSERT(s_currentRendererIndex != INVALID_RENDERER_INDEX);
 
@@ -280,6 +296,7 @@ namespace rpp
 
     void Renderer::SetWindowTitle(const String &title)
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_currentRenderers != nullptr);
         RPP_ASSERT(s_currentRendererIndex != INVALID_RENDERER_INDEX);
 
@@ -291,6 +308,7 @@ namespace rpp
 
     void Renderer::Destroy(u32 renderId)
     {
+        RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_currentRenderers != nullptr);
         RPP_ASSERT(renderId != INVALID_RENDERER_INDEX);
 

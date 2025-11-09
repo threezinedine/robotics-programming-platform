@@ -5,6 +5,7 @@ namespace rpp
 {
     void TestLog(const String &message)
     {
+        RPP_PROFILE_SCOPE();
         print(message.CStr());
         print("\n");
     }

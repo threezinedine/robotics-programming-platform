@@ -25,16 +25,19 @@ public:                                                           \
 #define STRUCTURE_SAVE_LOAD_IMPLEMENT(className)                                    \
     className *className::Create()                                                  \
     {                                                                               \
+        RPP_PROFILE_SCOPE();                                                        \
         return RPP_NEW(className);                                                  \
     }                                                                               \
                                                                                     \
     className *className::Create(const className##Description &desc)                \
     {                                                                               \
+        RPP_PROFILE_SCOPE();                                                        \
         return RPP_NEW(className, desc);                                            \
     }                                                                               \
                                                                                     \
     className *className::Create(const String &filePath)                            \
     {                                                                               \
+        RPP_PROFILE_SCOPE();                                                        \
         RPP_ASSERT(FileSystem::PathExists(filePath));                               \
                                                                                     \
         FileHandle file = FileSystem::OpenFile(filePath, FILE_MODE_READ);           \
@@ -46,6 +49,7 @@ public:                                                           \
                                                                                     \
     void className::Save(const String &filePath) const                              \
     {                                                                               \
+        RPP_PROFILE_SCOPE();                                                        \
         FileHandle file = FileSystem::OpenFile(filePath, FILE_MODE_WRITE);          \
         FileSystem::Write(file, ToString(this->ToDescription()));                   \
         FileSystem::CloseFile(file);                                                \
