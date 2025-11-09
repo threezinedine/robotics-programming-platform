@@ -14,6 +14,8 @@
 #include "modules/input/input.h"
 #include "modules/renderer/test_utils.h"
 
+#define MOUSE_CURSOR_SIZE (23.0f)
+
 namespace rpp
 {
 #define INVALID_IMGUI_KEY ImGuiKey_None
@@ -329,14 +331,15 @@ namespace rpp
         {
             ImDrawList *pDrawList = ImGui::GetForegroundDrawList();
             ImVec2 mousePos = ImGui::GetIO().MousePos;
+            Texture::TextureData *pMouseTextureData = Texture::s_textureStorage->Get(Renderer::GetCurrentRenderer()->mouseTexture);
 
             pDrawList->AddImage(
-                (void *)(intptr_t)Renderer::GetCurrentRenderer()->circleMask,
-                ImVec2(mousePos.x, mousePos.y),
-                ImVec2(mousePos.x, mousePos.y));
+                (void *)(intptr_t)pMouseTextureData->textureId,
+                ImVec2(mousePos.x + MOUSE_CURSOR_SIZE / 2, mousePos.y + MOUSE_CURSOR_SIZE / 2),
+                ImVec2(mousePos.x + MOUSE_CURSOR_SIZE / 2 * 3, mousePos.y + MOUSE_CURSOR_SIZE / 2 * 3));
         }
 
-        // Renderer::DrawMouseCursor({f32(InputSystem::GetMouseX()), f32(InputSystem::GetMouseY())});
+        Renderer::DrawMouseCursor({f32(InputSystem::GetMouseX()), f32(InputSystem::GetMouseY())});
 #endif
 
 #if 0

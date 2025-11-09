@@ -1,6 +1,11 @@
 #pragma once
 #include "core/core.h"
 
+#if defined(RPP_USE_TEST)
+#define private public
+#define protected public
+#endif
+
 namespace rpp
 {
     /**
@@ -65,3 +70,8 @@ namespace rpp
         static Scope<Storage<TextureData>> s_textureStorage; ///< Storage for managing texture data.
     };
 } // namespace rpp
+
+#if defined(RPP_USE_TEST)
+#define private public
+#define protected public
+#endif
