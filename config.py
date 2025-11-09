@@ -30,6 +30,7 @@ def main():
     GenerateTemplate("gruntime/.vscode/tasks.json.in")
     GenerateTemplate("gruntime/.vscode/launch.json.in")
 
+    ValidateEnvDirExists("templategen")
     RunPythonProject("templategen")
 
     if args.Project in PythonProjectNames:

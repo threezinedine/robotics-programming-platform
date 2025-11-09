@@ -247,12 +247,12 @@ def RunPythonProject(
             "__init__.py",
         )
 
-
         isAnyHeaderFileChanged = any(
             IsFileModified(headerFile)
             for headerFile in allHeaderFiles + allTemplateFiles + [typeMapFiles]
         )
 
+        isWriterOutputFileExist = os.path.isfile(writerOutput)
         isE2EOutputFileExists = os.path.isfile(e2eOutput)
         isE2EJsonWriterBindingOutputFileExists = os.path.isfile(
             e2eJsonWriterBindingOutput
@@ -271,6 +271,7 @@ def RunPythonProject(
 
         if (
             not isAnyHeaderFileChanged
+            and isWriterOutputFileExist
             # and isPyiFileExists
             # and isCppBindingFileExists
             and isE2EOutputFileExists
@@ -311,7 +312,6 @@ def RunPythonProject(
         applicationHeaderFile = os.path.join(
             Constants.ABSOLUTE_BASE_DIR,
             "libraries",
-            "applications",
             "include",
             "applications",
             "applications.h",
@@ -411,9 +411,7 @@ def RunPythonProject(
             )
             RunCommand(pyiE2EGRuntimeCommand, cwd=cwd)
 
-            e2eInitCommand = f"{pythonExe} {mainScript} " + " ".join(
-                e2eInitOutputArgs
-            )
+            e2eInitCommand = f"{pythonExe} {mainScript} " + " ".join(e2eInitOutputArgs)
             RunCommand(e2eInitCommand, cwd=cwd)
 
             e2eAppendCommand = " ".join([pythonExe, mainScript] + e2eAppendOutputArgs)
@@ -495,9 +493,7 @@ def RunPythonProject(
             ),
         ]
 
-        allOutputFiles = [
-            file[:-3] for file in allTemplateFiles
-        ]
+        allOutputFiles = [file[:-3] for file in allTemplateFiles]
 
         for templateFile, outputFile in zip(allTemplateFiles, allOutputFiles):
             finalTemplateFile = os.path.join(Constants.ABSOLUTE_BASE_DIR, templateFile)
@@ -505,8 +501,7 @@ def RunPythonProject(
             isOutputFileExist = os.path.exists(finalOutputFile)
 
             if not IsFileModified(templateFile) and not force and isOutputFileExist:
-                logger.debug(
-                    f"Template file not modified, skipping: {templateFile}")
+                logger.debug(f"Template file not modified, skipping: {templateFile}")
                 continue
 
             try:

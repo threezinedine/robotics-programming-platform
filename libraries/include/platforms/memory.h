@@ -43,7 +43,7 @@ namespace rpp
      *
      * @return TRUE if has the memory leaks, FALSE otherwise.
      */
-    b8 GetMemoryAllocated(char *buffer, size_t bufferSize);
+    u8 GetMemoryAllocated(char *buffer, size_t bufferSize);
 }
 
 /**
@@ -67,7 +67,7 @@ namespace rpp
 /**
  * @brief Macro to deallocate memory and set the pointer to nullptr (which is a good practice to avoid dangling pointers).
  */
-#define RPP_DELETE(ptr) delete ptr;         
+#define RPP_DELETE(ptr) delete ptr;
 
 /**
  * @brief Macro to allocate memory without file and line information. Used for containers' allocations.
@@ -132,7 +132,11 @@ namespace rpp
 #define RPP_MALLOC(size) malloc(size)
 #define RPP_FREE(ptr) free(ptr)
 
-#define RPP_NEW_ARRAY(ptr, type, count) do { ptr = new type[count]; } while (0)
+#define RPP_NEW_ARRAY(ptr, type, count) \
+    do                                  \
+    {                                   \
+        ptr = new type[count];          \
+    } while (0)
 #define RPP_DELETE_ARRAY(ptr, type, count) delete[] (ptr)
 
 #define RPP_ENABLE_MEMORY_TRACKING

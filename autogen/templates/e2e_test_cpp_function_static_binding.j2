@@ -2,6 +2,7 @@
 {% if "e2e" in method.annotations and method.isStatic and method.access == "public" %}
 static PyObject* {{ method.name }}(PyObject* self, PyObject* args)
 {
+    {% if method.parameters|length != 0 %}
     {% for param in method.parameters %}
     {{ param.type.replace("const", "").replace("*", "").replace("&", "").replace("std::string", "const char*").replace("String", "const char*") }} {{ param.name }};
     {% endfor %}
@@ -10,6 +11,7 @@ static PyObject* {{ method.name }}(PyObject* self, PyObject* args)
     {
         return nullptr;
     }
+    {% endif %}
 
     {% if method.returnType != "void" %}
         {% if e2eBindingType(method.returnType) == "s" %}

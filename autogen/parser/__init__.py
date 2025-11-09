@@ -69,9 +69,8 @@ def Parse(
             "-x",
             "c++",
             "-std=c++17",
-            "-I../libraries/core/include",
-            "-I../libraries/modules/include",
-            "-I../libraries/platforms/include",
+            "-I../libraries/include",
+            "-DRPP_USE_TEST=1",
         ],
         unsaved_files=(
             [

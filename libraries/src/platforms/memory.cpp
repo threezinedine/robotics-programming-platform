@@ -1,5 +1,11 @@
 #if defined(RPP_DEBUG)
 
+#if defined(_MSC_VER)
+#include <windows.h>
+#include <dbghelp.h>
+#define MAX_TRACE_STACK_DEPTH 32
+#endif
+
 #include <cstdlib>
 #include "platforms/console.h"
 #include <cstdio>
@@ -8,12 +14,6 @@
 
 #include "platforms/memory.h"
 
-#if defined(_MSC_VER)
-#include <windows.h>
-#include <dbghelp.h>
-#define MAX_TRACE_STACK_DEPTH 32
-#endif
-
 void operator delete(void *ptr) noexcept
 {
     ::rpp::Deallocate(ptr);
@@ -21,7 +21,7 @@ void operator delete(void *ptr) noexcept
 
 namespace rpp
 {
-    static b8 g_memoryTrackingEnabled = FALSE;
+    static u8 g_memoryTrackingEnabled = FALSE;
 
     namespace
     {
@@ -31,21 +31,21 @@ namespace rpp
             size_t size;
             const char *file;
             i32 line;
-    #if defined(_MSC_VER)
+#if defined(_MSC_VER)
             void *traceStack[MAX_TRACE_STACK_DEPTH];
             u32 traceStackSize;
-    #endif
+#endif
             MemHeader *next;
             MemHeader *prev;
         };
 
-    #if defined(_MSC_VER)
+#if defined(_MSC_VER)
         static void LogStackTrace(MemHeader *node)
         {
             USHORT frames = CaptureStackBackTrace(0, MAX_TRACE_STACK_DEPTH, node->traceStack, nullptr);
             node->traceStackSize = static_cast<u32>(frames);
         }
-    #endif
+#endif
 
         MemHeader *Create(void *ptr, size_t size, const char *file = nullptr, i32 line = 0)
         {
@@ -57,9 +57,9 @@ namespace rpp
             node->next = nullptr;
             node->prev = nullptr;
 
-    #if defined(_MSC_VER)
+#if defined(_MSC_VER)
             LogStackTrace(node);
-    #endif
+#endif
             return node;
         }
 
@@ -78,16 +78,16 @@ namespace rpp
                 if (g_memoryTrackingEnabled)
                 {
                     char buffer[524288];
-                    b8 hasLeak = GetMemoryAllocated(buffer, sizeof(buffer));
+                    u8 hasLeak = GetMemoryAllocated(buffer, sizeof(buffer));
 
                     rpp::print(buffer, rpp::ConsoleColor::RED);
 
-    #if RPP_PLATFORM_WINDOWS
+#if RPP_PLATFORM_WINDOWS
                     if (hasLeak)
                     {
                         debugbreak();
                     }
-    #endif
+#endif
                 }
 
                 MemHeader *node = head;
@@ -191,9 +191,9 @@ namespace rpp
                 debugbreak();
                 char message[512];
                 snprintf(message, sizeof(message),
-                        "Warning: Allocating memory (%s:%d) at an address that is already tracked (%s:%d) with a different size.\n"
-                        "Previous size: %zu bytes, New size: %zu bytes.\n",
-                        file, line, existing->file != nullptr ? existing->file : "unknown", existing->line, existing->size, size);
+                         "Warning: Allocating memory (%s:%d) at an address that is already tracked (%s:%d) with a different size.\n"
+                         "Previous size: %zu bytes, New size: %zu bytes.\n",
+                         file, line, existing->file != nullptr ? existing->file : "unknown", existing->line, existing->size, size);
                 rpp::print(message, rpp::ConsoleColor::YELLOW);
             }
             existing->size = size > existing->size ? size : existing->size;
@@ -230,7 +230,7 @@ namespace rpp
         return total;
     }
 
-    b8 GetMemoryAllocated(char *buffer, size_t bufferSize)
+    u8 GetMemoryAllocated(char *buffer, size_t bufferSize)
     {
         std::memset(buffer, 0, bufferSize);
         MemHeader *node = g_memList.head;
@@ -242,11 +242,11 @@ namespace rpp
 
             snprintf(buffer, bufferSize, "%sLeaked %zu bytes at address %p at %s:%d\n", buffer, node->size / 8, node->ptr, node->file != nullptr ? node->file : "unknown", node->line);
 
-    #if RPP_PLATFORM_WINDOWS
+#if RPP_PLATFORM_WINDOWS
             debugbreak();
-    #else 
+#else
             print(buffer, rpp::ConsoleColor::YELLOW);
-    #endif
+#endif
             node = node->next;
         }
 
