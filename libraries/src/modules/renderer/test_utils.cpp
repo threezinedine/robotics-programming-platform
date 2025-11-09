@@ -83,6 +83,21 @@ namespace rpp
 
             break;
         }
+        case ImGuiItemAction::IMGUI_CLOSE_RENDERER:
+        {
+            if (s_pData->rendererId == INVALID_ID || (s_pData->rendererId != INVALID_ID && s_findingFrameCount < 2))
+            {
+                TestSystem::GetInstance()->SetMainThreadWorking(FALSE);
+                ResetCurrentItem();
+            }
+            else
+            {
+                Renderer::Destroy(s_pData->rendererId);
+                TestSystem::GetInstance()->SetMainThreadWorking(FALSE);
+                ResetCurrentItem();
+            }
+            break;
+        }
         case ImGuiItemAction::IMGUI_ACTION_CLICK:
         {
             if (s_itemFound)
@@ -163,6 +178,7 @@ namespace rpp
         s_pData->action = ImGuiItemAction::IMGUI_ACTION_COUNT;
         s_pData->text = "";
         s_pData->characterIndex = 0;
+        s_pData->rendererId = INVALID_ID;
         s_pData->labelCheckingCallback = nullptr;
         s_findingFrameCount = 0;
         s_itemFound = FALSE;
@@ -310,6 +326,24 @@ namespace rpp
         RPP_UNUSED(rendererName);
 #endif
         return INVALID_ID;
+    }
+
+    void TestUtils::CloseRendererById(u32 rendererId)
+    {
+        RPP_PROFILE_SCOPE();
+#if defined(RPP_USE_TEST)
+        RPP_ASSERT(s_pData != nullptr);
+        s_pData->label = "";
+        s_pData->action = ImGuiItemAction::IMGUI_CLOSE_RENDERER;
+        s_pData->text = "";
+        s_pData->rendererId = rendererId;
+        s_findingFrameCount = 0;
+
+        TestSystem::GetInstance()->SetMainThreadWorking(TRUE);
+        TestSystem::GetInstance()->Yield();
+#else
+        RPP_UNUSED(rendererId);
+#endif
     }
 } // namespace rpp
 #endif

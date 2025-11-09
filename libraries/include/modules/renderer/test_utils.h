@@ -50,6 +50,7 @@ namespace rpp
             IMGUI_ACTION_ASSERT_TEXT_INPUT, ///< Just find the item without any action.
             IMGUI_ACTION_TYPE,              ///< Type text into the focused item.
             IMGUI_ACTION_ENTER,             ///< Type enter action
+            IMGUI_CLOSE_RENDERER,           ///< Close the renderer with the given id.
             IMGUI_ACTION_COUNT,
         };
 
@@ -70,6 +71,8 @@ namespace rpp
 
             /// @brief An optional callback function for additional label checking.
             LabelCheckingCallback labelCheckingCallback = nullptr;
+
+            u32 rendererId = INVALID_ID; ///< The renderer id associated with the current action.
         };
 
     public:
@@ -144,6 +147,13 @@ namespace rpp
          * @return The ID of the renderer if found, otherwise returns an `INVALID_ID`.
          */
         static u32 FindRendererIdByName(const String &rendererName) RPP_E2E_BINDING;
+
+        /**
+         * Used for closing the renderer by its ID.
+         *
+         * @param rendererId The ID of the renderer to close.
+         */
+        static void CloseRendererById(u32 rendererId) RPP_E2E_BINDING;
 
     private:
         /**

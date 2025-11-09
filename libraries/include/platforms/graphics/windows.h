@@ -255,6 +255,14 @@ namespace rpp
 
         inline void SetOnMouseMoveCallback(WindowOnMouseMoveCallback callback) { m_onMouseMoveCallback = callback; }
 
+        /**
+         * @brief A callback function type for window close events.
+         * @param pUserData A pointer to user-defined data passed to the callback.
+         */
+        using WindowOnCloseCallback = std::function<void(void *)>;
+
+        inline void SetOnCloseCallback(WindowOnCloseCallback callback) { m_onCloseCallback = callback; }
+
     private:
         u32 m_width;         ///< The width of the window.
         u32 m_height;        ///< The height of the window.
@@ -265,5 +273,6 @@ namespace rpp
 
         WindowResizeCallback m_resizeCallback;           ///< The callback function for window resize events.
         WindowOnMouseMoveCallback m_onMouseMoveCallback; ///< The callback function for mouse move events.
+        WindowOnCloseCallback m_onCloseCallback;         ///< The callback function for window close events.
     };
 } // namespace rpp

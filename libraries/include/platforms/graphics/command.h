@@ -37,7 +37,10 @@ namespace rpp
         BIND_FRAMEBUFFER,   ///< Bind a framebuffer object.
         UNBIND_FRAMEBUFFER, ///< Unbind the currently bound framebuffer object.
 
-        CLOSE_WINDOW, ///< Close the rendering window.
+        PREVENT_CLOSE, ///< Prevent the window from being closed.
+        CLOSE_WINDOW,  ///< Close the rendering window.
+
+        MOCK_CLOSE_WINDOW, ///< Mock close the rendering window (for testing). Used only for testing.
 
         DISABLE_MOUSE, ///< Use only for testing to remove the user mouse event.
         COUNT,

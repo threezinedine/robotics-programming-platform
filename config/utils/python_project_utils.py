@@ -71,20 +71,20 @@ def _GetListOfHeaderFiles() -> list[str]:
         os.path.join(
             Constants.ABSOLUTE_BASE_DIR,
             "libraries",
+            "include",
             "modules",
-            "include",
         ),
         os.path.join(
             Constants.ABSOLUTE_BASE_DIR,
             "libraries",
+            "include",
             "core",
-            "include",
         ),
         os.path.join(
             Constants.ABSOLUTE_BASE_DIR,
             "libraries",
-            "applications",
             "include",
+            "applications",
         ),
     ]
 

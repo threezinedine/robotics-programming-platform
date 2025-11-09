@@ -1,8 +1,9 @@
 #pragma once
 #include <cassert>
 #include <memory>
+#include <functional>
 
-namespace rpp 
+namespace rpp
 {
     typedef unsigned char u8;       ///< 8-bit unsigned integer.
     typedef unsigned short u16;     ///< 16-bit unsigned integer.
@@ -34,9 +35,8 @@ namespace rpp
     static_assert(sizeof(f32) == 4, "f32 must be 4 bytes");
     static_assert(sizeof(f64) == 8, "f64 must be 8 bytes");
 
-    #define TRUE b8(true)   ///< Boolean true.
-    #define FALSE b8(false) ///< Boolean false.
-
+#define TRUE b8(true)   ///< Boolean true.
+#define FALSE b8(false) ///< Boolean false.
 
     // The owner ship smart pointer which cannot be copied.
     template <typename T>

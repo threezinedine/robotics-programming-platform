@@ -28,6 +28,8 @@ private:
 
     void EditorMainRender();
 
+    void UnsavedChangesModalRender();
+
     void EditorMainToolbarRender();
 
 private:
@@ -57,6 +59,7 @@ private:
     char m_editedFunctionName[256] = "";            ///< The name of the function currently being edited.
     u32 m_currentEditingFunctionIndex = INVALID_ID; ///< The index of the currently editing function.
     b8 m_focusFunctionNameInput = FALSE;            ///< Whether to focus the function name input box.
+    b8 m_openUnsavedChangesModal = FALSE;           ///< Whether to open the Unsaved Changes modal.
 
     String m_openProjectFile; ///< The folder path of the currently opened project.
 };

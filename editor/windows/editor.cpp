@@ -40,6 +40,29 @@ void EditorWindow::InitializeImpl()
         OpenProject(m_pEditorData->GetRecentProjects()[0]);
     }
 
+    Renderer::GetWindow()->SetOnCloseCallback(
+        [&](void *pUserData)
+        {
+            RPP_PROFILE_SCOPE();
+            EditorWindow *pEditor = static_cast<EditorWindow *>(pUserData);
+            RPP_ASSERT(pEditor != nullptr);
+
+            if (m_pCurrentProject == nullptr)
+            {
+                return;
+            }
+
+            if (HistoryManager::GetInstance()->Empty())
+            {
+                return;
+            }
+
+            m_openUnsavedChangesModal = TRUE;
+            GraphicsCommandData preventCloseCommandData = {};
+            preventCloseCommandData.type = GraphicsCommandType::PREVENT_CLOSE;
+            Renderer::GetWindow()->ExecuteCommand(preventCloseCommandData);
+        });
+
     HistoryManager::GetInstance()->SetOnCommandExecuteCallback(
         [this](Command *pCommand)
         {
@@ -414,6 +437,36 @@ void EditorWindow::EditorMainRender()
         }
     }
     RPP_MARK_ITEM("Editor/Files");
+
+    UnsavedChangesModalRender();
+}
+
+void EditorWindow::UnsavedChangesModalRender()
+{
+    if (m_openUnsavedChangesModal)
+    {
+        RPP_LOG_DEBUG("Opening UnsavedChangesModal popup.");
+        ImGui::OpenPopup("UnsavedChangesModal");
+        m_openUnsavedChangesModal = FALSE;
+    }
+
+    ImGuiIO &io = ImGui::GetIO();
+    ImVec2 center = ImVec2(io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f);
+    ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+
+    if (ImGui::BeginPopupModal("UnsavedChangesModal", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove))
+    {
+        if (ImGui::Button("Save"))
+        {
+            HistoryManager::GetInstance()->Reset();
+            GraphicsCommandData cmdData;
+            cmdData.type = GraphicsCommandType::CLOSE_WINDOW;
+            Renderer::GetWindow()->ExecuteCommand(cmdData);
+        }
+        RPP_MARK_ITEM("Editor/UnsavedChangesModal/Save");
+        ImGui::EndPopup();
+        RPP_MARK_ITEM("Editor/UnsavedChangesModal");
+    }
 }
 
 void EditorWindow::EditorMainToolbarRender()

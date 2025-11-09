@@ -67,6 +67,20 @@ namespace rpp
         RPP_ASSERT(current->imguiId != INVALID_ID);
         ImGuiImpl::PrepareFrame(current->imguiId);
 
+#if defined(RPP_USE_TEST)
+        TestUtils::GlobalData *pGlobalData = TestUtils::s_pData;
+        if (pGlobalData->action == TestUtils::ImGuiItemAction::IMGUI_CLOSE_RENDERER)
+        {
+            if (current->rendererId == pGlobalData->rendererId)
+            {
+                pGlobalData->rendererId = INVALID_ID; // Trigger to reset the close renderer event
+                GraphicsCommandData closeCommandData = {};
+                closeCommandData.type = GraphicsCommandType::MOCK_CLOSE_WINDOW;
+                Renderer::GetWindow()->ExecuteCommand(closeCommandData);
+            }
+        }
+#endif
+
         // Main loop
         current->window->PollEvents();
 

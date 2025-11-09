@@ -99,3 +99,26 @@ def test_create_new_function(setup_recent_projects: None):
         projDes.functionNames.count("NewFunction (Copy)") == 1,
         "Project description does not contain 'NewFunction (Copy)' exactly once",
     )
+
+
+def test_close_window_while_unsaved_changes(setup_recent_projects: None):
+    TestUtils.LeftClick(EDITOR_MAIN_TOOLBAR_NEW)
+    TestUtils.LeftClick(EDITOR_MAIN_TOOLBAR_NEW_POPUP_FUNCTION)
+    TestSystem.Wait(10)
+    TestUtils.Enter()
+    TestSystem.Wait(10)
+
+    TestUtils.Assert(
+        TestUtils.IsItemFound(EDITOR_MAIN_FUNCTION_FORMAT.format("NewFunction")),
+        "New function does not exist after confirming name",
+    )
+
+    rendererId = TestUtils.FindRendererIdByName("Editor - ok*")
+    TestUtils.CloseRendererById(rendererId)
+
+    TestSystem.Wait(20)
+
+    TestUtils.Assert(
+        TestUtils.IsItemFound("Editor/UnsavedChangesModal"),
+        "Unsaved changes modal not opened after trying to close window with unsaved changes",
+    )

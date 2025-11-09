@@ -307,6 +307,14 @@ namespace rpp
             {
                 win->m_onMouseMoveCallback(xPos, yPos, win->m_pData);
             } });
+
+        glfwSetWindowCloseCallback((GLFWwindow *)m_window, [](GLFWwindow *window)
+                                   {
+            Window *win = (Window *)glfwGetWindowUserPointer(window);
+            if (win->m_onCloseCallback)
+            {
+                win->m_onCloseCallback(win->m_pData);
+            } });
     }
 
     Window::Window(const Window &other)
@@ -743,6 +751,20 @@ namespace rpp
         case GraphicsCommandType::CLOSE_WINDOW:
         {
             glfwSetWindowShouldClose((GLFWwindow *)m_window, TRUE);
+            return TRUE;
+        }
+        case GraphicsCommandType::PREVENT_CLOSE:
+        {
+            glfwSetWindowShouldClose((GLFWwindow *)m_window, FALSE);
+            return TRUE;
+        }
+        case GraphicsCommandType::MOCK_CLOSE_WINDOW:
+        {
+            GLFWwindowclosefun closeCallback = glfwSetWindowCloseCallback((GLFWwindow *)m_window, nullptr);
+            if (closeCallback)
+            {
+                closeCallback((GLFWwindow *)m_window);
+            }
             return TRUE;
         }
         case GraphicsCommandType::DISABLE_MOUSE:
