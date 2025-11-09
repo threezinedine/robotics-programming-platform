@@ -175,9 +175,13 @@ namespace rpp
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // Enable Gamepad Controls
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;     // Enable Docking
-        // io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;   // Enable Multi-Viewport / Platform Windows
-        // io.ConfigViewportsNoAutoMerge = true;
-        // io.ConfigViewportsNoTaskBarIcon = true;
+                                                              // io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;   // Enable Multi-Viewport / Platform Windows
+                                                              // io.ConfigViewportsNoAutoMerge = true;
+                                                              // io.ConfigViewportsNoTaskBarIcon = true;
+
+#if defined(RPP_USE_TEST)
+        io.WantCaptureMouse = false;
+#endif
 
         // Setup Dear ImGui style
         ImGui::StyleColorsDark();
@@ -280,7 +284,6 @@ namespace rpp
                 io.AddMouseButtonEvent(button, isPressed);
             }
 
-#if 1
             for (i32 key = 0; key < KeyboardButton::KEYBOARD_BUTTON_COUNT; ++key)
             {
                 b8 isPressed = InputSystem::IsKeyboardButtonDown(static_cast<KeyboardButton>(key));
@@ -293,7 +296,6 @@ namespace rpp
 
                 io.AddKeyEvent(keyEnum, isPressed);
             }
-#endif
         }
 #endif
         ImGui_ImplOpenGL3_NewFrame();

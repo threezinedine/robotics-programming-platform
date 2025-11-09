@@ -119,7 +119,7 @@ namespace rpp
 
         currentRenderer->window = Graphics::CreateWindow(width, height, title.CStr(), &graphicData, sizeof(RendererGraphicData));
 
-#if defined(RPP_USE_TEST)
+#if defined(RPP_USE_TEST) && 0
         {
             RPP_LOG_INFO("Disabling mouse input for renderer id {}", rendererId);
             DisableMouseCommandData disableMouseData = {};
