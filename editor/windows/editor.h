@@ -52,7 +52,7 @@ private:
      */
     EditorData *m_pEditorData;
 
-    char m_editedFunctionName[256] = ""; ///< The name of the function currently being edited.
+    char m_editedFunctionName[256] = "";            ///< The name of the function currently being edited.
     u32 m_currentEditingFunctionIndex = INVALID_ID; ///< The index of the currently editing function.
-    b8 m_focusFunctionNameInput = FALSE; ///< Whether to focus the function name input box.
+    b8 m_focusFunctionNameInput = FALSE;            ///< Whether to focus the function name input box.
 };

@@ -37,6 +37,20 @@ void EditorWindow::InitializeImpl()
     {
         OpenProject(m_pEditorData->GetRecentProjects()[0]);
     }
+
+    HistoryManager::GetInstance()->SetOnCommandExecuteCallback(
+        [this](Command *pCommand)
+        {
+            RPP_PROFILE_SCOPE();
+            Renderer::SetWindowTitle(Format("Editor - {}*", m_pCurrentProject->GetName()));
+        });
+
+    HistoryManager::GetInstance()->SetOnHistoryEmptyCallback(
+        [this]()
+        {
+            RPP_PROFILE_SCOPE();
+            Renderer::SetWindowTitle(Format("Editor - {}", m_pCurrentProject->GetName()));
+        });
 }
 
 void EditorWindow::RenderImpl()
@@ -397,7 +411,11 @@ void EditorWindow::EditorMainToolbarRender()
         if (ImGui::MenuItem("Function"))
         {
             RPP_ASSERT(m_pCurrentProject != nullptr);
+#if 0
             m_pCurrentProject->AddNewFunction();
+#else
+            HistoryManager::GetInstance()->ExecuteCommand(RPP_NEW(AddFunctionCommand, m_pCurrentProject));
+#endif
             m_currentEditingFunctionIndex = m_pCurrentProject->GetFunctionNames().Size() - 1;
             const char *newFunctionName = m_pCurrentProject->GetFunctionNames()[m_currentEditingFunctionIndex].CStr();
             memcpy(m_editedFunctionName, newFunctionName, strlen(newFunctionName) + 1);

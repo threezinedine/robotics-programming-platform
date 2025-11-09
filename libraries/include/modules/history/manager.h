@@ -43,6 +43,11 @@ namespace rpp
         void Undo();
 
         /**
+         * Resets the history, clearing all executed commands.
+         */
+        void Reset();
+
+        /**
          * Sets the callback to be called when a command is executed.
          */
         inline b8 Empty() const { return m_commands.Size() == 0; };
@@ -51,6 +56,28 @@ namespace rpp
          * Gets the number of commands in the history.
          */
         inline u32 Count() const { return m_commands.Size(); };
+
+    public:
+        /**
+         * Sets the callback to be called when a command is executed.
+         *
+         * @param callback The callback function.
+         */
+        void SetOnCommandExecuteCallback(const HistoryCommandExecuteCallback &callback) { m_onCommandExecute = callback; }
+
+        /**
+         * Sets the callback to be called when a command is undone.
+         *
+         * @param callback The callback function.
+         */
+        void SetOnCommandUndoCallback(const HistoryCommandUndoCallback &callback) { m_onCommandUndo = callback; }
+
+        /**
+         * Sets the callback to be called when the history becomes empty.
+         *
+         * @param callback The callback function.
+         */
+        void SetOnHistoryEmptyCallback(const HistoryCommandEmptyCallback &callback) { m_onHistoryEmpty = callback; }
 
     private:
         Stack<Command *> m_commands; /// The list of executed commands.

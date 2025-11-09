@@ -1,8 +1,11 @@
 #pragma once
 #include "core/core.h"
+#include "modules/history/history.h"
 
 namespace rpp
 {
+    class Project;
+
     /**
      * @brief The storage data of a `function` in the system. This is used in Python binding and JSON mapping.
      */
@@ -43,4 +46,22 @@ namespace rpp
     {
         return m_name;
     }
+
+    class AddFunctionCommand : public Command
+    {
+    public:
+        AddFunctionCommand(Project *pProject);
+        AddFunctionCommand(Project *pProject, const FunctionDescription &desc);
+        ~AddFunctionCommand();
+
+    protected:
+        b8 CanExecuteImpl() const;
+        void ExecuteImpl() override;
+        void UndoImpl() override;
+
+    private:
+        Project *m_pProject;                ///< The project to which the function will be added.
+        FunctionDescription m_functionDesc; ///< The description of the function to be added.
+        u32 m_addedFunctionIndex;           ///< The index of the added function in the project's function list.
+    };
 } // namespace rpp

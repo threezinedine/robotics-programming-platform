@@ -15,6 +15,12 @@ namespace rpp
 
     HistoryManager::~HistoryManager()
     {
+        while (!m_commands.Empty())
+        {
+            Command *pCommand = m_commands.Top();
+            m_commands.Pop();
+            RPP_DELETE(pCommand);
+        }
     }
 
     void HistoryManager::ExecuteCommand(Command *pCommand)
@@ -63,5 +69,20 @@ namespace rpp
             m_onHistoryEmpty();
         }
         RPP_DELETE(pCommand);
+    }
+
+    void HistoryManager::Reset()
+    {
+        while (!m_commands.Empty())
+        {
+            Command *pCommand = m_commands.Top();
+            m_commands.Pop();
+            RPP_DELETE(pCommand);
+        }
+
+        if (m_onHistoryEmpty)
+        {
+            m_onHistoryEmpty();
+        }
     }
 } // namespace rpp
