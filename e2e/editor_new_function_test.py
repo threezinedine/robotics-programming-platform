@@ -122,3 +122,29 @@ def test_close_window_while_unsaved_changes(setup_recent_projects: None):
         TestUtils.IsItemFound("Editor/UnsavedChangesModal"),
         "Unsaved changes modal not opened after trying to close window with unsaved changes",
     )
+
+    TestUtils.LeftClick("Editor/UnsavedChangesModal/Cancel")
+
+    TestSystem.Wait(20)
+
+    TestUtils.Assert(
+        not TestUtils.IsItemFound("Editor/UnsavedChangesModal"),
+        "Unsaved changes modal not closed after canceling",
+    )
+
+    TestUtils.CloseRendererById(rendererId)
+    TestSystem.Wait(20)
+    TestUtils.LeftClick("Editor/UnsavedChangesModal/Save")
+
+    TestSystem.Wait(20)
+
+    file: FileHandle = FileSystem.OpenFile("/home/ok/project.rppproj", FILE_READ)
+    content = FileSystem.Read(file)
+    FileSystem.CloseFile(file)
+
+    projDes = ProjectDescription(**json.loads(content))
+
+    TestUtils.Assert(
+        len(projDes.functionNames) == 1 and projDes.functionNames[0] == "NewFunction",
+        "Project description function names does not contain only 'NewFunction' after saving from unsaved changes modal",
+    )

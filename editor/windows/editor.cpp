@@ -456,12 +456,26 @@ void EditorWindow::UnsavedChangesModalRender()
 
     if (ImGui::BeginPopupModal("UnsavedChangesModal", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove))
     {
+        ImGui::Text("You have unsaved changes. Do you want to save before exiting?");
+        ImGui::Separator();
+
+        if (ImGui::Button("Cancel"))
+        {
+            ImGui::CloseCurrentPopup();
+        }
+        RPP_MARK_ITEM("Editor/UnsavedChangesModal/Cancel");
+
+        ImGui::SameLine();
+
         if (ImGui::Button("Save"))
         {
-            HistoryManager::GetInstance()->Reset();
+            RPP_ASSERT(m_pCurrentProject != nullptr);
+            m_pCurrentProject->Save(m_openProjectFile);
+#if !defined(RPP_USE_TEST)
             GraphicsCommandData cmdData;
             cmdData.type = GraphicsCommandType::CLOSE_WINDOW;
             Renderer::GetWindow()->ExecuteCommand(cmdData);
+#endif
         }
         RPP_MARK_ITEM("Editor/UnsavedChangesModal/Save");
         ImGui::EndPopup();

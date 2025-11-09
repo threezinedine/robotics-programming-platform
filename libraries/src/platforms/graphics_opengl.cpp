@@ -764,6 +764,7 @@ namespace rpp
             if (closeCallback)
             {
                 closeCallback((GLFWwindow *)m_window);
+                glfwSetWindowCloseCallback((GLFWwindow *)m_window, closeCallback);
             }
             return TRUE;
         }

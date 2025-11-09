@@ -85,6 +85,7 @@ namespace rpp
         }
         case ImGuiItemAction::IMGUI_CLOSE_RENDERER:
         {
+            RPP_LOG_DEBUG("id: {} - frame {}", s_pData->rendererId, s_findingFrameCount);
             if (s_pData->rendererId == INVALID_ID || (s_pData->rendererId != INVALID_ID && s_findingFrameCount < 2))
             {
                 TestSystem::GetInstance()->SetMainThreadWorking(FALSE);
