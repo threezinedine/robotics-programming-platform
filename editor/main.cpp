@@ -38,9 +38,7 @@ int main(int argc, const char **argv)
 
     TestSystem::GetInstance()->Initialize(
         String(STRINGIFY(RPP_PROJECT_DIR) "/e2e/results.json"),
-        String(""),
         runtimeFilePath,
-        String(""),
         runTestCaseName);
 
     TestSystem::GetInstance()->Setup();

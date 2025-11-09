@@ -5,11 +5,13 @@
 #include "platforms/timer.h"
 #include <cstring>
 
+#define INDENT_LENGTH 3
 namespace rpp
 {
     ProfilingRecord *Profiling::s_pCurrentRecords = nullptr;
     FileHandle Profiling::s_logFile = INVALID_ID;
     char Profiling::s_fileBuffer[1024] = {0};
+    u32 Profiling::s_indent = 0;
 
     void Profiling::StartRecord()
     {
@@ -42,7 +44,7 @@ namespace rpp
             }
         }
 
-        s_logFile = FileSystem::OpenFile(finalOutputFile, FILE_MODE_APPEND);
+        s_logFile = FileSystem::OpenPhysicalFile(finalOutputFile, FILE_MODE_APPEND);
         memcpy(s_fileBuffer, finalOutputFile.CStr(), finalOutputFile.Length() + 1);
 
         RPP_ASSERT_MSG(s_logFile != INVALID_ID, "Failed to open profiling log file: {}", finalOutputFile);
@@ -60,8 +62,21 @@ namespace rpp
         memset(s_fileBuffer, 0, sizeof(s_fileBuffer));
     }
 
+    static String GetIndentString(u32 indent)
+    {
+        String result = Format("{}", indent);
+
+        while (result.Length() < INDENT_LENGTH)
+        {
+            result = String(" ") + result;
+        }
+
+        return result;
+    }
+
     Profiling::Profiling(const String &file, const String &funcName, u32 line)
     {
+        s_indent++;
         m_record.file = file;
         m_record.func = funcName;
         m_record.line = line;
@@ -70,7 +85,7 @@ namespace rpp
         if (s_logFile != INVALID_ID)
         {
             Datetime now = TimestampToDatetime(m_record.start);
-            String content = Format("{} ({}:{}) -- {}-{}-{} {}:{}:{}\n", m_record.func, m_record.file, m_record.line,
+            String content = Format("[{}] - Start {} ({}:{}) -- {}-{}-{} {}:{}:{}\n", GetIndentString(s_indent), m_record.func, m_record.file, m_record.line,
                                     now.year, now.month, now.day, now.hour, now.minute, now.second);
 
             FileSystem::Write(s_logFile, content);
@@ -87,10 +102,11 @@ namespace rpp
         }
 
         Datetime now = TimestampToDatetime(m_record.end);
-        String content = Format("{} ({}:{}) -- {}-{}-{} {}:{}:{}\n", m_record.func, m_record.file, m_record.line,
+        String content = Format("[{}] - End   {} ({}:{}) -- {}-{}-{} {}:{}:{}\n", GetIndentString(s_indent), m_record.func, m_record.file, m_record.line,
                                 now.year, now.month, now.day, now.hour, now.minute, now.second);
 
         FileSystem::Write(s_logFile, content);
+        s_indent--;
     }
 } // namespace rpp
 #endif

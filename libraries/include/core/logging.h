@@ -122,7 +122,7 @@ namespace rpp
     };
 } // namespace rpp
 
-#if defined(RPP_LIBRARIES_TEST)
+#if !defined(RPP_LIBRARIES_TEST)
 #if defined(RPP_DEBUG)
 #define RPP_LOG_TRACE(msg, ...) rpp::Logging::GetInstance()->Log(rpp::LogLevel::TRACE, Format(msg, ##__VA_ARGS__), __FILE__, __LINE__)
 #define RPP_LOG_DEBUG(msg, ...) rpp::Logging::GetInstance()->Log(rpp::LogLevel::DEBUG, Format(msg, ##__VA_ARGS__), __FILE__, __LINE__)

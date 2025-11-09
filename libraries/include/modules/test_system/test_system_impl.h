@@ -24,17 +24,14 @@ namespace rpp
          * Starting the test system with the given scripts (these scripts is python scripts).
          *
          * @param resultFilePath The path to the result file where test results will be written (json format). This parameter is required.
-         * @param setupFilePath The path to the setup script (optional).
          * @param updateFilePath The path to the update script (optional).
-         * @param shutdownFilePath The path to the shutdown script (optional).
+         * @param runTestCaseName The name of the test case to run (optional).
          *
          * @note these scripts' paths must be ABSOLUTE physical paths, so inside this module, we dont use the `FileSystem` module
          * to read these files, instead, we use the native file reading APIs.
          */
         void Initialize(const String &resultFilePath,
-                        const String &setupFilePath = "",
                         const String &updateFilePath = "",
-                        const String &shutdownFilePath = "",
                         const String &runTestCaseName = "");
 
         /**
@@ -106,10 +103,8 @@ namespace rpp
         static void TestThreadStaticFunction(void *pParam);
 
     private:
-        String m_resultFilePath;        ///< The path to the result file.
-        String m_setupScriptContent;    ///< The content of the setup script.
-        String m_updateScriptContent;   ///< The content of the update script.
-        String m_shutdownScriptContent; ///< The content of the shutdown script.
+        String m_resultFilePath;      ///< The path to the result file.
+        String m_updateScriptContent; ///< The content of the update script.
 
         String m_runTestCaseName; ///< The name of the test case to run.
 

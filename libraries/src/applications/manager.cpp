@@ -41,11 +41,10 @@ namespace rpp
         u32 numberOfSessions = m_sessions->Size();
 
         Queue<u32> closedSessionIndices;
-        ;
 
         for (u32 sessionIndex = 0; sessionIndex < numberOfSessions; ++sessionIndex)
         {
-            ;
+            RPP_PROFILE_SCOPE();
             Scope<GraphicSession> &session = (*m_sessions)[sessionIndex];
             RPP_ASSERT(session != nullptr);
 
@@ -59,18 +58,15 @@ namespace rpp
             }
             else
             {
-                ;
                 shouldApplicationClose = FALSE;
-                ;
                 session->Update(deltaTime);
-                ;
                 session->Render();
-                ;
             }
         }
 
         while (!closedSessionIndices.Empty())
         {
+            RPP_PROFILE_SCOPE();
             u32 indexToRemove = closedSessionIndices.Front();
             closedSessionIndices.Pop();
 

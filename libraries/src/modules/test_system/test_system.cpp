@@ -24,63 +24,13 @@ namespace rpp
 
     namespace
     {
-        /**
-         * Read the content of a python file from the given absolute path.
-         *
-         * @param filePath The absolute path to the python file. This the path must be physical path, not virtual path.
-         */
-        String ReadPhysicalFile(const String &filePath)
-        {
-            std::ifstream fileStream(filePath.CStr(), std::ios::in | std::ios::binary);
-            if (fileStream)
-            {
-                try
-                {
-                    std::string content((std::istreambuf_iterator<char>(fileStream)), std::istreambuf_iterator<char>());
-                    return String(content.c_str());
-                }
-                catch (const std::exception &e)
-                {
-                    RPP_LOG_FATAL("Failed to read python file from path: {}, exception: {}", filePath, String(e.what()));
-                    exit(-1);
-                }
-            }
-
-            RPP_UNREACHABLE();
-            return String();
-        }
-
-        void WritePhysicalFile(const String &filePath, const String &content)
-        {
-            std::ofstream fileStream(filePath.CStr(), std::ios::out | std::ios::binary);
-            if (fileStream)
-            {
-                try
-                {
-                    fileStream.write(content.CStr(), content.Length());
-                    fileStream.close();
-                }
-                catch (const std::exception &e)
-                {
-                    RPP_LOG_FATAL("Failed to write python file to path: {}, exception: {}", filePath, String(e.what()));
-                    exit(-1);
-                }
-            }
-            else
-            {
-                RPP_LOG_FATAL("Failed to open file stream for writing python file to path: {}", filePath);
-                exit(-1);
-            }
-        }
     } // namespace anonymous
 
     RPP_SINGLETON_IMPLEMENT(TestSystem);
 
     TestSystem::TestSystem()
         : m_resultFilePath(""),
-          m_setupScriptContent(""),
           m_updateScriptContent(""),
-          m_shutdownScriptContent(""),
           m_runTestCaseName(""),
           m_testThreadSignal(INVALID_ID),
           m_mainThreadSignal(INVALID_ID),
@@ -88,16 +38,16 @@ namespace rpp
           m_shouldApplicationClose(FALSE),
           m_isMainThreadWorking(FALSE)
     {
+        RPP_PROFILE_SCOPE();
     }
 
     TestSystem::~TestSystem()
     {
+        RPP_PROFILE_SCOPE();
     }
 
     void TestSystem::Initialize(const String &resultFilePath,
-                                const String &setupFilePath,
                                 const String &updateFilePath,
-                                const String &shutdownFilePath,
                                 const String &runTestCaseName)
     {
         RPP_PROFILE_SCOPE();
@@ -108,33 +58,16 @@ namespace rpp
         m_shouldApplicationClose = FALSE;
         m_isMainThreadWorking = FALSE;
 
-        // TODO: Loading scripts later
-        if (setupFilePath.Length() > 0)
-        {
-            m_setupScriptContent = ReadPhysicalFile(setupFilePath);
-        }
-        else
-        {
-            m_setupScriptContent = "";
-        }
-
         if (updateFilePath.Length() > 0)
         {
-            m_updateScriptContent = ReadPhysicalFile(updateFilePath);
+            FileHandle fileHandle = FileSystem::OpenPhysicalFile(updateFilePath, FILE_MODE_READ);
+            m_updateScriptContent = FileSystem::Read(fileHandle);
+            FileSystem::CloseFile(fileHandle);
             RPP_LOG_INFO("Running test script {}", updateFilePath);
         }
         else
         {
             m_updateScriptContent = "";
-        }
-
-        if (shutdownFilePath.Length() > 0)
-        {
-            m_shutdownScriptContent = ReadPhysicalFile(shutdownFilePath);
-        }
-        else
-        {
-            m_shutdownScriptContent = "";
         }
 
         RPP_ASSERT(m_testThreadSignal == INVALID_ID && m_mainThreadSignal == INVALID_ID);
@@ -156,6 +89,7 @@ namespace rpp
 
     void TestSystem::Shutdown()
     {
+        RPP_PROFILE_SCOPE();
     }
 
     void TestSystem::Yield()
@@ -220,7 +154,8 @@ namespace rpp
         Signal::Notify(m_mainThreadSignal);
         Signal::Wait(m_testThreadSignal);
 
-        String resultContent = ReadPhysicalFile(m_resultFilePath);
+        FileHandle fileHandle = FileSystem::OpenPhysicalFile(m_resultFilePath, FILE_MODE_READ_WRITE);
+        String resultContent = FileSystem::Read(fileHandle);
         Json resultsJson(resultContent);
         Json resultJson;
         resultJson.Set("name", m_runTestCaseName);
@@ -297,7 +232,8 @@ namespace rpp
         }
 
         resultsJson.Append(resultJson);
-        WritePhysicalFile(m_resultFilePath, resultsJson.ToString());
+        FileSystem::Write(fileHandle, resultsJson.ToString());
+        FileSystem::CloseFile(fileHandle);
 
         m_shouldApplicationClose = TRUE;
         Signal::Notify(m_mainThreadSignal); // exit the test thread
@@ -307,12 +243,15 @@ namespace rpp
 
     void TestSystem::Setup()
     {
+        RPP_PROFILE_SCOPE();
         Signal::Wait(m_mainThreadSignal);
     }
 
     void TestSystem::Update(f32 deltaTime)
     {
+        RPP_PROFILE_SCOPE();
         RPP_UNUSED(deltaTime);
+
         if (m_isMainThreadWorking)
         {
             return;
@@ -324,6 +263,7 @@ namespace rpp
 
     b8 TestSystem::ShouldApplicationClose()
     {
+        RPP_PROFILE_SCOPE();
         return m_shouldApplicationClose;
     };
 } // namespace rpp

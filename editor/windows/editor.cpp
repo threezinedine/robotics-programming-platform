@@ -7,6 +7,7 @@ EditorWindow::EditorWindow(u32 width, u32 height, const String &title)
     : GraphicSession(width, height, title),
       m_pCurrentProject(nullptr)
 {
+    RPP_PROFILE_SCOPE();
     if (FileSystem::PathExists(EDITOR_DATA_FILE))
     {
         m_pEditorData = EditorData::Create(EDITOR_DATA_FILE);
@@ -23,11 +24,13 @@ EditorWindow::EditorWindow(u32 width, u32 height, const String &title)
 
 EditorWindow::~EditorWindow()
 {
+    RPP_PROFILE_SCOPE();
     RPP_DELETE(m_pEditorData);
 }
 
 void EditorWindow::InitializeImpl()
 {
+    RPP_PROFILE_SCOPE();
     RPP_ASSERT(m_pEditorData != nullptr);
 
     if (m_pEditorData->GetRecentProjects().Size() > 0)
@@ -38,6 +41,7 @@ void EditorWindow::InitializeImpl()
 
 void EditorWindow::RenderImpl()
 {
+    RPP_PROFILE_SCOPE();
     ImGuiIO &io = ImGui::GetIO();
     ImGui::SetNextWindowPos(ImVec2(0, 0));
     ImGui::SetNextWindowSize(ImVec2(io.DisplaySize.x, io.DisplaySize.y));
@@ -55,6 +59,7 @@ void EditorWindow::RenderImpl()
 
 void EditorWindow::MenuRender()
 {
+    RPP_PROFILE_SCOPE();
     ImGui::BeginMenuBar();
     {
         if (ImGui::BeginMenu("File"))
@@ -167,6 +172,7 @@ void EditorWindow::MenuRender()
 
 void EditorWindow::NewProjectModalRender()
 {
+    RPP_PROFILE_SCOPE();
     if (m_openNewProjectModal)
     {
         ImGui::OpenPopup(NEW_PROJECT_MODAL_ID);
@@ -273,6 +279,7 @@ void EditorWindow::NewProjectModalRender()
 
 void EditorWindow::CreateProject(const String &projectFolder, const ProjectDescription &desc)
 {
+    RPP_PROFILE_SCOPE();
     m_pCurrentProject = Project::Create(desc);
 
     String finalProjectPath = Format("{}/{}", projectFolder, desc.name);
@@ -289,6 +296,7 @@ void EditorWindow::CreateProject(const String &projectFolder, const ProjectDescr
 
 void EditorWindow::OpenProject(const String &projectFilePath)
 {
+    RPP_PROFILE_SCOPE();
     RPP_ASSERT(FileSystem::PathExists(projectFilePath));
 
     FileHandle file = FileSystem::OpenFile(projectFilePath, FILE_MODE_READ);
@@ -313,6 +321,7 @@ void EditorWindow::OpenProject(const String &projectFilePath)
 
 void EditorWindow::EditorMainRender()
 {
+    RPP_PROFILE_SCOPE();
     if (m_pCurrentProject == nullptr)
     {
         ImGui::Text("No project is opened.");
@@ -354,7 +363,7 @@ void EditorWindow::EditorMainRender()
                 }
                 RPP_MARK_ITEM(Format("Editor/Files/Function/{}", functionName));
             }
-            else 
+            else
             {
                 ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.0f, 1.0f));
                 ImGui::Selectable(functionName.CStr(), nullptr);
@@ -375,6 +384,7 @@ void EditorWindow::EditorMainRender()
 
 void EditorWindow::EditorMainToolbarRender()
 {
+    RPP_PROFILE_SCOPE();
     if (ImGui::Button("New"))
     {
         ImGui::OpenPopup("Editor/Main/Toolbar/New/Popup");
@@ -389,7 +399,7 @@ void EditorWindow::EditorMainToolbarRender()
             RPP_ASSERT(m_pCurrentProject != nullptr);
             m_pCurrentProject->AddNewFunction();
             m_currentEditingFunctionIndex = m_pCurrentProject->GetFunctionNames().Size() - 1;
-            const char* newFunctionName = m_pCurrentProject->GetFunctionNames()[m_currentEditingFunctionIndex].CStr();
+            const char *newFunctionName = m_pCurrentProject->GetFunctionNames()[m_currentEditingFunctionIndex].CStr();
             memcpy(m_editedFunctionName, newFunctionName, strlen(newFunctionName) + 1);
             m_focusFunctionNameInput = TRUE;
         }
@@ -411,6 +421,7 @@ void EditorWindow::EditorMainToolbarRender()
 
 void EditorWindow::ShutdownImpl()
 {
+    RPP_PROFILE_SCOPE();
     if (m_pCurrentProject != nullptr)
     {
         RPP_DELETE(m_pCurrentProject);

@@ -53,6 +53,7 @@ namespace rpp
         static ProfilingRecord *s_pCurrentRecords; ///< Pointer to the current profiling records buffer
         static FileHandle s_logFile;               ///< Handle to the log file where profiling data is written
         static char s_fileBuffer[1024];            ///< Buffer for file name (for logging purposes)
+        static u32 s_indent;                       ///< Current indentation level for nested profiling records
 
     public:
         /**

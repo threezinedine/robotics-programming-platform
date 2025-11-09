@@ -172,6 +172,6 @@ target_link_libraries(
 
 target_compile_definitions(
     ${PROJECT_TEST_NAME}
-    PUBLIC
+    PRIVATE
     RPP_LIBRARIES_TEST
 )
