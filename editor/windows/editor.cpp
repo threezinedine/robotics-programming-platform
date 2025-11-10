@@ -413,10 +413,13 @@ void EditorWindow::EditorMainRender()
 
                 if (ImGui::InputText("###EditingFunctionName", m_editedFunctionName, sizeof(m_editedFunctionName), ImGuiInputTextFlags_EnterReturnsTrue))
                 {
-                    m_currentEditingFunctionIndex = INVALID_ID;
                     if (String(m_editedFunctionName) != functionName)
                     {
                         isFunctionAdded = TRUE;
+                    }
+                    else
+                    {
+                        m_currentEditingFunctionIndex = INVALID_ID;
                     }
                 }
                 RPP_MARK_ITEM(Format("Editor/Files/Function/Rename/{}", functionName));
@@ -434,6 +437,7 @@ void EditorWindow::EditorMainRender()
         {
             m_pCurrentProject->GetFunctionNames()[m_currentEditingFunctionIndex] = m_editedFunctionName;
             memset(m_editedFunctionName, 0, sizeof(m_editedFunctionName));
+            m_currentEditingFunctionIndex = INVALID_ID;
         }
     }
     RPP_MARK_ITEM("Editor/Files");

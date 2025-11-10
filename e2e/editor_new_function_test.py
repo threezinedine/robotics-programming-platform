@@ -148,3 +148,17 @@ def test_close_window_while_unsaved_changes(setup_recent_projects: None):
         len(projDes.functionNames) == 1 and projDes.functionNames[0] == "NewFunction",
         "Project description function names does not contain only 'NewFunction' after saving from unsaved changes modal",
     )
+
+
+def test_rename_function(setup_recent_projects: None):
+    TestUtils.LeftClick(EDITOR_MAIN_TOOLBAR_NEW)
+    TestUtils.LeftClick(EDITOR_MAIN_TOOLBAR_NEW_POPUP_FUNCTION)
+    TestSystem.Wait(10)
+
+    TestUtils.Type("FunctionToRename")
+    TestUtils.Enter()
+    TestSystem.Wait(10)
+    TestUtils.Assert(
+        TestUtils.IsItemFound(EDITOR_MAIN_FUNCTION_FORMAT.format("FunctionToRename")),
+        "Function to rename does not exist after confirming name",
+    )
