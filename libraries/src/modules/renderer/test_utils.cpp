@@ -135,6 +135,47 @@ namespace rpp
             }
             break;
         }
+#if 0
+        case ImGuiItemAction::IMGUI_ACTION_DOUBLE_CLICK:
+        {
+            if (s_itemFound)
+            {
+                RPP_ASSERT(s_pCurrentItemData != nullptr);
+
+                if (s_pCurrentItemData->rendererId != Renderer::GetCurrentRendererId())
+                {
+                    break;
+                }
+
+                b8 arrived = InputSystem::MoveMouseTo(s_pCurrentItemData->position.x, s_pCurrentItemData->position.y);
+
+                if (!arrived)
+                {
+                    break;
+                }
+
+                ImGuiIO &io = ImGui::GetIO();
+                io.AddMouseButtonEvent(ImGuiMouseButton_Left, TRUE);
+                io.AddMouseButtonEvent(ImGuiMouseButton_Left, TRUE);
+                io.AddMouseButtonEvent(ImGuiMouseButton_Left, TRUE);
+                io.AddMouseButtonEvent(ImGuiMouseButton_Left, TRUE);
+                io.AddMouseButtonEvent(ImGuiMouseButton_Left, TRUE);
+                io.AddMouseButtonEvent(ImGuiMouseButton_Left, FALSE);
+
+                s_focusedRendererId = Renderer::GetCurrentRendererId();
+
+                TestSystem::GetInstance()->SetMainThreadWorking(FALSE);
+                ResetCurrentItem();
+            }
+            else
+            {
+                REGISTER_ERROR("Cannot find ImGui item with label '{}'", s_pData->label);
+                TestSystem::GetInstance()->SetMainThreadWorking(FALSE);
+                ResetCurrentItem();
+            }
+            break;
+        }
+#endif
         case ImGuiItemAction::IMGUI_ACTION_TYPE:
         {
             if (s_focusedRendererId != Renderer::GetCurrentRendererId())
@@ -217,6 +258,34 @@ namespace rpp
 
         TestSystem::GetInstance()->SetMainThreadWorking(TRUE);
         TestSystem::GetInstance()->Yield();
+    }
+
+    void TestUtils::DoubleClick(const String &label)
+    {
+        RPP_PROFILE_SCOPE();
+        RPP_ASSERT(s_pData != nullptr);
+        s_pData->label = label;
+#if 0
+        s_pData->action = ImGuiItemAction::IMGUI_ACTION_DOUBLE_CLICK;
+#else
+        s_pData->action = ImGuiItemAction::IMGUI_ACTION_CLICK;
+#endif
+        s_pData->text = "";
+        s_pData->characterIndex = 0;
+        s_findingFrameCount = 0;
+
+        TestSystem::GetInstance()->SetMainThreadWorking(TRUE);
+        TestSystem::GetInstance()->Yield();
+
+#if 1
+        TestSystem::GetInstance()->Wait(10);
+        s_pData->action = ImGuiItemAction::IMGUI_ACTION_CLICK;
+        s_pData->label = label;
+        s_findingFrameCount = 0;
+
+        TestSystem::GetInstance()->SetMainThreadWorking(TRUE);
+        TestSystem::GetInstance()->Yield();
+#endif
     }
 
     void TestUtils::Type(const String &text)

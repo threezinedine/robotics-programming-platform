@@ -411,7 +411,8 @@ void EditorWindow::EditorMainRender()
                     m_focusFunctionNameInput = FALSE;
                 }
 
-                if (ImGui::InputText("###EditingFunctionName", m_editedFunctionName, sizeof(m_editedFunctionName), ImGuiInputTextFlags_EnterReturnsTrue))
+                if (ImGui::InputText("###EditingFunctionName", m_editedFunctionName, sizeof(m_editedFunctionName),
+                                     ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll))
                 {
                     if (String(m_editedFunctionName) != functionName)
                     {
@@ -429,6 +430,15 @@ void EditorWindow::EditorMainRender()
                 ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.0f, 1.0f));
                 ImGui::Selectable(functionName.CStr());
                 RPP_MARK_ITEM(Format("Editor/Files/Function/{}", functionName));
+
+                if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+                {
+                    m_currentEditingFunctionIndex = functionIndex;
+                    const char *currentFunctionName = m_pCurrentProject->GetFunctionNames()[functionIndex].CStr();
+                    memcpy(m_editedFunctionName, currentFunctionName, strlen(currentFunctionName) + 1);
+                    m_focusFunctionNameInput = TRUE;
+                }
+
                 ImGui::PopStyleColor();
             }
         }

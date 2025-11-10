@@ -162,3 +162,30 @@ def test_rename_function(setup_recent_projects: None):
         TestUtils.IsItemFound(EDITOR_MAIN_FUNCTION_FORMAT.format("FunctionToRename")),
         "Function to rename does not exist after confirming name",
     )
+
+    TestUtils.DoubleClick(EDITOR_MAIN_FUNCTION_FORMAT.format("FunctionToRename"))
+    TestSystem.Wait(10)
+
+    TestUtils.Assert(
+        not TestUtils.IsItemFound(
+            EDITOR_MAIN_FUNCTION_FORMAT.format("FunctionToRename")
+        ),
+        "Function to rename is not in renaming mode after double clicking on it",
+    )
+
+    TestUtils.Assert(
+        TestUtils.IsItemFound(
+            EDITOR_MAIN_FUNCTION_RENAME_FORMAT.format("FunctionToRename")
+        ),
+        "Function to rename rename input box not found after double clicking on it",
+    )
+
+    TestUtils.Type("RenamedFunction")
+
+    TestUtils.Enter()
+    TestSystem.Wait(10)
+
+    TestUtils.Assert(
+        TestUtils.IsItemFound(EDITOR_MAIN_FUNCTION_FORMAT.format("RenamedFunction")),
+        "Renamed function does not exist after confirming new name",
+    )
