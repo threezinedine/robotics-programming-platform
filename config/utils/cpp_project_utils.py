@@ -208,6 +208,7 @@ def RunCppProjectTest(
     projectDir: str,
     projectType: str = "dev",
     scenario: str | None = None,
+    filter: str | None = None,
 ) -> None:
     """
     Run the testing suite for a C/C++ project. The testing version will be run.
@@ -282,6 +283,9 @@ def RunCppProjectTest(
         if scenario:
             runCommand += f" --scenario {scenario}"
 
+        if filter:
+            runCommand += f" --wildcard {filter}"
+
         print("Command to run tests:", runCommand)
         RunCommand(runCommand, cwd=TEST_UI_DIR)
     except Exception as e:
@@ -339,7 +343,6 @@ def RunLibrariesTest(
                 ):
                     executable = fileCompletePath
                     break
-
 
         if executable is None:
             raise FileNotFoundError(f"No executable found in '{executableDir}'.")

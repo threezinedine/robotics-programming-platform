@@ -71,6 +71,7 @@ def main():
                     projectDir=args.Project,
                     projectType=args.Type,
                     scenario=args.Scenario,
+                    filter=args.TestFilter,
                 )
         else:
             RunPythonProjectTest(

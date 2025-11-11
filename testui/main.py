@@ -3,6 +3,7 @@ import json
 import argparse
 import subprocess
 from typing import Literal
+from fnmatch import fnmatch
 from rich.table import Table
 from rich.console import Console
 from dataclasses import dataclass, field
@@ -61,6 +62,8 @@ class Args:
 
         parser.add_argument("--scenario", "-s", type=str)
 
+        parser.add_argument("--wildcard", "-w", type=str)
+
         self.args = parser.parse_args()
 
     @property
@@ -70,6 +73,10 @@ class Args:
     @property
     def Scenario(self) -> str | None:
         return self.args.scenario
+
+    @property
+    def Wildcard(self) -> str | None:
+        return self.args.wildcard
 
 
 def ExtractTestsFromFile(filePath: str) -> Test:
@@ -124,7 +131,15 @@ def main():
     if args.Project == "editor":
         for test in editorTests:
             for testCase in test.testCases:
-                if args.Scenario is None or args.Scenario == testCase:
+                if (
+                    (args.Scenario is None and args.Wildcard is None)
+                    or (args.Scenario is not None and args.Scenario == testCase)
+                    or (
+                        args.Wildcard is not None
+                        and args.Scenario is None
+                        and fnmatch(testCase, args.Wildcard)
+                    )
+                ):
                     isTestFound = True
                     runTests.append(testCase)
                     RunCommand(
