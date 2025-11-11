@@ -7,7 +7,8 @@
  */
 #define MAX_MOUSE_DELTA 10
 
-#define MOUSE_TEST_MOVING_SPEED 5
+/// TODO: Use dynamic speed later
+#define MOUSE_TEST_MOVING_SPEED 10
 
 namespace rpp
 {
