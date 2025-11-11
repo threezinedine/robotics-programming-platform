@@ -483,6 +483,12 @@ void EditorWindow::FunctionsRender()
                     m_focusFunctionNameInput = TRUE;
                 }
 
+                if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
+                {
+                    ResetFunctionSelectionStates();
+                    selected = TRUE;
+                }
+
                 if (ImGui::BeginPopupContextItem(Format("{}", functionName).CStr()))
                 {
                     if (ImGui::MenuItem("Rename"))

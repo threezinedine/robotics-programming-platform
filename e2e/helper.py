@@ -3,7 +3,7 @@ from constants import *
 
 
 def open_file_block():
-    TestUtils.LeftClick(EDITOR_FILES)
+    TestUtils.MoveToItem(EDITOR_FILES)
     TestUtils.LeftClick(EDITOR_FILES)
 
 

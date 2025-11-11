@@ -313,3 +313,16 @@ def test_multiple_select_the_functions(setup_project_with_functions: None):
 
     assert_function_not_selected("ExistingFunction")
     assert_function_not_selected("AnotherFunction")
+
+
+def test_right_click_then_the_function_is_selected(setup_project_with_functions: None):
+    open_file_block()
+
+    TestUtils.LeftClick(EDITOR_MAIN_FUNCTION_FORMAT.format("AnotherFunction"))
+    TestSystem.Wait(10)
+
+    TestUtils.RightClick(EDITOR_MAIN_FUNCTION_FORMAT.format("ExistingFunction"))
+    TestSystem.Wait(10)
+
+    assert_function_selected("ExistingFunction")
+    assert_function_not_selected("AnotherFunction")
