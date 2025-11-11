@@ -285,3 +285,7 @@ def test_delete_function(setup_project_with_functions: None):
     )
 
     assert_current_editor_window_title("Editor - ok*")
+
+
+def test_multiple_select_the_functions(setup_project_with_functions: None):
+    pass

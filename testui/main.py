@@ -143,7 +143,7 @@ def main():
 
     table.add_column("Scenario", style="dim", width=40)
     table.add_column("Status", justify="center", width=10)
-    table.add_column("Error Message", width=40)
+    table.add_column("Error Message", width=80)
 
     with open(RESULTS_FILE_PATH, "r") as resultsFile:
         resultsContent = json.loads(resultsFile.read())

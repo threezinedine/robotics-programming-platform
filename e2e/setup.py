@@ -6,7 +6,10 @@ from context import context
 @context
 def setup_recent_projects():
     editorData = EditorDataDescription(
-        recentProjects=["/home/ok/project.rppproj", "/home/test/project.rppproj"]
+        recentProjects=[
+            "/home/ok/project.rppproj",
+            "/home/test/project.rppproj",
+        ],
     )
     editorDataFilePath = "editor.json"
     file: FileHandle = FileSystem.OpenFile(editorDataFilePath, FILE_WRITE)
@@ -26,7 +29,13 @@ def setup_recent_projects():
 
 @context
 def setup_project_with_functions(setup_recent_projects: None):
-    projectData = ProjectDescription(name="ok", functionNames=["ExistingFunction"])
+    projectData = ProjectDescription(
+        name="ok",
+        functionNames=[
+            "ExistingFunction",
+            "AnotherFunction",
+        ],
+    )
     file: FileHandle = FileSystem.OpenFile("/home/ok/project.rppproj", FILE_WRITE)
     FileSystem.Write(file, json.dumps(asdict(projectData), indent=4))
     FileSystem.CloseFile(file)

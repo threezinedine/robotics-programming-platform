@@ -445,12 +445,7 @@ void EditorWindow::EditorMainRender()
                     m_focusFunctionNameInput = TRUE;
                 }
 
-                if (ImGui::IsMouseClicked(ImGuiMouseButton_Right))
-                {
-                    ImGui::OpenPopup(Format("FunctionContextMenu{}", functionName).CStr());
-                }
-
-                if (ImGui::BeginPopup(Format("FunctionContextMenu{}", functionName).CStr()))
+                if (ImGui::BeginPopupContextItem(Format("{}", functionName).CStr()))
                 {
                     if (ImGui::MenuItem("Rename"))
                     {
