@@ -46,6 +46,7 @@ namespace rpp
         {
             IMGUI_ACTION_MOVE,              ///< Move action on the item.
             IMGUI_ACTION_CLICK,             ///< Click action on the item.
+            IMGUI_ACTION_CLICK_RIGHT,       ///< Right click action on the item.
             IMGUI_ACTION_DOUBLE_CLICK,      ///< Double click action on the item.
             IMGUI_ACTION_FIND_ITEM,         ///< Just find the item without any action.
             IMGUI_ACTION_ASSERT_TEXT_INPUT, ///< Just find the item without any action.
@@ -125,6 +126,13 @@ namespace rpp
          * @return TRUE if the double click action was performed, FALSE otherwise.
          */
         static void DoubleClick(const String &label) RPP_E2E_BINDING;
+
+        /**
+         * Used for performing a right click on the current item being interacted with.
+         *
+         * @param label The label of the item to right click on.
+         */
+        static void RightClick(const String &label) RPP_E2E_BINDING;
 
         /**
          * Used for typing anything, disregarding the focused item.

@@ -1,6 +1,6 @@
 from packages import *  # this import will be deleted in the core, this line must be at the top of the file
 import json
-from setup import setup_recent_projects  # type: ignore
+from setup import setup_recent_projects, setup_project_with_functions  # type: ignore
 from constants import *
 
 
@@ -188,4 +188,70 @@ def test_rename_function(setup_recent_projects: None):
     TestUtils.Assert(
         TestUtils.IsItemFound(EDITOR_MAIN_FUNCTION_FORMAT.format("RenamedFunction")),
         "Renamed function does not exist after confirming new name",
+    )
+
+
+def test_open_context_menu_for_function(setup_project_with_functions: None):
+    TestUtils.LeftClick(EDITOR_FILES)
+    TestUtils.LeftClick(EDITOR_FILES)
+    TestUtils.RightClick(EDITOR_MAIN_FUNCTION_FORMAT.format("ExistingFunction"))
+    TestSystem.Wait(10)
+
+    TestUtils.Assert(
+        TestUtils.IsItemFound(
+            EDITOR_MAIN_FUNCTION_CONTEXT_MENU_FORMAT.format("ExistingFunction")
+        ),
+        "Function context menu not found after right clicking on function",
+    )
+
+    TestUtils.LeftClick(
+        EDITOR_MAIN_FUNCTION_CONTEXT_MENU_RENAME_FORMAT.format("ExistingFunction")
+    )
+
+    TestSystem.Wait(10)
+
+    TestUtils.Assert(
+        not TestUtils.IsItemFound(
+            EDITOR_MAIN_FUNCTION_FORMAT.format("ExistingFunction")
+        ),
+        "Function is not in renaming mode after clicking rename in context menu",
+    )
+
+    TestUtils.Assert(
+        TestUtils.IsItemFound(
+            EDITOR_MAIN_FUNCTION_RENAME_FORMAT.format("ExistingFunction")
+        ),
+        "Function rename input box not found after clicking rename in context menu",
+    )
+
+    TestUtils.Type("RenamedExistingFunction")
+    TestUtils.Enter()
+    TestSystem.Wait(10)
+
+    TestUtils.Assert(
+        TestUtils.IsItemFound(
+            EDITOR_MAIN_FUNCTION_FORMAT.format("RenamedExistingFunction")
+        ),
+        "Renamed function does not exist after confirming new name",
+    )
+
+    TestUtils.Assert(
+        not TestUtils.IsItemFound(
+            EDITOR_MAIN_FUNCTION_FORMAT.format("ExistingFunction")
+        ),
+        "Old function name still exists after renaming",
+    )
+
+    TestUtils.Assert(
+        not TestUtils.IsItemFound(
+            EDITOR_MAIN_FUNCTION_RENAME_FORMAT.format("ExistingFunction")
+        ),
+        "Function rename input box still exists after renaming",
+    )
+
+    TestUtils.Assert(
+        not TestUtils.IsItemFound(
+            EDITOR_MAIN_FUNCTION_RENAME_FORMAT.format("RenamedExistingFunction")
+        ),
+        "Function rename input box still exists after renaming",
     )

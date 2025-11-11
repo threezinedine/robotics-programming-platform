@@ -439,6 +439,30 @@ void EditorWindow::EditorMainRender()
                     m_focusFunctionNameInput = TRUE;
                 }
 
+                if (ImGui::IsMouseClicked(ImGuiMouseButton_Right))
+                {
+                    ImGui::OpenPopup(Format("FunctionContextMenu{}", functionName).CStr());
+                }
+
+                if (ImGui::BeginPopup(Format("FunctionContextMenu{}", functionName).CStr()))
+                {
+                    if (ImGui::MenuItem("Rename"))
+                    {
+                        m_currentEditingFunctionIndex = functionIndex;
+                        const char *currentFunctionName = m_pCurrentProject->GetFunctionNames()[functionIndex].CStr();
+                        memcpy(m_editedFunctionName, currentFunctionName, strlen(currentFunctionName) + 1);
+                        m_focusFunctionNameInput = TRUE;
+                    }
+                    RPP_MARK_ITEM(Format("Editor/Files/Function/ContextMenu/{}/Rename", functionName));
+
+                    if (ImGui::MenuItem("Delete"))
+                    {
+                    }
+
+                    ImGui::EndPopup();
+                }
+                RPP_MARK_ITEM(Format("Editor/Files/Function/ContextMenu/{}", functionName));
+
                 ImGui::PopStyleColor();
             }
         }

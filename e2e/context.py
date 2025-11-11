@@ -99,6 +99,7 @@ def _run_setup_internal(functionName: str, called: bool = True) -> None:
 
     if len(funcSignature.parameters) == 0:
         if called:
+            print("Run setup for:", functionName)
             result = next(func())
             setupCalls[functionName] = result
             setupCallsOrder.append(functionName)
@@ -118,6 +119,6 @@ def _run_setup_internal(functionName: str, called: bool = True) -> None:
 
     if called:
         print("Run setup for:", functionName)
-        result = func(*args)
+        result = next(func(*args))
         setupCalls[functionName] = result
         setupCallsOrder.append(functionName)

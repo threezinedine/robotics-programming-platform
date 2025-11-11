@@ -100,6 +100,7 @@ namespace rpp
             break;
         }
         case ImGuiItemAction::IMGUI_ACTION_CLICK:
+        case ImGuiItemAction::IMGUI_ACTION_CLICK_RIGHT:
         {
             if (s_itemFound)
             {
@@ -117,7 +118,9 @@ namespace rpp
                     break;
                 }
 
-                b8 done = InputSystem::ClickMouse(0);
+                MouseButton button = (s_pData->action == ImGuiItemAction::IMGUI_ACTION_CLICK) ? MouseButton::LEFT : MouseButton::RIGHT;
+
+                b8 done = InputSystem::ClickMouse(button);
 
                 s_focusedRendererId = Renderer::GetCurrentRendererId();
 
@@ -286,6 +289,20 @@ namespace rpp
         TestSystem::GetInstance()->SetMainThreadWorking(TRUE);
         TestSystem::GetInstance()->Yield();
 #endif
+    }
+
+    void TestUtils::RightClick(const String &label)
+    {
+        RPP_PROFILE_SCOPE();
+        RPP_ASSERT(s_pData != nullptr);
+        s_pData->label = label;
+        s_pData->action = ImGuiItemAction::IMGUI_ACTION_CLICK_RIGHT;
+        s_pData->text = "";
+        s_pData->characterIndex = 0;
+        s_findingFrameCount = 0;
+
+        TestSystem::GetInstance()->SetMainThreadWorking(TRUE);
+        TestSystem::GetInstance()->Yield();
     }
 
     void TestUtils::Type(const String &text)
