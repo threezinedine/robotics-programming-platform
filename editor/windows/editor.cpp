@@ -73,13 +73,22 @@ void EditorWindow::InitializeImpl()
         [this](Command *pCommand)
         {
             RPP_PROFILE_SCOPE();
+            RPP_ASSERT(m_pCurrentProject != nullptr);
             Renderer::SetWindowTitle(Format("Editor - {}*", m_pCurrentProject->GetName()));
+
+            u32 commandTag = pCommand->Tag();
+
+            if (commandTag & FUNCTION_COMMAND_TAG)
+            {
+                ResetFunctionSelectionStates();
+            }
         });
 
     HistoryManager::GetInstance()->SetOnHistoryEmptyCallback(
         [this]()
         {
             RPP_PROFILE_SCOPE();
+            RPP_ASSERT(m_pCurrentProject != nullptr);
             Renderer::SetWindowTitle(Format("Editor - {}", m_pCurrentProject->GetName()));
         });
 }
@@ -372,6 +381,7 @@ void EditorWindow::OpenProject(const String &projectFilePath)
     m_openProjectFile = projectFilePath;
 
     Renderer::SetWindowTitle(Format("Editor - {}", desc.name));
+    ResetFunctionSelectionStates();
 }
 
 void EditorWindow::SaveProject()
@@ -394,6 +404,22 @@ void EditorWindow::EditorMainRender()
 
     EditorMainToolbarRender();
 
+    ImGui::BeginChild("EditorMainChild", ImVec2(0, 0), FALSE, ImGuiWindowFlags_HorizontalScrollbar);
+    {
+        FunctionsRender();
+    }
+    ImGui::EndChild();
+    IS_CLICKED_OUTSIDE(
+        {
+            UnSelectAllFunctions();
+        });
+
+    UnsavedChangesModalRender();
+}
+
+void EditorWindow::FunctionsRender()
+{
+    RPP_PROFILE_SCOPE();
     if (m_focusFunctionNameInput)
     {
         ImGui::SetNextItemOpen(TRUE);
@@ -433,9 +459,21 @@ void EditorWindow::EditorMainRender()
             }
             else
             {
+                b8 &selected = m_functionSelectionStates[functionIndex];
                 ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.0f, 1.0f));
-                ImGui::Selectable(functionName.CStr());
-                RPP_MARK_ITEM(Format("Editor/Files/Function/{}", functionName));
+                if (ImGui::Selectable(functionName.CStr(), &selected))
+                {
+                    UnSelectAllFunctions();
+                    selected = TRUE;
+                }
+                if (selected)
+                {
+                    RPP_MARK_ITEM(Format("Editor/Files/Function/{}/Select", functionName));
+                }
+                else
+                {
+                    RPP_MARK_ITEM(Format("Editor/Files/Function/{}", functionName));
+                }
 
                 if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
                 {
@@ -484,8 +522,6 @@ void EditorWindow::EditorMainRender()
         }
     }
     RPP_MARK_ITEM("Editor/Files");
-
-    UnsavedChangesModalRender();
 }
 
 void EditorWindow::UnsavedChangesModalRender()
@@ -578,5 +614,40 @@ void EditorWindow::ShutdownImpl()
     {
         RPP_DELETE(m_pCurrentProject);
         m_pCurrentProject = nullptr;
+    }
+}
+
+void EditorWindow::ResetFunctionSelectionStates()
+{
+    RPP_ASSERT(m_pCurrentProject != nullptr);
+    Array<String> &functionNames = m_pCurrentProject->GetFunctionNames();
+    u32 functionsCount = functionNames.Size();
+    u32 functionStatesCount = m_functionSelectionStates.Size();
+
+    if (functionsCount > functionStatesCount)
+    {
+        m_functionSelectionStates.Reallocate(functionsCount);
+    }
+
+    m_functionSelectionStates.Clear();
+
+    for (u32 functionIndex = 0u; functionIndex < functionsCount; functionIndex++)
+    {
+        m_functionSelectionStates.Push(FALSE);
+    }
+}
+
+void EditorWindow::UnSelectAllFunctions()
+{
+    RPP_ASSERT(m_pCurrentProject != nullptr);
+    Array<String> &functionNames = m_pCurrentProject->GetFunctionNames();
+    u32 functionsCount = functionNames.Size();
+    u32 functionStatesCount = m_functionSelectionStates.Size();
+
+    RPP_ASSERT(functionsCount == functionStatesCount);
+
+    for (u32 functionIndex = 0u; functionIndex < functionsCount; functionIndex++)
+    {
+        m_functionSelectionStates[functionIndex] = FALSE;
     }
 }

@@ -111,3 +111,18 @@ namespace rpp
 #else
 #define RPP_MARK_ITEM(...)
 #endif
+
+// Used for doing smt when clicked outside a certain block
+#define IS_CLICKED_OUTSIDE(block)                                                                  \
+    do                                                                                             \
+    {                                                                                              \
+        ImVec2 mousePos = ImGui::GetMousePos();                                                    \
+        ImVec2 itemMinRect = ImGui::GetItemRectMin();                                              \
+        ImVec2 itemMaxRect = ImGui::GetItemRectMax();                                              \
+        b8 isInside = (mousePos.x >= itemMinRect.x && mousePos.x <= itemMaxRect.x &&               \
+                       mousePos.y >= itemMinRect.y && mousePos.y <= itemMaxRect.y);                \
+        if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && ImGui::IsWindowFocused() && !isInside) \
+        {                                                                                          \
+            block                                                                                  \
+        }                                                                                          \
+    } while (0)

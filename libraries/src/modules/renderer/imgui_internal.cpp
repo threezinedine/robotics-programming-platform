@@ -335,8 +335,8 @@ namespace rpp
 
             pDrawList->AddImage(
                 (void *)(intptr_t)pMouseTextureData->textureId,
-                ImVec2(mousePos.x + MOUSE_CURSOR_SIZE / 2, mousePos.y + MOUSE_CURSOR_SIZE / 2),
-                ImVec2(mousePos.x + MOUSE_CURSOR_SIZE / 2 * 3, mousePos.y + MOUSE_CURSOR_SIZE / 2 * 3));
+                ImVec2(mousePos.x, mousePos.y),
+                ImVec2(mousePos.x + MOUSE_CURSOR_SIZE, mousePos.y + MOUSE_CURSOR_SIZE));
         }
 
         Renderer::DrawMouseCursor({f32(InputSystem::GetMouseX()), f32(InputSystem::GetMouseY())});
@@ -408,7 +408,9 @@ namespace rpp
         TestUtils::s_pCurrentItemData = RPP_NEW(TestUtils::ItemData);
         TestUtils::ItemData *pCurrentData = TestUtils::s_pCurrentItemData;
         pCurrentData->label = label;
-        pCurrentData->position = ImGui::GetItemRectMin();
+        ImVec2 minPos = ImGui::GetItemRectMin();
+        ImVec2 maxPos = ImGui::GetItemRectMax();
+        pCurrentData->position = ImVec2((minPos.x + maxPos.x) * 0.5f, (minPos.y + maxPos.y) * 0.5f);
         pCurrentData->rendererId = Renderer::GetCurrentRendererId();
 
         RPP_ASSERT(pCurrentData->rendererId != INVALID_ID);

@@ -36,6 +36,20 @@ namespace rpp
          */
         void Undo();
 
+        /**
+         * @brief Gets the name of the command.
+         *
+         * @return The name of the command.
+         */
+        virtual String Name() const = 0;
+
+        /**
+         * @brief The tag is the way to categorize commands into groups.
+         *
+         * @return The tag of the command.
+         */
+        virtual u32 Tag() const = 0;
+
     protected:
         /**
          * Implement this method to define whether the command can be executed.
@@ -53,3 +67,8 @@ namespace rpp
         virtual void UndoImpl() {}
     };
 } // namespace rpp
+
+#define RPP_DEFINE_COMMAND(className, classTag)                        \
+public:                                                                \
+    inline String Name() const override { return String(#className); } \
+    inline u32 Tag() const override { return classTag; }

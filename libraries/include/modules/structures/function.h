@@ -1,6 +1,7 @@
 #pragma once
 #include "core/core.h"
 #include "modules/history/history.h"
+#include "tag.h"
 
 namespace rpp
 {
@@ -49,6 +50,8 @@ namespace rpp
 
     class AddFunctionCommand : public Command
     {
+        RPP_DEFINE_COMMAND(AddFunctionCommand, FUNCTION_COMMAND_TAG);
+
     public:
         AddFunctionCommand(Project *pProject);
         AddFunctionCommand(Project *pProject, const FunctionDescription &desc);
@@ -67,6 +70,8 @@ namespace rpp
 
     class DeleteFunctionCommand : public Command
     {
+        RPP_DEFINE_COMMAND(DeleteFunctionCommand, FUNCTION_COMMAND_TAG);
+
     public:
         DeleteFunctionCommand(Project *pProject, u32 functionIndex);
         ~DeleteFunctionCommand();

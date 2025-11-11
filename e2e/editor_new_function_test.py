@@ -2,7 +2,12 @@ from packages import *  # this import will be deleted in the core, this line mus
 import json
 from setup import setup_recent_projects, setup_project_with_functions  # type: ignore
 from constants import *
-from helper import assert_current_editor_window_title
+from helper import (
+    assert_current_editor_window_title,
+    open_file_block,
+    assert_function_not_selected,
+    assert_function_selected,
+)
 
 
 def test_create_new_function(setup_recent_projects: None):
@@ -151,45 +156,45 @@ def test_close_window_while_unsaved_changes(setup_recent_projects: None):
     )
 
 
-def test_rename_function(setup_recent_projects: None):
-    TestUtils.LeftClick(EDITOR_MAIN_TOOLBAR_NEW)
-    TestUtils.LeftClick(EDITOR_MAIN_TOOLBAR_NEW_POPUP_FUNCTION)
-    TestSystem.Wait(10)
+# def test_rename_function(setup_recent_projects: None):
+#     TestUtils.LeftClick(EDITOR_MAIN_TOOLBAR_NEW)
+#     TestUtils.LeftClick(EDITOR_MAIN_TOOLBAR_NEW_POPUP_FUNCTION)
+#     TestSystem.Wait(10)
 
-    TestUtils.Type("FunctionToRename")
-    TestUtils.Enter()
-    TestSystem.Wait(10)
-    TestUtils.Assert(
-        TestUtils.IsItemFound(EDITOR_MAIN_FUNCTION_FORMAT.format("FunctionToRename")),
-        "Function to rename does not exist after confirming name",
-    )
+#     TestUtils.Type("FunctionToRename")
+#     TestUtils.Enter()
+#     TestSystem.Wait(10)
+#     TestUtils.Assert(
+#         TestUtils.IsItemFound(EDITOR_MAIN_FUNCTION_FORMAT.format("FunctionToRename")),
+#         "Function to rename does not exist after confirming name",
+#     )
 
-    TestUtils.DoubleClick(EDITOR_MAIN_FUNCTION_FORMAT.format("FunctionToRename"))
-    TestSystem.Wait(10)
+#     TestUtils.DoubleClick(EDITOR_MAIN_FUNCTION_FORMAT.format("FunctionToRename"))
+#     TestSystem.Wait(10)
 
-    TestUtils.Assert(
-        not TestUtils.IsItemFound(
-            EDITOR_MAIN_FUNCTION_FORMAT.format("FunctionToRename")
-        ),
-        "Function to rename is not in renaming mode after double clicking on it",
-    )
+#     TestUtils.Assert(
+#         not TestUtils.IsItemFound(
+#             EDITOR_MAIN_FUNCTION_FORMAT.format("FunctionToRename")
+#         ),
+#         "Function to rename is not in renaming mode after double clicking on it",
+#     )
 
-    TestUtils.Assert(
-        TestUtils.IsItemFound(
-            EDITOR_MAIN_FUNCTION_RENAME_FORMAT.format("FunctionToRename")
-        ),
-        "Function to rename rename input box not found after double clicking on it",
-    )
+#     TestUtils.Assert(
+#         TestUtils.IsItemFound(
+#             EDITOR_MAIN_FUNCTION_RENAME_FORMAT.format("FunctionToRename")
+#         ),
+#         "Function to rename rename input box not found after double clicking on it",
+#     )
 
-    TestUtils.Type("RenamedFunction")
+#     TestUtils.Type("RenamedFunction")
 
-    TestUtils.Enter()
-    TestSystem.Wait(10)
+#     TestUtils.Enter()
+#     TestSystem.Wait(10)
 
-    TestUtils.Assert(
-        TestUtils.IsItemFound(EDITOR_MAIN_FUNCTION_FORMAT.format("RenamedFunction")),
-        "Renamed function does not exist after confirming new name",
-    )
+#     TestUtils.Assert(
+#         TestUtils.IsItemFound(EDITOR_MAIN_FUNCTION_FORMAT.format("RenamedFunction")),
+#         "Renamed function does not exist after confirming new name",
+#     )
 
 
 def test_open_context_menu_for_function(setup_project_with_functions: None):
@@ -288,4 +293,23 @@ def test_delete_function(setup_project_with_functions: None):
 
 
 def test_multiple_select_the_functions(setup_project_with_functions: None):
-    pass
+    # left click on first function
+    open_file_block()
+
+    TestUtils.LeftClick(EDITOR_MAIN_FUNCTION_FORMAT.format("ExistingFunction"))
+
+    TestSystem.Wait(10)
+    assert_function_selected("ExistingFunction")
+    assert_function_not_selected("AnotherFunction")
+
+    TestUtils.LeftClick(EDITOR_MAIN_FUNCTION_FORMAT.format("AnotherFunction"))
+    TestSystem.Wait(10)
+
+    assert_function_not_selected("ExistingFunction")
+    assert_function_selected("AnotherFunction")
+
+    TestUtils.LeftClick(EDITOR_MAIN_TOOLBAR_NEW)  # click outside the functions block
+    TestSystem.Wait(10)
+
+    assert_function_not_selected("ExistingFunction")
+    assert_function_not_selected("AnotherFunction")

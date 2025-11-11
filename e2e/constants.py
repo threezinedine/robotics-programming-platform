@@ -27,6 +27,7 @@ EDITOR_MAIN_TOOLBAR_NEW_POPUP_FUNCTION = "Editor/Main/Toolbar/New/Popup/Function
 EDITOR_MAIN_TOOLBAR_RELOAD = "Editor/Main/Toolbar/Reload"
 
 EDITOR_MAIN_FUNCTION_FORMAT = "Editor/Files/Function/{}"
+EDITOR_MAIN_FUNCTION_SELECTED_FORMAT = "Editor/Files/Function/{}/Select"
 EDITOR_MAIN_FUNCTION_RENAME_FORMAT = "Editor/Files/Function/Rename/{}"
 EDITOR_MAIN_FUNCTION_CONTEXT_MENU_FORMAT = "Editor/Files/Function/ContextMenu/{}"
 EDITOR_MAIN_FUNCTION_CONTEXT_MENU_RENAME_FORMAT = (

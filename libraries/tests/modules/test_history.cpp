@@ -5,6 +5,8 @@ static b8 undone = false;
 
 class CommandTestClass : public Command
 {
+    RPP_DEFINE_COMMAND(CommandTestClass, 0x00);
+
 protected:
     void ExecuteImpl() override
     {

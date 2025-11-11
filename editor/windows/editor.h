@@ -28,6 +28,8 @@ private:
 
     void EditorMainRender();
 
+    void FunctionsRender();
+
     void UnsavedChangesModalRender();
 
     void EditorMainToolbarRender();
@@ -63,4 +65,12 @@ private:
     Command *m_pCurrentCommand = nullptr;           ///< The current command being executed that caused unsaved changes.
 
     String m_openProjectFile; ///< The folder path of the currently opened project.
+
+    // multiple select feature
+private:
+    void ResetFunctionSelectionStates();
+    void UnSelectAllFunctions();
+
+private:
+    Array<b8> m_functionSelectionStates; ///< The selection states of functions in the current project.
 };
