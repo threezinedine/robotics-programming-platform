@@ -497,6 +497,7 @@ void EditorWindow::FunctionsRender()
                         const char *currentFunctionName = m_pCurrentProject->GetFunctionNames()[functionIndex].CStr();
                         memcpy(m_editedFunctionName, currentFunctionName, strlen(currentFunctionName) + 1);
                         m_focusFunctionNameInput = TRUE;
+                        ResetFunctionSelectionStates();
                     }
                     RPP_MARK_ITEM(Format("Editor/Files/Function/ContextMenu/{}/Rename", functionName));
 
