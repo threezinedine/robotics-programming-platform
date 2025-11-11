@@ -50,6 +50,14 @@ namespace rpp
          */
         void Shutdown();
 
+    public:
+        /**
+         * @brief Called when the window is resized. Derived classes can override this method to handle resize events.
+         * @param width The new width of the window.
+         * @param height The new height of the window.
+         */
+        void OnResize(u32 width, u32 height);
+
     protected:
         /**
          * @brief Implementation of the initialization logic for derived classes.
@@ -78,12 +86,33 @@ namespace rpp
          */
         virtual void ShutdownImpl();
 
+    protected:
+        /**
+         * @brief Implementation of the resize logic for derived classes.
+         * This method is called by `OnResize` to allow derived classes to handle resize events.
+         * @param width The new width of the window.
+         * @param height The new height of the window.
+         */
+        virtual void OnResizeImpl(u32 width, u32 height);
+
     public:
         /**
          * @brief Get the renderer id associated with this graphic session.
          * @return The renderer id.
          */
         inline u32 GetRendererId() const { return m_rendererId; }
+
+        /**
+         * @brief Get the width of the window.
+         * @return The width of the window.
+         */
+        inline u32 GetWidth() const { return m_width; }
+
+        /**
+         * @brief Get the height of the window.
+         * @return The height of the window.
+         */
+        inline u32 GetHeight() const { return m_height; }
 
     protected:
         u32 m_rendererId; ///< Each graphic session contains a renderer instance.

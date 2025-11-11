@@ -375,14 +375,22 @@ namespace rpp
     void ImGuiImpl::DrawRenderingScene(u32 imguiId)
     {
         RPP_PROFILE_SCOPE();
-        ImGui::BeginChild("RenderingScene");
-        float displayWidth = ImGui::GetContentRegionAvail().x;
-        float displayHeight = ImGui::GetContentRegionAvail().y;
+        ImGui::BeginChild("RenderingScene", ImVec2(0, 0));
+        const f32 factor = 0.9f;
+        f32 windowWidth = f32(Renderer::GetWindow()->GetWidth());
+        f32 windowHeight = f32(Renderer::GetWindow()->GetHeight());
+
+        f32 displayWidth = windowWidth * factor;
+        f32 displayHeight = windowHeight * factor;
+
+        f32 displayPosX = windowWidth * 0.5f * (1 - factor);
+        f32 displayPosY = windowHeight * 0.5f * (1 - factor);
 
         RPP_ASSERT(s_imguis != nullptr);
         ImGuiData *data = s_imguis->Get(imguiId);
         RPP_ASSERT(data != nullptr);
 
+        ImGui::SetCursorPos(ImVec2(displayPosX, displayPosY));
         ImGui::Image((void *)(uintptr_t)data->textureId, ImVec2(displayWidth, displayHeight), ImVec2(0, 1), ImVec2(1, 0));
         ImGui::EndChild();
     }

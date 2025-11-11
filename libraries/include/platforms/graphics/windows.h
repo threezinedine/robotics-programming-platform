@@ -241,7 +241,8 @@ namespace rpp
          * @param height The new height of the window.
          * @param pUserData A pointer to user-defined data passed to the callback.
          */
-        typedef void (*WindowResizeCallback)(u32 width, u32 height, void *pUserData);
+        using WindowResizeCallback = std::function<void(u32, u32, void *)>;
+        // typedef void (*WindowResizeCallback)(u32 width, u32 height, void *pUserData);
 
         inline void SetResizeCallback(WindowResizeCallback callback) { m_resizeCallback = callback; }
 

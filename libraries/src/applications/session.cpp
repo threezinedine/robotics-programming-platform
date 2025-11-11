@@ -16,6 +16,9 @@ namespace rpp
         RPP_ASSERT(m_rendererId != INVALID_ID);
         Renderer::Activate(m_rendererId);
         InitializeImpl();
+
+        Renderer::GetWindow()->SetResizeCallback(
+            std::bind(&GraphicSession::OnResize, this, std::placeholders::_1, std::placeholders::_2));
     }
 
     void GraphicSession::Update(f32 deltaTime)
@@ -33,16 +36,12 @@ namespace rpp
         RPP_ASSERT(m_rendererId != INVALID_ID);
         Renderer::Activate(m_rendererId);
 
-        ;
         Renderer::PreDraw();
 
-        ;
         RenderImpl();
 
-        ;
         Renderer::PostDraw();
 
-        ;
         Renderer::Present();
     }
 
@@ -54,6 +53,14 @@ namespace rpp
         ShutdownImpl();
         Renderer::Destroy(m_rendererId);
         m_rendererId = INVALID_ID;
+    }
+
+    void GraphicSession::OnResize(u32 width, u32 height)
+    {
+        RPP_PROFILE_SCOPE();
+        m_width = width;
+        m_height = height;
+        OnResizeImpl(width, height);
     }
 
     void GraphicSession::InitializeImpl()
@@ -77,6 +84,14 @@ namespace rpp
     void GraphicSession::ShutdownImpl()
     {
         RPP_PROFILE_SCOPE();
+        // Default implementation does nothing.
+    }
+
+    void GraphicSession::OnResizeImpl(u32 width, u32 height)
+    {
+        RPP_PROFILE_SCOPE();
+        RPP_UNUSED(width);
+        RPP_UNUSED(height);
         // Default implementation does nothing.
     }
 

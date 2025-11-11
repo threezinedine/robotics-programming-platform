@@ -27,5 +27,16 @@ namespace rpp
     void FunctionWindow::RenderImpl()
     {
         RPP_PROFILE_SCOPE();
+        Renderer::DrawRectangle({100, 100, 200, 150});
+
+        u32 windowWidth = GetWidth();
+        u32 windowHeight = GetHeight();
+        ImGui::SetNextWindowPos(ImVec2(0, 0));
+        ImGui::SetNextWindowSize(ImVec2((f32)windowWidth, (f32)windowHeight));
+        ImGui::Begin("Function Window", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar);
+        {
+            Renderer::DrawingSceneInImGui();
+        }
+        ImGui::End();
     }
 } // namespace rpp
