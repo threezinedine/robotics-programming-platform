@@ -64,4 +64,20 @@ namespace rpp
         FunctionDescription m_functionDesc; ///< The description of the function to be added.
         u32 m_addedFunctionIndex;           ///< The index of the added function in the project's function list.
     };
+
+    class DeleteFunctionCommand : public Command
+    {
+    public:
+        DeleteFunctionCommand(Project *pProject, u32 functionIndex);
+        ~DeleteFunctionCommand();
+
+    protected:
+        b8 CanExecuteImpl() const;
+        void ExecuteImpl() override;
+        void UndoImpl() override;
+
+    private:
+        Project *m_pProject; ///< The project from which the function will be deleted.
+        u32 m_functionIndex; ///< The index of the function to be deleted.
+    };
 } // namespace rpp

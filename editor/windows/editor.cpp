@@ -7,7 +7,8 @@ EditorWindow::EditorWindow(u32 width, u32 height, const String &title)
     : GraphicSession(width, height, title),
       m_pCurrentProject(nullptr),
       m_pEditorData(nullptr),
-      m_openProjectFile("")
+      m_openProjectFile(""),
+      m_pCurrentCommand(nullptr)
 {
     RPP_PROFILE_SCOPE();
     if (FileSystem::PathExists(EDITOR_DATA_FILE))
@@ -28,6 +29,11 @@ EditorWindow::~EditorWindow()
 {
     RPP_PROFILE_SCOPE();
     RPP_DELETE(m_pEditorData);
+
+    if (m_pCurrentCommand != nullptr)
+    {
+        RPP_DELETE(m_pCurrentCommand);
+    }
 }
 
 void EditorWindow::InitializeImpl()
@@ -457,7 +463,9 @@ void EditorWindow::EditorMainRender()
 
                     if (ImGui::MenuItem("Delete"))
                     {
+                        m_pCurrentCommand = RPP_NEW(DeleteFunctionCommand, m_pCurrentProject, functionIndex);
                     }
+                    RPP_MARK_ITEM(Format("Editor/Files/Function/ContextMenu/{}/Delete", functionName));
 
                     ImGui::EndPopup();
                 }
@@ -472,6 +480,12 @@ void EditorWindow::EditorMainRender()
             m_pCurrentProject->GetFunctionNames()[m_currentEditingFunctionIndex] = m_editedFunctionName;
             memset(m_editedFunctionName, 0, sizeof(m_editedFunctionName));
             m_currentEditingFunctionIndex = INVALID_ID;
+        }
+
+        if (m_pCurrentCommand != nullptr)
+        {
+            HistoryManager::GetInstance()->ExecuteCommand(m_pCurrentCommand);
+            m_pCurrentCommand = nullptr;
         }
     }
     RPP_MARK_ITEM("Editor/Files");

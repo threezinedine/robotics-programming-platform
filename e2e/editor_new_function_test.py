@@ -2,6 +2,7 @@ from packages import *  # this import will be deleted in the core, this line mus
 import json
 from setup import setup_recent_projects, setup_project_with_functions  # type: ignore
 from constants import *
+from helper import assert_current_editor_window_title
 
 
 def test_create_new_function(setup_recent_projects: None):
@@ -255,3 +256,32 @@ def test_open_context_menu_for_function(setup_project_with_functions: None):
         ),
         "Function rename input box still exists after renaming",
     )
+
+
+def test_delete_function(setup_project_with_functions: None):
+    TestUtils.LeftClick(EDITOR_FILES)
+    TestUtils.LeftClick(EDITOR_FILES)
+    TestUtils.RightClick(EDITOR_MAIN_FUNCTION_FORMAT.format("ExistingFunction"))
+    TestSystem.Wait(10)
+
+    TestUtils.Assert(
+        TestUtils.IsItemFound(
+            EDITOR_MAIN_FUNCTION_CONTEXT_MENU_FORMAT.format("ExistingFunction")
+        ),
+        "Function context menu not found after right clicking on function",
+    )
+
+    TestUtils.LeftClick(
+        EDITOR_MAIN_FUNCTION_CONTEXT_MENU_DELETE_FORMAT.format("ExistingFunction")
+    )
+
+    TestSystem.Wait(10)
+
+    TestUtils.Assert(
+        not TestUtils.IsItemFound(
+            EDITOR_MAIN_FUNCTION_FORMAT.format("ExistingFunction")
+        ),
+        "Function still exists after deleting it from context menu",
+    )
+
+    assert_current_editor_window_title("Editor - ok*")

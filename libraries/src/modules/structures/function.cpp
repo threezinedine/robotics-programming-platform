@@ -81,4 +81,43 @@ namespace rpp
         Array<String> &functionNames = m_pProject->GetFunctionNames();
         functionNames.Erase(m_addedFunctionIndex);
     }
+
+    DeleteFunctionCommand::DeleteFunctionCommand(Project *pProject, u32 functionIndex)
+        : Command(),
+          m_pProject(pProject),
+          m_functionIndex(functionIndex)
+    {
+        RPP_PROFILE_SCOPE();
+    }
+
+    DeleteFunctionCommand::~DeleteFunctionCommand()
+    {
+        RPP_PROFILE_SCOPE();
+    }
+
+    b8 DeleteFunctionCommand::CanExecuteImpl() const
+    {
+        RPP_PROFILE_SCOPE();
+        if (m_pProject == nullptr)
+        {
+            return FALSE;
+        }
+
+        const Array<String> &functionNames = m_pProject->GetFunctionNames();
+        return m_functionIndex < functionNames.Size();
+    }
+
+    void DeleteFunctionCommand::ExecuteImpl()
+    {
+        RPP_PROFILE_SCOPE();
+        Array<String> &functionNames = m_pProject->GetFunctionNames();
+        RPP_ASSERT(m_functionIndex < functionNames.Size());
+
+        functionNames.Erase(m_functionIndex);
+    }
+
+    void DeleteFunctionCommand::UndoImpl()
+    {
+        RPP_PROFILE_SCOPE();
+    }
 } // namespace rpp

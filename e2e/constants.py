@@ -32,3 +32,6 @@ EDITOR_MAIN_FUNCTION_CONTEXT_MENU_FORMAT = "Editor/Files/Function/ContextMenu/{}
 EDITOR_MAIN_FUNCTION_CONTEXT_MENU_RENAME_FORMAT = (
     "Editor/Files/Function/ContextMenu/{}/Rename"
 )
+EDITOR_MAIN_FUNCTION_CONTEXT_MENU_DELETE_FORMAT = (
+    "Editor/Files/Function/ContextMenu/{}/Delete"
+)

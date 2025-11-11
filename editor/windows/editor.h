@@ -60,6 +60,7 @@ private:
     u32 m_currentEditingFunctionIndex = INVALID_ID; ///< The index of the currently editing function.
     b8 m_focusFunctionNameInput = FALSE;            ///< Whether to focus the function name input box.
     b8 m_openUnsavedChangesModal = FALSE;           ///< Whether to open the Unsaved Changes modal.
+    Command *m_pCurrentCommand = nullptr;           ///< The current command being executed that caused unsaved changes.
 
     String m_openProjectFile; ///< The folder path of the currently opened project.
 };
