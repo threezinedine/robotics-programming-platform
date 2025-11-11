@@ -75,6 +75,8 @@ namespace rpp
             LabelCheckingCallback labelCheckingCallback = nullptr;
 
             u32 rendererId = INVALID_ID; ///< The renderer id associated with the current action.
+
+            void *pData = nullptr; ///< Optional pointer to item data.
         };
 
     public:

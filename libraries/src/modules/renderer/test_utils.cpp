@@ -138,11 +138,24 @@ namespace rpp
             }
             break;
         }
-#if 0
+#if 1
         case ImGuiItemAction::IMGUI_ACTION_DOUBLE_CLICK:
         {
             if (s_itemFound)
             {
+                struct DoubleClickData
+                {
+                    u32 stage = 0u;
+                    HighResTimer timer;
+                };
+
+#define PDATA_CAST (static_cast<DoubleClickData *>(s_pData->pData))
+                if (s_pData->pData == nullptr)
+                {
+                    s_pData->pData = RPP_NEW(DoubleClickData);
+                    PDATA_CAST->stage = 0u;
+                }
+
                 RPP_ASSERT(s_pCurrentItemData != nullptr);
 
                 if (s_pCurrentItemData->rendererId != Renderer::GetCurrentRendererId())
@@ -157,14 +170,50 @@ namespace rpp
                     break;
                 }
 
-                ImGuiIO &io = ImGui::GetIO();
-                io.AddMouseButtonEvent(ImGuiMouseButton_Left, TRUE);
-                io.AddMouseButtonEvent(ImGuiMouseButton_Left, TRUE);
-                io.AddMouseButtonEvent(ImGuiMouseButton_Left, TRUE);
-                io.AddMouseButtonEvent(ImGuiMouseButton_Left, TRUE);
-                io.AddMouseButtonEvent(ImGuiMouseButton_Left, TRUE);
-                io.AddMouseButtonEvent(ImGuiMouseButton_Left, FALSE);
+                if (PDATA_CAST->stage == 0u)
+                {
+                    b8 firstClickDone = InputSystem::ClickMouse(MouseButton::LEFT);
 
+                    if (!firstClickDone)
+                    {
+                        break;
+                    }
+
+                    PDATA_CAST->stage++;
+                    PDATA_CAST->timer.Start();
+                    break;
+                }
+                else if (PDATA_CAST->stage == 1u)
+                {
+                    if (PDATA_CAST->timer.GetElapsedTimeInMilliseconds() < 100)
+                    {
+                        break;
+                    }
+                    PDATA_CAST->stage++;
+                    break;
+                }
+                else if (PDATA_CAST->stage == 2u)
+                {
+                    b8 secondClickDone = InputSystem::ClickMouse(MouseButton::LEFT);
+
+                    if (!secondClickDone)
+                    {
+                        break;
+                    }
+
+                    PDATA_CAST->stage++;
+                    PDATA_CAST->timer.Start();
+                    break;
+                }
+                else
+                {
+                    if (PDATA_CAST->timer.GetElapsedTimeInMilliseconds() < 100)
+                    {
+                        break;
+                    }
+                }
+
+                RPP_DELETE(PDATA_CAST);
                 s_focusedRendererId = Renderer::GetCurrentRendererId();
 
                 TestSystem::GetInstance()->SetMainThreadWorking(FALSE);
@@ -268,7 +317,7 @@ namespace rpp
         RPP_PROFILE_SCOPE();
         RPP_ASSERT(s_pData != nullptr);
         s_pData->label = label;
-#if 0
+#if 1
         s_pData->action = ImGuiItemAction::IMGUI_ACTION_DOUBLE_CLICK;
 #else
         s_pData->action = ImGuiItemAction::IMGUI_ACTION_CLICK;
@@ -280,7 +329,7 @@ namespace rpp
         TestSystem::GetInstance()->SetMainThreadWorking(TRUE);
         TestSystem::GetInstance()->Yield();
 
-#if 1
+#if 0
         TestSystem::GetInstance()->Wait(10);
         s_pData->action = ImGuiItemAction::IMGUI_ACTION_CLICK;
         s_pData->label = label;

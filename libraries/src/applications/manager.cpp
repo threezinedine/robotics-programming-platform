@@ -12,6 +12,7 @@ namespace rpp
         RPP_ASSERT(m_sessions == nullptr);
 
         m_sessions = CreateScope<Array<Scope<GraphicSession>>>();
+        m_tempAddedSessions = CreateScope<Array<Scope<GraphicSession>>>();
     }
 
     GraphicSessionManager::~GraphicSessionManager()
@@ -28,14 +29,27 @@ namespace rpp
         RPP_ASSERT(m_sessions != nullptr);
         RPP_ASSERT(session != nullptr);
 
-        session->Initialize();
-        m_sessions->Push(std::move(session));
+        m_tempAddedSessions->Push(std::move(session));
     }
 
     b8 GraphicSessionManager::Update(f32 deltaTime)
     {
         RPP_PROFILE_SCOPE();
         RPP_ASSERT(m_sessions != nullptr);
+
+        // Append the temp added sessions to the main sessions array
+        {
+            RPP_PROFILE_SCOPE();
+            u32 tempAddedSessionCount = m_tempAddedSessions->Size();
+            for (u32 i = 0; i < tempAddedSessionCount; ++i)
+            {
+                Scope<GraphicSession> &session = (*m_tempAddedSessions)[i];
+                RPP_ASSERT(session != nullptr);
+                session->Initialize();
+                m_sessions->Push(std::move((*m_tempAddedSessions)[i]));
+            }
+            m_tempAddedSessions->Clear();
+        }
 
         b8 shouldApplicationClose = TRUE;
         u32 numberOfSessions = m_sessions->Size();
@@ -79,7 +93,6 @@ namespace rpp
 #if defined(RPP_USE_TEST)
         TestUtils::SystemUpdate();
 #endif
-
         return shouldApplicationClose;
     }
 

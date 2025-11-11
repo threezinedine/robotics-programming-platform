@@ -45,7 +45,8 @@ namespace rpp
         Scope<GraphicSession> &GetSession(u32 index) const;
 
     private:
-        Scope<Array<Scope<GraphicSession>>> m_sessions; ///< All the graphic sessions inside the application.
+        Scope<Array<Scope<GraphicSession>>> m_sessions;          ///< All the graphic sessions inside the application.
+        Scope<Array<Scope<GraphicSession>>> m_tempAddedSessions; ///< The sessions that are created in the current frame. Used to avoid modifying the sessions array while iterating over it.
     };
 } // namespace rpp
 

@@ -1,4 +1,5 @@
 #include "editor.h"
+#include "function_window.h"
 
 #define NEW_PROJECT_MODAL_ID "New Project Modal"
 #define EDITOR_DATA_FILE "editor.json"
@@ -477,10 +478,14 @@ void EditorWindow::FunctionsRender()
 
                 if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
                 {
-                    m_currentEditingFunctionIndex = functionIndex;
-                    const char *currentFunctionName = m_pCurrentProject->GetFunctionNames()[functionIndex].CStr();
-                    memcpy(m_editedFunctionName, currentFunctionName, strlen(currentFunctionName) + 1);
-                    m_focusFunctionNameInput = TRUE;
+                    ImVec2 mousePos = ImGui::GetMousePos();
+                    ImVec2 itemMin = ImGui::GetItemRectMin();
+                    ImVec2 itemMax = ImGui::GetItemRectMax();
+                    if (mousePos.x >= itemMin.x && mousePos.x <= itemMax.x &&
+                        mousePos.y >= itemMin.y && mousePos.y <= itemMax.y)
+                    {
+                        CREATE_SESSION(FunctionWindow, 800, 400, functionName);
+                    }
                 }
 
                 if (ImGui::IsItemClicked(ImGuiMouseButton_Right))

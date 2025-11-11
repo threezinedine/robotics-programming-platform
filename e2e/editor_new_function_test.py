@@ -3,7 +3,7 @@ import json
 from setup import setup_recent_projects, setup_project_with_functions  # type: ignore
 from constants import *
 from helper import (
-    assert_current_editor_window_title,
+    assert_title_exist,
     open_file_block,
     assert_function_not_selected,
     assert_function_selected,
@@ -289,7 +289,7 @@ def test_delete_function(setup_project_with_functions: None):
         "Function still exists after deleting it from context menu",
     )
 
-    assert_current_editor_window_title("Editor - ok*")
+    assert_title_exist("Editor - ok*")
 
 
 def test_multiple_select_the_functions(setup_project_with_functions: None):

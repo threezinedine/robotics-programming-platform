@@ -7,7 +7,7 @@ def open_file_block():
     TestUtils.LeftClick(EDITOR_FILES)
 
 
-def assert_current_editor_window_title(expectedTitle: str):
+def assert_title_exist(expectedTitle: str):
     TestUtils.Assert(
         TestUtils.FindRendererIdByName(expectedTitle) != INVALID_ID,
         f"Window name is not '{expectedTitle}'",
