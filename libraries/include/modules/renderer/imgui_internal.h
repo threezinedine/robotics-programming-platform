@@ -102,6 +102,25 @@ namespace rpp
 } // namespace rpp
 
 #if defined(RPP_USE_TEST)
+/**
+ * The way to be used in test for finding which item is being referred to. Placed right after the item definition (after the End call if has).
+ *
+ * @example
+ * ```cpp
+ * if (ImGui::Button("MyButton"))
+ * {
+ *     // Button logic here
+ * }
+ * RPP_MARK_ITEM("MyButton"); // now if the testing framework querys for "MyButton", it will find this button
+ *
+ * if (ImGui::BeginPopup("MyPopup"))
+ * {
+ *    // Popup content here
+ *    ImGui::EndPopup();
+ *    RPP_MARK_ITEM("MyPopup"); // now if the testing framework querys for "MyPopup", it will find this popup, only when it's opened
+ * }
+ * ```
+ */
 #define RPP_MARK_ITEM(...)                         \
     do                                             \
     {                                              \
@@ -112,7 +131,22 @@ namespace rpp
 #define RPP_MARK_ITEM(...)
 #endif
 
-// Used for doing smt when clicked outside a certain block
+/**
+ * Used for doing smt when clicked outside a certain block using it right after the defined block
+ *
+ * @example
+ * ```cpp
+ * ImGui::BeginChild("MyChild");
+ * {
+ *     // Child content here
+ * }
+ * ImGui::EndChild();
+ * IS_CLICKED_OUTSIDE(
+ * {
+ *     // Logic to execute when clicked outside the "MyChild" block
+ * });
+ * ```
+ */
 #define IS_CLICKED_OUTSIDE(block)                                                                  \
     do                                                                                             \
     {                                                                                              \
