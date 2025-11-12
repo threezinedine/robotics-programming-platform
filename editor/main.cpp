@@ -24,7 +24,7 @@ int main(int argc, const char **argv)
     FileSystem::Initialize();
 #endif
 
-#if defined(RPP_USE_PROFILE)
+#if defined(RPP_USE_PROFILING)
     Logging::GetInstance()->Setup(u8(HandlerType::CONSOLE), LogLevel::DEBUG);
 
     Profiling::StartLogging("logs/log_start");
@@ -47,7 +47,7 @@ int main(int argc, const char **argv)
     TestSystem::GetInstance()->Setup();
 #endif
 
-#if defined(RPP_USE_PROFILE)
+#if defined(RPP_USE_PROFILING)
     Profiling::StopLogging();
 
     Profiling::StartLogging("logs/log_update");
@@ -90,7 +90,7 @@ int main(int argc, const char **argv)
 #endif
         }
     }
-#if defined(RPP_USE_PROFILE)
+#if defined(RPP_USE_PROFILING)
     Profiling::StopLogging();
 
     Profiling::StartLogging("logs/log_end");
@@ -104,7 +104,7 @@ int main(int argc, const char **argv)
     GraphicSessionManager::GetInstance()->ClearSessions();
     Renderer::Shutdown();
     InputSystem::Shutdown();
-#if defined(RPP_USE_PROFILE)
+#if defined(RPP_USE_PROFILING)
     Profiling::StopLogging();
 #endif
     FileSystem::Shutdown();

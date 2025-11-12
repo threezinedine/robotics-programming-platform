@@ -9,6 +9,7 @@ from .path_utils import GetAbsoluteBuildDir
 from ..logger import logger
 from ..constants import Constants
 from .run_command import RunCommand
+from ..args import Args
 
 
 def GetGlobalPythonExePath() -> str:
@@ -47,9 +48,7 @@ def GetGlobalPythonExePath() -> str:
 
 def BuildProject(
     projectDir: str,
-    projectType: str = "dev",
-    recreate: bool = False,
-    buildOptions: list[str] | None = None,
+    args: Args | None = None,
 ) -> None:
     """
     Used for building C/C++ projects using CMake.
@@ -62,14 +61,12 @@ def BuildProject(
     projectType : str, optional
         The build type which is either 'dev' or 'prod'. Default is 'dev'.
 
-    recreate : bool, optional
-        Whether to recreate the build directory if it already exists. Default is False.
-
-    buildOptions : list[str], optional
-        Additional options to pass to the CMake command during the build process.
+    args : Args | None, optional
+        The command line arguments object. If provided, will be used to get additional build options. Default is None.
     """
 
     absoluteProjectDir = os.path.join(Constants.ABSOLUTE_BASE_DIR, projectDir)
+    projectType = "dev" if args is None else args.Type
     buildDir = GetAbsoluteBuildDir(projectDir, projectType)
 
     cmakeBuildType = "Debug" if projectType == "dev" else "Release"
@@ -81,14 +78,16 @@ def BuildProject(
     else:
         raise RuntimeError("Unsupported platform for building C/C++ projects.")
 
-    if os.path.exists(buildDir) and recreate:
+    if os.path.exists(buildDir) and (args is not None and args.IsForce):
         logger.info(f"Recreating build directory '{buildDir}'...")
         shutil.rmtree(buildDir)
 
     finalOptions: list[str] = []
-    if buildOptions:
-        for option in buildOptions:
-            finalOptions.append(f"-D{option}")
+
+    if args is not None:
+        if args.BuildOptions:
+            for option in args.BuildOptions:
+                finalOptions.append(f"-D{option}")
 
     globalPythonExe = GetGlobalPythonExePath()
     globalPythonExe = globalPythonExe.replace("\\", "/")

@@ -53,9 +53,7 @@ def main():
         if args.IsBuild:
             BuildProject(
                 projectDir=args.Project,
-                projectType=args.Type,
-                recreate=args.IsForce,
-                buildOptions=args.BuildOptions,
+                args=args,
             )
 
     if args.IsTest:

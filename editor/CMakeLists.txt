@@ -8,7 +8,7 @@ include(RPPUtils_Config)
 RPPProjectSetup()
 ExternalsSetup()
 
-RPPOption(RPP_USE_PROFILE OFF)
+RPPDefineOption(RPP_USE_PROFILING OFF)
 
 if (MSVC) # ignore specific warnings on MSVC
     add_compile_options(

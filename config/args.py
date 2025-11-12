@@ -136,6 +136,12 @@ class Args:
             help="Specify the scenario to use when running the tests (default: empty_scenario)",
         )
 
+        testParser.add_argument(
+            "--build",
+            action="store_true",
+            help="Build the project before running tests (for cpp projects only)",
+        )
+
         self.args = parser.parse_args()
 
         if self.args.verbose:
@@ -262,6 +268,15 @@ class Args:
         if self.IsTest and self.args.module:
             return self.args.module
         return "all"  # Default to 'all' if not specified
+
+    @property
+    def IsTestBuild(self) -> bool:
+        """
+        Returns true if the build flag is set when running the tests.
+        """
+        if self.IsTest:
+            return self.args.build
+        return False
 
     @property
     def CheckMemoryLeaks(self) -> bool:
