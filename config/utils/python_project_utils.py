@@ -156,6 +156,7 @@ def RunPythonProject(
     project: str,
     force: bool = False,
     reset: bool = False,
+    **kwargs: Any,
 ) -> None:
     """
     Runs the specified Python project.

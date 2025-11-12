@@ -200,6 +200,7 @@ def RunCppProjectTest(
     type: str = "dev",
     scenario: str | None = None,
     filter: str | None = None,
+    **kwargs: Any,
 ) -> None:
     """
     Run the testing suite for a C/C++ project. The testing version will be run.
