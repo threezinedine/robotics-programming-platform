@@ -2,14 +2,13 @@ import os
 import subprocess
 import shutil
 
-from .path_utils import GetAbsoluteBuildDir, CreateRecursiveDirIfNotExists
-from .validation_utils import ValidateCommandExists, ValidateEnvDirExists
+from .validation_utils import ValidateEnvDirExists
 
 from .path_utils import GetAbsoluteBuildDir
 from ..logger import logger
 from ..constants import Constants
 from .run_command import RunCommand
-from ..args import Args
+from typing import Any
 
 
 def GetGlobalPythonExePath() -> str:
@@ -47,29 +46,34 @@ def GetGlobalPythonExePath() -> str:
 
 
 def BuildProject(
-    projectDir: str,
-    args: Args | None = None,
+    project: str,
+    type: str = "dev",
+    force: bool = False,
+    options: list[str] | None = None,
+    **kwargs: Any,
 ) -> None:
     """
     Used for building C/C++ projects using CMake.
 
     Parameters
     ----------
-    projectDir : str
+    project: str
         The project directory where the CMakeLists.txt file is located (relative to the `ABSOLUTE_BASE_DIR`).
 
-    projectType : str, optional
+    type : str, optional
         The build type which is either 'dev' or 'prod'. Default is 'dev'.
 
-    args : Args | None, optional
-        The command line arguments object. If provided, will be used to get additional build options. Default is None.
+    force : bool, optional
+        Whether to recreate the build directory if it already exists. Default is False.
+
+    options : list[str], optional
+        Additional CMake options to pass during the configuration step.
     """
 
-    absoluteProjectDir = os.path.join(Constants.ABSOLUTE_BASE_DIR, projectDir)
-    projectType = "dev" if args is None else args.Type
-    buildDir = GetAbsoluteBuildDir(projectDir, projectType)
+    absoluteProjectDir = os.path.join(Constants.ABSOLUTE_BASE_DIR, project)
+    buildDir = GetAbsoluteBuildDir(project, type)
 
-    cmakeBuildType = "Debug" if projectType == "dev" else "Release"
+    cmakeBuildType = "Debug" if type == "dev" else "Release"
 
     if Constants.IsWindowsPlatform():
         makefile = "Visual Studio 17 2022"
@@ -78,16 +82,15 @@ def BuildProject(
     else:
         raise RuntimeError("Unsupported platform for building C/C++ projects.")
 
-    if os.path.exists(buildDir) and (args is not None and args.IsForce):
+    if os.path.exists(buildDir) and force:
         logger.info(f"Recreating build directory '{buildDir}'...")
         shutil.rmtree(buildDir)
 
     finalOptions: list[str] = []
 
-    if args is not None:
-        if args.BuildOptions:
-            for option in args.BuildOptions:
-                finalOptions.append(f"-D{option}")
+    if options:
+        for option in options:
+            finalOptions.append(f"-D{option}")
 
     globalPythonExe = GetGlobalPythonExePath()
     globalPythonExe = globalPythonExe.replace("\\", "/")
@@ -105,13 +108,13 @@ def BuildProject(
         )
 
     try:
-        projectDir = Constants.ABSOLUTE_BASE_DIR.replace("\\", "/")
+        project = Constants.ABSOLUTE_BASE_DIR.replace("\\", "/")
 
-        logger.info(f"Building project in '{projectDir}'...")
+        logger.info(f"Building project in '{project}'...")
         cmakeGenerateCommand = (
             f'cmake -S {absoluteProjectDir} -B {buildDir} -G "{makefile}" '
             f" -DCMAKE_BUILD_TYPE={cmakeBuildType} -DRPP_PYTHON_HOME={pythonHome}"
-            f' -DRPP_PROJECT_DIR="{projectDir}"'
+            f' -DRPP_PROJECT_DIR="{project}"'
             f" {' '.join(finalOptions)}"
         )
 
@@ -122,29 +125,25 @@ def BuildProject(
         RunCommand(buildCommand, cwd=absoluteProjectDir, capture=False)
 
     except Exception as e:
-        logger.error(f"Failed to build project in '{projectDir}': {e}")
-        raise RuntimeError(f"Failed to build project in '{projectDir}'.") from e
+        logger.error(f"Failed to build project in '{project}': {e}")
+        raise RuntimeError(f"Failed to build project in '{project}'.") from e
 
 
-def RunCppProject(projectDir: str, projectType: str, memoryCheck: bool = False) -> None:
+def RunCppProject(project: str, type: str, **kwargs: Any) -> None:
     """
     Runs the compiled C/C++ project (assumes the project has been built already).
 
     Parameters
     ----------
-    projectDir : str
+    project : str
         The project directory where the CMakeLists.txt file is located (relative to the `ABSOLUTE_BASE_DIR`).
 
-    projectType : str, optional
+    type : str, optional
         The build type which is either 'dev' or 'prod'. Default is 'dev'.
-
-    memoryCheck : bool, optional
-        Whether to check for memory leaks using Valgrind (only on Linux). Default is False, on windows, the memory check
-        is performed using code built-in memory tracking, see `platforms/include/platforms/memory.h`. and this flag is ignored.
     """
 
-    buildDir = GetAbsoluteBuildDir(projectDir, projectType)
-    cmakeBuildType = "Debug" if projectType == "dev" else "Release"
+    buildDir = GetAbsoluteBuildDir(project, type)
+    cmakeBuildType = "Debug" if type == "dev" else "Release"
 
     if Constants.IsWindowsPlatform():
         RunCommand(
@@ -185,27 +184,20 @@ def RunCppProject(projectDir: str, projectType: str, memoryCheck: bool = False) 
         raise FileNotFoundError(f"No executable found in '{executableDir}'.")
 
     try:
-        logger.info(f"Building project in '{projectDir}'...")
+        logger.info(f"Building project in '{project}'...")
         buildCommand = f"cmake --build {buildDir} --config {cmakeBuildType}"
         RunCommand(buildCommand, cwd=buildDir)
 
-        if Constants.IsLinuxPlatform() and memoryCheck:
-            ValidateCommandExists("valgrind")
-            memoryLeakCheckCommand = f"valgrind {executable}"
-            logger.info("Checking for memory leaks using Valgrind...")
-            RunCommand(memoryLeakCheckCommand, cwd=buildDir)
-        else:
-            logger.info(f"Running project '{projectDir}'...")
-            RunCommand(executable, cwd=buildDir)
+        RunCommand(executable, cwd=buildDir)
 
     except Exception as e:
-        logger.error(f"Failed to run project '{projectDir}': {e}")
-        raise RuntimeError(f"Failed to run project '{projectDir}'.") from e
+        logger.error(f"Failed to run project '{project}': {e}")
+        raise RuntimeError(f"Failed to run project '{project}'.") from e
 
 
 def RunCppProjectTest(
-    projectDir: str,
-    projectType: str = "dev",
+    project: str,
+    type: str = "dev",
     scenario: str | None = None,
     filter: str | None = None,
 ) -> None:
@@ -214,24 +206,21 @@ def RunCppProjectTest(
 
     Parameters
     ----------
-    projectDir : str
+    project: str
         The project directory where the CMakeLists.txt file is located (relative to the `ABSOLUTE_BASE_DIR`).
 
-    projectType : str, optional
+    type : str, optional
         The build type which is either 'dev' or 'prod'. Default is 'dev'.
 
     scenario : str, optional
         The scenario to use when running the tests. Only used for e2e testing (like `e2e-gruntime` or `e2e-editor`).
+
+    filter : str, optional
+        An optional filter to pass to the test executable to run specific tests only.
     """
-    buildDir = GetAbsoluteBuildDir(projectDir, projectType)
-    cmakeBuildType = "Debug" if projectType == "dev" else "Release"
+    buildDir = GetAbsoluteBuildDir(project, type)
+    cmakeBuildType = "Debug" if type == "dev" else "Release"
     executableDir: str | None = None
-
-    # create temp e2e folder
-
-    # Prepare e2e directory
-    e2eDir = os.path.join(Constants.ABSOLUTE_BASE_DIR, f"e2e-{projectDir}")
-    CreateRecursiveDirIfNotExists(os.path.join(e2eDir, "TestReports"))
 
     if Constants.IsWindowsPlatform():
         executableDir = os.path.join(buildDir, cmakeBuildType)
@@ -263,10 +252,10 @@ def RunCppProjectTest(
 
     assert executable is not None, f"No test executable found in '{executableDir}'."
 
-    ValidateEnvDirExists(projectDir="testui", recreate=False)
+    ValidateEnvDirExists(project="testui", force=False)
 
     try:
-        logger.info(f"Building project in '{projectDir}'...")
+        logger.info(f"Building project in '{project}'...")
         buildCommand = f"cmake --build {buildDir} --config {cmakeBuildType}"
         RunCommand(buildCommand, cwd=buildDir)
 
@@ -278,7 +267,7 @@ def RunCppProjectTest(
         else:
             TEST_UI_PYTHON_EXE = os.path.join(TEST_UI_DIR, "venv", "bin", "python3")
 
-        runCommand = f"{TEST_UI_PYTHON_EXE} main.py --project {projectDir}"
+        runCommand = f"{TEST_UI_PYTHON_EXE} main.py --project {project}"
         if scenario:
             runCommand += f" --scenario {scenario}"
 
@@ -288,40 +277,39 @@ def RunCppProjectTest(
         print("Command to run tests:", runCommand)
         RunCommand(runCommand, cwd=TEST_UI_DIR)
     except Exception as e:
-        logger.error(f"Failed to run tests for project '{projectDir}': {e}")
-        raise RuntimeError(f"Failed to run tests for project '{projectDir}'.") from e
+        logger.error(f"Failed to run tests for project '{project}': {e}")
+        raise RuntimeError(f"Failed to run tests for project '{project}'.") from e
 
 
 def RunLibrariesTest(
-    projectDir: str, projectType: str, filter: str | None = None
+    type: str,
+    filter: str | None = None,
+    **kwargs: Any,
 ) -> None:
     """
     Runs components tests in the `libraries` project (assumes the project has been built already).
 
     Parameters
     ----------
-    projectDir : str
-        The project directory where the CMakeLists.txt file is located (relative to the `ABSOLUTE_BASE_DIR`).
-
-    projectType : str, optional
+    type : str, optional
         The build type which is either 'dev' or 'prod'. Default is 'dev'.
 
     filter : str, optional
         An optional filter to pass to the test executable to run specific tests only.
     """
 
-    buildDir = GetAbsoluteBuildDir("libraries", projectType)
-    cmakeBuildType = "Debug" if projectType == "dev" else "Release"
+    buildDir = GetAbsoluteBuildDir("libraries", type)
+    cmakeBuildType = "Debug" if type == "dev" else "Release"
 
     if Constants.IsWindowsPlatform():
-        executableDir = os.path.join(buildDir, projectDir, cmakeBuildType)
+        executableDir = os.path.join(buildDir, cmakeBuildType)
     else:
         executableDir = os.path.join(
             buildDir,
         )
 
     try:
-        logger.info(f"Building project in '{projectDir}'...")
+        logger.info(f"Building project in 'libraries'...")
         buildCommand = f"cmake --build {buildDir} --config {cmakeBuildType}"
         RunCommand(buildCommand, cwd=buildDir)
 
@@ -348,9 +336,9 @@ def RunLibrariesTest(
 
         command = f"{executable} --gtest_filter={filter}" if filter else executable
 
-        logger.info(f"Running project '{projectDir}'...")
+        logger.info(f"Running project 'libraries'...")
         logger.debug(f"Executing command: {command}")
         RunCommand(command, cwd=executableDir)
     except Exception as e:
-        logger.error(f"Failed to run project '{projectDir}': {e}")
-        raise RuntimeError(f"Failed to run project '{projectDir}'.") from e
+        logger.error(f"Failed to run project 'libraries': {e}")
+        raise RuntimeError(f"Failed to run project 'libraries'.") from e

@@ -6,7 +6,6 @@ from config.utils.python_project_utils import (
     InstallPackages,
     RunPythonProject,
     RunPythonProjectTest,
-    OpenPyQtDesigner,
 )
 from config.utils.cpp_project_utils import (
     BuildProject,
@@ -34,16 +33,10 @@ def main():
     RunPythonProject("templategen")
 
     if args.Project in PythonProjectNames:
-        ValidateEnvDirExists(
-            projectDir=args.Project,
-            recreate=args.IsForce,
-        )
+        ValidateEnvDirExists(**args.ToDict())
 
         if args.IsPackageInstall:
-            InstallPackages(
-                projectDir=args.Project,
-                packages=args.InstalledPackages,
-            )
+            InstallPackages(**args.ToDict())
 
     if args.Project in CppProjectNames:
         ValidateCommandExists("cmake")
@@ -51,50 +44,22 @@ def main():
         InstallCppDependencies()
 
         if args.IsBuild:
-            BuildProject(
-                projectDir=args.Project,
-                args=args,
-            )
+            BuildProject(**args.ToDict())
 
     if args.IsTest:
         if args.Project in CppProjectNames:
             if args.Project == "libraries":
-                RunLibrariesTest(
-                    projectDir="core",
-                    projectType=args.Type,
-                    filter=args.TestFilter,
-                )
+                RunLibrariesTest(**args.ToDict())
             else:
-                RunCppProjectTest(
-                    projectDir=args.Project,
-                    projectType=args.Type,
-                    scenario=args.Scenario,
-                    filter=args.TestFilter,
-                )
+                RunCppProjectTest(**args.ToDict())
         else:
-            RunPythonProjectTest(
-                projectDir=args.Project,
-                filter=args.TestFilter,
-            )
+            RunPythonProjectTest(**args.ToDict())
 
     if args.IsRun:
         if args.Project in CppProjectNames:
-            RunCppProject(
-                projectDir=args.Project,
-                projectType=args.Type,
-                memoryCheck=args.CheckMemoryLeaks,
-            )
+            RunCppProject(**args.ToDict())
         else:
-            RunPythonProject(
-                projectDir=args.Project,
-                force=args.IsForce,
-                reset=args.IsReset,
-            )
-
-    if args.IsDesigner:
-        if Constants.IsLinuxPlatform():
-            raise Exception("The PyQt Designer tool is not supported on Linux.")
-        OpenPyQtDesigner()
+            RunPythonProject(**args.ToDict())
 
 
 if __name__ == "__main__":

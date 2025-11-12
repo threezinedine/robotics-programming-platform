@@ -1,4 +1,5 @@
 import argparse
+from typing import Any, Dict
 from .logger import logger
 from logging import DEBUG, INFO
 
@@ -98,17 +99,6 @@ class Args:
             help="Reset the project state before running",
         )
 
-        runSubParser.add_argument(
-            "--check",
-            action="store_true",
-            help="Check for memory leaks when running the project (only for C++ projects)",
-        )
-
-        subparsers.add_parser(
-            "designer",
-            help="Launch the GUI designer tool",
-        )
-
         testParser = subparsers.add_parser(
             "test",
             help="Run the tests for the specified project",
@@ -157,21 +147,6 @@ class Args:
         return self.args.project
 
     @property
-    def Type(self) -> str:
-        """
-        Returns the build type which is either 'dev' or 'prod'.
-        """
-        return self.args.type
-
-    @property
-    def IsForce(self) -> bool:
-        """
-        If  the force flag is set, this will be true then all operations
-        should be forced to run (igonring the cache).
-        """
-        return self.args.force
-
-    @property
     def IsPackageInstall(self) -> bool:
         """
         Returns true if the command is to install packages.
@@ -179,29 +154,11 @@ class Args:
         return self.args.command == "install"
 
     @property
-    def InstalledPackages(self) -> list[str]:
-        """
-        Returns the list of packages to install.
-        """
-        if self.IsPackageInstall:
-            return self.args.packages
-        return []
-
-    @property
     def IsBuild(self) -> bool:
         """
         Returns true if the command is to build the project.
         """
         return self.args.command == "build"
-
-    @property
-    def Toolchain(self) -> str:
-        """
-        Returns the toolchain to use for building the project.
-        """
-        if self.IsBuild:
-            return self.args.toolchain
-        return "msvc"
 
     @property
     def IsRun(self) -> bool:
@@ -218,58 +175,6 @@ class Args:
         return self.args.command == "test"
 
     @property
-    def Scenario(self) -> str | None:
-        """
-        Returns the scenario to use when running the tests.
-        """
-        if self.IsTest:
-            return self.args.scenario
-        return None
-
-    @property
-    def IsReset(self) -> bool:
-        """
-        Returns true if the reset flag is set when running the project.
-        """
-        if self.IsRun:
-            return self.args.reset
-        return False
-
-    @property
-    def IsDesigner(self) -> bool:
-        """
-        Returns true if the command is to launch the GUI designer tool.
-        """
-        return self.args.command == "designer"
-
-    @property
-    def TestFilter(self) -> str | None:
-        """
-        Returns the optional filter to run specific tests only.
-        """
-        if self.IsTest:
-            return self.args.filter
-        return None
-
-    @property
-    def BuildOptions(self) -> list[str]:
-        """
-        Returns additional options for the build process.
-        """
-        if self.IsBuild and self.args.options:
-            return self.args.options
-        return []
-
-    @property
-    def Module(self) -> str:
-        """
-        Returns the optional module to build.
-        """
-        if self.IsTest and self.args.module:
-            return self.args.module
-        return "all"  # Default to 'all' if not specified
-
-    @property
     def IsTestBuild(self) -> bool:
         """
         Returns true if the build flag is set when running the tests.
@@ -278,11 +183,8 @@ class Args:
             return self.args.build
         return False
 
-    @property
-    def CheckMemoryLeaks(self) -> bool:
+    def ToDict(self) -> Dict[str, Any]:
         """
-        Returns true if the check flag is set when running the project.
+        Converts the arguments to a dictionary.
         """
-        if self.IsRun:
-            return self.args.check
-        return False
+        return vars(self.args)

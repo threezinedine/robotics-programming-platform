@@ -1,5 +1,6 @@
 import os
 import subprocess
+from typing import Any
 from .path_utils import (
     CreateRecursiveDirIfNotExists,
     GetAbosolutePythonExecutable,
@@ -15,7 +16,7 @@ from .cpp_project_utils import BuildProject
 
 
 def InstallPackages(
-    projectDir: str,
+    project: str,
     packages: list[str],
 ) -> None:
     """
@@ -30,11 +31,11 @@ def InstallPackages(
         The list of packages to install.
     """
 
-    pipExe = GetAbsolutePipExecutable(projectDir)
-    cwd = os.path.join(Constants.ABSOLUTE_BASE_DIR, projectDir)
+    pipExe = GetAbsolutePipExecutable(project)
+    cwd = os.path.join(Constants.ABSOLUTE_BASE_DIR, project)
 
     try:
-        logger.info(f"Installing packages in '{projectDir}': {', '.join(packages)}")
+        logger.info(f"Installing packages in '{project}': {', '.join(packages)}")
 
         installPackagesCommand = f"{pipExe} install " + " ".join(packages)
 
@@ -152,7 +153,7 @@ def _GetUIFileList() -> list[str]:  # type: ignore
 
 
 def RunPythonProject(
-    projectDir: str,
+    project: str,
     force: bool = False,
     reset: bool = False,
 ) -> None:
@@ -171,14 +172,14 @@ def RunPythonProject(
         If True, resets the project state before running (default is False).
     """
 
-    pythonExe = GetAbosolutePythonExecutable(projectDir)
-    cwd = os.path.join(Constants.ABSOLUTE_BASE_DIR, projectDir)
+    pythonExe = GetAbosolutePythonExecutable(project)
+    cwd = os.path.join(Constants.ABSOLUTE_BASE_DIR, project)
     mainScript = os.path.join(cwd, "main.py")
 
     if not os.path.isfile(mainScript):
-        raise FileNotFoundError(f"No main.py file found in '{projectDir}'.")
+        raise FileNotFoundError(f"No main.py file found in '{project}'.")
 
-    if projectDir == "autogen":
+    if project == "autogen":
         allHeaderFiles = _GetListOfHeaderFiles()
         allTemplateFiles = _GetListOfTemplateFiles()
         typeMapFiles = os.path.join(
@@ -393,7 +394,7 @@ def RunPythonProject(
 
         try:
 
-            logger.info(f"Running Python project in '{projectDir}'...")
+            logger.info(f"Running Python project in '{project}'...")
 
             e2eCommand = " ".join([pythonExe, mainScript] + e2eOutputArgs)
             RunCommand(e2eCommand, cwd=cwd)
@@ -432,7 +433,7 @@ def RunPythonProject(
             )
             RunCommand(e2ePythonModuleEnumCreatedCommand, cwd=cwd)
 
-            logger.info(f"Python project '{projectDir}' finished successfully.")
+            logger.info(f"Python project '{project}' finished successfully.")
 
             for headerFile in allHeaderFiles + allTemplateFiles + [typeMapFiles]:
                 UpdateFileCache(headerFile)
@@ -440,23 +441,19 @@ def RunPythonProject(
         except Exception as e:
             logger.error(f"Failed to run Python project: {e}")
             raise RuntimeError(f"Failed to run Python project: {e}") from e
-    elif projectDir == "testui":
+    elif project == "testui":
         try:
-            BuildProject(
-                "editor",
-                projectType="dev",
-                recreate=False,
-            )
+            BuildProject("editor")
 
-            logger.info(f"Running Python project in '{projectDir}'...")
+            logger.info(f"Running Python project in '{project}'...")
             runCommand = f"{pythonExe} {mainScript}"
             RunCommand(runCommand, cwd=cwd)
-            logger.info(f"Python project '{projectDir}' finished successfully.")
+            logger.info(f"Python project '{project}' finished successfully.")
 
         except Exception as e:
             logger.error(f"Failed to run Python project: {e}")
             raise RuntimeError(f"Failed to run Python project: {e}") from e
-    elif projectDir == "templategen":
+    elif project == "templategen":
         editorVSCodeDir = os.path.join(
             "editor",
             ".vscode",
@@ -505,10 +502,10 @@ def RunPythonProject(
                 continue
 
             try:
-                logger.info(f"Running Python project in '{projectDir}'...")
+                logger.info(f"Running Python project in '{project}'...")
                 runCommand = f'{pythonExe} {mainScript} -i "{finalTemplateFile}" -o "{finalOutputFile}"'
                 RunCommand(runCommand, cwd=cwd)
-                logger.info(f"Python project '{projectDir}' finished successfully.")
+                logger.info(f"Python project '{project}' finished successfully.")
                 UpdateFileCache(templateFile)
 
             except Exception as e:
@@ -516,13 +513,17 @@ def RunPythonProject(
                 raise RuntimeError(f"Failed to run Python project: {e}") from e
 
 
-def RunPythonProjectTest(projectDir: str, filter: str | None = None) -> None:
+def RunPythonProjectTest(
+    project: str,
+    filter: str | None = None,
+    **kwargs: Any,
+) -> None:
     """
     Runs the specified Python project in test mode.
 
     Parameters
     ----------
-    projectDir : str
+    project: str
         The project directory where the main.py file is located (relative to the `ABSOLUTE_BASE_DIR`).
 
     filter : str | None
@@ -531,53 +532,25 @@ def RunPythonProjectTest(projectDir: str, filter: str | None = None) -> None:
 
     if Constants.IsWindowsPlatform():
         pytestExe = os.path.join(
-            GetAbsoluteVirtualEnvDir(projectDir),
+            GetAbsoluteVirtualEnvDir(project),
             "Scripts",
             "pytest.exe",
         )
     else:
         pytestExe = os.path.join(
-            GetAbsoluteVirtualEnvDir(projectDir),
+            GetAbsoluteVirtualEnvDir(project),
             "bin",
             "pytest",
         )
 
-    cwd = os.path.join(Constants.ABSOLUTE_BASE_DIR, projectDir)
+    cwd = os.path.join(Constants.ABSOLUTE_BASE_DIR, project)
 
     try:
-        logger.info(f"Running Python project in '{projectDir}' in test mode...")
+        logger.info(f"Running Python project in '{project}' in test mode...")
         runTestCommand = f"{pytestExe} " + (f"-k {filter}" if filter else "")
         RunCommand(runTestCommand, cwd=cwd, capture=False)
-        logger.info(f"Python project '{projectDir}' finished successfully.")
+        logger.info(f"Python project '{project}' finished successfully.")
 
     except Exception as e:
         logger.error(f"Failed to run Python project: {e}")
         raise RuntimeError(f"Failed to run Python project: {e}") from e
-
-
-def OpenPyQtDesigner() -> None:
-    """
-    Opens the PyQt Designer tool.
-    """
-
-    designgerExe = os.path.join(
-        GetAbsoluteVirtualEnvDir("testui"),
-        "Scripts",
-        "pyqt6-tools.exe",
-    )
-
-    try:
-        logger.info("Launching the PyQt Designer tool...")
-        subprocess.run(
-            [
-                designgerExe,
-                "designer",
-            ],
-            check=True,
-            shell=True,
-            cwd=os.path.join(Constants.ABSOLUTE_BASE_DIR, "testui"),
-        )
-        logger.info("PyQt Designer tool launched successfully.")
-    except Exception as e:
-        logger.error(f"Failed to launch PyQt Designer tool: {e}")
-        raise RuntimeError(f"Failed to launch PyQt Designer tool: {e}") from e

@@ -4,6 +4,7 @@ All utils for validating something (such as whether a command exists on the comm
 
 import os
 import shutil
+from typing import Any
 
 from ..logger import logger
 from ..constants import Constants
@@ -61,36 +62,36 @@ def ValidateDirectoryExists(dirPath: str, autoCreate: bool = True) -> None:
             logger.warning(f"Directory '{dirPath}' does not exist.")
 
 
-def ValidateEnvDirExists(projectDir: str, recreate: bool = False) -> None:
+def ValidateEnvDirExists(project: str, force: bool = False, **kwargs: Any) -> None:
     """
     Automatically creates the virtual environment for a given project if it does not exist.
 
     Parameters
     ----------
-    projectDir : str
+    project: str
         The project directory to check for the virtual environment (relative to the `ABSOLUTE_BASE_DIR`).
 
-    recreate : bool, optional
+    force : bool, optional
         Whether to recreate the virtual environment if it already exists. Default is False.
     """
     from .path_utils import GetAbsoluteVirtualEnvDir
 
-    venvDir = GetAbsoluteVirtualEnvDir(projectDir)
-    cwd = os.path.join(Constants.ABSOLUTE_BASE_DIR, projectDir)
-    pythonExe = GetAbosolutePythonExecutable(projectDir)
+    venvDir = GetAbsoluteVirtualEnvDir(project)
+    cwd = os.path.join(Constants.ABSOLUTE_BASE_DIR, project)
+    pythonExe = GetAbosolutePythonExecutable(project)
 
     if os.path.exists(venvDir):
-        if recreate:
+        if force:
             shutil.rmtree(venvDir)
         else:
-            logger.debug(f"Virtual environment directory '{projectDir}' exists.")
+            logger.debug(f"Virtual environment directory '{project}' exists.")
             return
 
     try:
-        logger.info(f"Creating virtual environment in '{projectDir}'...")
+        logger.info(f"Creating virtual environment in '{project}'...")
         createVenvCommand = f"{Constants.PYTHON_SCRIPT} -m venv venv"
         RunCommand(createVenvCommand, cwd=cwd)
-        logger.info(f"Virtual environment created in '{projectDir}'.")
+        logger.info(f"Virtual environment created in '{project}'.")
 
         logger.info("Upgrading pip in the virtual environment...")
         upgradePipCommand = f"{pythonExe} -m pip install --upgrade pip"
@@ -102,7 +103,7 @@ def ValidateEnvDirExists(projectDir: str, recreate: bool = False) -> None:
         RunCommand(installDepsCommand, cwd=cwd)
         logger.info("Dependencies installed successfully.")
     except Exception as e:
-        logger.error(f"Failed to create virtual environment in '{projectDir}': {e}")
+        logger.error(f"Failed to create virtual environment in '{project}': {e}")
         raise RuntimeError(
-            f"Failed to create virtual environment in '{projectDir}'."
+            f"Failed to create virtual environment in '{project}'."
         ) from e
