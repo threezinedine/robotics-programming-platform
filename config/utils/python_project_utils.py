@@ -18,6 +18,7 @@ from .cpp_project_utils import BuildProject
 def InstallPackages(
     project: str,
     packages: list[str],
+    **kwargs: Any,
 ) -> None:
     """
     Used for installing python libraries into a specified virtual environment.
