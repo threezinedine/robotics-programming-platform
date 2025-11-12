@@ -76,7 +76,7 @@ namespace rpp
 } // namespace rpp
 #endif
 
-#if defined(RPP_DEBUG)
+#if defined(RPP_DEBUG) && defined(RPP_USE_PROFILE)
 #define RPP_PROFILE_SCOPE() rpp::Profiling profiling__LINE__(__FILE__, __FUNCTION__, __LINE__)
 #else
 #define RPP_PROFILE_SCOPE()
