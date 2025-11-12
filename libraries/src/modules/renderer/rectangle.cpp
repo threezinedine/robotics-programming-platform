@@ -148,7 +148,7 @@ namespace rpp
 		f32 widthScale = rect.width / windowWidth * 2;
 		f32 heightScale = rect.height / windowHeight * 2;
 
-		Mat4x4 uTranslate = glm::translate(Mat4x4(1.0f), glm::vec3(rect.centerX / windowWidth * 2, rect.centerY / windowHeight * 2, 0));
+		Mat4x4 uTranslate = glm::translate(Mat4x4(1.0f), glm::vec3(rect.centerX / windowWidth, rect.centerY / windowHeight, 0));
 		Mat4x4 uScale = glm::scale(Mat4x4(1.0f),
 								   glm::vec3(widthScale, heightScale, 1.0f));
 

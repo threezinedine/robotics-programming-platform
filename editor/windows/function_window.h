@@ -13,5 +13,8 @@ namespace rpp
         void InitializeImpl() override;
         void UpdateImpl(f32 deltaTime) override;
         void RenderImpl() override;
+
+    private:
+        void ToolbarRender();
     };
 } // namespace rpp

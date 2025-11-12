@@ -2,6 +2,7 @@
 #include "modules/renderer/renderer_impl.h"
 #include "imgui.h"
 #include "modules/renderer/renderer.h"
+#include <algorithm>
 
 #if defined(RPP_GRAPHICS_BACKEND_OPENGL)
 #include "imgui_impl_glfw.h"
@@ -375,24 +376,32 @@ namespace rpp
     void ImGuiImpl::DrawRenderingScene(u32 imguiId)
     {
         RPP_PROFILE_SCOPE();
-        ImGui::BeginChild("RenderingScene", ImVec2(0, 0));
-        const f32 factor = 0.9f;
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0.0f, 0.0f));
+        ImGui::BeginChild("RenderingScene", ImVec2(0, 0), ImGuiChildFlags_Border);
+
+        ImVec2 currentCursorPos = ImGui::GetCursorPos();
+
+        f32 displayRegionX = ImGui::GetContentRegionAvail().x;
+        f32 displayRegionY = ImGui::GetContentRegionAvail().y;
+
         f32 windowWidth = f32(Renderer::GetWindow()->GetWidth());
         f32 windowHeight = f32(Renderer::GetWindow()->GetHeight());
 
+        f32 factor = std::min(displayRegionX / windowWidth, displayRegionY / windowHeight);
         f32 displayWidth = windowWidth * factor;
         f32 displayHeight = windowHeight * factor;
 
-        f32 displayPosX = windowWidth * 0.5f * (1 - factor);
-        f32 displayPosY = windowHeight * 0.5f * (1 - factor);
+        f32 displayPosX = (displayRegionX - displayWidth) / 2;
+        f32 displayPosY = (displayRegionY - displayHeight) / 2;
 
         RPP_ASSERT(s_imguis != nullptr);
         ImGuiData *data = s_imguis->Get(imguiId);
         RPP_ASSERT(data != nullptr);
 
-        ImGui::SetCursorPos(ImVec2(displayPosX, displayPosY));
+        ImGui::SetCursorPos(ImVec2(displayPosX + currentCursorPos.x, displayPosY + currentCursorPos.y));
         ImGui::Image((void *)(uintptr_t)data->textureId, ImVec2(displayWidth, displayHeight), ImVec2(0, 1), ImVec2(1, 0));
         ImGui::EndChild();
+        ImGui::PopStyleVar();
     }
 
     void ImGuiImpl::LabelItem(const String &label, ImGuiID imguiId)

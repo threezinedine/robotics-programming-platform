@@ -35,8 +35,25 @@ namespace rpp
         ImGui::SetNextWindowSize(ImVec2((f32)windowWidth, (f32)windowHeight));
         ImGui::Begin("Function Window", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar);
         {
+            ToolbarRender();
+
             Renderer::DrawingSceneInImGui();
         }
         ImGui::End();
+    }
+
+    void FunctionWindow::ToolbarRender()
+    {
+        RPP_PROFILE_SCOPE();
+
+        if (ImGui::Button("Test"))
+        {
+        }
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Another Button"))
+        {
+        }
     }
 } // namespace rpp
