@@ -3,6 +3,8 @@
 
 namespace rpp
 {
+    STRUCTURE_SAVE_LOAD_IMPLEMENT(Function);
+
     Function::Function()
         : m_name("UnnamedFunction")
     {
@@ -26,10 +28,12 @@ namespace rpp
         RPP_PROFILE_SCOPE();
     }
 
-    Function Function::CreateFunction(const FunctionDescription &desc)
+    FunctionDescription Function::ToDescription() const
     {
         RPP_PROFILE_SCOPE();
-        return Function(desc);
+        FunctionDescription desc;
+        desc.name = m_name;
+        return desc;
     }
 
     AddFunctionCommand::AddFunctionCommand(Project *pProject)
@@ -69,7 +73,7 @@ namespace rpp
         RPP_PROFILE_SCOPE();
         RPP_ASSERT(m_pProject != nullptr);
         m_pProject->AddNewFunction(m_functionDesc.name);
-        m_addedFunctionIndex = m_pProject->GetFunctionNames().Size() - 1;
+        m_addedFunctionIndex = m_pProject->GetFunctionDescriptions().Size() - 1;
     }
 
     void AddFunctionCommand::UndoImpl()
@@ -77,9 +81,9 @@ namespace rpp
         RPP_PROFILE_SCOPE();
         RPP_ASSERT(m_pProject != nullptr);
         RPP_ASSERT(m_addedFunctionIndex != INVALID_ID);
-        RPP_ASSERT(m_addedFunctionIndex < m_pProject->GetFunctionNames().Size());
-        Array<String> &functionNames = m_pProject->GetFunctionNames();
-        functionNames.Erase(m_addedFunctionIndex);
+        RPP_ASSERT(m_addedFunctionIndex < m_pProject->GetFunctionDescriptions().Size());
+        Array<FunctionDescription> &functionDescriptions = m_pProject->GetFunctionDescriptions();
+        functionDescriptions.Erase(m_addedFunctionIndex);
     }
 
     DeleteFunctionCommand::DeleteFunctionCommand(Project *pProject, u32 functionIndex)
@@ -103,17 +107,17 @@ namespace rpp
             return FALSE;
         }
 
-        const Array<String> &functionNames = m_pProject->GetFunctionNames();
-        return m_functionIndex < functionNames.Size();
+        const Array<FunctionDescription> &functionDescriptions = m_pProject->GetFunctionDescriptions();
+        return m_functionIndex < functionDescriptions.Size();
     }
 
     void DeleteFunctionCommand::ExecuteImpl()
     {
         RPP_PROFILE_SCOPE();
-        Array<String> &functionNames = m_pProject->GetFunctionNames();
-        RPP_ASSERT(m_functionIndex < functionNames.Size());
+        Array<FunctionDescription> &functionDescriptions = m_pProject->GetFunctionDescriptions();
+        RPP_ASSERT(m_functionIndex < functionDescriptions.Size());
 
-        functionNames.Erase(m_functionIndex);
+        functionDescriptions.Erase(m_functionIndex);
     }
 
     void DeleteFunctionCommand::UndoImpl()

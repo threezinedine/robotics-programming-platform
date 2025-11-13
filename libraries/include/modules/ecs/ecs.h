@@ -216,7 +216,7 @@ namespace rpp
          * @param isActive The new active status of the system.
          * @note actually modify the system after call `Update` method of the ECS class.
          */
-        static void ModifySystemStatus(u32 systemId, b8 isActive);
+        static void ModifySystemStatus(SystemId systemId, b8 isActive);
 
     public:
         /**
@@ -227,7 +227,7 @@ namespace rpp
          * @param pRequiredComponents The list of component IDs which are required by the system.
          * @param numberOfRequiredComponents The number of required components in the list.
          */
-        static u32 RegisterSystem(System *system, ComponentId *pRequiredComponents, u32 numberOfRequiredComponents);
+        static SystemId RegisterSystem(System *system, ComponentId *pRequiredComponents, u32 numberOfRequiredComponents);
 
         /**
          * Update all the systems in the current ECS system instance. Each system will process all the entities

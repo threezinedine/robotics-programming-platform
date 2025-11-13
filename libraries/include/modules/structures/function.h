@@ -2,6 +2,7 @@
 #include "core/core.h"
 #include "modules/history/history.h"
 #include "tag.h"
+#include "utils.h"
 
 namespace rpp
 {
@@ -21,29 +22,19 @@ namespace rpp
      */
     class Function
     {
-    public:
-        Function();
-        Function(const FunctionDescription &desc);
-        Function(const Function &other);
-        ~Function();
-
-    public:
-        /// @brief Create a function from the given description.
-        /// @param desc The description of the function.
-        /// @return The created function.
-        static Function CreateFunction(const FunctionDescription &desc);
+        STRUCTURE_SAVE_LOAD_DEFINE(Function);
 
     public:
         /**
          * @brief Get the name of the function.
          */
-        inline const String &GetName();
+        inline const String &GetName() const;
 
     private:
         String m_name; ///< The name of the function.
     };
 
-    const String &Function::GetName()
+    const String &Function::GetName() const
     {
         return m_name;
     }

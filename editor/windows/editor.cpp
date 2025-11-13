@@ -428,13 +428,15 @@ void EditorWindow::FunctionsRender()
 
     if (ImGui::CollapsingHeader("Files"))
     {
-        u32 functionCount = m_pCurrentProject->GetFunctionNames().Size();
+        Array<FunctionDescription> &functionDescriptions = m_pCurrentProject->GetFunctionDescriptions();
+        u32 functionCount = functionDescriptions.Size();
 
         bool isFunctionAdded = FALSE;
 
         for (u32 functionIndex = 0; functionIndex < functionCount; functionIndex++)
         {
-            String &functionName = m_pCurrentProject->GetFunctionNames()[functionIndex];
+            FunctionDescription &functionDescription = functionDescriptions[functionIndex];
+            String &functionName = functionDescription.name;
 
             if (m_currentEditingFunctionIndex == functionIndex)
             {
@@ -484,7 +486,7 @@ void EditorWindow::FunctionsRender()
                     if (mousePos.x >= itemMin.x && mousePos.x <= itemMax.x &&
                         mousePos.y >= itemMin.y && mousePos.y <= itemMax.y)
                     {
-                        CREATE_SESSION(FunctionWindow, 800, 400, functionName);
+                        CREATE_SESSION(FunctionWindow, 800, 400, functionName, functionDescriptions[functionIndex]);
                     }
                 }
 
@@ -499,7 +501,7 @@ void EditorWindow::FunctionsRender()
                     if (ImGui::MenuItem("Rename"))
                     {
                         m_currentEditingFunctionIndex = functionIndex;
-                        const char *currentFunctionName = m_pCurrentProject->GetFunctionNames()[functionIndex].CStr();
+                        const char *currentFunctionName = functionName.CStr();
                         memcpy(m_editedFunctionName, currentFunctionName, strlen(currentFunctionName) + 1);
                         m_focusFunctionNameInput = TRUE;
                         ResetFunctionSelectionStates();
@@ -522,7 +524,7 @@ void EditorWindow::FunctionsRender()
 
         if (isFunctionAdded)
         {
-            m_pCurrentProject->GetFunctionNames()[m_currentEditingFunctionIndex] = m_editedFunctionName;
+            m_pCurrentProject->GetFunctionDescriptions()[m_currentEditingFunctionIndex].name = m_editedFunctionName;
             memset(m_editedFunctionName, 0, sizeof(m_editedFunctionName));
             m_currentEditingFunctionIndex = INVALID_ID;
         }
@@ -593,13 +595,9 @@ void EditorWindow::EditorMainToolbarRender()
         if (ImGui::MenuItem("Function"))
         {
             RPP_ASSERT(m_pCurrentProject != nullptr);
-#if 0
-            m_pCurrentProject->AddNewFunction();
-#else
             HistoryManager::GetInstance()->ExecuteCommand(RPP_NEW(AddFunctionCommand, m_pCurrentProject));
-#endif
-            m_currentEditingFunctionIndex = m_pCurrentProject->GetFunctionNames().Size() - 1;
-            const char *newFunctionName = m_pCurrentProject->GetFunctionNames()[m_currentEditingFunctionIndex].CStr();
+            m_currentEditingFunctionIndex = m_pCurrentProject->GetFunctionDescriptions().Size() - 1;
+            const char *newFunctionName = m_pCurrentProject->GetFunctionDescriptions()[m_currentEditingFunctionIndex].name.CStr();
             memcpy(m_editedFunctionName, newFunctionName, strlen(newFunctionName) + 1);
             m_focusFunctionNameInput = TRUE;
         }
@@ -632,8 +630,8 @@ void EditorWindow::ShutdownImpl()
 void EditorWindow::ResetFunctionSelectionStates()
 {
     RPP_ASSERT(m_pCurrentProject != nullptr);
-    Array<String> &functionNames = m_pCurrentProject->GetFunctionNames();
-    u32 functionsCount = functionNames.Size();
+    Array<FunctionDescription> &functionDescriptions = m_pCurrentProject->GetFunctionDescriptions();
+    u32 functionsCount = functionDescriptions.Size();
     u32 functionStatesCount = m_functionSelectionStates.Size();
 
     if (functionsCount > functionStatesCount)
@@ -652,8 +650,8 @@ void EditorWindow::ResetFunctionSelectionStates()
 void EditorWindow::UnSelectAllFunctions()
 {
     RPP_ASSERT(m_pCurrentProject != nullptr);
-    Array<String> &functionNames = m_pCurrentProject->GetFunctionNames();
-    u32 functionsCount = functionNames.Size();
+    Array<FunctionDescription> &functionDescriptions = m_pCurrentProject->GetFunctionDescriptions();
+    u32 functionsCount = functionDescriptions.Size();
     u32 functionStatesCount = m_functionSelectionStates.Size();
 
     RPP_ASSERT(functionsCount == functionStatesCount);

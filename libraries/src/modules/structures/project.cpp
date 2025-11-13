@@ -18,7 +18,7 @@ namespace rpp
     }
 
     Project::Project(const Project &other)
-        : m_name(other.m_name), m_functionNames(other.m_functionNames)
+        : m_name(other.m_name), m_functionDescriptions(other.m_functionDescriptions)
     {
         RPP_PROFILE_SCOPE();
     }
@@ -64,6 +64,10 @@ namespace rpp
             uniqueName = Format("{} (Copy)", uniqueName);
         }
 
+        FunctionDescription functionDesc;
+        functionDesc.name = uniqueName;
+
         m_functionNames.Push(uniqueName);
+        m_functionDescriptions.Push(functionDesc);
     }
 }

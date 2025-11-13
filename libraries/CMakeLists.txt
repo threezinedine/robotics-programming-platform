@@ -33,6 +33,7 @@ file(
     "src/*.cpp"
     "src/**/*.cpp"
     "src/**/**/*.cpp"
+    "src/**/**/**/*.cpp"
 )
 
 file(

@@ -2,15 +2,24 @@
 
 namespace rpp
 {
-    FunctionWindow::FunctionWindow(u32 width, u32 height, const String &title)
+    FunctionWindow::FunctionWindow(u32 width, u32 height, const String &title, const FunctionDescription &functionDescription)
         : GraphicSession(width, height, title)
     {
         RPP_PROFILE_SCOPE();
+        m_pFunctionBlock = RPP_NEW(FunctionBlock, functionDescription);
+        m_pFunction = Function::Create(functionDescription);
     }
 
     FunctionWindow::~FunctionWindow()
     {
         RPP_PROFILE_SCOPE();
+        RPP_ASSERT(m_pFunctionBlock != nullptr);
+        RPP_DELETE(m_pFunctionBlock);
+        m_pFunctionBlock = nullptr;
+
+        RPP_ASSERT(m_pFunction != nullptr); ///< Do not delete the function here, it is managed by the project.
+        RPP_DELETE(m_pFunction);
+        m_pFunction = nullptr;
     }
 
     void FunctionWindow::InitializeImpl()
