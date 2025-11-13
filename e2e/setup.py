@@ -39,3 +39,17 @@ def setup_project_with_functions(setup_recent_projects: None):
     file: FileHandle = FileSystem.OpenFile("/home/ok/project.rppproj", FILE_WRITE)
     FileSystem.Write(file, json.dumps(asdict(projectData), indent=4))
     FileSystem.CloseFile(file)
+
+    file: FileHandle = FileSystem.OpenFile("files/ExistingFunction.rppfunc", FILE_WRITE)
+    functionData = FunctionDescription(
+        name="ExistingFunction",
+    )
+    FileSystem.Write(file, json.dumps(asdict(functionData), indent=4))
+    FileSystem.CloseFile(file)
+
+    file: FileHandle = FileSystem.OpenFile("files/AnotherFunction.rppfunc", FILE_WRITE)
+    functionData = FunctionDescription(
+        name="AnotherFunction",
+    )
+    FileSystem.Write(file, json.dumps(asdict(functionData), indent=4))
+    FileSystem.CloseFile(file)

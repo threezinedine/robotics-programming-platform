@@ -39,6 +39,13 @@ namespace rpp
          */
         void AddNewFunction(const String &functionName = "NewFunction");
 
+        /**
+         * @brief Remove a function from the project by its index.
+         *
+         * @param functionIndex The index of the function to remove.
+         */
+        void RemoveFunction(u32 functionIndex);
+
     private:
         String m_name;                                     ///< The name of the project.
         Array<String> m_functionNames;                     ///< The list of function names in the project. --- IGNORE ---

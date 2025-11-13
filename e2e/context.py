@@ -48,7 +48,6 @@ def setup_context(testFunc: Callable[..., Any]) -> None:
     run_context(test_database_connection) // the setup_database will be automatically called before test_database_connection
     ```
     """
-    print("Setup context for:", testFunc.__name__)
     functionNames[testFunc.__name__] = testFunc
     functionSignatures[testFunc.__name__] = inspect.signature(testFunc)
 
@@ -99,7 +98,6 @@ def _run_setup_internal(functionName: str, called: bool = True) -> None:
 
     if len(funcSignature.parameters) == 0:
         if called:
-            print("Run setup for:", functionName)
             result = next(func())
             setupCalls[functionName] = result
             setupCallsOrder.append(functionName)
@@ -118,7 +116,6 @@ def _run_setup_internal(functionName: str, called: bool = True) -> None:
         args.append(setupCalls[argName])
 
     if called:
-        print("Run setup for:", functionName)
         result = next(func(*args))
         setupCalls[functionName] = result
         setupCallsOrder.append(functionName)

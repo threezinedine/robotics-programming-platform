@@ -82,8 +82,8 @@ namespace rpp
         RPP_ASSERT(m_pProject != nullptr);
         RPP_ASSERT(m_addedFunctionIndex != INVALID_ID);
         RPP_ASSERT(m_addedFunctionIndex < m_pProject->GetFunctionDescriptions().Size());
-        Array<FunctionDescription> &functionDescriptions = m_pProject->GetFunctionDescriptions();
-        functionDescriptions.Erase(m_addedFunctionIndex);
+
+        m_pProject->RemoveFunction(m_addedFunctionIndex);
     }
 
     DeleteFunctionCommand::DeleteFunctionCommand(Project *pProject, u32 functionIndex)
