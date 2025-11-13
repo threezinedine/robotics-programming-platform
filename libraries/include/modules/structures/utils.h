@@ -1,6 +1,8 @@
 #pragma once
 #include "core/core.h"
 
+using SaveEventCallback = std::function<void()>;
+
 #define STRUCTURE_SAVE_LOAD_DEFINE(className)                     \
 public:                                                           \
     className();                                                  \
@@ -15,7 +17,13 @@ public:                                                           \
     void Save(const String &filePath) const;                      \
                                                                   \
 public:                                                           \
-    className##Description ToDescription() const;
+    className##Description ToDescription() const;                 \
+                                                                  \
+private:                                                          \
+    SaveEventCallback m_saveEventCallback = nullptr;              \
+                                                                  \
+private:                                                          \
+    inline void SetSaveEventCallback(SaveEventCallback callback) { m_saveEventCallback = callback; }
 
 /**
  * Need da define `className()`, `className(const className##Description &desc)`,
@@ -53,4 +61,8 @@ public:                                                           \
         FileHandle file = FileSystem::OpenFile(filePath, FILE_MODE_WRITE);          \
         FileSystem::Write(file, ToString(this->ToDescription()));                   \
         FileSystem::CloseFile(file);                                                \
+        if (m_saveEventCallback)                                                    \
+        {                                                                           \
+            m_saveEventCallback();                                                  \
+        }                                                                           \
     }

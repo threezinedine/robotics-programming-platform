@@ -47,6 +47,12 @@ namespace rpp
         void RemoveFunction(u32 functionIndex);
 
     private:
+        /**
+         * @brief Save all functions to their respective files.
+         */
+        void SaveFunctions();
+
+    private:
         String m_name;                                     ///< The name of the project.
         Array<String> m_functionNames;                     ///< The list of function names in the project. --- IGNORE ---
         Array<FunctionDescription> m_functionDescriptions; ///< The list of function names in the project.

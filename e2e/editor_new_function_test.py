@@ -155,6 +155,12 @@ def test_close_window_while_unsaved_changes(setup_recent_projects: None):
         "Project description function names does not contain only 'NewFunction' after saving from unsaved changes modal",
     )
 
+    # Assert the function file is created
+    TestUtils.Assert(
+        FileSystem.PathExists("files/NewFunction.rppfunc"),
+        "Function file 'files/NewFunction.rppfunc' does not exist after saving from unsaved changes modal",
+    )
+
 
 # def test_rename_function(setup_recent_projects: None):
 #     TestUtils.LeftClick(EDITOR_MAIN_TOOLBAR_NEW)

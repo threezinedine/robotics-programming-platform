@@ -9,6 +9,7 @@ namespace rpp
         : m_name("UnnamedProject")
     {
         RPP_PROFILE_SCOPE();
+        SetSaveEventCallback(std::bind(&Project::SaveFunctions, this));
     }
 
     Project::Project(const ProjectDescription &desc)
@@ -46,12 +47,29 @@ namespace rpp
             u32 missingIndex = missingFunctionIndices[i];
             m_functionNames.Erase(missingIndex);
         }
+
+        SetSaveEventCallback(std::bind(&Project::SaveFunctions, this));
     }
 
     Project::Project(const Project &other)
         : m_name(other.m_name), m_functionDescriptions(other.m_functionDescriptions)
     {
         RPP_PROFILE_SCOPE();
+        SetSaveEventCallback(std::bind(&Project::SaveFunctions, this));
+    }
+
+    void Project::SaveFunctions()
+    {
+        RPP_PROFILE_SCOPE();
+        u32 functionCount = m_functionDescriptions.Size();
+
+        for (u32 functionIndex = 0; functionIndex < functionCount; functionIndex++)
+        {
+            const FunctionDescription &functionDesc = m_functionDescriptions[functionIndex];
+            FileHandle file = FileSystem::OpenFile(Format("files/{}.rppfunc", functionDesc.name), FILE_MODE_WRITE);
+            FileSystem::Write(file, ToString(functionDesc));
+            FileSystem::CloseFile(file);
+        }
     }
 
     Project::~Project()
